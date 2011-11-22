@@ -1,8 +1,21 @@
+/* DEFINIZIONE DI UN WRITER PER LA RICHIESTA CLASSICA DEI PARAMETRI */
+Ext.define('Ext.data.writer.SinglePost', {
+    extend: 'Ext.data.writer.Writer',
+    alternateClassName: 'Ext.data.SinglePostWriter',
+    alias: 'writer.singlepost',
+
+    writeRecords: function(request, data) {
+        request.params = data[0];
+        return request;
+    }
+});
+
+
 /*Definisco il modello dei dati*/
 Ext.define('StatoTavoli', {
     extend: 'Ext.data.Model',
     fields: [
-             {name: 'idTavolo', 		type: 'int'},
+             {name: 'idTavolo', 		type: 'int',		useNull: true},
              {name: 'nomeTavolo', 		type: 'string'},
              {name: 'numeroPiano', 		type: 'int'},
              {name: 'nomePiano', 		type: 'string'},
@@ -13,27 +26,31 @@ Ext.define('StatoTavoli', {
     ],
     proxy: {
         type: 'rest',
-        actionMethods: {
+        url : 'stato',
+        /*actionMethods: {
             create : 'POST',
             read   : 'GET',
             update : 'PUT',
             destroy: 'DELETE'
-        },
-        url : 'stato',
+        },*/
+        
         //format: 'json',
         appendId: true, //default
-        directionParam : 'lol',
-        headers: {
-        	create  : undefined,
-            read    : undefined,
-            update  : undefined,
-            destroy : undefined
-        },
+        /*headers: {
+        	create  : 'shemale',
+            read    : 'prendi',
+            update  : 'aggiorna',
+            destroy : 'destriy'
+        },*/
+        /*
         api: {
             create  : undefined,
             read    : undefined,
             update  : undefined,
             destroy : undefined
+        },*/
+        writer: {
+            type: 'singlepost'
         },
 		reader: {
 	        type: 'json',
@@ -46,7 +63,7 @@ Ext.define('StatoTavoli', {
 
 
 /*Creo lo store*/
-Ext.create('Ext.data.Store', {
+var store = Ext.create('Ext.data.Store', {
 	storeId: 'datasource_stato_tavoli',
 	groupField: 'nomeArea',
 	model: 'StatoTavoli',
@@ -97,6 +114,12 @@ var _mainTabPanel = {
 	            //height: 100,
 	            items: ['Raggruppamenti: ',{
 	                tooltip: 'Toggle the visibility of the summary row',
+	                text: 'None',
+	                handler: function(){
+	                	_mainTabPanel._tab_stato.getStore().clearGrouping();
+	                }
+	            },{
+	                tooltip: 'Toggle the visibility of the summary row',
 	                text: 'Piano',
 	                handler: function(){
 	                	_mainTabPanel._tab_stato.getStore().group('nomePiano');
@@ -114,20 +137,26 @@ var _mainTabPanel = {
 	                	 _mainTabPanel._tab_stato.getStore().group('statoTavolo');
 	                }
 	            },'->',{
-	            	text: 'Aggiorna',
+	                text: 'Aggiorna',
+	                iconCls: 'icon-add',
 	                handler: function(){
-	                	_toolbar.add('lalaal');
-	                	_tabPanel.removeAll();
-	                	_tabPanel.add({
-	                		xtype: 'form',
-	                		layout: 'fit',
-	                		region: 'west',
-	                		title: 'Hello',
-	                		collapsible: true,
-	                	    split: true,
-	                	    width: 200,
-	                	    html: '<p>World!</p>'
-	                	});
+	                    // empty record
+	                    store.load();
+	                }
+	            },{
+	                text: 'Add',
+	                iconCls: 'icon-add',
+	                handler: function(){
+	                    // empty record
+	                    store.insert(0, new StatoTavoli());
+	                    //rowEditing.startEdit(0, 0);
+	                }
+	            }, '-', {
+	                text: 'Delete',
+	                iconCls: 'icon-delete',
+	                handler: function(){
+	                    var selection = store.remove(store.getAt(0));
+	                 store.sync();
 	                }
 	            }]
 	        }]	//Fine dockeditems
