@@ -1,6 +1,9 @@
 package Servlets;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -25,74 +28,8 @@ public class stato extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+    @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		this.doPost(request, response);
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*
-		JSONObject t0 = new JSONObject();
-		JSONObject t1 = new JSONObject();
-		JSONObject t2 = new JSONObject();
-		JSONObject t3 = new JSONObject();
-		JSONObject t4 = new JSONObject();
-		
-		t0.put("id_tavolo", 0);
-		t0.put("nome_tavolo", 0);
-		t0.put("piano", 0);
-		t0.put("area", "A0");
-		t0.put("num_posti", 0);
-		t0.put("stato", 0);
-		t0.put("cameriere", 0);
-		
-		t1.put("id_tavolo", 1);
-		t1.put("nome_tavolo", 0);
-		t1.put("piano", 0);
-		t1.put("area", "A0");
-		t1.put("num_posti", 0);
-		t1.put("stato", 0);
-		t1.put("cameriere", 0);
-		
-		t2.put("id_tavolo", 2);
-		t2.put("nome_tavolo", 0);
-		t2.put("piano", 0);
-		t2.put("area", "A0");
-		t2.put("num_posti", 0);
-		t2.put("stato", 0);
-		t2.put("cameriere", 0);
-		
-		t3.put("id_tavolo", 3);
-		t3.put("nome_tavolo", 0);
-		t3.put("piano", 0);
-		t3.put("area", "A0");
-		t3.put("num_posti", 0);
-		t3.put("stato", 0);
-		t3.put("cameriere", 0);
-		
-		t4.put("id_tavolo", 4);
-		t4.put("nome_tavolo", 0);
-		t4.put("piano", 0);
-		t4.put("area", "A0");
-		t4.put("num_posti", 0);
-		t4.put("stato", 0);
-		t4.put("cameriere", 0);
-	
-		
-		
-		JSONArray array = new JSONArray();
-		array.put(t0);	array.put(t1);	array.put(t2);	array.put(t3);	array.put(t4);
-		JSONObject send = new JSONObject();
-		send.put("items",array);
-		
-		response.getWriter().println(send);
-		*/
-		
 		DBConnection db = new DBConnection();
 		db.connect();
 		
@@ -102,5 +39,28 @@ public class stato extends HttpServlet {
 		
 		db.disconnect();
 	}
+
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)	throws ServletException, IOException {
+		System.out.println("POST");
+	
+		JSONObject json_out = new JSONObject();
+		json_out.put("success", true);
+		json_out.put("message", "lalalala");
+		
+		response.getWriter().println(	json_out	);
+	}
+	
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp)	throws ServletException, IOException {
+		System.out.println("PUT");
+	}
+	
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp)	throws ServletException, IOException {
+		System.out.println("DELETE");
+	}
+
+	
 
 }
