@@ -9,11 +9,8 @@
 	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/tabPanel.js"></script>
 	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/toolbar.js"></script>
 	<script type="text/javascript" language="javascript">
-		var messaggio = "Click destro disabilitato";
-
 		function DisabilitaIE4(){
 		    if (event.button == 2){
-		        alert(messaggio);
 		        return false;
 		    }
 		}
@@ -21,7 +18,6 @@
 		function DisabilitaNS4(e){
 		    if (document.layers || document.getElementById && !document.all){
 		        if (e.which == 2 || e.which == 3) {
-		            alert(messaggio);
 		            return false;
 		        }
 		    }
@@ -31,15 +27,12 @@
 		    if (document.layers){
 		        document.captureEvents(Event.MOUSEDOWN);
 		        document.onmousedown = DisabilitaNS4;
-		    }
-		    else if (document.all && !document.getElementById){
+		    }	else if (document.all && !document.getElementById){
 		        document.onmousedown = DisabilitaIE4;
 		    }
 		}
 		
-		document.oncontextmenu = function(){ 
-		    return false;
-		}
+		document.oncontextmenu = function(){	return false;	}
 	</script>
 
 	<head>
@@ -49,12 +42,10 @@
 	
 	<body>
 		<div id='center'></div>
-		
 		<script type="text/javascript">
 			/*Quando il documento è caricato eseguo l'applicazione*/
 			Ext.EventManager.onDocumentReady(desktop_main);
 		</script>
-		
 	</body>
 	
 </html>
