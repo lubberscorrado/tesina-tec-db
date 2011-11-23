@@ -13,7 +13,7 @@ var desktop_main = function desktop_main(){
 	_toolbar = get_main_toolbar();
 	
 	/* Genero il tab panel*/
-	_tabPanel = get_main_tabPanel();
+	//_tabPanel = get_main_tabPanel();
 	
 	/* Genero i pannelli laterali per permettere le modifiche successive: ViewPort una volta creato non può esser modificato*/
 	_viewPort_panel_east = Ext.create('Ext.panel.Panel', {
@@ -32,7 +32,7 @@ var desktop_main = function desktop_main(){
 		collapsible: true,
         split: true,
         width: 200,
-        hidden: true,
+        hidden: false,
         collapsed: true
 	});
 	
@@ -49,4 +49,5 @@ var desktop_main = function desktop_main(){
 	});
 	
 	_mainTabPanel.addTabStato();
+	_mainTabPanel.addTabGestioneTavolo();
 };
