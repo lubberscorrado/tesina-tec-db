@@ -1,5 +1,6 @@
 package DB;
 import java.sql.*;
+
 import org.json.*;
 
 public class DBConnection {
@@ -57,6 +58,10 @@ public class DBConnection {
 		}
 	}
 	
+	public Connection getConnection(){
+		return db;
+	}
+	
 	public String executeJSONQuery(String query){
 		System.out.println("executeJSONQuery(String query): "+query);
 		if(!connesso){
@@ -111,7 +116,7 @@ public class DBConnection {
 			while(rs.next()) {   // Creo il vettore risultato scorrendo tutto il ResultSet
 				json_object = new JSONObject();
 				for (int i=0; i<colonne; i++){
-					json_object.put(rsmd.getColumnName(i+1), rs.getString(i+1));
+					json_object.put(rsmd.getColumnLabel(i+1), rs.getString(i+1));
 				}
 				json_array.put(json_object);
 			}
@@ -126,6 +131,43 @@ public class DBConnection {
 	return json_out; 
 	}
 
+	/**
+	 * Aggiunge ad un JSON ARRAY esterno i risultati della query
+	 * @param query
+	 * @param json_array
+	 * @return
+	 */
+	public boolean executeJSONQuery(String query, JSONArray json_array){
+		System.out.println("executeJSONQuery(String query,String root): "+query);
+		JSONObject	tmp = null;
+		if(!connesso){
+			System.out.println("La connessione non è attiva!");
+			return false;
+		}
+		
+		int colonne = 0;
+		try {
+			Statement stmt = db.createStatement();     // Creo lo Statement per l'esecuzione della query
+			ResultSet rs = stmt.executeQuery(query);   // Ottengo il ResultSet dell'esecuzione della query
+			ResultSetMetaData rsmd = rs.getMetaData();
+			colonne = rsmd.getColumnCount();
+			boolean first = true;
+			while(rs.next()) {   // Creo il vettore risultato scorrendo tutto il ResultSet
+				tmp = new JSONObject();
+				for (int i=0; i<colonne; i++){
+					tmp.put(rsmd.getColumnLabel(i+1), rs.getString(i+1));
+				}
+				json_array.put(tmp);
+			}
+			rs.close();     // Chiudo il ResultSet
+			stmt.close();   // Chiudo lo Statement
+		} catch (Exception e) {
+			e.printStackTrace();
+			errore = e.getMessage();
+			System.out.println("Errore: " + errore);
+		}
 	
+	return true; 
+	}
 
 }
