@@ -42,15 +42,15 @@ public class gestioneTavolo extends HttpServlet {
 		String query = null;
 		
 		if(request.getParameter("node").equals("root")){
-			query = "SELECT CONCAT('P',idPiano) AS id,	idPiano AS realId,	nome AS text, 'root' AS parentId				FROM piano;";
+			query = "SELECT idPiano AS realId,	nome AS text,	'root' AS realParentId,		1 AS tipo		FROM piano;";
 			json_out = db.executeJSONQuery(query, "data");
 			
 		}else if (request.getParameter("node").startsWith("P")){
-			query = "SELECT CONCAT('A',idArea) AS id,	idArea AS realId,	nome AS text, CONCAT('P',idPiano) AS parentId 	FROM area WHERE idPiano = '"+request.getParameter("node").substring(1)+"';";
+			query = "SELECT idArea AS realId,	nome AS text,	idPiano AS realParentId,	2 AS tipo	 	FROM area WHERE idPiano = '"+request.getParameter("node").substring(1)+"';";
 			json_out = db.executeJSONQuery(query, "data");
 			
 		}else if (request.getParameter("node").startsWith("A")){
-			query = "SELECT CONCAT('T',idTavolo) AS id,	idTavolo AS realId,	nome AS text, CONCAT('A',idArea) AS parentId, true AS leaf	FROM tavolo WHERE idArea = '"+request.getParameter("node").substring(1)+"';";
+			query = "SELECT idTavolo AS realId,	nome AS text,	idArea AS realParentId,		3 AS tipo		FROM tavolo WHERE idArea = '"+request.getParameter("node").substring(1)+"';";
 			json_out = db.executeJSONQuery(query, "data");
 		}
 		
@@ -58,26 +58,49 @@ public class gestioneTavolo extends HttpServlet {
 		db.disconnect();
 	}
 	
-	/*
-	 * `idPiano` int(11) NOT NULL AUTO_INCREMENT,
-  `numero` int(11) NOT NULL,
-  `nome` varchar(45) NOT NULL,
-  `enabled
-	 */
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("PUTTA");
+		int tipo = Integer.parseInt( request.getParameter("tipo") );
+		String query = null;
+		switch(tipo){
+			case 1: {//Aggiungi piano
+				query = "INSERT INTO piano () VALUES ();";
+				break;
+			}
+			case 2: {//Aggiungi area
+				query = "INSERT INTO area () VALUES ();";
+				break;
+			}
+			case 3: {//Aggiungi tavolo
+				query = "INSERT INTO tavolo () VALUES ();";
+				break;
+			}
+			default: return;
+		}
 		
-		
-		
+		/*
+		 * descrizione	
+			enabled	on
+			id	1
+			nome	
+			numPosti	
+			numeroPiano	
+			parentId	root
+				1
+		 */
 		
 		
 		JSONObject tmp = new JSONObject();
-		tmp.put("parentId", "root");
-		tmp.put("text", "newPiano");
+		tmp.put("id", "9");
+		if(request.getParameter("parentId").length()==0)tmp.put("parentId", "root");
+		else tmp.put("parentId", request.getParameter("parentId"));
+		
+		tmp.put("tipo", request.getParameter("tipo"));
+		tmp.put("text", request.getParameter("nome"));
+
 		
 		JSONArray json_array = new JSONArray();
 		json_array.put(tmp);
@@ -88,8 +111,9 @@ public class gestioneTavolo extends HttpServlet {
 		json_out.put("success", true);
 		json_out.put("message", "shemale");
 		json_out.put("id", 999);
-		json_out.put("root", json_array);
-		
+		json_out.put("data", json_array);
+
+		json_out.put("msg", "troie di altri tempi!!!");
 		response.getWriter().println(	json_out	);
 	}
 
@@ -116,6 +140,7 @@ public class gestioneTavolo extends HttpServlet {
 		json_out.put("success", true);
 		json_out.put("message", "shemale");
 		json_out.put("root", json_array);
+		json_out.put("msg", "troie di altri tempi!!!");
 		
 		response.getWriter().println(	json_out	);
 	}

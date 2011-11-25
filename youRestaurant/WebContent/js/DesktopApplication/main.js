@@ -6,7 +6,6 @@ var _viewPort_panel_west;
 
 
 /* Funzione main */
-/* Funzione main */
 var desktop_main = function desktop_main(){
 	
 	/* Genero la Toolbar */
@@ -17,6 +16,7 @@ var desktop_main = function desktop_main(){
 	
 	/* Genero i pannelli laterali per permettere le modifiche successive: ViewPort una volta creato non può esser modificato*/
 	_viewPort_panel_east = Ext.create('Ext.panel.Panel', {
+		id: 'viewport_east',
 		region: 'east',
 		layout: 'fit',
 		collapsible: true,
@@ -27,6 +27,7 @@ var desktop_main = function desktop_main(){
 	});
 	
 	_viewPort_panel_west = Ext.create('Ext.panel.Panel', {
+		id: 'viewport_west',
 		region: 'west',
 		layout: 'fit',
 		collapsible: true,

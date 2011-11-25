@@ -6,12 +6,7 @@
 	<script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all.js"></script>
 	<link rel="stylesheet" type="text/css" href="./ExtJS/ext-all-gray.css" />
 	
-	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/dataModels.js"></script>
-	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/dataStores.js"></script>
-	
-	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/main.js"></script>
-	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/tabPanel.js"></script>
-	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/toolbar.js"></script>
+	<script type="text/javascript" language="Javascript" SRC="./js/Registrazione/main.js"></script>
 	<script type="text/javascript" language="javascript">
 		function DisabilitaIE4(){
 		    if (event.button == 2){
@@ -41,14 +36,14 @@
 
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-		<title>Restaurant Manager - Desktop</title>
+		<title>Restaurant Manager - Registrazione</title>
 	</head>
 	
 	<body>
-		<div id='center'></div>
+		<div id='div_centrale' style="text-align: center"></div>
 		<script type="text/javascript">
 			/*Quando il documento è caricato eseguo l'applicazione*/
-			Ext.EventManager.onDocumentReady(desktop_main);
+			Ext.EventManager.onDocumentReady(registration_main);
 		</script>
 	</body>
 	
