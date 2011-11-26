@@ -301,11 +301,12 @@ var _mainTabPanel = {
 		createTabGestioneTavolo : function(){
 			this._albero_gestioneTavolo = Ext.create('Ext.tree.Panel', {
 				id: 'albero_gestioneTavolo',
-			    title: 'Simple Tree',
+			    title: 'Gestione ristorante: piani, aree, tavoli',
 			    width: 500,
 			    height: 500,
 			    rootVisible: true,
-			    store: Ext.data.StoreManager.lookup('datastore_gestione_tavolo'),
+			    useArrows: true,
+			    store: Ext.getStore('datastore_gestione_tavolo'),
 			    dockedItems: [{
 		            xtype: 'toolbar',
 		            dock: 'bottom',
@@ -466,6 +467,7 @@ var _mainTabPanel = {
 		},
 		addNewNodeGestioneTavolo : function(parentNode){
 			var askWindow = Ext.create('Ext.window.Window', {
+				id: 'window_inserimentoNodoGestioneTavolo',
         	    title: 'Hello',
         	    height: 400,
         	    width: 400,
@@ -492,6 +494,7 @@ var _mainTabPanel = {
 			        name: 'nome',
 			        allowBlank: false
 			    },{
+			    	xtype: 'numberfield',
 			        fieldLabel: 'Numero piano',
 			        name: 'numeroPiano'
 			    },{
@@ -539,13 +542,11 @@ var _mainTabPanel = {
 			                    	var nodo_padre = Ext.getStore('datastore_gestione_tavolo').getNodeById(parentId);
 			                    	nodo_padre.appendChild(nuovo_nodo);
 			                    	
-			                    	Ext.Msg.alert('Success: ', action.result.message);
-			                       
-			                       //_mainTabPanel._albero_gestioneTavolo.update();
-			                       //'id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
+			                    	Ext.Msg.alert('Info: ', action.result.message);
+			                    	Ext.getCmp('window_inserimentoNodoGestioneTavolo').destroy();
 			                    },
 			                    failure: function(form, action) {
-			                        Ext.Msg.alert('Failed: ', action.result.msg);
+			                        Ext.Msg.alert('Errore: ', action.result.message);
 			                    }
 			                });
 			            }
@@ -584,6 +585,72 @@ var _mainTabPanel = {
 				return;
 			}
 			
+		},
+		
+		createTabGestioneMenu : function(){
+			var tree = Ext.create('Ext.tree.Panel', {
+				id: 'albero_gestioneMenu',
+		        title: 'Gestione menù',
+		        width: 500,
+		        height: 500,
+		        //collapsible: true,
+		        useArrows: true,
+		        rootVisible: true,
+		        store: Ext.getStore('datastore_gestione_menu'),
+		        //multiSelect: true,
+		        singleExpand: true,
+		        //the 'columns' property is now 'headers'
+		        /*columns: [{
+		            xtype: 'treecolumn', //this is so we know which column will show the tree
+		            text: 'Task',
+		            flex: 2,
+		            sortable: true,
+		            dataIndex: 'task'
+		        },{
+		            //we must use the templateheader component so we can use a custom tpl
+		            xtype: 'templatecolumn',
+		            text: 'Duration',
+		            flex: 1,
+		            sortable: true,
+		            dataIndex: 'duration',
+		            align: 'center',
+		            //add in the custom tpl for the rows
+		            tpl: Ext.create('Ext.XTemplate', '{duration:this.formatHours}', {
+		                formatHours: function(v) {
+		                    if (v < 1) {
+		                        return Math.round(v * 60) + ' mins';
+		                    } else if (Math.floor(v) !== v) {
+		                        var min = v - Math.floor(v);
+		                        return Math.floor(v) + 'h ' + Math.round(min * 60) + 'm';
+		                    } else {
+		                        return v + ' hour' + (v === 1 ? '' : 's');
+		                    }
+		                }
+		            })
+		        },{
+		            text: 'Assigned To',
+		            flex: 1,
+		            dataIndex: 'user',
+		            sortable: true
+		        }]*/
+		    });
+		},
+		
+		addTabGestioneMenu : function(){
+			this.createTabGestioneMenu();
+			this._tab_menu = Ext.create('Ext.panel.Panel', {
+				id:	'main_tabPanel_gestioneMenu',
+				layout: 'vbox',
+				title: 'Gestione menù',
+				width: '100%',
+			    height: '100%',
+			    autoScroll : true,
+			    items: [
+			            Ext.getCmp('albero_gestioneMenu')
+			    ]
+			});
+		
+			Ext.getCmp('main_tabPanel').add( Ext.getCmp('main_tabPanel_gestioneMenu') );
 		}
 		
 };

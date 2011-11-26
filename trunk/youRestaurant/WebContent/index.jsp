@@ -9,6 +9,7 @@
 	</head>
 	
 	<body>
+		<a href='index_login.jsp' title='Effettua il login!'><h1>Effettua il login!</h1></a>
 		<a href='index_registrazione.jsp' title='Registra il tuo ristorante!'><h1>Registra il tuo ristorante!</h1></a>
 		<a href='index_desktop.jsp' title='Accesso alla versione desktop'><h1>Accesso alla versione desktop</h1></a>
 	</body>

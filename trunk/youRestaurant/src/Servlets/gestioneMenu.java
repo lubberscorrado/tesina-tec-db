@@ -17,16 +17,16 @@ import org.json.JSONObject;
 import DB.DBConnection;
 
 /**
- * Servlet implementation class gestioneTavolo
+ * Servlet implementation class gestioneMenu
  */
-@WebServlet("/gestioneTavolo")
-public class gestioneTavolo extends HttpServlet {
+@WebServlet("/gestioneMenu")
+public class gestioneMenu extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public gestioneTavolo() {
+    public gestioneMenu() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -109,7 +109,7 @@ public class gestioneTavolo extends HttpServlet {
 		
 		JSONObject json_out = new JSONObject();
 		json_out.put("success", true);
-		json_out.put("message", "Inserimento effettuato correttamente");
+		json_out.put("message", "shemale");
 		json_out.put("id", 999);
 		json_out.put("data", json_array);
 
@@ -154,6 +154,77 @@ public class gestioneTavolo extends HttpServlet {
 		json_out.put("message", "lalalala");
 		
 		response.getWriter().println(	json_out	);
+	}
+	
+	private JSONArray getAree(String idPiano){
+		DBConnection db = new DBConnection();
+		JSONArray json_array = new JSONArray();
+		JSONObject json_tmp = new JSONObject();
+		db.connect();
+		String query = "SELECT * FROM area WHERE idPiano = '"+idPiano+"';";
+		/**/
+		int colonne;
+		try {
+			Statement stmt = db.getConnection().createStatement();     // Creo lo Statement per l'esecuzione della query
+	        ResultSet rs = stmt.executeQuery(query);   // Ottengo il ResultSet dell'esecuzione della query
+	        ResultSetMetaData rsmd = rs.getMetaData();
+	        colonne = rsmd.getColumnCount();
+	        boolean first = true;
+	        while(rs.next()) {
+	        	json_tmp = new JSONObject();
+	        	json_tmp.put("123", rs.getString(1));
+	        	json_tmp.put("qwe", rs.getString(2));
+	        	json_tmp.put("text", rs.getString(3));
+	        	json_tmp.put("asd", rs.getString(4));
+	        	json_tmp.put("tipo", "piano");
+	        	json_tmp.put("parentNode", idPiano);
+	        	json_tmp.put("leaf", "false");
+	        	json_tmp.put("depth", 2);
+	        	json_tmp.put("childNodes", getAree(rs.getString(1)));
+	        	
+	        	json_array.put(json_tmp);
+	        	
+	        }
+	        rs.close();     // Chiudo il ResultSet
+	        stmt.close();   // Chiudo lo Statement
+     	} catch (Exception e) { e.printStackTrace(); e.getMessage(); }
+		db.disconnect();
+		return json_array;
+	}
+	
+	private JSONArray getTavoli(String idArea){
+		DBConnection db = new DBConnection();
+		JSONArray json_array = new JSONArray();
+		JSONObject json_tmp = new JSONObject();
+		db.connect();
+		String query = "SELECT * FROM tavolo WHERE idArea = '"+idArea+"';";
+		/**/
+		int colonne;
+		try {
+			Statement stmt = db.getConnection().createStatement();     // Creo lo Statement per l'esecuzione della query
+	        ResultSet rs = stmt.executeQuery(query);   // Ottengo il ResultSet dell'esecuzione della query
+	        ResultSetMetaData rsmd = rs.getMetaData();
+	        colonne = rsmd.getColumnCount();
+	        boolean first = true;
+	        while(rs.next()) {
+	        	json_tmp = new JSONObject();
+	        	json_tmp.put("123", rs.getString(1));
+	        	json_tmp.put("qwe", rs.getString(2));
+	        	json_tmp.put("text", rs.getString(3));
+	        	json_tmp.put("asd", rs.getString(4));
+	        	json_tmp.put("tipo", "piano");
+	        	json_tmp.put("parentNode", idArea);
+	        	json_tmp.put("leaf", "true");
+	        	json_tmp.put("depth", 3);
+	        	
+	        	json_array.put(json_tmp);
+	        	
+	        }
+	        rs.close();     // Chiudo il ResultSet
+	        stmt.close();   // Chiudo lo Statement
+     	} catch (Exception e) { e.printStackTrace(); e.getMessage(); }
+		db.disconnect();
+		return json_array;
 	}
 
 }

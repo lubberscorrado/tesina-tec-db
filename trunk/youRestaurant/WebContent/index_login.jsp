@@ -6,7 +6,7 @@
 	<script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all.js"></script>
 	<link rel="stylesheet" type="text/css" href="./ExtJS/ext-all-gray.css" />
 	
-	<script type="text/javascript" language="Javascript" SRC="./js/Registrazione/main.js"></script>
+	<script type="text/javascript" language="Javascript" SRC="./js/Login/main.js"></script>
 	<script type="text/javascript" language="javascript">
 		function DisabilitaIE4(){
 		    if (event.button == 2){
@@ -43,7 +43,7 @@
 		<div id='div_centrale' align="center" style="margin:20px"></div>
 		<script type="text/javascript">
 			/*Quando il documento è caricato eseguo l'applicazione*/
-			Ext.EventManager.onDocumentReady(registration_main);
+			Ext.EventManager.onDocumentReady(login_main);
 		</script>
 	</body>
 	

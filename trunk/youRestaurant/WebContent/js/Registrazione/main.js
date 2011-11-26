@@ -12,7 +12,7 @@ var registration_main = function registration_main(){
 	    title: 'Registrazione nuovo ristorante',
 	    bodyPadding: 5,
 	    width: 350,
-	    height: 400,
+	    //height: 600,
 
 	    // The form will submit an AJAX request to this URL when submitted
 	    url: 'registrazione',
@@ -69,6 +69,7 @@ var registration_main = function registration_main(){
 	    },{
 	        fieldLabel: 'eMail',
 	        name: 'email',
+	        vtype: 'email',
 	        allowBlank: false
 	    },{
 	        fieldLabel: 'Sito Web',
@@ -95,10 +96,11 @@ var registration_main = function registration_main(){
 	            if (form.isValid()) {
 	                form.submit({
 	                    success: function(form, action) {
-	                       Ext.Msg.alert('Success', action.result.msg);
+	                    	Ext.Msg.alert('Info:', action.result.message);
+	                    	setTimeout("javascript:location.replace('index_login.jsp')",5000);
 	                    },
 	                    failure: function(form, action) {
-	                        Ext.Msg.alert('Failed', action.result.msg);
+	                    	Ext.Msg.alert('Failed', action.result.message);
 	                    }
 	                });
 	            }

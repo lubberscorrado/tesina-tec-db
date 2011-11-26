@@ -20,8 +20,42 @@ Ext.create('Ext.data.TreeStore', {
     listeners: {
 		beforeappend: function( thisNode, newChildNode, eOpts ){
 			var tipo = newChildNode.get("tipo");
-			if( tipo == 1){
+			if( tipo == 1){			//Piano
             	newChildNode.set('leaf', false);
+            	newChildNode.set('id', 'P'+newChildNode.get('realId'));
+            	newChildNode.set('parentId', newChildNode.get('parentId'));
+            	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
+            }else if( tipo == 2){	//Area
+            	newChildNode.set('leaf', false);
+            	newChildNode.set('id', 'A'+newChildNode.get('realId'));
+            	newChildNode.set('parentId', 'P'+newChildNode.get('parentId'));
+            	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
+            }else if( tipo == 3){	//Tavolo
+            	newChildNode.set('leaf', true);
+            	newChildNode.set('id', 'T'+newChildNode.get('realId'));
+            	newChildNode.set('parentId', 'A'+newChildNode.get('parentId'));
+            	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
+            }
+		},
+		append: function( thisNode, newChildNode, index, eOpts ) {
+			
+	    }
+    }
+});
+
+Ext.create('Ext.data.TreeStore', {
+	storeId: 'datastore_gestione_menu',
+	autoLoad: true,
+	autoSync: true,
+	model: 'nodoGestioneMenu',
+	root: {
+        text: "Menù"
+    },
+    listeners: {
+		beforeappend: function( thisNode, newChildNode, eOpts ){
+			var tipo = newChildNode.get("tipo");
+			if( tipo == 1){	
+				newChildNode.set('leaf', false);
             	newChildNode.set('id', 'P'+newChildNode.get('realId'));
             	newChildNode.set('parentId', newChildNode.get('parentId'));
             	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
