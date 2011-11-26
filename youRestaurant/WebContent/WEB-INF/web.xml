@@ -33,7 +33,7 @@
     <servlet-name>gestioneTavolo</servlet-name>
     <url-pattern>/gestioneTavolo</url-pattern>
   </servlet-mapping>
-   <servlet>
+  <servlet>
     <servlet-name>prova</servlet-name>
     <servlet-class>Servlets.prova</servlet-class>
   </servlet>
@@ -41,4 +41,22 @@
     <servlet-name>prova</servlet-name>
     <url-pattern>/prova</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>gestioneMenu</servlet-name>
+    <servlet-class>Servlets.gestioneMenu</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>gestioneMenu</servlet-name>
+    <url-pattern>/gestioneMenu</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>registrazione</servlet-name>
+    <servlet-class>Servlets.registrazione</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>registrazione</servlet-name>
+    <url-pattern>/registrazione</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

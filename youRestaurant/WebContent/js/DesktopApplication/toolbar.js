@@ -1,5 +1,6 @@
 function get_main_toolbar(){
 	tmp = Ext.create('Ext.toolbar.Toolbar', {
+		id: 'main_toolbar',
 		region: 'north',
 		items: [
 		               {
@@ -8,7 +9,26 @@ function get_main_toolbar(){
 		               },
 		               {
 		                   xtype: 'splitbutton',
-		                   text : 'Split Button'
+		                   text : 'Split Button',
+		                   menu: new Ext.menu.Menu({
+		                       items: [
+		                           // these will render as dropdown menu items when the arrow is clicked:
+		                           {text: 'Item 1', handler: function(){
+		                        	   alert("Item 1 clicked");
+		                        	   var new_menu_node = new nodoGestioneTavolo();//Ext.ModelManager.getModel('nodoGestioneTavolo');
+		                        	   new_menu_node.set('tipo','1');
+		                        	   new_menu_node.set('nome','troiette di altri tempi');
+		                        	   new_menu_node.save();
+		                        	   }
+		                           },
+		                           {text: 'Item 2', handler: function(){
+		                        	   alert("Item 2 clicked");
+		                        	   var new_menu_node = new nodoGestioneMenu();
+		                        	   new_menu_node.save();
+		                        	   }
+		                           }
+		                       ]
+		                   })
 		               },
 		               // begin using the right-justified button container
 		               '->', // same as { xtype: 'tbfill' }

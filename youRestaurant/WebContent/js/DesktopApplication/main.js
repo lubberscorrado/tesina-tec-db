@@ -51,4 +51,5 @@ var desktop_main = function desktop_main(){
 	
 	_mainTabPanel.addTabStato();
 	_mainTabPanel.addTabGestioneTavolo();
+	_mainTabPanel.addTabGestioneMenu();
 };
