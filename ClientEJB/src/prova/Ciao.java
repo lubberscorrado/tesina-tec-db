@@ -64,8 +64,8 @@ public class Ciao extends HttpServlet {
 //		Area area = gestioneArea.aggiungiArea(5, "Area cortile", "Area esterna sul cortile", true, piano);
 //		Tavolo tavolo = gestioneTavolo.aggiungiTavolo(5, "Tavolo in marmo" , "Libero", "Tavolo grande", true, area);
 		
-		List<Area> la = gestioneArea.getAreeTenant(3);
-
+		//List<Area> la = gestioneArea.getAreeTenant(3);
+		response.getWriter().println("TROIE DI ALTRI TEMPI");
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
