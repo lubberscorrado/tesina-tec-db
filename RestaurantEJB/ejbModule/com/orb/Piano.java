@@ -19,7 +19,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="piano")
-public class Piano implements Serializable {
+public class Piano {
 		
 	@Id
 	@Column(name="idPiano")

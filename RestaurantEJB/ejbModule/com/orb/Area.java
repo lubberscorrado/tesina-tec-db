@@ -16,20 +16,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
 @Entity
+
 @Table(name="area")
-public class Area implements Serializable {
+public class Area {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="idArea")
 	private int idArea;
-
-	/** Id piano è già mappato come foreign key.*/
 	
 	@Column(name="idTenant")
 	private int idTenant;
@@ -107,7 +107,6 @@ public class Area implements Serializable {
 	public void setIdTenant(int idTenant) {
 		this.idTenant = idTenant;
 	}
-	
-	
+
 	
 }

@@ -5,18 +5,30 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
+@NamedQueries({
+	@NamedQuery(name = "getTavoliByStato",
+				query = "SELECT t FROM Tavolo t WHERE t.stato = :stato AND t.idTenant = :idTenant"),
+	@NamedQuery(name = "getTavoli",
+				query = "SELECT t FROM Tavolo t WHERE t.idTenant = :idTenant"),
+	@NamedQuery(name = "getPrenotazioniByTavoloStato",
+				query = "SELECT p FROM Prenotazione p INNER JOIN p.tavoloAppartenenza t " +
+						"WHERE t.idTavolo = :idTavolo AND  p.stato = :stato")})
+
 @Table(name="tavolo")
-public class Tavolo implements Serializable {
+public class Tavolo {
 		
 	@Id
 	@Column(name="idTavolo")
@@ -38,10 +50,12 @@ public class Tavolo implements Serializable {
 	@Column(name="idTenant")
 	private int idTenant;
 	
-	@ManyToOne
+	@OneToMany(mappedBy="tavoloAppartenenza")
+	private List<Prenotazione> listaPrenotazioni;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="idArea", referencedColumnName="idArea")
 	private Area areaAppartenenza;
-	
 	
 	public int getIdTavolo() {
 		return idTavolo;
@@ -100,6 +114,17 @@ public class Tavolo implements Serializable {
 		this.idTenant = idTenant;
 	}
 	
-	
+	/* Metodi su oggetti Lazy fetched, non necessari in questo caso */
+//	public List<Prenotazione> getListPrenotazioni() {
+//		return listaPrenotazioni;
+//	}
+//
+//	public void setListPrenotazioni(List<Prenotazione> listPrenotazioni) {
+//		this.listaPrenotazioni = listPrenotazioni;
+//	}
+
+	public String getStato() {
+		return stato;
+	}
 	
 }

@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 
 import com.orb.Area;
 import com.orb.Piano;
+import com.orb.Tavolo;
 
 @Stateless
 public class GestionePiano {
@@ -33,11 +34,13 @@ public class GestionePiano {
 		piano.setNome(nome);
 		piano.setDescrizione(descrizione);
 		piano.setEnabled(enabled);
-		
 		em.persist(piano);
-		
 		return piano;
-		
+	}
+	
+	/** Ritorna un piano tramite chiave primaria */
+	public Piano getPiano(int idPiano){
+		return em.find(Piano.class, idPiano);
 	}
 	
 		
