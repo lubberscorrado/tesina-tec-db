@@ -51,11 +51,11 @@ public class GestioneTavolo{
 		
 		List<Tavolo> listTavoli = query.getResultList();
 		Iterator<Tavolo> it = listTavoli.iterator();
-		
-		
-		List<StatoTavolo> listaStatoTavolo = new ArrayList();
+				
+		List<StatoTavolo> listaStatoTavolo = new ArrayList<StatoTavolo>();
 		
 		while(it.hasNext()) {
+			
 			Tavolo t = it.next();
 			
 			Area areaAppartenenza = t.getAreaAppartenenza();
@@ -68,13 +68,8 @@ public class GestioneTavolo{
 													0,
 													t.getStato(),
 													"TBD"));
-			
-			
 		}
-		
 		return listaStatoTavolo;
 	
 	}
-	
-	
 }

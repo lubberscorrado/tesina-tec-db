@@ -5,11 +5,13 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import com.orb.Area;
 import com.orb.Piano;
 import com.orb.Tavolo;
 
+@SuppressWarnings("unchecked")
 @Stateless
 public class GestionePiano {
 
@@ -38,9 +40,11 @@ public class GestionePiano {
 		return piano;
 	}
 	
-	/** Ritorna un piano tramite chiave primaria */
-	public Piano getPiano(int idPiano){
-		return em.find(Piano.class, idPiano);
+	public List<Piano> getPiani(int idTenant) {
+		Query query = em.createNamedQuery("getPiani");
+		query.setParameter("idTenant", idTenant);
+		return (List<Piano>)query.getResultList();
+	
 	}
 	
 		
