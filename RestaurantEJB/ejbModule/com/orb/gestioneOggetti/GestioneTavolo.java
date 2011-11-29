@@ -1,5 +1,7 @@
 package com.orb.gestioneOggetti;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -12,6 +14,7 @@ import com.orb.Area;
 import com.orb.Piano;
 import com.orb.Prenotazione;
 import com.orb.Tavolo;
+import com.restaurant.StatoTavolo;
 
 @SuppressWarnings("unchecked")
 @Stateless
@@ -41,38 +44,37 @@ public class GestioneTavolo{
 		
 	}
 	
-	/** Ritorna le prenotazioni associate ad un tavolo in un determinato stato */
-	public List<Prenotazione>  getPrenotazioniAssociate(int idTavolo, String stato){
-		
-		Query query = em.createNamedQuery("getPrenotazioniByTavoloStato");
-		query.setParameter("idTavolo", idTavolo);
-		query.setParameter("stato", stato);
-		
-		return (List<Prenotazione>)query.getResultList();
-
-	}
-	
-	
-	/** Ritorna un tavolo tramite chiave primaria */
-	public Tavolo getTavolo(int idTavolo){
-		return em.find(Tavolo.class, idTavolo);
-	}
-	
-	/** Ritorna la lista dei tavoli associati ad un tenant */
-	public List<Tavolo> getTavoliByTenant(int idTenant) {
+	public List<StatoTavolo> getStatoTavoli(int idTenant) {
 		
 		Query query = em.createNamedQuery("getTavoli");
 		query.setParameter("idTenant", idTenant);
-		return (List<Tavolo>)query.getResultList();
-	}
-
-	/** Ritorna i tavoli di un tenant in un determinato stato */
-	public List<Tavolo> getTavoliByStato(int idTenant, String stato) {
-		Query query;
-		query = em.createNamedQuery("getTavoliByStato");
-		query.setParameter("stato", stato);
-		query.setParameter("idTenant", idTenant);
-		return (List<Tavolo>)query.getResultList();
-	}
 		
+		List<Tavolo> listTavoli = query.getResultList();
+		Iterator<Tavolo> it = listTavoli.iterator();
+		
+		
+		List<StatoTavolo> listaStatoTavolo = new ArrayList();
+		
+		while(it.hasNext()) {
+			Tavolo t = it.next();
+			
+			Area areaAppartenenza = t.getAreaAppartenenza();
+			Piano pianoAssociato = areaAppartenenza.getPianoAppartenenza();
+			
+			listaStatoTavolo.add(new StatoTavolo(	t.getIdTavolo(),
+													t.getNome(),
+													pianoAssociato.getNumero(),
+													areaAppartenenza.getNome(),
+													0,
+													t.getStato(),
+													"TBD"));
+			
+			
+		}
+		
+		return listaStatoTavolo;
+	
+	}
+	
+	
 }

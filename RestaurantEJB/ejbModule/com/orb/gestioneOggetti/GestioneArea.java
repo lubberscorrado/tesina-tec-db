@@ -39,7 +39,6 @@ public class GestioneArea{
 								boolean enabled,
 								int idPiano) {
 		
-		
 		Area area = new Area();
 		area.setIdTenant(idTenant);
 		area.setNome(nome);
@@ -47,12 +46,10 @@ public class GestioneArea{
 		area.setEnabled(enabled);
 		
 		Piano piano = em.find(Piano.class, idPiano);
-		
-		
+				
 		if(piano != null)
 			area.setPianoAppartenenza(piano);
 		else
-			/* Se il piano a cui associare l'area non esiste ritorna null */
 			return null;
 		
 		em.persist(area);

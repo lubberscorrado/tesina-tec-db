@@ -19,13 +19,8 @@ import javax.persistence.Table;
 
 @Entity
 @NamedQueries({
-	@NamedQuery(name = "getTavoliByStato",
-				query = "SELECT t FROM Tavolo t WHERE t.stato = :stato AND t.idTenant = :idTenant"),
 	@NamedQuery(name = "getTavoli",
-				query = "SELECT t FROM Tavolo t WHERE t.idTenant = :idTenant"),
-	@NamedQuery(name = "getPrenotazioniByTavoloStato",
-				query = "SELECT p FROM Prenotazione p INNER JOIN p.tavoloAppartenenza t " +
-						"WHERE t.idTavolo = :idTavolo AND  p.stato = :stato")})
+				query = "SELECT t FROM Tavolo t WHERE t.idTenant = :idTenant")})
 
 @Table(name="tavolo")
 public class Tavolo {
@@ -57,6 +52,25 @@ public class Tavolo {
 	@JoinColumn(name="idArea", referencedColumnName="idArea")
 	private Area areaAppartenenza;
 	
+	
+
+	public Tavolo(	String nome, 
+					String descrizione,
+					boolean enabled, 
+					String stato, 
+					int idTenant,
+					Area areaAppartenenza) {
+		super();
+		this.nome = nome;
+		this.descrizione = descrizione;
+		this.enabled = enabled;
+		this.stato = stato;
+		this.idTenant = idTenant;
+		this.areaAppartenenza = areaAppartenenza;
+	}
+
+	public Tavolo() {}
+
 	public int getIdTavolo() {
 		return idTavolo;
 	}
@@ -114,14 +128,13 @@ public class Tavolo {
 		this.idTenant = idTenant;
 	}
 	
-	/* Metodi su oggetti Lazy fetched, non necessari in questo caso */
-//	public List<Prenotazione> getListPrenotazioni() {
-//		return listaPrenotazioni;
-//	}
-//
-//	public void setListPrenotazioni(List<Prenotazione> listPrenotazioni) {
-//		this.listaPrenotazioni = listPrenotazioni;
-//	}
+	public List<Prenotazione> getListPrenotazioni() {
+		return listaPrenotazioni;
+	}
+
+	public void setListPrenotazioni(List<Prenotazione> listPrenotazioni) {
+		this.listaPrenotazioni = listPrenotazioni;
+	}
 
 	public String getStato() {
 		return stato;
