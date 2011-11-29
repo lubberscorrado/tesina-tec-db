@@ -12,6 +12,7 @@ import com.orb.Piano;
 import com.orb.Tavolo;
 
 @SuppressWarnings("unchecked")
+
 @Stateless
 public class GestionePiano {
 
@@ -21,14 +22,11 @@ public class GestionePiano {
 	
 	public GestionePiano() {}
 	
-	
-
 	public Piano aggiungiPiano(	int idTenant, 
 								int numero, 
 								String nome, 
 								String descrizione, 
 								boolean enabled) {
-		
 		
 		Piano piano = new Piano();
 		piano.setIdTenant(idTenant);
@@ -36,16 +34,30 @@ public class GestionePiano {
 		piano.setNome(nome);
 		piano.setDescrizione(descrizione);
 		piano.setEnabled(enabled);
-		em.persist(piano);
+		
+		try {
+			em.persist(piano);
+		}catch(Exception e) {
+			System.out.println("Errore durante l'inserimento del piano (GestionePiano.aggiungiPiano): " + e.getMessage());
+			return null;
+		}
+		
 		return piano;
+	
 	}
 	
 	public List<Piano> getPiani(int idTenant) {
 		Query query = em.createNamedQuery("getPiani");
 		query.setParameter("idTenant", idTenant);
-		return (List<Piano>)query.getResultList();
-	
+		List<Piano> listaPiano;
+		
+		try {
+			listaPiano = (List<Piano>)query.getResultList();
+		} catch (Exception e) {
+			System.out.println("Errore durante l'acquisizione dei piani (GestionePiano.getPiani)" + e.getMessage());
+			return null;
+		}
+		return listaPiano;
 	}
 	
-		
 }
