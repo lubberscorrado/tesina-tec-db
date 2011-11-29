@@ -35,6 +35,7 @@ public class registrazione extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String nomeLocale = request.getParameter("nomeLocale");
 		String cap = request.getParameter("cap");
 		String citta = request.getParameter("citta");
 		String email = request.getParameter("email");

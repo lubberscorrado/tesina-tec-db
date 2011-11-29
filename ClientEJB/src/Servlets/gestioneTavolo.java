@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.List;
 
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,6 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.orb.Piano;
+import com.orb.gestioneOggetti.GestioneArea;
+import com.orb.gestioneOggetti.GestionePiano;
+import com.orb.gestioneOggetti.GestioneTavolo;
+
 import DB.DBConnection;
 
 /**
@@ -22,6 +29,12 @@ import DB.DBConnection;
 @WebServlet("/gestioneTavolo")
 public class gestioneTavolo extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	@EJB
+ 	private GestionePiano gestionePiano;
+	@EJB
+	private GestioneArea gestioneArea;
+	@EJB
+	private GestioneTavolo gestioneTavolo;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -35,27 +48,64 @@ public class gestioneTavolo extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		DBConnection db = new DBConnection();
-		JSONObject json_out = new JSONObject();
-		db.connect();
+		List<Piano> lista_piani = null;
+		JSONArray json_array = new JSONArray();
+		JSONObject json_tmp = null;
+//		DBConnection db = new DBConnection();
+//		JSONObject json_out = new JSONObject();
+//		db.connect();
+//		
+//		String query = null;
+//		
+//		if(request.getParameter("node").equals("root")){
+//			query = "SELECT idPiano AS realId,	nome AS text,	'root' AS realParentId,		1 AS tipo		FROM piano;";
+//			json_out = db.executeJSONQuery(query, "data");
+//			
+//		}else if (request.getParameter("node").startsWith("P")){
+//			query = "SELECT idArea AS realId,	nome AS text,	idPiano AS realParentId,	2 AS tipo	 	FROM area WHERE idPiano = '"+request.getParameter("node").substring(1)+"';";
+//			json_out = db.executeJSONQuery(query, "data");
+//			
+//		}else if (request.getParameter("node").startsWith("A")){
+//			query = "SELECT idTavolo AS realId,	nome AS text,	idArea AS realParentId,		3 AS tipo		FROM tavolo WHERE idArea = '"+request.getParameter("node").substring(1)+"';";
+//			json_out = db.executeJSONQuery(query, "data");
+//		}
+//		
+//		response.getWriter().println(	json_out	);
+//		db.disconnect();
 		
-		String query = null;
+		
 		
 		if(request.getParameter("node").equals("root")){
-			query = "SELECT idPiano AS realId,	nome AS text,	'root' AS realParentId,		1 AS tipo		FROM piano;";
-			json_out = db.executeJSONQuery(query, "data");
+			lista_piani = gestionePiano.getPiani(0);
+			Piano piano = null;
+			for(int i=0; i<lista_piani.size();i++){
+				json_tmp = new JSONObject();
+				piano = lista_piani.get(i);
+				json_tmp.put("text", piano.getNome());
+				json_tmp.put("id", piano.getIdPiano());
+				json_tmp.put("parentId", "root");
+				json_array.put(json_tmp);
+				// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
+			}
+			
+			///query = "SELECT idPiano AS realId,	nome AS text,	'root' AS realParentId,		1 AS tipo		FROM piano;";
+			//json_out = db.executeJSONQuery(query, "data");
 			
 		}else if (request.getParameter("node").startsWith("P")){
-			query = "SELECT idArea AS realId,	nome AS text,	idPiano AS realParentId,	2 AS tipo	 	FROM area WHERE idPiano = '"+request.getParameter("node").substring(1)+"';";
-			json_out = db.executeJSONQuery(query, "data");
+			//query = "SELECT idArea AS realId,	nome AS text,	idPiano AS realParentId,	2 AS tipo	 	FROM area WHERE idPiano = '"+request.getParameter("node").substring(1)+"';";
+			//json_out = db.executeJSONQuery(query, "data");
 			
 		}else if (request.getParameter("node").startsWith("A")){
-			query = "SELECT idTavolo AS realId,	nome AS text,	idArea AS realParentId,		3 AS tipo		FROM tavolo WHERE idArea = '"+request.getParameter("node").substring(1)+"';";
-			json_out = db.executeJSONQuery(query, "data");
+			//query = "SELECT idTavolo AS realId,	nome AS text,	idArea AS realParentId,		3 AS tipo		FROM tavolo WHERE idArea = '"+request.getParameter("node").substring(1)+"';";
+			//json_out = db.executeJSONQuery(query, "data");
 		}
 		
-		response.getWriter().println(	json_out	);
-		db.disconnect();
+		
+		JSONObject json_out = new JSONObject();
+		json_out.put("success", true);
+		json_out.put("message","Forse va bene XD");
+		json_out.put("data", json_array);
+		response.getWriter().print(json_out);
 	}
 	
 
@@ -67,7 +117,7 @@ public class gestioneTavolo extends HttpServlet {
 		String query = null;
 		switch(tipo){
 			case 1: {//Aggiungi piano
-				query = "INSERT INTO piano () VALUES ();";
+				gestionePiano.aggiungiPiano(0, Integer.parseInt(request.getParameter("numeroPiano")), request.getParameter("nome"), request.getParameter("descrizione"), true);
 				break;
 			}
 			case 2: {//Aggiungi area

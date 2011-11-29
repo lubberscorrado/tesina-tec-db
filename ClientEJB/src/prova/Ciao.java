@@ -28,9 +28,6 @@ import com.orb.Tavolo;
 import com.orb.gestioneOggetti.GestioneArea;
 import com.orb.gestioneOggetti.GestionePiano;
 import com.orb.gestioneOggetti.GestioneTavolo;
-import com.restaurant.EntityManagerCreator;
-import com.restaurant.ProvaSessionRemote;
-import com.restaurant.TenantSession;
 
 
 @WebServlet("/Ciao")
