@@ -43,7 +43,6 @@ public class gestioneTavolo extends HttpServlet {
      */
     public gestioneTavolo() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -69,38 +68,39 @@ public class gestioneTavolo extends HttpServlet {
 			}
 			
 		}else if (request.getParameter("node").startsWith("P")){
-			List<Area> lista_aree = gestioneArea.getAreeTenant(0);
-			Area area = null;
-			if(lista_aree != null){
-				for(int i=0; i<lista_aree.size();i++){
-					json_tmp = new JSONObject();
-					area = lista_aree.get(i);
-					json_tmp.put("text", area.getNome());
-					json_tmp.put("id", area.getIdArea());
-					json_tmp.put("parentId", "0");	/// GET ID PIANO
-					json_tmp.put("tipo", 2);
-					json_array.put(json_tmp);
-					// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
-				}
-			}
+//			Piano piano = gestionePiano.getPiani(0);
+//			List<Area> lista_aree = gestioneArea.getAreeTenant(0);
+//			Area area = null;
+//			if(lista_aree != null){
+//				for(int i=0; i<lista_aree.size();i++){
+//					json_tmp = new JSONObject();
+//					area = lista_aree.get(i);
+//					json_tmp.put("text", area.getNome());
+//					json_tmp.put("id", area.getIdArea());
+//					json_tmp.put("parentId", "0");	/// GET ID PIANO
+//					json_tmp.put("tipo", 2);
+//					json_array.put(json_tmp);
+//					// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
+//				}
+//			}
 			
 		}else if (request.getParameter("node").startsWith("A")){
-			List<Tavolo> lista_tavoli = null;// = gestioneTavolo.		//get tavoli
-			Tavolo tavolo = null;
-			if(lista_tavoli != null){
-				for(int i=0; i<lista_tavoli.size();i++){
-					json_tmp = new JSONObject();
-					tavolo = lista_tavoli.get(i);
-					json_tmp.put("text", tavolo.getNome());
-					json_tmp.put("id", tavolo.getIdTavolo());
-					json_tmp.put("parentId", "0");	/// GET ID AREA
-					json_tmp.put("tipo", 3);
-					json_array.put(json_tmp);
-					// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
-				}
-			}
-
-			
+//			List<Tavolo> lista_tavoli = null;// = gestioneTavolo.		//get tavoli
+//			Tavolo tavolo = null;
+//			if(lista_tavoli != null){
+//				for(int i=0; i<lista_tavoli.size();i++){
+//					json_tmp = new JSONObject();
+//					tavolo = lista_tavoli.get(i);
+//					json_tmp.put("text", tavolo.getNome());
+//					json_tmp.put("id", tavolo.getIdTavolo());
+//					json_tmp.put("parentId", "0");	/// GET ID AREA
+//					json_tmp.put("tipo", 3);
+//					json_array.put(json_tmp);
+//					// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
+//				}
+//			}
+//
+//			
 		}
 		
 		
