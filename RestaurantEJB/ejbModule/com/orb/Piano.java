@@ -98,11 +98,11 @@ public class Piano {
 		this.enabled = enabled;
 	}
 
-	public List<Area> getListAree() {
+	public List<Area> getAree() {
 		return listAree;
 	}
 
-	public void setListAree(List<Area> listAree) {
+	public void setAree(List<Area> listAree) {
 		this.listAree = listAree;
 	}
 	

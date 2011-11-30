@@ -9,12 +9,16 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.xml.crypto.Data;
 
+import com.exceptions.DatabaseException;
 import com.orb.Area;
 import com.orb.Piano;
 import com.orb.Prenotazione;
 import com.orb.Tavolo;
 import com.restaurant.StatoTavolo;
+import com.restaurant.TreeNodeArea;
+import com.restaurant.TreeNodeTavolo;
 
 @SuppressWarnings("unchecked")
 @Stateless
@@ -44,22 +48,49 @@ public class GestioneTavolo{
 		
 	}
 	
-	public List<StatoTavolo> getStatoTavoli(int idTenant) {
+	/** Funzione che ritorna lo stato di tutti i tavoli a
+	 * partire dall'id del cliente
+	 * @param idTenant Id del cliente
+	 * @return Lista di oggetti StatoTavolo che incapsulano le informazioni
+	 * sullo stato di un tavolo
+	 * @throws DatabaseException 
+	 */
+	public List<StatoTavolo> getStatoTavoli(int idTenant) throws DatabaseException {
 		
 		Query query = em.createNamedQuery("getTavoli");
 		query.setParameter("idTenant", idTenant);
 		
-		List<Tavolo> listTavoli = query.getResultList();
+		List<Tavolo> listTavoli = null;
+		
+		try {
+			listTavoli = query.getResultList();
+		} catch(Exception e) {
+			/* NB: potrebbe anche essere un'eccezione data dalla violazione di un
+			 * vincolo di integrità referenziale */
+			throw new DatabaseException(DatabaseException.ERRORE_CONNESSIONE_DATABSE);
+		}
+		
+	
 		Iterator<Tavolo> it = listTavoli.iterator();
-				
 		List<StatoTavolo> listaStatoTavolo = new ArrayList<StatoTavolo>();
+	
+		Area areaAppartenenza;
+		Piano pianoAssociato;
 		
 		while(it.hasNext()) {
 			
 			Tavolo t = it.next();
-			
-			Area areaAppartenenza = t.getAreaAppartenenza();
-			Piano pianoAssociato = areaAppartenenza.getPianoAppartenenza();
+		
+			try {
+				
+				areaAppartenenza = t.getAreaAppartenenza();
+				pianoAssociato = areaAppartenenza.getPianoAppartenenza();
+				
+			} catch(Exception e) {
+				
+				throw new DatabaseException(DatabaseException.ERRORE_CONNESSIONE_DATABSE);
+				
+			}
 			
 			listaStatoTavolo.add(new StatoTavolo(	t.getIdTavolo(),
 													t.getNome(),
@@ -69,7 +100,42 @@ public class GestioneTavolo{
 													t.getStato(),
 													"TBD"));
 		}
+		
 		return listaStatoTavolo;
 	
 	}
+	
+	/** 
+	 * Ritorna la lista dei tavoli associati ad una deteriminata area 
+	 */
+	
+	public List<TreeNodeTavolo> getTavoloByArea(int idArea) throws DatabaseException {
+		
+		Area area = em.find(Area.class, idArea);
+		
+		if(area == null) {
+			
+			throw new DatabaseException(DatabaseException.OGGETTO_NON_TROVATO);
+		}
+		
+		List<Tavolo> listaTavoli = area.getTavoli();	
+		
+			
+		List<TreeNodeTavolo> listaTreeNodeTavolo = new ArrayList<TreeNodeTavolo>();
+		
+		Iterator<Tavolo> it = listaTavoli.iterator();
+		
+		while(it.hasNext()) {
+			Tavolo t = it.next();
+			listaTreeNodeTavolo.add(new TreeNodeTavolo(	t.getIdTavolo(),
+														t.getNome(),
+														t.getDescrizione(),
+														t.isEnabled(),
+														t.getStato(),
+														t.getIdTenant()));
+		}
+		
+		return listaTreeNodeTavolo;
+	}
+	
 }

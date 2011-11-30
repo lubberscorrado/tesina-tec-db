@@ -52,7 +52,7 @@ public class Tavolo {
 	@JoinColumn(name="idArea", referencedColumnName="idArea")
 	private Area areaAppartenenza;
 	
-	
+	//TODO Aggiungere il numero persone per un tavolo
 
 	public Tavolo(	String nome, 
 					String descrizione,
@@ -128,11 +128,11 @@ public class Tavolo {
 		this.idTenant = idTenant;
 	}
 	
-	public List<Prenotazione> getListPrenotazioni() {
+	public List<Prenotazione> getPrenotazioni() {
 		return listaPrenotazioni;
 	}
 
-	public void setListPrenotazioni(List<Prenotazione> listPrenotazioni) {
+	public void setPrenotazioni(List<Prenotazione> listPrenotazioni) {
 		this.listaPrenotazioni = listPrenotazioni;
 	}
 

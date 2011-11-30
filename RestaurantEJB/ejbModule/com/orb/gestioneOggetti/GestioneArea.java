@@ -74,12 +74,14 @@ public class GestioneArea{
 	}
 	
 	
-	/** Ritorna la lista delle aree appartenenti ad un piano */
+	/** 
+	 * Ritorna la lista delle aree appartenenti ad un piano 
+	 */
 	
 	public List<TreeNodeArea> getAreeByPiano(int idPiano) {
 		
 		Piano piano = em.find(Piano.class, idPiano);
-		List<Area> listaAree = piano.getListAree();
+		List<Area> listaAree = piano.getAree();
 		
 		List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
 		Iterator<Area> it = listaAree.iterator();
