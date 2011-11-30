@@ -48,7 +48,7 @@ public class Tavolo {
 	@OneToMany(mappedBy="tavoloAppartenenza")
 	private List<Prenotazione> listaPrenotazioni;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name="idArea", referencedColumnName="idArea")
 	private Area areaAppartenenza;
 	

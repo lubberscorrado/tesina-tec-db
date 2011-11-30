@@ -1,5 +1,7 @@
 package com.orb.gestioneOggetti;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -10,6 +12,7 @@ import javax.persistence.Query;
 import com.orb.Area;
 
 import com.orb.Piano;
+import com.restaurant.TreeNodeArea;
 
 
 @SuppressWarnings("unchecked") 
@@ -71,6 +74,27 @@ public class GestioneArea{
 	}
 	
 	
+	/** Ritorna la lista delle aree appartenenti ad un piano */
+	
+	public List<TreeNodeArea> getAreeByPiano(int idPiano, int idTenant) {
+		
+		Piano piano = em.find(Piano.class, idPiano);
+		List<Area> listaAree = piano.getListAree();
+		
+		List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
+		Iterator<Area> it = listaAree.iterator();
+		
+		while(it.hasNext()) {
+			Area area = it.next();
+			listaTreeNodeArea.add(new TreeNodeArea( area.getIdArea(), 
+													area.getIdTenant(), 
+													area.getNome(), 
+													area.getDescrizione(), 
+													area.isEnabled()));
+		}
+		
+		return listaTreeNodeArea;
+	}
 	
 	
 }
