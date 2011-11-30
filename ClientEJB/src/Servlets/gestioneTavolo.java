@@ -16,7 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.orb.Area;
 import com.orb.Piano;
+import com.orb.Tavolo;
 import com.orb.gestioneOggetti.GestioneArea;
 import com.orb.gestioneOggetti.GestionePiano;
 import com.orb.gestioneOggetti.GestioneTavolo;
@@ -48,7 +50,6 @@ public class gestioneTavolo extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		List<Piano> lista_piani = null;
 		JSONArray json_array = new JSONArray();
 		JSONObject json_tmp = null;
 //		DBConnection db = new DBConnection();
@@ -75,29 +76,56 @@ public class gestioneTavolo extends HttpServlet {
 		
 		
 		
+		
 		if(request.getParameter("node").equals("root")){
-			lista_piani = gestionePiano.getPiani(0);
+			List<Piano> lista_piani = gestionePiano.getPiani(0);
 			Piano piano = null;
-			for(int i=0; i<lista_piani.size();i++){
-				json_tmp = new JSONObject();
-				piano = lista_piani.get(i);
-				json_tmp.put("text", piano.getNome());
-				json_tmp.put("id", piano.getIdPiano());
-				json_tmp.put("parentId", "root");
-				json_array.put(json_tmp);
-				// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
+			if(lista_piani != null){
+				for(int i=0; i<lista_piani.size();i++){
+					json_tmp = new JSONObject();
+					piano = lista_piani.get(i);
+					json_tmp.put("text", piano.getNome());
+					json_tmp.put("id", piano.getIdPiano());
+					json_tmp.put("parentId", "root");
+					json_tmp.put("tipo", 1);
+					json_array.put(json_tmp);
+					// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
+				}
 			}
 			
-			///query = "SELECT idPiano AS realId,	nome AS text,	'root' AS realParentId,		1 AS tipo		FROM piano;";
-			//json_out = db.executeJSONQuery(query, "data");
-			
 		}else if (request.getParameter("node").startsWith("P")){
-			//query = "SELECT idArea AS realId,	nome AS text,	idPiano AS realParentId,	2 AS tipo	 	FROM area WHERE idPiano = '"+request.getParameter("node").substring(1)+"';";
-			//json_out = db.executeJSONQuery(query, "data");
+			List<Area> lista_aree = gestioneArea.getAreeTenant(0);
+			Area area = null;
+			if(lista_aree != null){
+				for(int i=0; i<lista_aree.size();i++){
+					json_tmp = new JSONObject();
+					area = lista_aree.get(i);
+					json_tmp.put("text", area.getNome());
+					json_tmp.put("id", area.getIdArea());
+					json_tmp.put("parentId", "0");	/// GET ID PIANO
+					json_tmp.put("tipo", 2);
+					json_array.put(json_tmp);
+					// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
+				}
+			}
 			
 		}else if (request.getParameter("node").startsWith("A")){
-			//query = "SELECT idTavolo AS realId,	nome AS text,	idArea AS realParentId,		3 AS tipo		FROM tavolo WHERE idArea = '"+request.getParameter("node").substring(1)+"';";
-			//json_out = db.executeJSONQuery(query, "data");
+			List<Tavolo> lista_tavoli = null;// = gestioneTavolo.		//get tavoli
+			Tavolo tavolo = null;
+			if(lista_tavoli != null){
+				for(int i=0; i<lista_tavoli.size();i++){
+					json_tmp = new JSONObject();
+					tavolo = lista_tavoli.get(i);
+					json_tmp.put("text", tavolo.getNome());
+					json_tmp.put("id", tavolo.getIdTavolo());
+					json_tmp.put("parentId", "0");	/// GET ID AREA
+					json_tmp.put("tipo", 3);
+					json_array.put(json_tmp);
+					// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
+				}
+			}
+
+			
 		}
 		
 		
@@ -121,11 +149,11 @@ public class gestioneTavolo extends HttpServlet {
 				break;
 			}
 			case 2: {//Aggiungi area
-				query = "INSERT INTO area () VALUES ();";
+				gestioneArea.aggiungiArea(0, request.getParameter("nome"), request.getParameter("descrizione"), true, Integer.parseInt(request.getParameter("parentId")));
 				break;
 			}
 			case 3: {//Aggiungi tavolo
-				query = "INSERT INTO tavolo () VALUES ();";
+				//gestioneTavolo.aggiungiTavolo(0, request.getParameter("nome"), "Libero", request.getParameter("descrizione"), true, request.getParameter("parentId"));
 				break;
 			}
 			default: return;

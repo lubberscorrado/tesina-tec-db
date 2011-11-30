@@ -4,7 +4,7 @@
 <html>
 	<!--  <script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all-debug.js"></script> -->
 	<script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all.js"></script>
-	<link rel="stylesheet" type="text/css" href="./ExtJS/ext-all-gray.css" />
+	<link rel="stylesheet" type="text/css" href="./ExtJS/resources/css/ext-all-gray.css" />
 	
 	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/dataModels.js"></script>
 	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/dataStores.js"></script>
