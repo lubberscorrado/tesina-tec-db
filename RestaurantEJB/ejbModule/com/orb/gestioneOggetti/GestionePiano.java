@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import com.exceptions.DatabaseException;
 import com.orb.Area;
 import com.orb.Piano;
 import com.orb.Tavolo;
@@ -29,7 +30,8 @@ public class GestionePiano {
 								int numero, 
 								String nome, 
 								String descrizione, 
-								boolean enabled) {
+								boolean enabled) throws DatabaseException {
+		
 		
 		Piano piano = new Piano();
 		piano.setIdTenant(idTenant);
@@ -41,13 +43,20 @@ public class GestionePiano {
 		try {
 			em.persist(piano);
 		}catch(Exception e) {
-			System.out.println("Errore durante l'inserimento del piano (GestionePiano.aggiungiPiano): " + e.getMessage());
-			return null;
+			throw new DatabaseException("Errore durante l'inserimento del piano " +
+										"(" + e.getMessage() + ")");
 		}
 		
 		return piano;
 	
 	}
+	
+	/**
+	 * Ritorna i piani associati ad un cliente
+	 * @param idTenant Id del cliente
+	 * @return Lista di oggetti TreeNodePiano che incapsulano le informazioni
+	 * sui piani.
+	 */
 	
 	public List<TreeNodePiano> getPiani(int idTenant) {
 		
@@ -59,7 +68,7 @@ public class GestionePiano {
 		try {
 			listaPiano = (List<Piano>)query.getResultList();
 		} catch (Exception e) {
-			System.out.println("Errore durante l'acquisizione dei piani (GestionePiano.getPiani)" + e.getMessage());
+			System.out.println("Errore durante l'acquisizione dei piani (" + e.getMessage() +")");
 			return null;
 		}
 		

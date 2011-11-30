@@ -34,7 +34,7 @@ public class GestioneTavolo{
 									String stato,
 									String descrizione, 
 									boolean enabled,
-									Area areaAssociata) {
+									int idArea) throws DatabaseException {
 		
 		Tavolo tavolo = new Tavolo();
 		tavolo.setIdTenant(idTenant);
@@ -42,19 +42,32 @@ public class GestioneTavolo{
 		tavolo.setDescrizione(descrizione);
 		tavolo.setEnabled(enabled);
 		tavolo.setStato(stato);
-		tavolo.setAreaAppartenenza(areaAssociata);
-		em.persist(tavolo);
-		return tavolo;
 		
+		Area area = em.find(Area.class, idArea);
+		if(area == null)
+			throw new DatabaseException("Impossibile trovare l'area di appartenenza del tavolo");
+		
+		tavolo.setAreaAppartenenza(area);
+		
+		try {
+			em.persist(tavolo);
+		} catch (Exception e) {
+			throw new DatabaseException("Errore durante l'inserimento del tavolo + " +
+										"("+ e.toString()+")");
+			
+		}
+		return tavolo;
 	}
 	
-	/** Funzione che ritorna lo stato di tutti i tavoli a
-	 * partire dall'id del cliente
+	/** 
+	 * Ritorna lo stato di tutti i tavoli a partire dall'id del cliente
 	 * @param idTenant Id del cliente
 	 * @return Lista di oggetti StatoTavolo che incapsulano le informazioni
-	 * sullo stato di un tavolo
-	 * @throws DatabaseException 
+	 *  sullo stato di un tavolo
+	 * @throws DatabaseException Oggetto di eccezione che incapsula le informazioni
+	 * sull'errore che si è verificato.
 	 */
+	
 	public List<StatoTavolo> getStatoTavoli(int idTenant) throws DatabaseException {
 		
 		Query query = em.createNamedQuery("getTavoli");
@@ -65,12 +78,9 @@ public class GestioneTavolo{
 		try {
 			listTavoli = query.getResultList();
 		} catch(Exception e) {
-			/* NB: potrebbe anche essere un'eccezione data dalla violazione di un
-			 * vincolo di integrità referenziale */
-			throw new DatabaseException(DatabaseException.ERRORE_CONNESSIONE_DATABSE);
+			throw new DatabaseException("Errore durante la ricerca dei tavoli ("+ e.toString()+")");
 		}
 		
-	
 		Iterator<Tavolo> it = listTavoli.iterator();
 		List<StatoTavolo> listaStatoTavolo = new ArrayList<StatoTavolo>();
 	
@@ -80,16 +90,13 @@ public class GestioneTavolo{
 		while(it.hasNext()) {
 			
 			Tavolo t = it.next();
-		
+			
 			try {
-				
 				areaAppartenenza = t.getAreaAppartenenza();
 				pianoAssociato = areaAppartenenza.getPianoAppartenenza();
-				
 			} catch(Exception e) {
-				
-				throw new DatabaseException(DatabaseException.ERRORE_CONNESSIONE_DATABSE);
-				
+				throw new DatabaseException("Errore durante la ricerca dei piani e delle aree " +
+											"(" + e.toString() + ")");
 			}
 			
 			listaStatoTavolo.add(new StatoTavolo(	t.getIdTavolo(),
@@ -106,21 +113,30 @@ public class GestioneTavolo{
 	}
 	
 	/** 
-	 * Ritorna la lista dei tavoli associati ad una deteriminata area 
+	 * Ritorna la lista dei tavoli associati ad una certa area
+	 * @param idArea Id dell'area della quale si vogliono ottenere i tavoli
+	 * @return Lista di oggetti TreeNodeTavolo che incapsulano le informazioni su
+	 * un tavolo
+	 * @throws DatabaseException Generica eccezione durante le operazioni sul database
 	 */
 	
 	public List<TreeNodeTavolo> getTavoloByArea(int idArea) throws DatabaseException {
 		
+	
 		Area area = em.find(Area.class, idArea);
 		
-		if(area == null) {
-			
-			throw new DatabaseException(DatabaseException.OGGETTO_NON_TROVATO);
+		if(area == null) 
+			throw new DatabaseException("Area non trovata");
+		
+		List<Tavolo> listaTavoli;
+		
+		try {
+			listaTavoli = area.getTavoli();	
+		}catch(Exception e) {
+			throw new DatabaseException("Errore durante la ricerca dei tavoli associati ad un area +" +
+										"(" + e.getMessage() +")");
 		}
 		
-		List<Tavolo> listaTavoli = area.getTavoli();	
-		
-			
 		List<TreeNodeTavolo> listaTreeNodeTavolo = new ArrayList<TreeNodeTavolo>();
 		
 		Iterator<Tavolo> it = listaTavoli.iterator();
@@ -134,7 +150,6 @@ public class GestioneTavolo{
 														t.getStato(),
 														t.getIdTenant()));
 		}
-		
 		return listaTreeNodeTavolo;
 	}
 	

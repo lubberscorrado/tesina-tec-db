@@ -29,6 +29,7 @@ public class StatoTavolo {
 		this.statoTavolo = statoTavolo;
 		this.cameriere = cameriere;
 	}
+	
 	public int getIdTavolo() {
 		return idTavolo;
 	}
