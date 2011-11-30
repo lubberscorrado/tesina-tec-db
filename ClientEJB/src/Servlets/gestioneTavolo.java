@@ -52,31 +52,7 @@ public class gestioneTavolo extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		JSONArray json_array = new JSONArray();
 		JSONObject json_tmp = null;
-//		DBConnection db = new DBConnection();
-//		JSONObject json_out = new JSONObject();
-//		db.connect();
-//		
-//		String query = null;
-//		
-//		if(request.getParameter("node").equals("root")){
-//			query = "SELECT idPiano AS realId,	nome AS text,	'root' AS realParentId,		1 AS tipo		FROM piano;";
-//			json_out = db.executeJSONQuery(query, "data");
-//			
-//		}else if (request.getParameter("node").startsWith("P")){
-//			query = "SELECT idArea AS realId,	nome AS text,	idPiano AS realParentId,	2 AS tipo	 	FROM area WHERE idPiano = '"+request.getParameter("node").substring(1)+"';";
-//			json_out = db.executeJSONQuery(query, "data");
-//			
-//		}else if (request.getParameter("node").startsWith("A")){
-//			query = "SELECT idTavolo AS realId,	nome AS text,	idArea AS realParentId,		3 AS tipo		FROM tavolo WHERE idArea = '"+request.getParameter("node").substring(1)+"';";
-//			json_out = db.executeJSONQuery(query, "data");
-//		}
-//		
-//		response.getWriter().println(	json_out	);
-//		db.disconnect();
-		
-		
-		
-		
+
 		if(request.getParameter("node").equals("root")){
 			List<Piano> lista_piani = gestionePiano.getPiani(0);
 			Piano piano = null;
@@ -89,7 +65,6 @@ public class gestioneTavolo extends HttpServlet {
 					json_tmp.put("parentId", "root");
 					json_tmp.put("tipo", 1);
 					json_array.put(json_tmp);
-					// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
 				}
 			}
 			
