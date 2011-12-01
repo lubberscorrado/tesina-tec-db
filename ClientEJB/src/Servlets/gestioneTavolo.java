@@ -173,6 +173,8 @@ public class gestioneTavolo extends HttpServlet {
 			case 2: {//Aggiungi area
 				try {
 					area = gestioneArea.aggiungiArea(idTenant, request.getParameter("nome"), request.getParameter("descrizione"), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
+					
+				
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -2,6 +2,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
+	<script type="text/javascript" language="javascript">
+		<%
+			if( session == null || session.isNew() || session.getAttribute("Logged").equals(false) ){
+				//Redirect alla pagina di login
+				out.print("location.replace('index_login.jsp');");
+			}
+		%>	
+	</script>
+
 	<!--  <script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all-debug.js"></script> -->
 	<script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all.js"></script>
 	<link rel="stylesheet" type="text/css" href="./ExtJS/resources/css/ext-all-gray.css" />
@@ -47,12 +56,8 @@
 	<body>
 		<div id='center'></div>
 		<script type="text/javascript">
-			<% if( session.isNew() || session.getAttribute("Logged").equals("false") ){ %>
-				location.replace("index_login.jsp");
-			<% }else{ %>
-			/*Quando il documento è caricato eseguo l'applicazione*/
+			//Dopo aver caricato la libreria fa partire l'applicazione
 			Ext.EventManager.onDocumentReady(desktop_main);
-			<% } %>
 		</script>
 		
 	</body>
