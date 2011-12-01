@@ -26,11 +26,11 @@ public class GestionePiano {
 	
 	public GestionePiano() {}
 	
-	public Piano aggiungiPiano(	int idTenant, 
-								int numero, 
-								String nome, 
-								String descrizione, 
-								boolean enabled) throws DatabaseException {
+	public TreeNodePiano aggiungiPiano(	int idTenant, 
+										int numero, 
+										String nome, 
+										String descrizione, 
+										boolean enabled) throws DatabaseException {
 		
 		
 		Piano piano = new Piano();
@@ -47,7 +47,7 @@ public class GestionePiano {
 										"(" + e.getMessage() + ")");
 		}
 		
-		return piano;
+		return new TreeNodePiano(piano);
 	
 	}
 	
@@ -80,15 +80,10 @@ public class GestionePiano {
 		while(it.hasNext()) {
 			Piano piano = it.next();
 			
-			listaTreeNodePiano.add(new TreeNodePiano(	piano.getIdPiano(),
-														piano.getIdTenant(),
-														piano.getNumero(), 0, 
-														piano.getNome(), 
-														piano.getDescrizione(), 
-														piano.isEnabled()));
-			
-			
+			listaTreeNodePiano.add(new TreeNodePiano(piano));
+	
 		}
+		
 		try {
 			listaPiano = (List<Piano>)query.getResultList();
 		} catch (Exception e) {

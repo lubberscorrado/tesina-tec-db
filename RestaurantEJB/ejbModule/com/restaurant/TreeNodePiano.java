@@ -1,34 +1,27 @@
 package com.restaurant;
 
 import com.orb.Area;
+import com.orb.Piano;
 
 public class TreeNodePiano {
 	
 	private int idPiano;
 	private int idTenant;
 	private int numero;
-	private int numPersone;
 	private String nome;
 	private String descrizione;
 	private boolean enabled;
 	
 	
 	
-	public TreeNodePiano(	int idPiano, 
-							int idTenant, 
-							int numero, 
-							int numPersone,
-							String nome, 
-							String descrizione, 
-							boolean enabled) {
+	public TreeNodePiano(Piano piano) {
 		super();
-		this.idPiano = idPiano;
-		this.idTenant = idTenant;
-		this.numero = numero;
-		this.numPersone = numPersone;
-		this.nome = nome;
-		this.descrizione = descrizione;
-		this.enabled = enabled;
+		this.idPiano = piano.getIdPiano();
+		this.idTenant = piano.getIdTenant();
+		this.numero = piano.getNumero();
+		this.nome = piano.getNome();
+		this.descrizione = piano.getDescrizione();
+		this.enabled = piano.isEnabled();
 	}
 	
 	public int getIdPiano() {
@@ -48,12 +41,6 @@ public class TreeNodePiano {
 	}
 	public void setNumero(int numero) {
 		this.numero = numero;
-	}
-	public int getNumPersone() {
-		return numPersone;
-	}
-	public void setNumPersone(int numPersone) {
-		this.numPersone = numPersone;
 	}
 	public String getNome() {
 		return nome;

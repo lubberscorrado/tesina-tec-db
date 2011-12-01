@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 
 import com.orb.Area;
 import com.orb.Prenotazione;
+import com.orb.Tavolo;
 
 public class TreeNodeTavolo {
 	
@@ -22,19 +23,14 @@ public class TreeNodeTavolo {
 	private String stato;
 	private int idTenant;
 		
-	public TreeNodeTavolo(	int idTavolo, 
-							String nome, 
-							String descrizione,
-							boolean enabled, 
-							String stato, 
-							int idTenant) {
+	public TreeNodeTavolo(Tavolo tavolo) {
 		super();
-		this.idTavolo = idTavolo;
-		this.nome = nome;
-		this.descrizione = descrizione;
-		this.enabled = enabled;
-		this.stato = stato;
-		this.idTenant = idTenant;
+		this.idTavolo = tavolo.getIdTavolo();
+		this.nome = tavolo.getNome();
+		this.descrizione = tavolo.getDescrizione();
+		this.enabled = tavolo.isEnabled();
+		this.stato = tavolo.getStato();
+		this.idTenant = tavolo.getIdTenant();
 	}
 	
 	public int getIdTavolo() {

@@ -15,7 +15,6 @@ import com.orb.Area;
 import com.orb.Piano;
 import com.restaurant.TreeNodeArea;
 
-
 @SuppressWarnings("unchecked") 
 @Stateless
 public class GestioneArea{
@@ -23,25 +22,20 @@ public class GestioneArea{
 	@PersistenceContext(unitName="ejbrelationships") 
 	private EntityManager em;
 	
-	
 	public GestioneArea() {}
 	
-		
 	/** Ritorna l'elenco di tutte le aree appartenenti ad un cliente */
-	
 	public List<Area> getAreeTenant(int idTenant) {
-		
 		Query query = em.createQuery("SELECT a FROM Area a WHERE a.idTenant = :idTenant");
 		query.setParameter("idTenant", idTenant);
 		return (List<Area>)query.getResultList();
-		
 	}
 	
-	public Area aggiungiArea(	int idTenant, 
-								String nome, 
-								String descrizione, 
-								boolean enabled,
-								int idPiano) throws DatabaseException {
+	public TreeNodeArea aggiungiArea(	int idTenant, 
+										String nome, 
+										String descrizione, 
+										boolean enabled,
+										int idPiano) throws DatabaseException {
 		
 		Area area = new Area();
 		area.setIdTenant(idTenant);
@@ -55,10 +49,8 @@ public class GestioneArea{
 			throw new DatabaseException("Impossibile trovare il piano di appartenenza dell'area");
 		
 		em.persist(area);
-		return area;
-		
+		return new TreeNodeArea(area);
 	}
-	
 	
 	public Area updateArea(Area area) {
 		em.merge(area);
@@ -98,13 +90,8 @@ public class GestioneArea{
 		while(it.hasNext()) {
 			
 			Area area = it.next();
-			listaTreeNodeArea.add(new TreeNodeArea( area.getIdArea(), 
-													area.getIdTenant(), 
-													area.getNome(), 
-													area.getDescrizione(), 
-													area.isEnabled()));
+			listaTreeNodeArea.add(new TreeNodeArea(area));
 		}
-		
 		return listaTreeNodeArea;
 	}
 	

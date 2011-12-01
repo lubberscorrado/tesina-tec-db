@@ -46,8 +46,7 @@ public class Piano {
 	@Column(name="enabled")
 	private boolean enabled;
 	
-
-	@OneToMany(mappedBy="pianoAppartenenza", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy="pianoAppartenenza")
 	private List<Area> listAree;
 
 	public int getIdPiano() {

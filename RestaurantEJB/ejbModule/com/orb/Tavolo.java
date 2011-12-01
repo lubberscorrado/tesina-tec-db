@@ -21,7 +21,6 @@ import javax.persistence.Table;
 @NamedQueries({
 	@NamedQuery(name = "getTavoli",
 				query = "SELECT t FROM Tavolo t WHERE t.idTenant = :idTenant")})
-
 @Table(name="tavolo")
 public class Tavolo {
 		
@@ -52,8 +51,6 @@ public class Tavolo {
 	@JoinColumn(name="idArea", referencedColumnName="idArea")
 	private Area areaAppartenenza;
 	
-	//TODO Aggiungere il numero persone per un tavolo
-
 	public Tavolo(	String nome, 
 					String descrizione,
 					boolean enabled, 
@@ -78,7 +75,6 @@ public class Tavolo {
 	public void setIdTavolo(int idTavolo) {
 		this.idTavolo = idTavolo;
 	}
-
 
 	public String getNome() {
 		return nome;

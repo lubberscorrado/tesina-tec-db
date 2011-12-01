@@ -1,13 +1,9 @@
 package com.exceptions;
 
-
-
 public class DatabaseException extends Exception  {
 
 	private static final long serialVersionUID = 1L;
-		
 	private String error;
-	
 		
 	public DatabaseException(String error) {
 		super();
@@ -23,9 +19,7 @@ public class DatabaseException extends Exception  {
 	}
 
 	public String toString() {
-		
 		return error;
-	
 	}
 	
 }

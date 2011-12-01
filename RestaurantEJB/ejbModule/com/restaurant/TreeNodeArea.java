@@ -1,5 +1,7 @@
 package com.restaurant;
 
+import com.orb.Area;
+
 public class TreeNodeArea {
 
 	
@@ -11,17 +13,13 @@ public class TreeNodeArea {
 	
 	
 	
-	public TreeNodeArea(	int idArea,
-							int idTenant, 
-							String nome,
-							String descrizione, 
-							boolean enabled) {
+	public TreeNodeArea(Area area) {
 		super();
-		this.idArea = idArea;
-		this.idTenant = idTenant;
-		this.nome = nome;
-		this.descrizione = descrizione;
-		this.enabled = enabled;
+		this.idArea = area.getIdArea();
+		this.idTenant = area.getIdTenant();
+		this.nome = area.getNome();
+		this.descrizione = area.getDescrizione();
+		this.enabled = area.isEnabled();
 	}
 	
 	public int getIdArea() {
