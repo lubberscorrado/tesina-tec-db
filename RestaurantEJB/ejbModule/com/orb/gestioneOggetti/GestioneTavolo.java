@@ -135,7 +135,7 @@ public class GestioneTavolo{
 	 * @throws DatabaseException Generica eccezione durante le operazioni sul database
 	 */
 	
-	@TransactionAttribute(TransactionAttributeType.NEVER)
+	
 	public List<TreeNodeTavolo> getTavoloByArea(int idArea) throws DatabaseException {
 	
 		Area area = em.find(Area.class, idArea);
@@ -148,6 +148,7 @@ public class GestioneTavolo{
 		try {
 			listaTavoli = area.getTavoli();	
 		}catch(Exception e) {
+			System.out.println("ERRORE QUI");
 			throw new DatabaseException("Errore durante la ricerca dei tavoli associati ad un area +" +
 										"(" + e.getMessage() +")");
 		}
