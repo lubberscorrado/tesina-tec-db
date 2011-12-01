@@ -617,13 +617,38 @@ var _mainTabPanel = {
 			    // The fields
 			    defaultType: 'textfield',
 			    items: [{
-			        fieldLabel: 'First Name',
-			        name: 'first',
+			        fieldLabel: 'ID',
+			        name: 'id',
+			        hidden: true
+			    },{
+			        fieldLabel: 'ParentId',
+			        name: 'parentId',
+			        hidden: true
+			    },{
+			        fieldLabel: 'Depth',
+			        name: 'tipo',
+			        hidden: true
+			    },{
+			        fieldLabel: 'Nome',
+			        name: 'nome',
 			        allowBlank: false
 			    },{
-			        fieldLabel: 'Last Name',
-			        name: 'last',
-			        allowBlank: false
+			    	xtype: 'numberfield',
+			        fieldLabel: 'Numero piano',
+			        name: 'numeroPiano',
+			        hidden: true
+			    },{
+			        fieldLabel: 'NumPosti',
+			        name: 'numPosti',
+			        hidden: true
+			    },{
+			        fieldLabel: 'Descrizione',
+			        name: 'descrizione',
+			        hidden: true
+			    },{
+			    	xtype: 'checkboxfield',
+			        fieldLabel: 'Attivo',
+			        name: 'enabled'
 			    }],
 
 			    // Reset and Submit buttons
@@ -655,6 +680,7 @@ var _mainTabPanel = {
 			switch(selectedNode.get('tipo')){
 			case 1: {
 				form_tmp.setTitle('Modifica piano');
+				form_tmp.getForm().findField('id').setValue(parentNode.get('id'));
 				break;
 			}
 			case 2: {
