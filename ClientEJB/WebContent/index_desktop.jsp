@@ -4,7 +4,11 @@
 <html>
 	<script type="text/javascript" language="javascript">
 		<%
-			if( session == null || session.isNew() || session.getAttribute("Logged").equals(false) ){
+			if( session == null || session.isNew() ){
+				session.setAttribute("Logged", false);
+				//Redirect alla pagina di login
+				out.print("location.replace('index_login.jsp');");
+			}else if( session.getAttribute("Logged").equals(false) ){
 				//Redirect alla pagina di login
 				out.print("location.replace('index_login.jsp');");
 			}

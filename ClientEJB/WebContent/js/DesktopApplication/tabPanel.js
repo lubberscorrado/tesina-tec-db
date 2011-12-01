@@ -317,46 +317,20 @@ var _mainTabPanel = {
 		                handler: function(){
 		                	Ext.getStore('datastore_gestione_tavolo').load();
 		                }
-		            },{
+		            }/*,{
 		                text: 'Add',
 		                iconCls: 'icon-add',
 		                handler: function(){
-		                	//var selModel = _mainTabPanel._albero_gestioneTavolo.getSelectionModel();
-		                    //var selectedNode = selModel.getLastSelected();
-		                    //_mainTabPanel.addNewNodeGestioneTavolo(selectedNode);
-		                    
-		                	/*alert("ADDDD");
-		                	var selModel = _mainTabPanel._albero_gestioneTavolo.getSelectionModel();
-		                    var node = selModel.getLastSelected();
-		                    alert(node.get('id')+" - "+node.get('text'));
-		                    node = Ext.getStore('datastore_gestione_tavolo').getNodeById( node.get('id') );
-		                    var new_record = Ext.create('nodoGestioneTavolo', {
-		                    	//id: 12345,
-		                    	text: 'nuovo oggetto',
-		                    	parentId: 123456,
-		                    	name: 'Ed Spencer',
-		                    	tipo: 'piano',
-		                    	email: 'ed@sencha.com'
-		                    });
-		                    
-		                    alert("Prima: "+new_record.get('id'));
-		                    new_record.save();
-		                    alert("Dopo: "+new_record.get('id'));
-		                    
-		                    node.appendChild(new_record);
-		                    
-		                    //Ext.getStore('datastore_gestione_tavolo').add(new_record);
-							*/
+		                	
 		                    
 		                }
 		            }, '-', {
 		                text: 'Delete',
 		                iconCls: 'icon-delete',
 		                handler: function(){
-		                    //var selection = Ext.getStore('datastore_gestione_tavolo').remove(Ext.getStore('datastore_gestione_tavolo').getAt(0));
-		                    //Ext.getStore('datastore_gestione_tavolo').sync();
+		                	
 		                }
-		            }]
+		            }*/]
 		        }],	//Fine dockeditems
 		        
 		        viewConfig: {

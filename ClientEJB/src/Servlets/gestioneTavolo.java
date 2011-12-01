@@ -151,13 +151,16 @@ public class gestioneTavolo extends HttpServlet {
 		JSONObject json_tmp = null;
 		int tipo = Integer.parseInt( request.getParameter("tipo") );
 		String query = null;
-		Piano piano = null;
-		Area area = null;
-		Tavolo tavolo = null;
+		TreeNodePiano piano = null;
+		TreeNodeArea area = null;
+		TreeNodeTavolo tavolo = null;
 		switch(tipo){
 			case 1: {//Aggiungi piano
 				try {
 					piano = gestionePiano.aggiungiPiano(idTenant, Integer.parseInt(numeroPiano), nome, descrizione, enabled);
+					json_tmp	=	JSONFromBean.jsonFromTreeNodePiano(piano);
+					//json_tmp.put("parentId, );
+					json_array.put( json_tmp );
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -165,15 +168,15 @@ public class gestioneTavolo extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				json_tmp	=	JSONFromBean.jsonFromPiano(piano);
-				//json_tmp.put("parentId, );
-				json_array.put( json_tmp );
+				
 				break;
 			}
 			case 2: {//Aggiungi area
 				try {
 					area = gestioneArea.aggiungiArea(idTenant, request.getParameter("nome"), request.getParameter("descrizione"), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
-					
+					json_tmp	=	JSONFromBean.jsonFromTreeNodeArea(area);
+					json_tmp.put("parentId", request.getParameter("parentId").substring(1));
+					json_array.put(	json_tmp );
 				
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
@@ -182,12 +185,14 @@ public class gestioneTavolo extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				json_array.put(	JSONFromBean.jsonFromArea(area)	);
 				break;
 			}
 			case 3: {//Aggiungi tavolo
 				try {
 					tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), request.getParameter("stato"), request.getParameter("descrizione"), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
+					json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
+					json_tmp.put("parentId", request.getParameter("parentId").substring(1));
+					json_array.put(	json_tmp );
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -195,7 +200,6 @@ public class gestioneTavolo extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				json_array.put(	JSONFromBean.jsonFromTavolo(tavolo)	);
 				break;
 			}
 			default: return;

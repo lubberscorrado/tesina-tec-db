@@ -31,7 +31,7 @@ public class JSONResponse {
 	
 	public static boolean UserAccessControl(HttpServletRequest request, HttpServletResponse response, int privs) throws IOException{
 		HttpSession session = request.getSession();
-		if(session.isNew() || session.getAttribute("Logged").equals("false")){
+		if(session == null || session.isNew() || session.getAttribute("Logged").equals(false)){
 			JSONObject json_out = new JSONObject();
 			json_out.put("success", false);
 			json_out.put("message", "L'utente non è autenticato nel sistema.");
