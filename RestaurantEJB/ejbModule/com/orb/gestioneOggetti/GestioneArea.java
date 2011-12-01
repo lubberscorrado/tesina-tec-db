@@ -48,6 +48,7 @@ public class GestioneArea{
 		if(piano == null)
 			throw new DatabaseException("Impossibile trovare il piano di appartenenza dell'area");
 		
+		area.setPianoAppartenenza(piano);
 		em.persist(area);
 		return new TreeNodeArea(area);
 	}
