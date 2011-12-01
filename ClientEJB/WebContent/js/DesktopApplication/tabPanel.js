@@ -362,7 +362,7 @@ var _mainTabPanel = {
 			                        			_mainTabPanel.addNewNodeGestioneTavolo(lastSelected);
 			                        		}
 			                            },{
-			                            	text: 'Modifica',
+			                            	text: 'Modifica piano',
 			                            	handler: function(){
 			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                        			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
@@ -379,6 +379,12 @@ var _mainTabPanel = {
 			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                        			_mainTabPanel.addNewNodeGestioneTavolo(lastSelected);
 			                        		}
+			                            },{
+			                            	text: 'Modifica area',
+			                            	handler: function(){
+			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                        			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
+			                            	}
 			                            },
 			                            {text: 'Rimuovi area'}
 			                        ]
@@ -386,7 +392,13 @@ var _mainTabPanel = {
 		                	}else if(depth == 3){
 		                		contextMenu = Ext.create('Ext.menu.Menu', {
 			                        items: [
-			                            {text: 'Modifica tavolo'},
+			                            {
+			                            	text: 'Modifica tavolo',
+			                            	handler: function(){
+			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                        			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
+			                            	}
+			                            },
 			                            {text: 'Rimuovi tavolo'}
 			                        ]
 			                    });
@@ -586,7 +598,7 @@ var _mainTabPanel = {
 		},
 		
 		modifyNodeGestioneTavolo : function(selectedNode){
-			Ext.create('Ext.form.Panel', {
+			var form_tmp = Ext.create('Ext.form.Panel', {
 				id: 'form_gestioneTavolo_updateNode',
 			    title: 'Simple Form',
 			    bodyPadding: 5,
@@ -639,6 +651,21 @@ var _mainTabPanel = {
 			        }
 			    }]
 			});
+			
+			switch(selectedNode.get('tipo')){
+			case 1: {
+				form_tmp.setTitle('Modifica piano');
+				break;
+			}
+			case 2: {
+				form_tmp.setTitle('Modifica area');
+				break;
+			}
+			case 3: {
+				form_tmp.setTitle('Modifica tavolo');
+				break;
+			}
+			}
 			Ext.getCmp('viewport_east').add(Ext.getCmp('form_gestioneTavolo_updateNode'));
 			Ext.getCmp('viewport_east').expand();
 		},

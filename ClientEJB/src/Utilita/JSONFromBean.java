@@ -84,5 +84,20 @@ public class JSONFromBean {
 			
 		return json_obj;
 	}
+	
+	/*
+	 * JSON FROM STATO LOCALE
+	 */
+	public static JSONObject jsonFromOBJ(StatoTavolo statotavolo){
+		JSONObject json_obj = new JSONObject();
+		json_obj.put("idTavolo", statotavolo.getIdTavolo());
+		json_obj.put("numeroPiano", statotavolo.getNumeroPiano());
+		json_obj.put("numPosti", statotavolo.getNumPosti());
+		json_obj.put("cameriere", statotavolo.getCameriere());
+		json_obj.put("nomeArea", statotavolo.getNomeArea());
+		json_obj.put("nomeTavolo", statotavolo.getNomeTavolo());
+		json_obj.put("statoTavolo", statotavolo.getStatoTavolo());
+		return json_obj;
+	}
 
 }

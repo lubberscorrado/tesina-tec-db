@@ -67,6 +67,7 @@ public class gestioneTavolo extends HttpServlet {
 		JSONObject json_out = new JSONObject();
 		JSONObject json_tmp = null;
 		
+		//PIANI
 		if(request.getParameter("node").equals("root")){
 			List<TreeNodePiano> lista_piani = gestionePiano.getPiani(idTenant);
 			TreeNodePiano piano = null;
@@ -77,6 +78,7 @@ public class gestioneTavolo extends HttpServlet {
 				}
 			}
 			
+		//AREE
 		}else if (request.getParameter("node").startsWith("P")){
 			int idPiano = Integer.parseInt( request.getParameter("node").substring(1) );
 			List<TreeNodeArea> lista_aree = null;
@@ -96,6 +98,7 @@ public class gestioneTavolo extends HttpServlet {
 				}
 			}
 			
+		//TAVOLI
 		}else if (request.getParameter("node").startsWith("A")){
 			int idArea = Integer.parseInt( request.getParameter("node").substring(1) );
 			List<TreeNodeTavolo> lista_tavoli = null;
@@ -106,6 +109,7 @@ public class gestioneTavolo extends HttpServlet {
 				json_out.put("message","Eccezione caricamento tavoli");
 				response.getWriter().print(json_out);
 				e.printStackTrace();
+				System.err.println("ECCEZIONE: "+e.toString());
 			}
 			TreeNodeTavolo tavolo = null;
 			if(lista_tavoli != null){
@@ -124,7 +128,7 @@ public class gestioneTavolo extends HttpServlet {
 		
 		json_out.put("success", true);
 		json_out.put("message","OK");
-		if(json_array.length() > 0) json_out.put("data", json_array);
+		/*if(json_array.length() > 0) */json_out.put("data", json_array);
 		response.getWriter().print(json_out);
 	}
 	

@@ -35,7 +35,7 @@ Ext.define('StatoTavolo', {
 	        type: 'json',
 	        model: 'StatoTavolo',
 	        idProperty: 'id_tavolo',
-	        root: 'items'
+	        root: 'statoTavolo'
 	    }
     }
 });
@@ -116,8 +116,8 @@ Ext.define('nodoGestioneTavolo', {
 	    actionMethods : {
             create : 'POST',
             read   : 'GET',
-            update : 'PUT'/*,
-            destroy: 'TROY'*/
+            update : 'PUT',
+            destroy: 'DELETE'
         }
     }
 });
