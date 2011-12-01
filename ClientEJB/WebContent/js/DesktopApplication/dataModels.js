@@ -26,7 +26,7 @@ Ext.define('StatoTavolo', {
     ],
     proxy: {
         type: 'rest',
-        url : 'stato',
+        url : 'statoTavolo',
         appendId: true,
         writer: {
             type: 'singlepost'
@@ -99,7 +99,7 @@ Ext.define('StatoCuoco', {
 Ext.define('nodoGestioneTavolo', {
     /*extend: 'Ext.data.NodeInterface',*/
 	extend: 'Ext.data.Model',
-    fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
+    fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text','idPiano','idArea','idTavolo'],
     store: Ext.getStore('datastore_gestione_tavolo'),
     proxy: {
         type: 'rest',
@@ -112,7 +112,13 @@ Ext.define('nodoGestioneTavolo', {
 	        type: 'json',
 	        idProperty: 'id',
 	        root: 'data'
-	    }
+	    },
+	    actionMethods : {
+            create : 'POST',
+            read   : 'GET',
+            update : 'PUT'/*,
+            destroy: 'TROY'*/
+        }
     }
 });
 

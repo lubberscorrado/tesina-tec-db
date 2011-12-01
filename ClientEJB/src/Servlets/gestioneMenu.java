@@ -34,6 +34,7 @@ public class gestioneMenu extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+    @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		DBConnection db = new DBConnection();
 		JSONObject json_out = new JSONObject();
@@ -62,6 +63,7 @@ public class gestioneMenu extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+    @Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int tipo = Integer.parseInt( request.getParameter("tipo") );
 		String query = null;
@@ -120,6 +122,7 @@ public class gestioneMenu extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPut(HttpServletRequest, HttpServletResponse)
 	 */
+    @Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("PUTTA");
 		
@@ -148,6 +151,7 @@ public class gestioneMenu extends HttpServlet {
 	/**
 	 * @see HttpServlet#doDelete(HttpServletRequest, HttpServletResponse)
 	 */
+    @Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		JSONObject json_out = new JSONObject();
 		json_out.put("success", true);

@@ -6,8 +6,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
+
+import Utilita.JSONResponse;
 
 /**
  * Servlet implementation class login
@@ -38,6 +41,14 @@ public class login extends HttpServlet {
 		JSONObject json_out = new JSONObject();
 		json_out.put("success", true);
 		json_out.put("message", "Login effettuato correttamente.");
+		
+		// Setto i valori della sessione
+		HttpSession session = request.getSession();
+		session.setAttribute("Logged", true);
+		session.setAttribute("idTenant", 0);
+		session.setAttribute("Privs", JSONResponse.PRIV_SuperAdministrator);
+		
+		System.out.println("Login from: "+request.getRemoteAddr());
 		
 		response.getWriter().println(json_out);
 	}

@@ -47,9 +47,14 @@
 	<body>
 		<div id='center'></div>
 		<script type="text/javascript">
+			<% if( session.isNew() || session.getAttribute("Logged").equals("false") ){ %>
+				location.replace("index_login.jsp");
+			<% }else{ %>
 			/*Quando il documento è caricato eseguo l'applicazione*/
 			Ext.EventManager.onDocumentReady(desktop_main);
+			<% } %>
 		</script>
+		
 	</body>
 	
 </html>

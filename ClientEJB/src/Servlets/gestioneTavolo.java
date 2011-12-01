@@ -16,12 +16,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import Utilita.JSONFromBean;
+import Utilita.JSONResponse;
+
+import com.exceptions.DatabaseException;
 import com.orb.Area;
 import com.orb.Piano;
 import com.orb.Tavolo;
 import com.orb.gestioneOggetti.GestioneArea;
 import com.orb.gestioneOggetti.GestionePiano;
 import com.orb.gestioneOggetti.GestioneTavolo;
+import com.restaurant.TreeNodeArea;
+import com.restaurant.TreeNodePiano;
+import com.restaurant.TreeNodeTavolo;
 
 import DB.DBConnection;
 
@@ -37,6 +44,8 @@ public class gestioneTavolo extends HttpServlet {
 	private GestioneArea gestioneArea;
 	@EJB
 	private GestioneTavolo gestioneTavolo;
+	
+	private int idTenant = -1;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -49,65 +58,73 @@ public class gestioneTavolo extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//Controllo dei privilegi di accesso
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+			return;
+		}
+		idTenant = (Integer) request.getSession().getAttribute("idTenant");
 		JSONArray json_array = new JSONArray();
+		JSONObject json_out = new JSONObject();
 		JSONObject json_tmp = null;
-
+		
 		if(request.getParameter("node").equals("root")){
-			List<Piano> lista_piani = gestionePiano.getPiani(0);
-			Piano piano = null;
+			List<TreeNodePiano> lista_piani = gestionePiano.getPiani(idTenant);
+			TreeNodePiano piano = null;
 			if(lista_piani != null){
 				for(int i=0; i<lista_piani.size();i++){
-					json_tmp = new JSONObject();
 					piano = lista_piani.get(i);
-					json_tmp.put("text", piano.getNome());
-					json_tmp.put("id", piano.getIdPiano());
-					json_tmp.put("parentId", "root");
-					json_tmp.put("tipo", 1);
-					json_array.put(json_tmp);
+					json_array.put(	JSONFromBean.jsonFromTreeNodePiano(piano) );
 				}
 			}
 			
 		}else if (request.getParameter("node").startsWith("P")){
-//			Piano piano = gestionePiano.getPiani(0);
-//			List<Area> lista_aree = gestioneArea.getAreeTenant(0);
-//			Area area = null;
-//			if(lista_aree != null){
-//				for(int i=0; i<lista_aree.size();i++){
-//					json_tmp = new JSONObject();
-//					area = lista_aree.get(i);
-//					json_tmp.put("text", area.getNome());
-//					json_tmp.put("id", area.getIdArea());
-//					json_tmp.put("parentId", "0");	/// GET ID PIANO
-//					json_tmp.put("tipo", 2);
-//					json_array.put(json_tmp);
-//					// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
-//				}
-//			}
+			int idPiano = Integer.parseInt( request.getParameter("node").substring(1) );
+			List<TreeNodeArea> lista_aree = null;
+			try {
+				lista_aree = gestioneArea.getAreeByPiano( idPiano );
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			TreeNodeArea area = null;
+			if(lista_aree != null){
+				for(int i=0; i<lista_aree.size();i++){
+					area = lista_aree.get(i);
+					json_tmp = JSONFromBean.jsonFromTreeNodeArea(area);
+					json_tmp.put("parentId",idPiano);
+					json_array.put( json_tmp );
+				}
+			}
 			
 		}else if (request.getParameter("node").startsWith("A")){
-//			List<Tavolo> lista_tavoli = null;// = gestioneTavolo.		//get tavoli
-//			Tavolo tavolo = null;
-//			if(lista_tavoli != null){
-//				for(int i=0; i<lista_tavoli.size();i++){
-//					json_tmp = new JSONObject();
-//					tavolo = lista_tavoli.get(i);
-//					json_tmp.put("text", tavolo.getNome());
-//					json_tmp.put("id", tavolo.getIdTavolo());
-//					json_tmp.put("parentId", "0");	/// GET ID AREA
-//					json_tmp.put("tipo", 3);
-//					json_array.put(json_tmp);
-//					// fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
-//				}
-//			}
-//
-//			
+			int idArea = Integer.parseInt( request.getParameter("node").substring(1) );
+			List<TreeNodeTavolo> lista_tavoli = null;
+			try {
+				lista_tavoli = gestioneTavolo.getTavoloByArea(idArea);
+			} catch (DatabaseException e) {
+				json_out.put("success", false);
+				json_out.put("message","Eccezione caricamento tavoli");
+				response.getWriter().print(json_out);
+				e.printStackTrace();
+			}
+			TreeNodeTavolo tavolo = null;
+			if(lista_tavoli != null){
+				for(int i=0; i<lista_tavoli.size();i++){
+					tavolo = lista_tavoli.get(i);
+					json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
+					json_tmp.put("parentId",idArea);
+					json_array.put( json_tmp );
+				}
+			}
+
+			
 		}
 		
 		
-		JSONObject json_out = new JSONObject();
+		
 		json_out.put("success", true);
-		json_out.put("message","Forse va bene XD");
-		json_out.put("data", json_array);
+		json_out.put("message","OK");
+		if(json_array.length() > 0) json_out.put("data", json_array);
 		response.getWriter().print(json_out);
 	}
 	
@@ -116,57 +133,76 @@ public class gestioneTavolo extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//Controllo dei privilegi di accesso
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+			return;
+		}
+		
+		String nome = request.getParameter("nome");
+		String enabledS = request.getParameter("enabled");
+		boolean enabled;
+		if(enabledS.equals("on")) enabled = true; else enabled = false;
+		String numPosti = request.getParameter("numPosti");
+		String numeroPiano = request.getParameter("numeroPiano");
+		String descrizione = request.getParameter("descrizione");
+		
+		idTenant = (Integer) request.getSession().getAttribute("idTenant");
+		JSONArray json_array = new JSONArray();
+		JSONObject json_tmp = null;
 		int tipo = Integer.parseInt( request.getParameter("tipo") );
 		String query = null;
+		Piano piano = null;
+		Area area = null;
+		Tavolo tavolo = null;
 		switch(tipo){
 			case 1: {//Aggiungi piano
-				gestionePiano.aggiungiPiano(0, Integer.parseInt(request.getParameter("numeroPiano")), request.getParameter("nome"), request.getParameter("descrizione"), true);
+				try {
+					piano = gestionePiano.aggiungiPiano(idTenant, Integer.parseInt(numeroPiano), nome, descrizione, enabled);
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DatabaseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				json_tmp	=	JSONFromBean.jsonFromPiano(piano);
+				//json_tmp.put("parentId, );
+				json_array.put( json_tmp );
 				break;
 			}
 			case 2: {//Aggiungi area
-				gestioneArea.aggiungiArea(0, request.getParameter("nome"), request.getParameter("descrizione"), true, Integer.parseInt(request.getParameter("parentId")));
+				try {
+					area = gestioneArea.aggiungiArea(idTenant, request.getParameter("nome"), request.getParameter("descrizione"), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DatabaseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				json_array.put(	JSONFromBean.jsonFromArea(area)	);
 				break;
 			}
 			case 3: {//Aggiungi tavolo
-				//gestioneTavolo.aggiungiTavolo(0, request.getParameter("nome"), "Libero", request.getParameter("descrizione"), true, request.getParameter("parentId"));
+				try {
+					tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), request.getParameter("stato"), request.getParameter("descrizione"), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DatabaseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				json_array.put(	JSONFromBean.jsonFromTavolo(tavolo)	);
 				break;
 			}
 			default: return;
 		}
 		
-		/*
-		 * descrizione	
-			enabled	on
-			id	1
-			nome	
-			numPosti	
-			numeroPiano	
-			parentId	root
-				1
-		 */
-		
-		
-		JSONObject tmp = new JSONObject();
-		tmp.put("id", "9");
-		if(request.getParameter("parentId").length()==0)tmp.put("parentId", "root");
-		else tmp.put("parentId", request.getParameter("parentId"));
-		
-		tmp.put("tipo", request.getParameter("tipo"));
-		tmp.put("text", request.getParameter("nome"));
-
-		
-		JSONArray json_array = new JSONArray();
-		json_array.put(tmp);
-		
-		
-		
 		JSONObject json_out = new JSONObject();
 		json_out.put("success", true);
 		json_out.put("message", "Inserimento effettuato correttamente");
-		json_out.put("id", 999);
 		json_out.put("data", json_array);
-
-		json_out.put("msg", "troie di altri tempi!!!");
 		response.getWriter().println(	json_out	);
 	}
 
@@ -174,39 +210,20 @@ public class gestioneTavolo extends HttpServlet {
 	 * @see HttpServlet#doPut(HttpServletRequest, HttpServletResponse)
 	 */
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("PUTTA");
-		
-		
-		
-		
-		
-		JSONObject tmp = new JSONObject();
-		tmp.put("parentId", "root");
-		tmp.put("text", "newPiano");
-		
-		JSONArray json_array = new JSONArray();
-		json_array.put(tmp);
-		
-		
-		
-		JSONObject json_out = new JSONObject();
-		json_out.put("success", true);
-		json_out.put("message", "shemale");
-		json_out.put("root", json_array);
-		json_out.put("msg", "troie di altri tempi!!!");
-		
-		response.getWriter().println(	json_out	);
+		//Controllo dei privilegi di accesso
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+			return;
+		}
 	}
 
 	/**
 	 * @see HttpServlet#doDelete(HttpServletRequest, HttpServletResponse)
 	 */
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		JSONObject json_out = new JSONObject();
-		json_out.put("success", true);
-		json_out.put("message", "lalalala");
-		
-		response.getWriter().println(	json_out	);
+		//Controllo dei privilegi di accesso
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+			return;
+		}
 	}
 
 }
