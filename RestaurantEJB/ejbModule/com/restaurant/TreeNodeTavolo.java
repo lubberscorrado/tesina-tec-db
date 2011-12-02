@@ -22,7 +22,8 @@ public class TreeNodeTavolo {
 	private boolean enabled;
 	private String stato;
 	private int idTenant;
-		
+	private int numposti;
+	
 	public TreeNodeTavolo(Tavolo tavolo) {
 		super();
 		this.idTavolo = tavolo.getIdTavolo();
@@ -31,8 +32,20 @@ public class TreeNodeTavolo {
 		this.enabled = tavolo.isEnabled();
 		this.stato = tavolo.getStato();
 		this.idTenant = tavolo.getIdTenant();
+		this.numposti = tavolo.getNumposti();
 	}
 	
+	
+	public int getNumposti() {
+		return numposti;
+	}
+
+
+	public void setNumposti(int numposti) {
+		this.numposti = numposti;
+	}
+
+
 	public int getIdTavolo() {
 		return idTavolo;
 	}
