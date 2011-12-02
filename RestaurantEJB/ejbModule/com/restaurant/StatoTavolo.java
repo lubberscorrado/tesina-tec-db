@@ -1,5 +1,9 @@
 package com.restaurant;
 
+import com.orb.Area;
+import com.orb.Piano;
+import com.orb.Tavolo;
+
 public class StatoTavolo {
 	
 	private int idTavolo;
@@ -12,22 +16,16 @@ public class StatoTavolo {
 	
 	
 	
-	public StatoTavolo(	int idTavolo, 
-						String nomeTavolo, 
-						int numeroPiano,
-						String nomeArea, 
-						int numPosti, 
-						String statoTavolo, 
-						String cameriere) {
+	public StatoTavolo(Tavolo t, Area a, Piano p) {
 		
 		super();
-		this.idTavolo = idTavolo;
-		this.nomeTavolo = nomeTavolo;
-		this.numeroPiano = numeroPiano;
-		this.nomeArea = nomeArea;
-		this.numPosti = numPosti;
-		this.statoTavolo = statoTavolo;
-		this.cameriere = cameriere;
+		this.idTavolo = t.getIdTavolo();
+		this.nomeTavolo = t.getNome();
+		this.numeroPiano = p.getNumero();
+		this.nomeArea = a.getNome();
+		this.numPosti = t.getNumposti();
+		this.statoTavolo = t.getStato();
+		this.cameriere = "TODO";
 	}
 	
 	public int getIdTavolo() {
@@ -72,7 +70,4 @@ public class StatoTavolo {
 	public void setCameriere(String cameriere) {
 		this.cameriere = cameriere;
 	}
-	
-	
-
 }
