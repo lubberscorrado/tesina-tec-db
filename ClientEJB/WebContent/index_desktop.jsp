@@ -4,12 +4,16 @@
 <html>
 	<script type="text/javascript" language="javascript">
 		<%
+		try{
 			if( session == null || session.isNew() ){
 				session.setAttribute("Logged", false);
 				//Redirect alla pagina di login
 				out.print("location.replace('index_login.jsp');");
 			}else if( session.getAttribute("Logged").equals(false) ){
 				//Redirect alla pagina di login
+				out.print("location.replace('index_login.jsp');");
+			}
+			}catch(Exception e){
 				out.print("location.replace('index_login.jsp');");
 			}
 		%>	

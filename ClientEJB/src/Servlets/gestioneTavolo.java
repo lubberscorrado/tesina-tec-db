@@ -30,7 +30,6 @@ import com.restaurant.TreeNodeArea;
 import com.restaurant.TreeNodePiano;
 import com.restaurant.TreeNodeTavolo;
 
-import DB.DBConnection;
 
 /**
  * Servlet implementation class gestioneTavolo
@@ -93,7 +92,7 @@ public class gestioneTavolo extends HttpServlet {
 				for(int i=0; i<lista_aree.size();i++){
 					area = lista_aree.get(i);
 					json_tmp = JSONFromBean.jsonFromTreeNodeArea(area);
-					json_tmp.put("parentId",idPiano);
+					json_tmp.put("parentId","P"+idPiano);
 					json_array.put( json_tmp );
 				}
 			}
@@ -116,19 +115,16 @@ public class gestioneTavolo extends HttpServlet {
 				for(int i=0; i<lista_tavoli.size();i++){
 					tavolo = lista_tavoli.get(i);
 					json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
-					json_tmp.put("parentId",idArea);
+					json_tmp.put("parentId","A"+idArea);
 					json_array.put( json_tmp );
 				}
 			}
 
-			
 		}
-		
-		
 		
 		json_out.put("success", true);
 		json_out.put("message","OK");
-		/*if(json_array.length() > 0) */json_out.put("data", json_array);
+		json_out.put("data", json_array);
 		response.getWriter().print(json_out);
 	}
 	

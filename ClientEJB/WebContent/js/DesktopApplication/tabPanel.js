@@ -677,23 +677,42 @@ var _mainTabPanel = {
 			    }]
 			});
 			
+			form_tmp.getForm().loadRecord(selectedNode);
+			
 			switch(selectedNode.get('tipo')){
 			case 1: {
 				form_tmp.setTitle('Modifica piano');
-				form_tmp.getForm().findField('id').setValue(parentNode.get('id'));
+				form_tmp.getForm().findField('descrizione').setVisible(true);
+				form_tmp.getForm().findField('numeroPiano').setVisible(true);
+				//form_tmp.getForm().findField('numeroPiano').hidden(false);
+				
+//				form_tmp.getForm().findField('nome').setValue('kiss');
+//				form_tmp.getForm().findField('numPiano').setValue('kiss');
+//				form_tmp.getForm().findField('descrizione').setValue('kiss');
+//				form_tmp.getForm().findField('id').setValue('kiss');
+//fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text','idPiano','idArea','idTavolo'],
+			    
+				//form_tmp.getForm().findField('id').setValue(parentNode.get('id'));
+				//nome numero piano descrizione attivo
 				break;
 			}
 			case 2: {
 				form_tmp.setTitle('Modifica area');
+				form_tmp.getForm().findField('descrizione').setVisible(true);
+				//nome descrizione attivo
 				break;
 			}
 			case 3: {
 				form_tmp.setTitle('Modifica tavolo');
+				form_tmp.getForm().findField('numPosti').setVisible(true);
+				//nome numposti attivo
 				break;
 			}
 			}
-			Ext.getCmp('viewport_east').add(Ext.getCmp('form_gestioneTavolo_updateNode'));
+			Ext.getCmp('viewport_east').removeAll();
 			Ext.getCmp('viewport_east').expand();
+			Ext.getCmp('viewport_east').add(Ext.getCmp('form_gestioneTavolo_updateNode'));
+			
 		},
 		
 		createTabGestioneMenu : function(){

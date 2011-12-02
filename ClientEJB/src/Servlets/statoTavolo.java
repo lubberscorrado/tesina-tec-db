@@ -14,12 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import Utilita.JSONFromBean;
-
 import com.restaurant.StatoTavolo;
 
-import DB.DBConnection;
 
 /**
  * Servlet implementation class stato

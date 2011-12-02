@@ -99,26 +99,25 @@ Ext.define('StatoCuoco', {
 Ext.define('nodoGestioneTavolo', {
     /*extend: 'Ext.data.NodeInterface',*/
 	extend: 'Ext.data.Model',
-    fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text','idPiano','idArea','idTavolo'],
+    fields: ['id','realId','parentId','realParentId','nome','descrizione','numeroPiano','tipo','enabled','numPosti','stato','text','idPiano','idArea','idTavolo'],
     store: Ext.getStore('datastore_gestione_tavolo'),
     proxy: {
         type: 'rest',
         url : 'gestioneTavolo',
         writer: {
             type: 'singlepost'
-            //type: 'json'
         },
 		reader: {
 	        type: 'json',
-	        idProperty: 'id',
+	        //idProperty: 'id',
 	        root: 'data'
-	    },
+	    }/*,
 	    actionMethods : {
             create : 'POST',
             read   : 'GET',
             update : 'PUT',
             destroy: 'DELETE'
-        }
+        }*/
     }
 });
 
