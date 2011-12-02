@@ -44,6 +44,12 @@ public class Tavolo {
 	@Column(name="idTenant")
 	private int idTenant;
 	
+	@Column(name="numposti")
+	private int numposti;
+	
+	@OneToMany(mappedBy="tavoloAppartenenza")
+	private List<Conto> conti;
+		
 	@OneToMany(mappedBy="tavoloAppartenenza")
 	private List<Prenotazione> listaPrenotazioni;
 	
@@ -100,6 +106,23 @@ public class Tavolo {
 		this.enabled = enabled;
 	}
 
+	
+	public int getNumposti() {
+		return numposti;
+	}
+
+	public void setNumposti(int numposti) {
+		this.numposti = numposti;
+	}
+
+	public List<Prenotazione> getListaPrenotazioni() {
+		return listaPrenotazioni;
+	}
+
+	public void setListaPrenotazioni(List<Prenotazione> listaPrenotazioni) {
+		this.listaPrenotazioni = listaPrenotazioni;
+	}
+
 	public String isStato() {
 		return stato;
 	}
@@ -134,6 +157,14 @@ public class Tavolo {
 
 	public String getStato() {
 		return stato;
+	}
+
+	public List<Conto> getConti() {
+		return conti;
+	}
+
+	public void setConti(List<Conto> conti) {
+		this.conti = conti;
 	}
 	
 }
