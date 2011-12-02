@@ -1,23 +1,14 @@
 package com.orb;
 
-import java.io.Serializable;
-import java.util.List;
 
+import java.util.List;
 import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -42,8 +33,7 @@ public class Area {
 	
 	@Column(name="enabled")
 	private boolean enabled;
-	
-	
+		
 	@ManyToOne
 	@JoinColumn(name="idPiano", referencedColumnName="idPiano")
 	private Piano pianoAppartenenza;
