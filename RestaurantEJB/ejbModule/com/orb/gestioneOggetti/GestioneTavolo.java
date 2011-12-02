@@ -20,6 +20,7 @@ import com.orb.Area;
 import com.orb.Piano;
 import com.orb.Prenotazione;
 import com.orb.Tavolo;
+import com.orb.UtentePersonale;
 import com.restaurant.StatoTavolo;
 import com.restaurant.TreeNodeArea;
 import com.restaurant.TreeNodeTavolo;
@@ -42,12 +43,19 @@ public class GestioneTavolo{
 											boolean enabled,
 											int idArea) throws DatabaseException {
 		
+		// TODO Controllare i valori null dei tavoli
+		
 		Tavolo tavolo = new Tavolo();
 		tavolo.setIdTenant(idTenant);
 		tavolo.setNome(nome);
 		tavolo.setDescrizione(descrizione);
 		tavolo.setEnabled(enabled);
-		tavolo.setStato(stato);
+		
+		if(stato != null)
+			tavolo.setStato(stato);
+		else
+			tavolo.setStato("Libero");
+		
 		tavolo.setNumposti(numposti);
 		
 		Area area = em.find(Area.class, idArea);
@@ -64,6 +72,36 @@ public class GestioneTavolo{
 			
 		}
 		return new TreeNodeTavolo(tavolo);
+	}
+	
+	
+	
+	public void updateTavolo(	int idTavolo,
+								String nome,
+								String descrizione,
+								String stato,
+								boolean enabled) throws DatabaseException {
+		
+		try {
+			
+			Tavolo tavolo = em.find(Tavolo.class, idTavolo);
+			
+			if(tavolo == null)
+				throw new DatabaseException("Errore durante la ricerca del tavolo da aggiornare");
+		
+			tavolo.setNome(nome);
+			tavolo.setDescrizione(descrizione);
+			tavolo.setStato(stato);
+			tavolo.setEnabled(enabled);
+			
+			em.persist(tavolo);
+			
+		}catch(Exception e) {
+			
+			throw new DatabaseException("Errore durante la modifica del tavolo (" +e.toString() +")");
+			
+		}
+		
 	}
 	
 	/** 
@@ -109,14 +147,56 @@ public class GestioneTavolo{
 			Tavolo tavolo = it.next();
 			
 			try {
+				
 				area = tavolo.getAreaAppartenenza();
 				piano = area.getPianoAppartenenza();
+				
 			} catch(Exception e) {
 				throw new DatabaseException("Errore durante la ricerca dei piani e delle aree " +
 											"(" + e.toString() + ")");
 			}
 			
-			listaStatoTavolo.add(new StatoTavolo(tavolo, area, piano));
+			//TODO Verificare la correttezza della query
+			
+			/* Reupero il cameriere associato al tavolo */
+			Query queryCameriere = em.createQuery(	"SELECT u FROM UtentePersonale u " +
+													"LEFT JOIN u.conti c " +
+													"LEFT JOIN c.tavoloAppartenenza t " +
+													"WHERE c.stato = :stato AND t.idTavolo = :idTavolo");
+			
+			queryCameriere.setParameter("stato", "Aperto");
+			queryCameriere.setParameter("idTavolo", tavolo.getIdTavolo());
+			List<UtentePersonale> listaCamerieri = null;
+			
+			try {
+				listaCamerieri = queryCameriere.getResultList();
+			}catch(Exception e) {
+				throw new DatabaseException("Errore durante la ricerca del cameriere associato " +
+											"al tavolo (" + e.toString() + ")");
+			}
+			
+			// TODO getResultList non dovrebbe ritornare null, verificare 
+			
+			if(listaCamerieri.size() == 0) {
+				/* Al tavolo non è associato alcun cameriere, probabilmente poichè non c'è 
+				 * alcun conto aperto */
+				
+				listaStatoTavolo.add(new StatoTavolo(tavolo, area, piano, null));
+			
+			}else {
+			
+				if(listaCamerieri.size()> 1)
+					System.out.println(	"WARNING: Ad un unico tavolo sono associati più camerieri, " +
+										"non sono stati probabilmente chiusi conti precedenti");
+				
+				/* Se ci sono più camerieri associati allo stesso tavolo riporto l'ultimo cameriere 
+				 * in ordine temporale  */
+				listaStatoTavolo.add(new StatoTavolo(	tavolo, 
+														area, 
+														piano, 
+														listaCamerieri.get(listaCamerieri.size() - 1)));
+			}
+			
 		}
 		
 		return listaStatoTavolo;
@@ -135,30 +215,44 @@ public class GestioneTavolo{
 	 */
 	
 	public List<TreeNodeTavolo> getTavoloByArea(int idArea) throws DatabaseException {
-	
-		Area area = em.find(Area.class, idArea);
 		
-		if(area == null) 
-			throw new DatabaseException("Area non trovata");
+		Area area;
 		
+		/* Lista dei tavoli associati all'area */
 		List<Tavolo> listaTavoli;
 		
+		/* Lista degli oggetti TreeNodeTavolo ritornati dalla ricerca */
+		List<TreeNodeTavolo> listaTreeNodeTavolo;
+		
 		try {
+		
+			area = em.find(Area.class, idArea);
+			if(area == null) 
+				throw new DatabaseException("Errore durante la ricerca dell'area");
+		
+		} catch(Exception e) {
+			throw new DatabaseException("Errore durante la ricerca dell'area +("+ e.toString() +")");
+		}
+		
+		try {
+			
+			/* L'inizializzazione LAZY avviene durante l'accesso agli oggetti, non in seguito
+			 * al metodo getTavoli() */
 			listaTavoli = area.getTavoli();	
+			listaTreeNodeTavolo = new ArrayList<TreeNodeTavolo>();
+		
+			Iterator<Tavolo> it = listaTavoli.iterator();
+		
+			while(it.hasNext()) {
+				Tavolo tavolo = it.next();
+				listaTreeNodeTavolo.add(new TreeNodeTavolo(tavolo));
+			}
+		
 		}catch(Exception e) {
-			System.out.println("ERRORE QUI");
 			throw new DatabaseException("Errore durante la ricerca dei tavoli associati ad un area +" +
 										"(" + e.getMessage() +")");
 		}
 		
-		List<TreeNodeTavolo> listaTreeNodeTavolo = new ArrayList<TreeNodeTavolo>();
-		
-		Iterator<Tavolo> it = listaTavoli.iterator();
-		
-		while(it.hasNext()) {
-			Tavolo tavolo = it.next();
-			listaTreeNodeTavolo.add(new TreeNodeTavolo(tavolo));
-		}
 		return listaTreeNodeTavolo;
 	}
 	
