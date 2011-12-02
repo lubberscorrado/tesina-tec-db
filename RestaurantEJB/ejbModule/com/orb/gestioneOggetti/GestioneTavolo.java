@@ -76,11 +76,12 @@ public class GestioneTavolo{
 	
 	
 	
-	public void updateTavolo(	int idTavolo,
-								String nome,
-								String descrizione,
-								String stato,
-								boolean enabled) throws DatabaseException {
+	public TreeNodeTavolo updateTavolo(	int idTavolo,
+										int numposti,
+										String nome,
+										String descrizione,
+										String stato,
+										boolean enabled) throws DatabaseException {
 		
 		try {
 			
@@ -89,19 +90,23 @@ public class GestioneTavolo{
 			if(tavolo == null)
 				throw new DatabaseException("Errore durante la ricerca del tavolo da aggiornare");
 		
+			tavolo.setIdTenant(tavolo.getIdTenant());
 			tavolo.setNome(nome);
 			tavolo.setDescrizione(descrizione);
 			tavolo.setStato(stato);
 			tavolo.setEnabled(enabled);
+			tavolo.setAreaAppartenenza(tavolo.getAreaAppartenenza());
+			tavolo.setNumposti(numposti);
 			
 			em.persist(tavolo);
+			
+			return new TreeNodeTavolo(tavolo);
 			
 		}catch(Exception e) {
 			
 			throw new DatabaseException("Errore durante la modifica del tavolo (" +e.toString() +")");
 			
 		}
-		
 	}
 	
 	/** 
