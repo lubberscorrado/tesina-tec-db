@@ -348,6 +348,7 @@ var _mainTabPanel = {
 				                        		text: 'Aggiungi piano',
 				                        		handler: function(){
 				                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+				                        			Ext.getCmp('albero_gestioneTavolo').getSelectionModel().select(lastSelected);
 				                        			_mainTabPanel.addNewNodeGestioneTavolo(lastSelected);
 				                        		}
 			                            	}
@@ -655,7 +656,8 @@ var _mainTabPanel = {
 			    buttons: [{
 			        text: 'Reset',
 			        handler: function() {
-			            this.up('form').getForm().reset();
+			            //Ricarica i valori del nodo selezionato
+			        	this.up('form').getForm().loadRecord(selectedNode);
 			        }
 			    }, {
 			        text: 'Submit',
@@ -664,14 +666,17 @@ var _mainTabPanel = {
 			        handler: function() {
 			            var form = this.up('form').getForm();
 			            if (form.isValid()) {
-			                form.submit({
+			                /*form.submit({
 			                    success: function(form, action) {
 			                       Ext.Msg.alert('Success', action.result.msg);
 			                    },
 			                    failure: function(form, action) {
 			                        Ext.Msg.alert('Failed', action.result.msg);
 			                    }
-			                });
+			                });*/
+			                form.updateRecord(selectedNode);
+			                selectedNode.save();
+			                //form.
 			            }
 			        }
 			    }]
@@ -684,28 +689,16 @@ var _mainTabPanel = {
 				form_tmp.setTitle('Modifica piano');
 				form_tmp.getForm().findField('descrizione').setVisible(true);
 				form_tmp.getForm().findField('numeroPiano').setVisible(true);
-				//form_tmp.getForm().findField('numeroPiano').hidden(false);
-				
-//				form_tmp.getForm().findField('nome').setValue('kiss');
-//				form_tmp.getForm().findField('numPiano').setValue('kiss');
-//				form_tmp.getForm().findField('descrizione').setValue('kiss');
-//				form_tmp.getForm().findField('id').setValue('kiss');
-//fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text','idPiano','idArea','idTavolo'],
-			    
-				//form_tmp.getForm().findField('id').setValue(parentNode.get('id'));
-				//nome numero piano descrizione attivo
 				break;
 			}
 			case 2: {
 				form_tmp.setTitle('Modifica area');
 				form_tmp.getForm().findField('descrizione').setVisible(true);
-				//nome descrizione attivo
 				break;
 			}
 			case 3: {
 				form_tmp.setTitle('Modifica tavolo');
 				form_tmp.getForm().findField('numPosti').setVisible(true);
-				//nome numposti attivo
 				break;
 			}
 			}

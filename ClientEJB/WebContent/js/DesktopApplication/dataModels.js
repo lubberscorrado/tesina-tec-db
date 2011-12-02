@@ -109,7 +109,7 @@ Ext.define('nodoGestioneTavolo', {
         },
 		reader: {
 	        type: 'json',
-	        //idProperty: 'id',
+	        idProperty: 'id',
 	        root: 'data'
 	    }/*,
 	    actionMethods : {

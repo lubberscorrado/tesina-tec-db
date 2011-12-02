@@ -189,7 +189,7 @@ public class gestioneTavolo extends HttpServlet {
 			}
 			case 3: {//Aggiungi tavolo
 				try {
-					tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), request.getParameter("stato"), request.getParameter("descrizione"), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
+					tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), request.getParameter("stato"), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("numPosti")), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
 					json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
 					json_tmp.put("parentId", request.getParameter("parentId").substring(1));
 					json_array.put(	json_tmp );
@@ -220,6 +220,20 @@ public class gestioneTavolo extends HttpServlet {
 		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
 			return;
 		}
+		//Modifico i dati
+		int tipo = Integer.parseInt(request.getParameter("tipo"));
+		switch(tipo){
+			case 1:{
+				break;
+			}
+			case 2:{
+				break;
+			}
+			case 3:{
+				break;
+			}
+		}
+		
 	}
 
 	/**

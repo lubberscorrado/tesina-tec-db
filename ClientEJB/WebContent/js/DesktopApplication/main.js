@@ -21,7 +21,7 @@ var desktop_main = function desktop_main(){
 		layout: 'fit',
 		collapsible: true,
         split: true,
-        width: 200,
+        width: 250,
         hidden: false,
         collapsed: true
 	});
@@ -32,7 +32,7 @@ var desktop_main = function desktop_main(){
 		layout: 'fit',
 		collapsible: true,
         split: true,
-        width: 200,
+        width: 250,
         hidden: false,
         collapsed: true
 	});
