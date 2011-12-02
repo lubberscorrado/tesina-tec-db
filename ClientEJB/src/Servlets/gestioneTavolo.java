@@ -122,10 +122,8 @@ public class gestioneTavolo extends HttpServlet {
 
 		}
 		
-		json_out.put("success", true);
-		json_out.put("message","OK");
-		json_out.put("data", json_array);
-		response.getWriter().print(json_out);
+		//Mando in output i dati
+		JSONResponse.WriteOutput(response, true, "OK","data",json_array);
 	}
 	
 
@@ -156,8 +154,15 @@ public class gestioneTavolo extends HttpServlet {
 		TreeNodeTavolo tavolo = null;
 		switch(tipo){
 			case 1: {//Aggiungi piano
+				int intNumeroPiano = 0;
 				try {
-					piano = gestionePiano.aggiungiPiano(idTenant, Integer.parseInt(numeroPiano), nome, descrizione, enabled);
+					try{
+						intNumeroPiano = Integer.parseInt(numeroPiano);
+					}catch(Exception e){
+						intNumeroPiano = 0;
+					}
+					
+					piano = gestionePiano.aggiungiPiano(idTenant, intNumeroPiano, nome, descrizione, enabled);
 					json_tmp	=	JSONFromBean.jsonFromTreeNodePiano(piano);
 					//json_tmp.put("parentId, );
 					json_array.put( json_tmp );
@@ -205,31 +210,54 @@ public class gestioneTavolo extends HttpServlet {
 			default: return;
 		}
 		
-		JSONObject json_out = new JSONObject();
-		json_out.put("success", true);
-		json_out.put("message", "Inserimento effettuato correttamente");
-		json_out.put("data", json_array);
-		response.getWriter().println(	json_out	);
+		//Mando in output i dati
+		JSONResponse.WriteOutput(response, true, "Inserimento effettuato correttamente","data",json_array);
 	}
 
 	/**
 	 * @see HttpServlet#doPut(HttpServletRequest, HttpServletResponse)
 	 */
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("PUTTTT");
+		
 		//Controllo dei privilegi di accesso
 		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
 			return;
 		}
 		//Modifico i dati
 		int tipo = Integer.parseInt(request.getParameter("tipo"));
+		boolean enabled = true;
+		if(request.getParameter("enabled").equals("on")){
+			enabled = true;
+		}else{
+			enabled = false;
+		}
 		switch(tipo){
 			case 1:{
+				//gestionePiano.
 				break;
 			}
 			case 2:{
+				//gestioneArea.
 				break;
 			}
 			case 3:{
+				TreeNodeTavolo treeNodeTavolo = null;
+				try {
+					treeNodeTavolo = gestioneTavolo.updateTavolo(Integer.parseInt(request.getParameter("id").substring(1)), Integer.parseInt(request.getParameter("numPosti")), request.getParameter("nome"), request.getParameter("descrizione"), request.getParameter("stato"), enabled);
+					//gestioneTavolo.updateTavolo(Integer.parseInt(request.getParameter("id").substring(1)), request.getParameter("nome"), request.getParameter("descrizione"), request.getParameter("stato"), enabled);
+				} catch (NumberFormatException e) {
+					JSONResponse.WriteOutput(response, false,"NumberFormatException");
+					e.printStackTrace();
+				} catch (DatabaseException e) {
+					JSONResponse.WriteOutput(response, false,"DatabaseException");
+					e.printStackTrace();
+				}
+				JSONArray json_array = new JSONArray();
+				JSONObject json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(treeNodeTavolo);
+				json_tmp.put("parentId",request.getParameter("parentId"));
+				json_array.put(json_tmp);
+				JSONResponse.WriteOutput(response, true, "Modifiche effettuate correttamente", "data", json_array);
 				break;
 			}
 		}

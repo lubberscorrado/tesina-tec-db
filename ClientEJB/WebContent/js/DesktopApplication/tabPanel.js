@@ -337,6 +337,11 @@ var _mainTabPanel = {
 		        	//plugins: { ptype: 'treeviewdragdrop' },
 		            stripeRows: true,
 		            listeners: {
+		            	itemdblclick: function( view, rec,item,index,e,eOpts ){
+		            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+		            		if(lastSelected.get('tipo')==3)
+		            			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
+		            	},
 		                itemcontextmenu: function(view, rec, node, index, e) {
 		                	var depth = rec.get("depth");
 		                	var contextMenu = null;
@@ -348,7 +353,6 @@ var _mainTabPanel = {
 				                        		text: 'Aggiungi piano',
 				                        		handler: function(){
 				                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-				                        			Ext.getCmp('albero_gestioneTavolo').getSelectionModel().select(lastSelected);
 				                        			_mainTabPanel.addNewNodeGestioneTavolo(lastSelected);
 				                        		}
 			                            	}
@@ -606,7 +610,6 @@ var _mainTabPanel = {
 			    width: '100%',
 			    height: '100%',
 
-			    // The form will submit an AJAX request to this URL when submitted
 			    url: 'gestioneTavolo',
 
 			    // Fields will be arranged vertically, stretched to full width

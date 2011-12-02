@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class JSONResponse {
@@ -40,5 +41,33 @@ public class JSONResponse {
 		}
 		
 		
+	}
+	
+	
+	public static boolean WriteOutput(HttpServletResponse response, boolean success, String message){
+		JSONObject json_out = new JSONObject();
+		json_out.put("success", success);
+		json_out.put("message", message);
+		try {
+			response.getWriter().println(json_out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	public static boolean WriteOutput(HttpServletResponse response, boolean success, String message, String json_array_name, JSONArray json_array){
+		JSONObject json_out = new JSONObject();
+		json_out.put("success", success);
+		json_out.put("message", message);
+		json_out.put(json_array_name, json_array);
+		try {
+			response.getWriter().println(json_out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
 	}
 }
