@@ -22,6 +22,21 @@ public class TreeNodeArea {
 		this.enabled = area.isEnabled();
 	}
 	
+	
+	public TreeNodeArea(int idArea, 
+						int idTenant, 
+						String nome,
+						String descrizione, 
+						boolean enabled) {
+		super();
+		this.idArea = idArea;
+		this.idTenant = idTenant;
+		this.nome = nome;
+		this.descrizione = descrizione;
+		this.enabled = enabled;
+	}
+
+
 	public int getIdArea() {
 		return idArea;
 	}

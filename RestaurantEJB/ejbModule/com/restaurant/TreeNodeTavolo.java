@@ -36,6 +36,24 @@ public class TreeNodeTavolo {
 	}
 	
 	
+	public TreeNodeTavolo(	int idTavolo, 
+							String nome, 
+							String descrizione,
+							boolean enabled, 
+							String stato, 
+							int idTenant, 
+							int numposti) {
+		super();
+		this.idTavolo = idTavolo;
+		this.nome = nome;
+		this.descrizione = descrizione;
+		this.enabled = enabled;
+		this.stato = stato;
+		this.idTenant = idTenant;
+		this.numposti = numposti;
+	}
+
+
 	public int getNumposti() {
 		return numposti;
 	}

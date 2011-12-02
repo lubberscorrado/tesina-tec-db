@@ -50,13 +50,17 @@ public class GestioneArea{
 		
 		area.setPianoAppartenenza(piano);
 		em.persist(area);
+		
 		return new TreeNodeArea(area);
 	}
 	
-	public Area updateArea(Area area) {
-		em.merge(area);
-		return area;
-	}
+//	public Area updateArea(TreeNodeArea newArea) {
+//		
+//		Area oldArea = em.find(Area.class, newArea.getIdArea());
+//		
+//		em.merge(area);
+//		return area;
+//	}
 	
 	public void deleteArea(Area area) {
 		em.remove(em.merge(area));

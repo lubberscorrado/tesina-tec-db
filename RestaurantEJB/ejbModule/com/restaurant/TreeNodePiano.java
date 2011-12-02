@@ -23,7 +23,23 @@ public class TreeNodePiano {
 		this.descrizione = piano.getDescrizione();
 		this.enabled = piano.isEnabled();
 	}
-	
+		
+	public TreeNodePiano(	int idPiano, 
+							int idTenant, 
+							int numero, 
+							String nome,
+							String descrizione, 
+							boolean enabled) {
+		super();
+		this.idPiano = idPiano;
+		this.idTenant = idTenant;
+		this.numero = numero;
+		this.nome = nome;
+		this.descrizione = descrizione;
+		this.enabled = enabled;
+	}
+
+
 	public int getIdPiano() {
 		return idPiano;
 	}

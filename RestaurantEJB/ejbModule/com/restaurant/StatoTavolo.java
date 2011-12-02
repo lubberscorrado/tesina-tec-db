@@ -3,6 +3,7 @@ package com.restaurant;
 import com.orb.Area;
 import com.orb.Piano;
 import com.orb.Tavolo;
+import com.orb.UtentePersonale;
 
 public class StatoTavolo {
 	
@@ -13,10 +14,9 @@ public class StatoTavolo {
 	private int numPosti;
 	private String statoTavolo;
 	private String cameriere;
+		
 	
-	
-	
-	public StatoTavolo(Tavolo t, Area a, Piano p) {
+	public StatoTavolo(Tavolo t, Area a, Piano p, UtentePersonale u) {
 		
 		super();
 		this.idTavolo = t.getIdTavolo();
@@ -25,7 +25,12 @@ public class StatoTavolo {
 		this.nomeArea = a.getNome();
 		this.numPosti = t.getNumposti();
 		this.statoTavolo = t.getStato();
-		this.cameriere = "TODO";
+		
+		/* Setto il cameriere associato al tavolo solo se non è nullo */
+		if(u != null)
+			this.cameriere = u.getNome() + u.getCognome();
+		else
+			this.cameriere = "Non definito";
 	}
 	
 	public int getIdTavolo() {
