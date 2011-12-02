@@ -38,6 +38,7 @@ public class GestioneTavolo{
 											String nome, 
 											String stato,
 											String descrizione, 
+											int numposti,
 											boolean enabled,
 											int idArea) throws DatabaseException {
 		
@@ -47,6 +48,7 @@ public class GestioneTavolo{
 		tavolo.setDescrizione(descrizione);
 		tavolo.setEnabled(enabled);
 		tavolo.setStato(stato);
+		tavolo.setNumposti(numposti);
 		
 		Area area = em.find(Area.class, idArea);
 		if(area == null)
@@ -66,7 +68,8 @@ public class GestioneTavolo{
 	
 	/** 
 	 * Ritorna lo stato di tutti i tavoli a partire dall'id del cliente. Non richiede
-	 * l'attivazione di una transazione da parte del container (AUTOCOMMIT lasciato di default a 1).
+	 * l'attivazione di una transazione da parte del container (AUTOCOMMIT lasciato di default a 1)
+	 * poichè tutte le entity sono eagerly fetched.
 	 * @param idTenant Id del cliente
 	 * @return Lista di oggetti StatoTavolo che incapsulano le informazioni
 	 *  sullo stato di un tavolo
@@ -76,9 +79,9 @@ public class GestioneTavolo{
 	@TransactionAttribute(TransactionAttributeType.NEVER)
 	public List<StatoTavolo> getStatoTavoli(int idTenant) throws DatabaseException {
 		
-		/* Ottengo tutti i tavoli associato al cliente, forzando l'acquisizione delle aree e dei piani
-		 * in un'unica query. Senza il FETCH JOIN il metodo di fetch delle enitità (eager) è a discrezione 
-		 * del persistence framework */
+		/* Ottengo tutti i tavoli associato al cliente, forzando l'acquisizione delle aree e 
+		 * dei piani in un'unica query. Senza il FETCH JOIN il metodo di fetch delle enitità 
+		 * (eager) è a discrezione  del persistence framework */
 		
 		// TODO Lasciare la gestione del metodo di fetch al persistence framework?
 		
@@ -98,28 +101,22 @@ public class GestioneTavolo{
 		Iterator<Tavolo> it = listTavoli.iterator();
 		List<StatoTavolo> listaStatoTavolo = new ArrayList<StatoTavolo>();
 	
-		Area areaAppartenenza;
-		Piano pianoAssociato;
+		Area area;
+		Piano piano;
 		
 		while(it.hasNext()) {
 			
-			Tavolo t = it.next();
+			Tavolo tavolo = it.next();
 			
 			try {
-				areaAppartenenza = t.getAreaAppartenenza();
-				pianoAssociato = areaAppartenenza.getPianoAppartenenza();
+				area = tavolo.getAreaAppartenenza();
+				piano = area.getPianoAppartenenza();
 			} catch(Exception e) {
 				throw new DatabaseException("Errore durante la ricerca dei piani e delle aree " +
 											"(" + e.toString() + ")");
 			}
 			
-			listaStatoTavolo.add(new StatoTavolo(	t.getIdTavolo(),
-													t.getNome(),
-													pianoAssociato.getNumero(),
-													areaAppartenenza.getNome(),
-													0,
-													t.getStato(),
-													"TBD"));
+			listaStatoTavolo.add(new StatoTavolo(tavolo, area, piano));
 		}
 		
 		return listaStatoTavolo;
@@ -127,14 +124,15 @@ public class GestioneTavolo{
 	}
 	
 	/** 
-	 * Ritorna la lista dei tavoli associati ad una certa area. Non richiede 
-	 * l'attivazione di una nuova transazione.
+	 * Ritorna la lista dei tavoli associati ad una certa area. I tavoli sono 
+	 * lazy fetched quindi è necessario che l'entità area rimanda attached 
+	 * al persistence contex (l'entity manager è transaction scoped). Se una transazione
+	 * JTA non è avvita, l'entità area diventa subito detached.
 	 * @param idArea Id dell'area della quale si vogliono ottenere i tavoli
 	 * @return Lista di oggetti TreeNodeTavolo che incapsulano le informazioni su
 	 * un tavolo
 	 * @throws DatabaseException Generica eccezione durante le operazioni sul database
 	 */
-	
 	
 	public List<TreeNodeTavolo> getTavoloByArea(int idArea) throws DatabaseException {
 	
