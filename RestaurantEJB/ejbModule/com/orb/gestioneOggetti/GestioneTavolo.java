@@ -50,7 +50,7 @@ public class GestioneTavolo{
 	 */
 	public TreeNodeTavolo aggiungiTavolo(	int idTenant, 
 											String nome, 
-											String stato,
+											StatoTavoloEnum stato,
 											String descrizione, 
 											int numposti,
 											boolean enabled,
@@ -62,10 +62,7 @@ public class GestioneTavolo{
 		tavolo.setNome(nome);
 		tavolo.setDescrizione(descrizione);
 		tavolo.setEnabled(enabled);
-		
-		// TODO Sistemare lo stato del tavolo che viene sempre passato come null
 		tavolo.setStato(StatoTavoloEnum.LIBERO);
-		
 		tavolo.setNumposti(numposti);
 		
 		Area area = em.find(Area.class, idArea);
@@ -107,6 +104,7 @@ public class GestioneTavolo{
 			
 			Tavolo tavolo = em.find(Tavolo.class, idTavolo);
 			
+			System.out.println("Looking for " + idTavolo);
 			if(tavolo == null)
 				throw new DatabaseException("Errore durante la ricerca del tavolo da aggiornare");
 		
@@ -117,7 +115,7 @@ public class GestioneTavolo{
 			tavolo.setEnabled(enabled);
 			tavolo.setAreaAppartenenza(tavolo.getAreaAppartenenza());
 			tavolo.setNumposti(numposti);
-			
+						
 			return new TreeNodeTavolo(tavolo);
 			
 		}catch(Exception e) {
