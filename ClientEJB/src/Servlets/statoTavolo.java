@@ -30,8 +30,7 @@ import com.restaurant.StatoTavolo;
 public class statoTavolo extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private int idTenant = -1;
-	@EJB
- 	private GestioneTavolo gestioneTavolo;
+	@EJB	private GestioneTavolo	gestioneTavolo;
 
     /**
      * Default constructor. 

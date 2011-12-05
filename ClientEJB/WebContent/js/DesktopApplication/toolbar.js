@@ -47,8 +47,7 @@ function get_main_toolbar(){
 		                   xtype: 'button',
 		                   text: 'LogOut'
 		               }
-		]/*,
-		renderTo: Ext.getBody()*/
+		]
 	});
 	return tmp;
 }

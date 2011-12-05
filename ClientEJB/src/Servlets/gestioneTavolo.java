@@ -1,9 +1,7 @@
 package Servlets;
 
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -16,13 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import sun.org.mozilla.javascript.internal.IdScriptableObject;
+
 import Utilita.JSONFromBean;
 import Utilita.JSONResponse;
 
 import com.exceptions.DatabaseException;
-import com.orb.Area;
-import com.orb.Piano;
-import com.orb.Tavolo;
 import com.orb.gestioneOggetti.GestioneArea;
 import com.orb.gestioneOggetti.GestionePiano;
 import com.orb.gestioneOggetti.GestioneTavolo;
@@ -30,21 +27,19 @@ import com.restaurant.TreeNodeArea;
 import com.restaurant.TreeNodePiano;
 import com.restaurant.TreeNodeTavolo;
 
-
 /**
  * Servlet implementation class gestioneTavolo
  */
 @WebServlet("/gestioneTavolo")
 public class gestioneTavolo extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	@EJB
- 	private GestionePiano gestionePiano;
-	@EJB
-	private GestioneArea gestioneArea;
-	@EJB
-	private GestioneTavolo gestioneTavolo;
-	
 	private int idTenant = -1;
+	
+	@EJB	private GestionePiano	gestionePiano;
+	@EJB	private GestioneArea	gestioneArea;
+	@EJB	private GestioneTavolo	gestioneTavolo;
+	
+	
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -61,6 +56,7 @@ public class gestioneTavolo extends HttpServlet {
 		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
 			return;
 		}
+		
 		idTenant = (Integer) request.getSession().getAttribute("idTenant");
 		JSONArray json_array = new JSONArray();
 		JSONObject json_out = new JSONObject();
@@ -125,7 +121,6 @@ public class gestioneTavolo extends HttpServlet {
 		//Mando in output i dati
 		JSONResponse.WriteOutput(response, true, "OK","data",json_array);
 	}
-	
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -136,142 +131,137 @@ public class gestioneTavolo extends HttpServlet {
 			return;
 		}
 		
-		String nome = request.getParameter("nome");
-		String enabledS = request.getParameter("enabled");
-		boolean enabled;
-		if(enabledS.equals("on")) enabled = true; else enabled = false;
-		String numPosti = request.getParameter("numPosti");
-		String numeroPiano = request.getParameter("numeroPiano");
-		String descrizione = request.getParameter("descrizione");
-		
 		idTenant = (Integer) request.getSession().getAttribute("idTenant");
 		JSONArray json_array = new JSONArray();
 		JSONObject json_tmp = null;
 		int tipo = Integer.parseInt( request.getParameter("tipo") );
-		String query = null;
-		TreeNodePiano piano = null;
-		TreeNodeArea area = null;
-		TreeNodeTavolo tavolo = null;
-		switch(tipo){
-			case 1: {//Aggiungi piano
-				int intNumeroPiano = 0;
-				try {
-					try{
-						intNumeroPiano = Integer.parseInt(numeroPiano);
-					}catch(Exception e){
-						intNumeroPiano = 0;
+		boolean enabled = Boolean.parseBoolean( request.getParameter("enabled") );
+		String nome = request.getParameter("nome");
+		String descrizione = request.getParameter("descrizione");
+		
+		if(request.getParameter("action").equals("update")){
+			int id = Integer.parseInt( request.getParameter("id").substring(1) );
+			switch(tipo){
+				case 1:{
+					
+					break;
+				}
+				case 2:{
+					break;
+				}
+				case 3:{
+					try {
+						TreeNodeTavolo treeNodeTavolo = gestioneTavolo.updateTavolo(id, Integer.parseInt(request.getParameter("numPosti")), nome, descrizione, "Libero", enabled);
+						json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(treeNodeTavolo);
+						json_tmp.put("parentId", request.getParameter("parentId"));
+						json_array.put(json_tmp);
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (DatabaseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 					
-					piano = gestionePiano.aggiungiPiano(idTenant, intNumeroPiano, nome, descrizione, enabled);
-					json_tmp	=	JSONFromBean.jsonFromTreeNodePiano(piano);
-					//json_tmp.put("parentId, );
-					json_array.put( json_tmp );
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (DatabaseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					break;
 				}
+				default: return;
+			}
+			JSONResponse.WriteOutput(response, true, "Modifiche effettuate correttamente!","data",json_array);
+			return;
+			
+		}else if(request.getParameter("action").equals("delete")){
+			String sid = request.getParameter("id");
+			int id = Integer.parseInt( sid.substring(1) );
+			
+			if(sid.startsWith("P")){
 				
-				break;
-			}
-			case 2: {//Aggiungi area
-				try {
-					area = gestioneArea.aggiungiArea(idTenant, request.getParameter("nome"), request.getParameter("descrizione"), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
-					json_tmp	=	JSONFromBean.jsonFromTreeNodeArea(area);
-					json_tmp.put("parentId", request.getParameter("parentId").substring(1));
-					json_array.put(	json_tmp );
+			}else if(sid.startsWith("A")){
 				
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (DatabaseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+			}else if(sid.startsWith("T")){
+				
 			}
-			case 3: {//Aggiungi tavolo
-				try {
-					tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), request.getParameter("stato"), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("numPosti")), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
-					json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
-					json_tmp.put("parentId", request.getParameter("parentId").substring(1));
-					json_array.put(	json_tmp );
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (DatabaseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			
+			JSONResponse.WriteOutput(response, true, "Elemento cancellato correttamente!","data",json_array);
+			return;
+			
+		}else if(request.getParameter("action").equals("create")){
+			//ADD
+			
+			String numPosti = request.getParameter("numPosti");
+			String numeroPiano = request.getParameter("numeroPiano");
+			
+			
+			String query = null;
+			TreeNodePiano piano = null;
+			TreeNodeArea area = null;
+			TreeNodeTavolo tavolo = null;
+			switch(tipo){
+				case 1: {//Aggiungi piano
+					int intNumeroPiano = 0;
+					try {
+						try{
+							intNumeroPiano = Integer.parseInt(numeroPiano);
+						}catch(Exception e){
+							intNumeroPiano = 0;
+						}
+						
+						piano = gestionePiano.aggiungiPiano(idTenant, intNumeroPiano, nome, descrizione, enabled);
+						json_tmp	=	JSONFromBean.jsonFromTreeNodePiano(piano);
+						//json_tmp.put("parentId, );
+						json_array.put( json_tmp );
+						
+						
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (DatabaseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					break;
 				}
-				break;
+				case 2: {//Aggiungi area
+					try {
+						area = gestioneArea.aggiungiArea(idTenant, request.getParameter("nome"), request.getParameter("descrizione"), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
+						json_tmp	=	JSONFromBean.jsonFromTreeNodeArea(area);
+						json_tmp.put("parentId", request.getParameter("parentId").substring(1));
+						json_array.put(	json_tmp );
+					
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (DatabaseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+				}
+				case 3: {//Aggiungi tavolo
+					try {
+						tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), request.getParameter("stato"), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("numPosti")), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
+						json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
+						json_tmp.put("parentId", request.getParameter("parentId").substring(1));
+						json_array.put(	json_tmp );
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (DatabaseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+				}
+				default: return;
 			}
-			default: return;
-		}
-		
-		//Mando in output i dati
-		JSONResponse.WriteOutput(response, true, "Inserimento effettuato correttamente","data",json_array);
-	}
-
-	/**
-	 * @see HttpServlet#doPut(HttpServletRequest, HttpServletResponse)
-	 */
-	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("PUTTTT");
-		
-		//Controllo dei privilegi di accesso
-		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+			//Mando in output i dati
+			JSONResponse.WriteOutput(response, true, "Inserimento effettuato correttamente","data",json_array);
 			return;
 		}
-		//Modifico i dati
-		int tipo = Integer.parseInt(request.getParameter("tipo"));
-		boolean enabled = true;
-		if(request.getParameter("enabled").equals("on")){
-			enabled = true;
-		}else{
-			enabled = false;
-		}
-		switch(tipo){
-			case 1:{
-				//gestionePiano.
-				break;
-			}
-			case 2:{
-				//gestioneArea.
-				break;
-			}
-			case 3:{
-				TreeNodeTavolo treeNodeTavolo = null;
-				try {
-					treeNodeTavolo = gestioneTavolo.updateTavolo(Integer.parseInt(request.getParameter("id").substring(1)), Integer.parseInt(request.getParameter("numPosti")), request.getParameter("nome"), request.getParameter("descrizione"), request.getParameter("stato"), enabled);
-					//gestioneTavolo.updateTavolo(Integer.parseInt(request.getParameter("id").substring(1)), request.getParameter("nome"), request.getParameter("descrizione"), request.getParameter("stato"), enabled);
-				} catch (NumberFormatException e) {
-					JSONResponse.WriteOutput(response, false,"NumberFormatException");
-					e.printStackTrace();
-				} catch (DatabaseException e) {
-					JSONResponse.WriteOutput(response, false,"DatabaseException");
-					e.printStackTrace();
-				}
-				JSONArray json_array = new JSONArray();
-				JSONObject json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(treeNodeTavolo);
-				json_tmp.put("parentId",request.getParameter("parentId"));
-				json_array.put(json_tmp);
-				JSONResponse.WriteOutput(response, true, "Modifiche effettuate correttamente", "data", json_array);
-				break;
-			}
-		}
 		
-	}
-
-	/**
-	 * @see HttpServlet#doDelete(HttpServletRequest, HttpServletResponse)
-	 */
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//Controllo dei privilegi di accesso
-		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
-			return;
-		}
+		//Caso del delete di default del datasource
+		JSONResponse.WriteOutput(response, true, "OK");
 	}
 
 }

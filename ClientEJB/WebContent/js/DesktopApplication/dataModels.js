@@ -5,6 +5,7 @@ Ext.define('Ext.data.writer.SinglePost', {
     alias: 'writer.singlepost',
 
     writeRecords: function(request, data) {
+    	data[0].action = request.params.action;
         request.params = data[0];
         return request;
     }
@@ -99,25 +100,31 @@ Ext.define('StatoCuoco', {
 Ext.define('nodoGestioneTavolo', {
     /*extend: 'Ext.data.NodeInterface',*/
 	extend: 'Ext.data.Model',
-    fields: ['id','realId','parentId','realParentId','nome','descrizione','numeroPiano','tipo','enabled','numPosti','stato','text','idPiano','idArea','idTavolo'],
+    fields: ['id','parentId','nome','descrizione','numeroPiano','tipo','enabled','numPosti','stato','text'],
     store: Ext.getStore('datastore_gestione_tavolo'),
     proxy: {
         type: 'rest',
         url : 'gestioneTavolo',
+        //url : 'services/gestioneTavolo',
+        appendId : false,
         writer: {
-            type: 'singlepost'
+        	//type: 'json'
+        		type: 'singlepost'/*,
+            	encode: false,
+                writeAllFields: true,
+                listful: true*/
         },
 		reader: {
 	        type: 'json',
 	        idProperty: 'id',
 	        root: 'data'
-	    }/*,
+	    },
 	    actionMethods : {
             create : 'POST',
             read   : 'GET',
-            update : 'PUT',
-            destroy: 'DELETE'
-        }*/
+            update : 'POST',
+            destroy: 'POST'
+        }
     }
 });
 

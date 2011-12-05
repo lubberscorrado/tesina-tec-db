@@ -8,6 +8,8 @@ var _viewPort_panel_west;
 /* Funzione main */
 var desktop_main = function desktop_main(){
 	
+	document.getElementById('center').innerHTML = '';
+	
 	/* Genero la Toolbar */
 	_toolbar = get_main_toolbar();
 	

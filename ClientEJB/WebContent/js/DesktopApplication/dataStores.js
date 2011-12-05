@@ -52,6 +52,9 @@ Ext.create('Ext.data.TreeStore', {
 		},
 		append: function( thisNode, newChildNode, index, eOpts ) {
 			console.debug('Append: depth='+newChildNode.get('depth')+' id='+newChildNode.get('id')+'\t\tparentId='+newChildNode.get('parentId')+'\t\ttext='+newChildNode.get('text')+'\t\tdescrizione='+newChildNode.get('descrizione'));
+		},
+		update: function( thisStore, record, operation, eOpts ){
+			console.debug('UPDATE');
 		}
     }
 });

@@ -373,7 +373,21 @@ var _mainTabPanel = {
 			                        			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
 			                            	}
 			                            },
-			                            {text: 'Rimuovi piano'}
+			                            {
+			                            	text: 'Rimuovi piano',
+			                            	handler: function(){
+			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                            		lastSelected.destroy({
+			        			                    params : {
+			        			                    	action : 'delete'
+			        			                    },
+			        			                    success : function(record) {
+			        			                        console.debug('CANCELLATOOO');
+			        			                        //form.updateRecord(record);// selectedNode.commit();
+			        			                    }
+			        			                });
+			                            	}
+			                            }
 			                        ]
 			                    });
 		                	}else if(depth == 2){
@@ -522,6 +536,9 @@ var _mainTabPanel = {
 			            if (form.isValid()) {
 			                // Submit the Ajax request and handle the response
 			                form.submit({
+			                	params : {
+			                    	action : 'create'
+			                    },
 			                    success: function(form, action) {
 			                    	Ext.getCmp('window_inserimentoNodoGestioneTavolo').destroy();
 			                    	var parentId = null;
@@ -677,9 +694,17 @@ var _mainTabPanel = {
 			                        Ext.Msg.alert('Failed', action.result.msg);
 			                    }
 			                });*/
-			                form.updateRecord(selectedNode);
-			                selectedNode.save();
-			                //form.
+			                
+			                //selectedNode.save({extraParams : { azione: 'update'}}); 
+			                selectedNode.save({
+			                    params : {
+			                    	action : 'update'
+			                    },
+			                    success : function(record) {
+			                        console.debug('VIVAAAA');
+			                        form.updateRecord(record);// selectedNode.commit();
+			                    }
+			                });
 			            }
 			        }
 			    }]
