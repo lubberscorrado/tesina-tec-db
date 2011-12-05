@@ -514,6 +514,7 @@ var _mainTabPanel = {
 			        fieldLabel: 'Numero piano',
 			        name: 'numeroPiano'
 			    },{
+			    	xtype: 'numberfield',
 			        fieldLabel: 'NumPosti',
 			        name: 'numPosti'
 			    },{
@@ -661,6 +662,7 @@ var _mainTabPanel = {
 			        name: 'numeroPiano',
 			        hidden: true
 			    },{
+			    	xtype: 'numberfield',
 			        fieldLabel: 'NumPosti',
 			        name: 'numPosti',
 			        hidden: true
@@ -709,7 +711,7 @@ var _mainTabPanel = {
 			                       updatedNode.set('descrizione',action.result.data[0].descrizione);
 			                       updatedNode.set('tipo',action.result.data[0].tipo);
 			                       updatedNode.set('numPosti',action.result.data[0].numPosti);
-			                       if(action.result.data[0].enabled == 'true'){
+			                       if(action.result.data[0].enabled == true){
 			                    	   updatedNode.set('enabled','on');
 			                       }else{
 			                    	   updatedNode.set('enabled','off');
@@ -720,27 +722,10 @@ var _mainTabPanel = {
 			                        Ext.Msg.alert('Failed', action.result.message);
 			                    }
 			                });
-			                
-			                //selectedNode.save({extraParams : { azione: 'update'}}); 
-			            	//form.updateRecord(record, action);
-			                /*selectedNode.save({
-			                    params : {
-			                    	action : 'update'
-			                    },
-			                    success : function(record, action) {
-			                    	console.debug('LOVE ME LOVE YOU'+record.result.message+' - '+action.result.message);
-			                    	Ext.Msg.alert('Success', action.result.message);
-			                        //form.updateRecord(record, action);// selectedNode.commit();
-			                        
-			                    },
-			                    failure: function(record) {
-			                        Ext.Msg.alert('Failed', action.result.message);
-			                    }
-			                });*/
 			            }
 			        }
 			    }]
-			});
+			});	//END FORM
 			
 			form_tmp.getForm().loadRecord(selectedNode);
 			

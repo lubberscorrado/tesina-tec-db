@@ -63,9 +63,11 @@ public class gestioneTavolo extends HttpServlet {
 		JSONObject json_out = new JSONObject();
 		JSONObject json_tmp = null;
 		
-		//PIANI
-		if(request.getParameter("node").equals("root")){
-			try {
+		try {
+		
+			//PIANI
+			if(request.getParameter("node").equals("root")){
+			
 				List<TreeNodePiano> lista_piani = gestionePiano.getPiani(idTenant);
 				TreeNodePiano piano = null;
 				if(lista_piani != null){
@@ -76,19 +78,11 @@ public class gestioneTavolo extends HttpServlet {
 				}
 				JSONResponse.WriteOutput(response, true, "OK","data",json_array);
 				return;
-			} catch (DatabaseException e) {
-				JSONResponse.WriteOutput(response, false, e.toString());
-				e.printStackTrace();
-				return;
-			} catch (Exception e){
-				JSONResponse.WriteOutput(response, false, "Parsing error.");
-				return;
-			}
 			
-		//AREE
-		}else if (request.getParameter("node").startsWith("P")){
 			
-			try {
+			//AREE
+			}else if (request.getParameter("node").startsWith("P")){
+			
 				int idPiano = Integer.parseInt( request.getParameter("node").substring(1) );
 				List<TreeNodeArea> lista_aree = gestioneArea.getAreeByPiano( idPiano );
 				TreeNodeArea area = null;
@@ -102,19 +96,11 @@ public class gestioneTavolo extends HttpServlet {
 				}
 				JSONResponse.WriteOutput(response, true, "OK","data",json_array);
 				return;
-			} catch (DatabaseException e) {
-				e.printStackTrace();
-				JSONResponse.WriteOutput(response, false, e.toString());
-				return;
-			} catch (Exception e){
-				JSONResponse.WriteOutput(response, false, "Parsing error.");
-				return;
-			}
 			
 			
-		//TAVOLI
-		}else if (request.getParameter("node").startsWith("A")){
-			try {
+			//TAVOLI
+			}else if (request.getParameter("node").startsWith("A")){
+			
 				int idArea = Integer.parseInt( request.getParameter("node").substring(1) );
 				List<TreeNodeTavolo> lista_tavoli = gestioneTavolo.getTavoloByArea(idArea);
 				TreeNodeTavolo tavolo = null;
@@ -129,18 +115,19 @@ public class gestioneTavolo extends HttpServlet {
 				JSONResponse.WriteOutput(response, true, "OK","data",json_array);
 				return;
 				
-			} catch (DatabaseException e) {
-				JSONResponse.WriteOutput(response, false, e.toString());
-				e.printStackTrace();
-				return;
-			} catch (Exception e){
-				JSONResponse.WriteOutput(response, false, "Parsing error.");
-				return;
 			}
-		}
 		
-		//Mando in output i dati
-		JSONResponse.WriteOutput(response, true, "OK","data",json_array);
+			//Mando in output i dati
+			JSONResponse.WriteOutput(response, true, "OK","data",json_array);
+		
+		} catch (DatabaseException e) {
+			JSONResponse.WriteOutput(response, false, e.toString());
+			e.printStackTrace();
+			return;
+		} catch (Exception e){
+			JSONResponse.WriteOutput(response, false, "Parsing error.");
+			return;
+		}
 	}
 
 	/**
@@ -157,11 +144,17 @@ public class gestioneTavolo extends HttpServlet {
 		JSONObject json_tmp = null;
 		String nome = null;
 		String descrizione = null;
+		String enabledS = null;
 		boolean enabled;
 		int tipo = 0;
 		try{
 			tipo = Integer.parseInt( request.getParameter("tipo") );
-			enabled = Boolean.parseBoolean( request.getParameter("enabled") );
+			enabledS = request.getParameter("enabled");
+			if( enabledS == null || enabledS.equals("false") || enabledS.equals("off")){
+				enabled = false;
+			}else{
+				enabled = true;
+			}
 			nome = request.getParameter("nome");
 			descrizione = request.getParameter("descrizione");
 		}catch(Exception e){

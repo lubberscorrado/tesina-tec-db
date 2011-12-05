@@ -23,7 +23,7 @@ Ext.create('Ext.data.TreeStore', {
 		beforeappend: function( thisNode, newChildNode, eOpts ){
 			
 			var tipo = newChildNode.get('tipo');
-			if( newChildNode.get('enabled') == 'true' ){
+			if( newChildNode.get('enabled') == 'on' || newChildNode.get('enabled') == true ){
 				newChildNode.set('enabled','on');
 				console.debug('ENABLED ON');
 			} else {
