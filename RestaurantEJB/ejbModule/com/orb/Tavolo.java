@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -39,7 +41,8 @@ public class Tavolo {
 	private boolean enabled;
 	
 	@Column(name="stato")
-	private String stato;
+	@Enumerated(EnumType.STRING)
+	private StatoTavoloEnum stato;
 
 	@Column(name="idTenant")
 	private int idTenant;
@@ -60,7 +63,7 @@ public class Tavolo {
 	public Tavolo(	String nome, 
 					String descrizione,
 					boolean enabled, 
-					String stato, 
+					StatoTavoloEnum stato, 
 					int idTenant,
 					Area areaAppartenenza) {
 		super();
@@ -123,11 +126,11 @@ public class Tavolo {
 		this.listaPrenotazioni = listaPrenotazioni;
 	}
 
-	public String isStato() {
+	public StatoTavoloEnum isStato() {
 		return stato;
 	}
 
-	public void setStato(String stato) {
+	public void setStato(StatoTavoloEnum stato) {
 		this.stato = stato;
 	}
 
@@ -155,7 +158,7 @@ public class Tavolo {
 		this.listaPrenotazioni = listPrenotazioni;
 	}
 
-	public String getStato() {
+	public StatoTavoloEnum getStato() {
 		return stato;
 	}
 

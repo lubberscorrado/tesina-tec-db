@@ -56,9 +56,10 @@ public class GestionePiano {
 	 * @param idTenant Id del cliente
 	 * @return Lista di oggetti TreeNodePiano che incapsulano le informazioni
 	 * sui piani.
+	 * @throws DatabaseException 
 	 */
 	
-	public List<TreeNodePiano> getPiani(int idTenant) {
+	public List<TreeNodePiano> getPiani(int idTenant) throws DatabaseException {
 		
 		Query query = em.createNamedQuery("getPiani");
 		query.setParameter("idTenant", idTenant);
@@ -68,27 +69,15 @@ public class GestionePiano {
 		try {
 			listaPiano = (List<Piano>)query.getResultList();
 		} catch (Exception e) {
-			System.out.println("Errore durante l'acquisizione dei piani (" + e.getMessage() +")");
-			return null;
+			throw new DatabaseException("Errore durante l'acquisizione dei piani (" + e.toString() + ")");
 		}
-		
+				
 		List<TreeNodePiano> listaTreeNodePiano = new ArrayList<TreeNodePiano>();
-		
-		
 		Iterator<Piano> it = listaPiano.iterator();
 		
 		while(it.hasNext()) {
 			Piano piano = it.next();
-			
 			listaTreeNodePiano.add(new TreeNodePiano(piano));
-	
-		}
-		
-		try {
-			listaPiano = (List<Piano>)query.getResultList();
-		} catch (Exception e) {
-			System.out.println("Errore durante l'acquisizione dei piani (GestionePiano.getPiani)" + e.getMessage());
-			return null;
 		}
 		
 		return listaTreeNodePiano;

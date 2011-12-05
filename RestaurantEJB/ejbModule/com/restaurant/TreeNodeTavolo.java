@@ -30,7 +30,7 @@ public class TreeNodeTavolo {
 		this.nome = tavolo.getNome();
 		this.descrizione = tavolo.getDescrizione();
 		this.enabled = tavolo.isEnabled();
-		this.stato = tavolo.getStato();
+		this.stato = tavolo.getStato().toString();
 		this.idTenant = tavolo.getIdTenant();
 		this.numposti = tavolo.getNumposti();
 	}

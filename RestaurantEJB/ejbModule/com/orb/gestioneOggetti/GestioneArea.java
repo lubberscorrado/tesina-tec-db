@@ -73,32 +73,30 @@ public class GestioneArea{
 	 * @throws DatabaseException Eccezione di errore durante l'accesso al database
 	 */
 	
+	// TODO Forzare il fetch con una query FETCH per ottenere le aree di un piano in un' unica query?
+	
 	public List<TreeNodeArea> getAreeByPiano(int idPiano) throws DatabaseException {
-		
-		Piano piano = em.find(Piano.class, idPiano);
-		
-		if(piano == null)
-			throw new DatabaseException("Impossibile trovare il piano");
-		
-		List<Area> listaAree;
-		
+	
 		try {
-			listaAree = piano.getAree();
+			
+			Piano piano = em.find(Piano.class, idPiano);
+			if(piano == null)
+				throw new DatabaseException("Impossibile trovare il piano");
+			
+			List<Area> listaAree = piano.getAree();
+			List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
+			Iterator<Area> it = listaAree.iterator();
+			
+			while(it.hasNext()) {
+				Area area = it.next();
+				listaTreeNodeArea.add(new TreeNodeArea(area));
+			}
+			
+			return listaTreeNodeArea;
+				
 		} catch(Exception e) {
 			throw new DatabaseException("Impossibile ottenere le aree associate al piano " +
 										"(" + e.toString()+")");
 		}
-		
-		List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
-		Iterator<Area> it = listaAree.iterator();
-		
-		while(it.hasNext()) {
-			
-			Area area = it.next();
-			listaTreeNodeArea.add(new TreeNodeArea(area));
-		}
-		return listaTreeNodeArea;
 	}
-	
-	
 }

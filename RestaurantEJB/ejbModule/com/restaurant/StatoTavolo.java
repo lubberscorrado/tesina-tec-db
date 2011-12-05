@@ -24,7 +24,7 @@ public class StatoTavolo {
 		this.numeroPiano = p.getNumero();
 		this.nomeArea = a.getNome();
 		this.numPosti = t.getNumposti();
-		this.statoTavolo = t.getStato();
+		this.statoTavolo = t.getStato().toString();
 		
 		/* Setto il cameriere associato al tavolo solo se non è nullo */
 		if(u != null)

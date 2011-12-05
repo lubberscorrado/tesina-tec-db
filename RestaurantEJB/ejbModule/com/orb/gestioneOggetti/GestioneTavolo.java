@@ -3,8 +3,6 @@ package com.orb.gestioneOggetti;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -20,10 +18,12 @@ import com.orb.Area;
 import com.orb.Piano;
 import com.orb.Prenotazione;
 import com.orb.Tavolo;
+import com.orb.StatoTavoloEnum;
 import com.orb.UtentePersonale;
 import com.restaurant.StatoTavolo;
 import com.restaurant.TreeNodeArea;
 import com.restaurant.TreeNodeTavolo;
+
 
 @SuppressWarnings("unchecked")
 @Stateless
@@ -35,6 +35,19 @@ public class GestioneTavolo{
 		
 	public GestioneTavolo() {}
 	
+	
+	/**
+	 * Aggiunge un tavolo per un determinato cliente
+	 * @param idTenant Id del cliente
+	 * @param nome Nome del tavolo
+	 * @param stato Stato del tavolo
+	 * @param descrizione Descrizione del tavolo
+	 * @param numposti Numero di posti
+	 * @param enabled Flag che indica se il tavolo è attivo
+	 * @param idArea Id dell'area a cui appartiene il tavolo
+	 * @return Oggetto TreeNodeTavolo che rappresenta il tavolo appena creato
+	 * @throws DatabaseException
+	 */
 	public TreeNodeTavolo aggiungiTavolo(	int idTenant, 
 											String nome, 
 											String stato,
@@ -43,18 +56,15 @@ public class GestioneTavolo{
 											boolean enabled,
 											int idArea) throws DatabaseException {
 		
-		// TODO Controllare i valori null dei tavoli
-		
+		// TODO Controllare che i valori passati non siano null
 		Tavolo tavolo = new Tavolo();
 		tavolo.setIdTenant(idTenant);
 		tavolo.setNome(nome);
 		tavolo.setDescrizione(descrizione);
 		tavolo.setEnabled(enabled);
 		
-		if(stato != null)
-			tavolo.setStato(stato);
-		else
-			tavolo.setStato("Libero");
+		// TODO Sistemare lo stato del tavolo che viene sempre passato come null
+		tavolo.setStato(StatoTavoloEnum.LIBERO);
 		
 		tavolo.setNumposti(numposti);
 		
@@ -74,7 +84,17 @@ public class GestioneTavolo{
 		return new TreeNodeTavolo(tavolo);
 	}
 	
-	
+	/**
+	 * Modifica le informazioni di un tavolo a partire dal suo id.
+	 * @param idTavolo Id del tavolo da modificare
+	 * @param numposti Numero dei posti del tavolo
+	 * @param nome Nome del tavolo
+	 * @param descrizione Descrizione del tavolo
+	 * @param stato Stato del tavolo
+	 * @param enabled Flag di attivazione 
+	 * @return Oggetto TreeNodeTavolo che rappresenta il tavolo modificato
+	 * @throws DatabaseException
+	 */
 	
 	public TreeNodeTavolo updateTavolo(	int idTavolo,
 										int numposti,
@@ -93,12 +113,10 @@ public class GestioneTavolo{
 			tavolo.setIdTenant(tavolo.getIdTenant());
 			tavolo.setNome(nome);
 			tavolo.setDescrizione(descrizione);
-			tavolo.setStato(stato);
+			tavolo.setStato(StatoTavoloEnum.valueOf(stato.toUpperCase()));
 			tavolo.setEnabled(enabled);
 			tavolo.setAreaAppartenenza(tavolo.getAreaAppartenenza());
 			tavolo.setNumposti(numposti);
-			
-			em.persist(tavolo);
 			
 			return new TreeNodeTavolo(tavolo);
 			
@@ -109,6 +127,25 @@ public class GestioneTavolo{
 		}
 	}
 	
+	/**
+	 * Elimina una taovlo a partire dall'id
+	 * @param idTavolo Id del tavolo da eliminare dal database
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore che si è
+	 * verificato
+	 */
+	public void deleteTavolo(int idTavolo) throws DatabaseException {
+		
+		try {
+			Tavolo tavolo = em.find(Tavolo.class, idTavolo);
+			if(tavolo == null)
+				throw new DatabaseException("Errore durante la ricerca del tavolo");
+			em.remove(tavolo);
+		} catch (Exception e) {
+			throw new DatabaseException("Errore durante l'eliminazione del tavolo ("+ e.toString() +")" );
+		}
+	}
+	
+	
 	/** 
 	 * Ritorna lo stato di tutti i tavoli a partire dall'id del cliente. Non richiede
 	 * l'attivazione di una transazione da parte del container (AUTOCOMMIT lasciato di default a 1)
@@ -116,7 +153,7 @@ public class GestioneTavolo{
 	 * @param idTenant Id del cliente
 	 * @return Lista di oggetti StatoTavolo che incapsulano le informazioni
 	 *  sullo stato di un tavolo
-	 * @throws DatabaseException Oggetto di eccezione che incapsula le informazioni
+	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'errore che si è verificato.
 	 */
 	@TransactionAttribute(TransactionAttributeType.NEVER)
@@ -143,26 +180,21 @@ public class GestioneTavolo{
 		
 		Iterator<Tavolo> it = listTavoli.iterator();
 		List<StatoTavolo> listaStatoTavolo = new ArrayList<StatoTavolo>();
-	
 		Area area;
 		Piano piano;
 		
 		while(it.hasNext()) {
 			
 			Tavolo tavolo = it.next();
-			
 			try {
-				
 				area = tavolo.getAreaAppartenenza();
 				piano = area.getPianoAppartenenza();
-				
 			} catch(Exception e) {
 				throw new DatabaseException("Errore durante la ricerca dei piani e delle aree " +
 											"(" + e.toString() + ")");
 			}
 			
 			//TODO Verificare la correttezza della query
-			
 			/* Reupero il cameriere associato al tavolo */
 			Query queryCameriere = em.createQuery(	"SELECT u FROM UtentePersonale u " +
 													"LEFT JOIN u.conti c " +
@@ -180,16 +212,11 @@ public class GestioneTavolo{
 											"al tavolo (" + e.toString() + ")");
 			}
 			
-			// TODO getResultList non dovrebbe ritornare null, verificare 
-			
 			if(listaCamerieri.size() == 0) {
 				/* Al tavolo non è associato alcun cameriere, probabilmente poichè non c'è 
 				 * alcun conto aperto */
-				
 				listaStatoTavolo.add(new StatoTavolo(tavolo, area, piano, null));
-			
 			}else {
-			
 				if(listaCamerieri.size()> 1)
 					System.out.println(	"WARNING: Ad un unico tavolo sono associati più camerieri, " +
 										"non sono stati probabilmente chiusi conti precedenti");
@@ -201,7 +228,6 @@ public class GestioneTavolo{
 														piano, 
 														listaCamerieri.get(listaCamerieri.size() - 1)));
 			}
-			
 		}
 		
 		return listaStatoTavolo;
@@ -212,12 +238,14 @@ public class GestioneTavolo{
 	 * Ritorna la lista dei tavoli associati ad una certa area. I tavoli sono 
 	 * lazy fetched quindi è necessario che l'entità area rimanda attached 
 	 * al persistence contex (l'entity manager è transaction scoped). Se una transazione
-	 * JTA non è avvita, l'entità area diventa subito detached.
+	 * JTA non è avviata, l'entità area diventa subito detached.
 	 * @param idArea Id dell'area della quale si vogliono ottenere i tavoli
 	 * @return Lista di oggetti TreeNodeTavolo che incapsulano le informazioni su
 	 * un tavolo
 	 * @throws DatabaseException Generica eccezione durante le operazioni sul database
 	 */
+	
+	// TODO Verificare se forzare l'acquisizione dei tavolo con un FETCH JOIN
 	
 	public List<TreeNodeTavolo> getTavoloByArea(int idArea) throws DatabaseException {
 		
