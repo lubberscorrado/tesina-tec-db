@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, LoginActivity!</string>
+    <string name="app_name">RestaurantAndroid</string>
+    <string name="example_name">Questo è un elemento</string>
+
+    <!-- ListView Example -->
+    <string name="create_test_activity_title">Choose your next test</string>
+    <string name="create_test_activity_help_button">Help</string>
+    <string name="customize_test_type_prompt">Set Exam Type</string>
+    <string name="customize_test_time_prompt">Set Question Type</string>
+</resources>
