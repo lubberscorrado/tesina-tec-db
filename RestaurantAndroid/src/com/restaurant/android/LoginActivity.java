@@ -76,7 +76,10 @@ public class LoginActivity extends Activity {
 		  		}
 		  	}
 		  });
-		        btnCancel.setOnClickListener(new OnClickListener() {
+		  
+        
+        /* Se clicco su "Cancel", esce */
+          btnCancel.setOnClickListener(new OnClickListener() {
 		  	@Override
 		  	public void onClick(View v) {
 		  		// Close the application
