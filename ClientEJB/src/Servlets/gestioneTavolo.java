@@ -20,6 +20,7 @@ import Utilita.JSONFromBean;
 import Utilita.JSONResponse;
 
 import com.exceptions.DatabaseException;
+import com.orb.StatoTavoloEnum;
 import com.orb.gestioneOggetti.GestioneArea;
 import com.orb.gestioneOggetti.GestionePiano;
 import com.orb.gestioneOggetti.GestioneTavolo;
@@ -73,6 +74,8 @@ public class gestioneTavolo extends HttpServlet {
 						json_array.put(	JSONFromBean.jsonFromTreeNodePiano(piano) );
 					}
 				}
+				JSONResponse.WriteOutput(response, true, "OK","data",json_array);
+				return;
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -97,6 +100,8 @@ public class gestioneTavolo extends HttpServlet {
 						json_array.put( json_tmp );
 					}
 				}
+				JSONResponse.WriteOutput(response, true, "OK","data",json_array);
+				return;
 			} catch (DatabaseException e) {
 				e.printStackTrace();
 				return;
@@ -120,6 +125,9 @@ public class gestioneTavolo extends HttpServlet {
 						json_array.put( json_tmp );
 					}
 				}
+				JSONResponse.WriteOutput(response, true, "OK","data",json_array);
+				return;
+				
 			} catch (DatabaseException e) {
 				json_out.put("success", false);
 				json_out.put("message","Eccezione caricamento tavoli");
@@ -166,7 +174,7 @@ public class gestioneTavolo extends HttpServlet {
 				}
 				case 3:{
 					try {
-						TreeNodeTavolo treeNodeTavolo = gestioneTavolo.updateTavolo(id, Integer.parseInt(request.getParameter("numPosti")), nome, descrizione, "Libero", enabled);
+						TreeNodeTavolo treeNodeTavolo = gestioneTavolo.updateTavolo(id, Integer.parseInt(request.getParameter("numPosti")), nome, descrizione, StatoTavoloEnum.LIBERO.toString(), enabled);
 						json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(treeNodeTavolo);
 						json_tmp.put("parentId", request.getParameter("parentId"));
 						json_array.put(json_tmp);
@@ -255,7 +263,7 @@ public class gestioneTavolo extends HttpServlet {
 				}
 				case 3: {//Aggiungi tavolo
 					try {
-						tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), "Libero", request.getParameter("descrizione"), Integer.parseInt(request.getParameter("numPosti")), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
+						tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), StatoTavoloEnum.LIBERO.toString(), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("numPosti")), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
 						json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
 						json_tmp.put("parentId", request.getParameter("parentId").substring(1));
 						json_array.put(	json_tmp );
