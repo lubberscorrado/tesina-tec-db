@@ -694,6 +694,27 @@ var _mainTabPanel = {
 			                    },
 			                    success: function(form, action) {
 			                       Ext.Msg.alert('Success', action.result.message);
+//			                       var node = Ext.getStore('datastore_gestione_tavolo').getNodeById( action.result.data[0].parentId );
+//			                       node.append(
+//			                    		   Ext.create('nodoGestioneTavolo',action.result.data[0])
+//			                       );
+
+			                       //			                       Ext.getStore('datastore_gestione_tavolo').load({params : {
+//				                    	node : action.result.data[0].parentId
+//				                    }});
+			                       
+			                       var updatedNode = Ext.getStore('datastore_gestione_tavolo').getNodeById( action.result.data[0].id );
+			                       updatedNode.set('nome',action.result.data[0].nome);
+			                       updatedNode.set('text',action.result.data[0].nome);
+			                       updatedNode.set('descrizione',action.result.data[0].descrizione);
+			                       updatedNode.set('tipo',action.result.data[0].tipo);
+			                       updatedNode.set('numPosti',action.result.data[0].numPosti);
+			                       if(action.result.data[0].enabled == 'true'){
+			                    	   updatedNode.set('enabled','on');
+			                       }else{
+			                    	   updatedNode.set('enabled','off');
+			                       }
+			                      
 			                    },
 			                    failure: function(form, action) {
 			                        Ext.Msg.alert('Failed', action.result.message);

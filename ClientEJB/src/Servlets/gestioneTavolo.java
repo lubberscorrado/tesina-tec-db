@@ -254,7 +254,7 @@ public class gestioneTavolo extends HttpServlet {
 					break;
 				}
 				case 3: {//Aggiungi tavolo
-					tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), StatoTavoloEnum.LIBERO.toString(), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("numPosti")), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
+					tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), StatoTavoloEnum.LIBERO, request.getParameter("descrizione"), Integer.parseInt(request.getParameter("numPosti")), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
 					json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
 					json_tmp.put("parentId", request.getParameter("parentId").substring(1));
 					json_array.put(	json_tmp );
