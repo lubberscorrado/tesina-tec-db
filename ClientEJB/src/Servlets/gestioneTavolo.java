@@ -77,7 +77,7 @@ public class gestioneTavolo extends HttpServlet {
 				JSONResponse.WriteOutput(response, true, "OK","data",json_array);
 				return;
 			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
+				JSONResponse.WriteOutput(response, false, e.toString());
 				e.printStackTrace();
 				return;
 			} catch (Exception e){
@@ -104,6 +104,7 @@ public class gestioneTavolo extends HttpServlet {
 				return;
 			} catch (DatabaseException e) {
 				e.printStackTrace();
+				JSONResponse.WriteOutput(response, false, e.toString());
 				return;
 			} catch (Exception e){
 				JSONResponse.WriteOutput(response, false, "Parsing error.");
@@ -129,11 +130,8 @@ public class gestioneTavolo extends HttpServlet {
 				return;
 				
 			} catch (DatabaseException e) {
-				json_out.put("success", false);
-				json_out.put("message","Eccezione caricamento tavoli");
-				response.getWriter().print(json_out);
+				JSONResponse.WriteOutput(response, false, e.toString());
 				e.printStackTrace();
-				System.err.println("ECCEZIONE: "+e.toString());
 				return;
 			} catch (Exception e){
 				JSONResponse.WriteOutput(response, false, "Parsing error.");
@@ -236,10 +234,10 @@ public class gestioneTavolo extends HttpServlet {
 						
 						
 					} catch (NumberFormatException e) {
-						// TODO Auto-generated catch block
+						JSONResponse.WriteOutput(response, false, e.toString());
 						e.printStackTrace();
 					} catch (DatabaseException e) {
-						// TODO Auto-generated catch block
+						JSONResponse.WriteOutput(response, false, e.toString());
 						e.printStackTrace();
 					}
 					
@@ -253,10 +251,10 @@ public class gestioneTavolo extends HttpServlet {
 						json_array.put(	json_tmp );
 					
 					} catch (NumberFormatException e) {
-						// TODO Auto-generated catch block
+						JSONResponse.WriteOutput(response, false, e.toString());
 						e.printStackTrace();
 					} catch (DatabaseException e) {
-						// TODO Auto-generated catch block
+						JSONResponse.WriteOutput(response, false, e.toString());
 						e.printStackTrace();
 					}
 					break;
@@ -268,10 +266,10 @@ public class gestioneTavolo extends HttpServlet {
 						json_tmp.put("parentId", request.getParameter("parentId").substring(1));
 						json_array.put(	json_tmp );
 					} catch (NumberFormatException e) {
-						// TODO Auto-generated catch block
+						JSONResponse.WriteOutput(response, false, e.toString());
 						e.printStackTrace();
 					} catch (DatabaseException e) {
-						// TODO Auto-generated catch block
+						JSONResponse.WriteOutput(response, false, e.toString());
 						e.printStackTrace();
 					}
 					break;

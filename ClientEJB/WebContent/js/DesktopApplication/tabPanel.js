@@ -382,8 +382,10 @@ var _mainTabPanel = {
 			        			                    	action : 'delete'
 			        			                    },
 			        			                    success : function(record) {
-			        			                        console.debug('CANCELLATOOO');
-			        			                        //form.updateRecord(record);// selectedNode.commit();
+			        			                    	Ext.Msg.alert('Success', action.result.message);
+			        			                    },
+			        			                    failure: function(form, action) {
+			        			                        Ext.Msg.alert('Failed', action.result.message);
 			        			                    }
 			        			                });
 			                            	}
@@ -701,8 +703,11 @@ var _mainTabPanel = {
 			                    	action : 'update'
 			                    },
 			                    success : function(record) {
-			                        console.debug('VIVAAAA');
+			                    	Ext.Msg.alert('Success', action.result.message);
 			                        form.updateRecord(record);// selectedNode.commit();
+			                    },
+			                    failure: function(form, action) {
+			                        Ext.Msg.alert('Failed', action.result.message);
 			                    }
 			                });
 			            }
