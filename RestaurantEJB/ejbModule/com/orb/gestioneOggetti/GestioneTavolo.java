@@ -100,7 +100,7 @@ public class GestioneTavolo{
 										int numposti,
 										String nome,
 										String descrizione,
-										String stato,
+										StatoTavoloEnum stato,
 										boolean enabled) throws DatabaseException {
 		
 		try {
@@ -113,7 +113,7 @@ public class GestioneTavolo{
 			tavolo.setIdTenant(tavolo.getIdTenant());
 			tavolo.setNome(nome);
 			tavolo.setDescrizione(descrizione);
-			tavolo.setStato(StatoTavoloEnum.valueOf(stato.toUpperCase()));
+			tavolo.setStato(stato);
 			tavolo.setEnabled(enabled);
 			tavolo.setAreaAppartenenza(tavolo.getAreaAppartenenza());
 			tavolo.setNumposti(numposti);
@@ -282,7 +282,7 @@ public class GestioneTavolo{
 			}
 		
 		}catch(Exception e) {
-			throw new DatabaseException("Errore durante la ricerca dei tavoli associati ad un area +" +
+			throw new DatabaseException("Errore durante la ricerca dei tavoli associati ad un area " +
 										"(" + e.getMessage() +")");
 		}
 		

@@ -11,9 +11,12 @@ import javax.persistence.Query;
 
 import com.exceptions.DatabaseException;
 import com.orb.Area;
+import com.orb.StatoTavoloEnum;
+import com.orb.Tavolo;
 
 import com.orb.Piano;
 import com.restaurant.TreeNodeArea;
+import com.restaurant.TreeNodeTavolo;
 
 @SuppressWarnings("unchecked") 
 @Stateless
@@ -54,18 +57,48 @@ public class GestioneArea{
 		return new TreeNodeArea(area);
 	}
 	
-//	public Area updateArea(TreeNodeArea newArea) {
-//		
-//		Area oldArea = em.find(Area.class, newArea.getIdArea());
-//		
-//		em.merge(area);
-//		return area;
-//	}
-	
-	public void deleteArea(Area area) {
-		em.remove(em.merge(area));
-	}
-	
+	/**
+	 * Modifica un'area a partire dal suo id
+	 * @param idArea Id dell'area da modificare
+	 * @param nome Nome modificato dell'area
+	 * @param descrizione Descrizione modificata dell'area
+	 * @param enabled Stato dell'area modificata
+	 * @return Oggetto TreeNodeArea che rappresenta la nuova area modificata
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
+	 */
+	 
+	 public TreeNodeArea updateArea(	int idArea,
+			 							String nome,
+										String descrizione,
+										boolean enabled) throws DatabaseException {
+			
+		
+		try {
+			
+			Area area = em.find(Area.class, idArea);
+			
+			if(area == null)
+				throw new DatabaseException("Errore durante la ricerca dell'area da aggiornare");
+		
+			area.setNome(nome);
+			area.setDescrizione(descrizione);
+			area.setEnabled(enabled);
+			
+			return new TreeNodeArea(area);
+			
+		}catch(Exception e) {
+			
+			throw new DatabaseException("Errore durante la modifica del tavolo (" +e.toString() +")");
+			
+		}
+	 }
+	 
+	 
+//	 public void deleteArea(int idArea) {
+//		 
+//	
+//	 }
+//	
 	/** 
 	 * Ritorna la lista delle aree associate ad un determinato piano
 	 * @param idPiano id del piano del quale si vuole ottenere la lista delle aree
