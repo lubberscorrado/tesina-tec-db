@@ -64,58 +64,73 @@ public class gestioneTavolo extends HttpServlet {
 		
 		//PIANI
 		if(request.getParameter("node").equals("root")){
-			List<TreeNodePiano> lista_piani = gestionePiano.getPiani(idTenant);
-			TreeNodePiano piano = null;
-			if(lista_piani != null){
-				for(int i=0; i<lista_piani.size();i++){
-					piano = lista_piani.get(i);
-					json_array.put(	JSONFromBean.jsonFromTreeNodePiano(piano) );
+			try {
+				List<TreeNodePiano> lista_piani = gestionePiano.getPiani(idTenant);
+				TreeNodePiano piano = null;
+				if(lista_piani != null){
+					for(int i=0; i<lista_piani.size();i++){
+						piano = lista_piani.get(i);
+						json_array.put(	JSONFromBean.jsonFromTreeNodePiano(piano) );
+					}
 				}
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			} catch (Exception e){
+				JSONResponse.WriteOutput(response, false, "Parsing error.");
+				return;
 			}
 			
 		//AREE
 		}else if (request.getParameter("node").startsWith("P")){
-			int idPiano = Integer.parseInt( request.getParameter("node").substring(1) );
-			List<TreeNodeArea> lista_aree = null;
+			
 			try {
-				lista_aree = gestioneArea.getAreeByPiano( idPiano );
-			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			TreeNodeArea area = null;
-			if(lista_aree != null){
-				for(int i=0; i<lista_aree.size();i++){
-					area = lista_aree.get(i);
-					json_tmp = JSONFromBean.jsonFromTreeNodeArea(area);
-					json_tmp.put("parentId","P"+idPiano);
-					json_array.put( json_tmp );
+				int idPiano = Integer.parseInt( request.getParameter("node").substring(1) );
+				List<TreeNodeArea> lista_aree = gestioneArea.getAreeByPiano( idPiano );
+				TreeNodeArea area = null;
+				if(lista_aree != null){
+					for(int i=0; i<lista_aree.size();i++){
+						area = lista_aree.get(i);
+						json_tmp = JSONFromBean.jsonFromTreeNodeArea(area);
+						json_tmp.put("parentId","P"+idPiano);
+						json_array.put( json_tmp );
+					}
 				}
+			} catch (DatabaseException e) {
+				e.printStackTrace();
+				return;
+			} catch (Exception e){
+				JSONResponse.WriteOutput(response, false, "Parsing error.");
+				return;
 			}
+			
 			
 		//TAVOLI
 		}else if (request.getParameter("node").startsWith("A")){
-			int idArea = Integer.parseInt( request.getParameter("node").substring(1) );
-			List<TreeNodeTavolo> lista_tavoli = null;
 			try {
-				lista_tavoli = gestioneTavolo.getTavoloByArea(idArea);
+				int idArea = Integer.parseInt( request.getParameter("node").substring(1) );
+				List<TreeNodeTavolo> lista_tavoli = gestioneTavolo.getTavoloByArea(idArea);
+				TreeNodeTavolo tavolo = null;
+				if(lista_tavoli != null){
+					for(int i=0; i<lista_tavoli.size();i++){
+						tavolo = lista_tavoli.get(i);
+						json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
+						json_tmp.put("parentId","A"+idArea);
+						json_array.put( json_tmp );
+					}
+				}
 			} catch (DatabaseException e) {
 				json_out.put("success", false);
 				json_out.put("message","Eccezione caricamento tavoli");
 				response.getWriter().print(json_out);
 				e.printStackTrace();
 				System.err.println("ECCEZIONE: "+e.toString());
+				return;
+			} catch (Exception e){
+				JSONResponse.WriteOutput(response, false, "Parsing error.");
+				return;
 			}
-			TreeNodeTavolo tavolo = null;
-			if(lista_tavoli != null){
-				for(int i=0; i<lista_tavoli.size();i++){
-					tavolo = lista_tavoli.get(i);
-					json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
-					json_tmp.put("parentId","A"+idArea);
-					json_array.put( json_tmp );
-				}
-			}
-
 		}
 		
 		//Mando in output i dati
@@ -240,7 +255,7 @@ public class gestioneTavolo extends HttpServlet {
 				}
 				case 3: {//Aggiungi tavolo
 					try {
-						tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), request.getParameter("stato"), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("numPosti")), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
+						tavolo = gestioneTavolo.aggiungiTavolo(idTenant, request.getParameter("nome"), "Libero", request.getParameter("descrizione"), Integer.parseInt(request.getParameter("numPosti")), Boolean.parseBoolean(request.getParameter("enabled")), Integer.parseInt(request.getParameter("parentId").substring(1)));
 						json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(tavolo);
 						json_tmp.put("parentId", request.getParameter("parentId").substring(1));
 						json_array.put(	json_tmp );
