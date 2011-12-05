@@ -688,29 +688,34 @@ var _mainTabPanel = {
 			        handler: function() {
 			            var form = this.up('form').getForm();
 			            if (form.isValid()) {
-			                /*form.submit({
+			                form.submit({
+			                	params : {
+			                    	action : 'update'
+			                    },
 			                    success: function(form, action) {
-			                       Ext.Msg.alert('Success', action.result.msg);
+			                       Ext.Msg.alert('Success', action.result.message);
 			                    },
 			                    failure: function(form, action) {
-			                        Ext.Msg.alert('Failed', action.result.msg);
+			                        Ext.Msg.alert('Failed', action.result.message);
 			                    }
-			                });*/
+			                });
 			                
 			                //selectedNode.save({extraParams : { azione: 'update'}}); 
-			                selectedNode.save({
+			            	//form.updateRecord(record, action);
+			                /*selectedNode.save({
 			                    params : {
 			                    	action : 'update'
 			                    },
-			                    success : function(record) {
+			                    success : function(record, action) {
+			                    	console.debug('LOVE ME LOVE YOU'+record.result.message+' - '+action.result.message);
 			                    	Ext.Msg.alert('Success', action.result.message);
-			                        form.updateRecord(record);// selectedNode.commit();
-			                        console.debug('LOVE ME LOVE YOU'+record.result.message+' - '+action.result.message);
+			                        //form.updateRecord(record, action);// selectedNode.commit();
+			                        
 			                    },
 			                    failure: function(record) {
 			                        Ext.Msg.alert('Failed', action.result.message);
 			                    }
-			                });
+			                });*/
 			            }
 			        }
 			    }]
