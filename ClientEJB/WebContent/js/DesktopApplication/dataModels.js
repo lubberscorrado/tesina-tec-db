@@ -130,7 +130,7 @@ Ext.define('nodoGestioneTavolo', {
 
 Ext.define('nodoGestioneMenu', {
 	extend: 'Ext.data.Model',
-    fields: ['id','realId','parentId','realParentId','nome','descrizione','tipo','enabled','numPosti','stato','text'],
+    fields: ['id','parentId','nome','descrizione','prezzo','tipo','text'],
     store: Ext.getStore('datastore_gestione_menu'),
     proxy: {
         type: 'rest',

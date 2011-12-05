@@ -372,22 +372,11 @@ var _mainTabPanel = {
 			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                        			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
 			                            	}
-			                            },
-			                            {
+			                            },{
 			                            	text: 'Rimuovi piano',
 			                            	handler: function(){
 			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                            		lastSelected.destroy({
-			        			                    params : {
-			        			                    	action : 'delete'
-			        			                    },
-			        			                    success : function(record, action) {
-			        			                    	Ext.Msg.alert('Success', action.result.message);
-			        			                    },
-			        			                    failure: function(form, action) {
-			        			                        Ext.Msg.alert('Failed', action.result.message);
-			        			                    }
-			        			                });
+			                            		_mainTabPanel.removeNodeGestioneTavolo(lastSelected);
 			                            	}
 			                            }
 			                        ]
@@ -406,8 +395,13 @@ var _mainTabPanel = {
 			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                        			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
 			                            	}
-			                            },
-			                            {text: 'Rimuovi area'}
+			                            },{
+			                            	text: 'Rimuovi area',
+			                            	handler: function(){
+			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                            		_mainTabPanel.removeNodeGestioneTavolo(lastSelected);
+			                            	}
+			                            }
 			                        ]
 			                    });
 		                	}else if(depth == 3){
@@ -419,8 +413,13 @@ var _mainTabPanel = {
 			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                        			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
 			                            	}
-			                            },
-			                            {text: 'Rimuovi tavolo'}
+			                            },{
+			                            	text: 'Rimuovi tavolo',
+			                            	handler: function(){
+			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                            		_mainTabPanel.removeNodeGestioneTavolo(lastSelected);
+			                            	}
+			                            }
 			                        ]
 			                    });
 		                	}else{
@@ -696,15 +695,6 @@ var _mainTabPanel = {
 			                    },
 			                    success: function(form, action) {
 			                       Ext.Msg.alert('Success', action.result.message);
-//			                       var node = Ext.getStore('datastore_gestione_tavolo').getNodeById( action.result.data[0].parentId );
-//			                       node.append(
-//			                    		   Ext.create('nodoGestioneTavolo',action.result.data[0])
-//			                       );
-
-			                       //			                       Ext.getStore('datastore_gestione_tavolo').load({params : {
-//				                    	node : action.result.data[0].parentId
-//				                    }});
-			                       
 			                       var updatedNode = Ext.getStore('datastore_gestione_tavolo').getNodeById( action.result.data[0].id );
 			                       updatedNode.set('nome',action.result.data[0].nome);
 			                       updatedNode.set('text',action.result.data[0].nome);
@@ -752,7 +742,29 @@ var _mainTabPanel = {
 			Ext.getCmp('viewport_east').add(Ext.getCmp('form_gestioneTavolo_updateNode'));
 			
 		},
-		
+		removeNodeGestioneTavolo : function(selectedNode){
+//			Ext.Msg.show({
+//			     title:'Save Changes?',
+//			     msg: 'You are closing a tab that has unsaved changes. Would you like to save your changes?',
+//			     buttons: Ext.Msg.YESNO,
+//			     icon: Ext.Msg.QUESTION
+//			});
+			Ext.MessageBox.confirm('Conferma', 'Sei sicuro di voler rimuovere '+selectedNode.get('nome')+'?', function(btn){
+				if(btn == 'no') return;
+				selectedNode.destroy({
+	                params : {
+	                	action : 'delete'
+	                },
+	                success : function(record, action) {
+	                	Ext.Msg.alert('Success', action.result.message);
+	                },
+	                failure: function(form, action) {
+	                    Ext.Msg.alert('Failed', action.result.message);
+	                }
+	            });
+			});
+			
+		},
 		createTabGestioneMenu : function(){
 			var tree = Ext.create('Ext.tree.Panel', {
 				id: 'albero_gestioneMenu',

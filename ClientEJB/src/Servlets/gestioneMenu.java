@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import Utilita.JSONResponse;
+
 
 
 /**
@@ -22,7 +24,6 @@ public class gestioneMenu extends HttpServlet {
      */
     public gestioneMenu() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -30,6 +31,21 @@ public class gestioneMenu extends HttpServlet {
 	 */
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//AGGIUNGERE CONTROLLO PRIVILEGI
+    	
+    	
+    	String node = request.getParameter("node");
+		if(node == null){
+			JSONResponse.WriteOutput(response, false, "Richiesta non valida");	return;
+		}
+		
+		try{
+			
+			
+			
+		}catch(Exception e){
+			JSONResponse.WriteOutput(response, false, "Eccezione generale");	return;
+		}
 		
 	}
 
@@ -40,25 +56,4 @@ public class gestioneMenu extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 	}
-
-	/**
-	 * @see HttpServlet#doPut(HttpServletRequest, HttpServletResponse)
-	 */
-    @Override
-	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-	}
-
-	/**
-	 * @see HttpServlet#doDelete(HttpServletRequest, HttpServletResponse)
-	 */
-    @Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-	}
-	
-
-	
-
-
 }

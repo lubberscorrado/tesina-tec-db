@@ -201,11 +201,11 @@ public class gestioneTavolo extends HttpServlet {
 			int id = Integer.parseInt( sid.substring(1) );
 			
 			if(sid.startsWith("P")){
-				
+				gestionePiano.deletePiano(id);
 			}else if(sid.startsWith("A")){
-				
+				gestioneArea.deleteArea(id);
 			}else if(sid.startsWith("T")){
-				
+				gestioneTavolo.deleteTavolo(id);
 			}
 			
 			JSONResponse.WriteOutput(response, true, "Elemento cancellato correttamente!","data",json_array);

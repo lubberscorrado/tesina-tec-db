@@ -70,20 +70,17 @@ Ext.create('Ext.data.TreeStore', {
     listeners: {
 		beforeappend: function( thisNode, newChildNode, eOpts ){
 			var tipo = newChildNode.get("tipo");
-			if( tipo == 1){	
+			if( tipo == 1){			//CATEGORIA
 				newChildNode.set('leaf', false);
-            	newChildNode.set('id', 'P'+newChildNode.get('realId'));
-            	newChildNode.set('parentId', newChildNode.get('parentId'));
+				newChildNode.set('text', newChildNode.get('nome'));
+            	//newChildNode.set('id', 'P'+newChildNode.get('realId'));
+            	//newChildNode.set('parentId', newChildNode.get('parentId'));
             	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
-            }else if( tipo == 2){
-            	newChildNode.set('leaf', false);
-            	newChildNode.set('id', 'A'+newChildNode.get('realId'));
-            	newChildNode.set('parentId', 'P'+newChildNode.get('parentId'));
-            	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
-            }else if( tipo == 3){
+            }else if( tipo == 2){	//VOCE MENU
             	newChildNode.set('leaf', true);
-            	newChildNode.set('id', 'T'+newChildNode.get('realId'));
-            	newChildNode.set('parentId', 'A'+newChildNode.get('parentId'));
+            	newChildNode.set('text', newChildNode.get('nome'));
+            	//newChildNode.set('id', 'A'+newChildNode.get('realId'));
+            	//newChildNode.set('parentId', 'P'+newChildNode.get('parentId'));
             	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
             }
 		},
