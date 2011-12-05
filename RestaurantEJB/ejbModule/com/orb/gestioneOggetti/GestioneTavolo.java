@@ -93,7 +93,7 @@ public class GestioneTavolo{
 	 * @param stato Stato del tavolo
 	 * @param enabled Flag di attivazione 
 	 * @return Oggetto TreeNodeTavolo che rappresenta il tavolo modificato
-	 * @throws DatabaseException
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
 	 */
 	
 	public TreeNodeTavolo updateTavolo(	int idTavolo,
@@ -110,7 +110,7 @@ public class GestioneTavolo{
 			if(tavolo == null)
 				throw new DatabaseException("Errore durante la ricerca del tavolo da aggiornare");
 		
-			tavolo.setIdTenant(tavolo.getIdTenant());
+			//tavolo.setIdTenant(tavolo.getIdTenant());
 			tavolo.setNome(nome);
 			tavolo.setDescrizione(descrizione);
 			tavolo.setStato(stato);

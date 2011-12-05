@@ -60,8 +60,8 @@ public class GestioneArea{
 	/**
 	 * Modifica un'area a partire dal suo id
 	 * @param idArea Id dell'area da modificare
-	 * @param nome Nome modificato dell'area
-	 * @param descrizione Descrizione modificata dell'area
+	 * @param nome Nome dell'area modificata
+	 * @param descrizione Descrizione dell'area modificata
 	 * @param enabled Stato dell'area modificata
 	 * @return Oggetto TreeNodeArea che rappresenta la nuova area modificata
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
@@ -93,12 +93,22 @@ public class GestioneArea{
 		}
 	 }
 	 
+	 /**
+	  * Elimina un'are a partire dall'id.
+	  * @param idArea id dell'area da eliminare
+	  * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore che si è verificato
+	  */
+	 public void deleteArea(int idArea) throws DatabaseException {
+		 try {
+			 Area area = em.find(Area.class, idArea);
+			 if(area == null)
+				 throw new DatabaseException("Errore durante la ricerca dell'area da rimuovere");
+			 em.remove(area);
+		 } catch (Exception e) {
+			 throw new DatabaseException("Errore durante l'eliminazione dell'area ("+ e.toString() +")");
+		 }
+	  }
 	 
-//	 public void deleteArea(int idArea) {
-//		 
-//	
-//	 }
-//	
 	/** 
 	 * Ritorna la lista delle aree associate ad un determinato piano
 	 * @param idPiano id del piano del quale si vuole ottenere la lista delle aree
