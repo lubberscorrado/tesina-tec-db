@@ -381,7 +381,7 @@ var _mainTabPanel = {
 			        			                    params : {
 			        			                    	action : 'delete'
 			        			                    },
-			        			                    success : function(record) {
+			        			                    success : function(record, action) {
 			        			                    	Ext.Msg.alert('Success', action.result.message);
 			        			                    },
 			        			                    failure: function(form, action) {
@@ -705,8 +705,9 @@ var _mainTabPanel = {
 			                    success : function(record) {
 			                    	Ext.Msg.alert('Success', action.result.message);
 			                        form.updateRecord(record);// selectedNode.commit();
+			                        console.debug('LOVE ME LOVE YOU'+record.result.message+' - '+action.result.message);
 			                    },
-			                    failure: function(form, action) {
+			                    failure: function(record) {
 			                        Ext.Msg.alert('Failed', action.result.message);
 			                    }
 			                });
