@@ -10,6 +10,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ *  Classe che mostra l'elenco del Menu
+ * @author fabio
+ *
+ */
 public class MenuListActivity extends ListActivity {
 	
 	@Override

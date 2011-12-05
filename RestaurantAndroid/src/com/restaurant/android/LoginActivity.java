@@ -1,6 +1,7 @@
 package com.restaurant.android;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class LoginActivity extends Activity {
 	
@@ -58,8 +60,18 @@ public class LoginActivity extends Activity {
 		        editor.commit();
 	
 		  		if(username.equals("guest") && password.equals("guest")){
-		  			lblResult.setText("Login successful.");
+		  			
+		  			// Mostro un messaggio in sovra-impressione
+		  			Toast.makeText(getApplicationContext(), "Login successful!", 20).show();
+		  			
+		  			//-----------------------
+		  			// Open New Activity
+		  			//-----------------------
+		  			Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+		  			LoginActivity.this.startActivity(myIntent);
+		  			
 		  		} else {
+		  			Toast.makeText(getApplicationContext(), "Login failed. Username and/or password doesn't match", 20).show();
 		  			lblResult.setText("Login failed. Username and/or password doesn't match.");
 		  		}
 		  	}
