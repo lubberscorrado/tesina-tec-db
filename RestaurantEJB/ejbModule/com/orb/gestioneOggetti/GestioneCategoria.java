@@ -44,6 +44,7 @@ public class GestioneCategoria {
 												int idPadre) throws DatabaseException {
 		
 		try {
+			
 			Categoria categoriaPadre = em.find(Categoria.class, idPadre);
 		
 			if(categoriaPadre == null)
@@ -66,10 +67,12 @@ public class GestioneCategoria {
 		}
 		
 	}
+	
 	/**
 	 * Ritorna una lista delle categorie appartenenti ad un cliente e figlie di una determinata
 	 * categoria padre.
-	 * @param idTenant Id del cliente a cui appartengono le categorie
+	 * @param idTenant Id del cliente a cui appartengono le categorie. Necessario poichè alcune
+	 * categorie sono condivise.
 	 * @param idPadre Id della categoria padre
 	 * @return Lista di oggetti TreeNodeCategoria che rappresentano le categorie ottenute dal 
 	 * Database
@@ -79,15 +82,17 @@ public class GestioneCategoria {
 	
 	public List<TreeNodeCategoria> getCategorie(int idTenant, int idPadre) throws DatabaseException {
 		
-		
 		try {
-			Categoria categoriaPadre = em.find(Categoria.class, idPadre);
 			
-			if(categoriaPadre ==null)
-				throw new DatabaseException("Impossibile trovare la categoria padre");
+			/* Acquisisco le categorie figlie dei nodi radici comuni limitando la selezione
+			 * al cliente di interesse  */
 			
-			/* Lazy initialization */
-			List<Categoria> listaCategoria = categoriaPadre.getCategorieFiglie();
+			Query query= em.createNamedQuery("getCategorieFiglieDi");
+			query.setParameter("idCategoriaPadre", idPadre);
+			query.setParameter("idTenant", idTenant);
+			
+			
+			List<Categoria> listaCategoria = (List<Categoria>)query.getResultList();
 								
 			List<TreeNodeCategoria> listaTreeNodeCategoria= new ArrayList<TreeNodeCategoria>();
 			

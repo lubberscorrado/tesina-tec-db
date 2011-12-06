@@ -16,9 +16,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
+@NamedQueries({
+	@NamedQuery(name = "getCategorieFiglieDi",
+				query = "SELECT c FROM Categoria c " +
+						"LEFT JOIN c.categoriaPadre cp WHERE "+
+						"cp.idCategoria=:idCategoriaPadre AND "+
+						"c.idTenant=:idTenant")})
 @Table(name="categoria")
 public class Categoria {
-	
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="idCategoria")
@@ -37,6 +43,7 @@ public class Categoria {
 	 * di default eager, ma diventa ricorsivo essendo l'associazione collegata
 	 * alla stessa entità */
 	@ManyToOne(fetch=FetchType.LAZY)
+	
 	@JoinColumn(name="idCategoriaPadre", referencedColumnName="idCategoria")
 	private Categoria categoriaPadre;
 	

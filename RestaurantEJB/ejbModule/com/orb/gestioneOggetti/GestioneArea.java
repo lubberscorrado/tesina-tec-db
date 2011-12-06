@@ -134,6 +134,8 @@ public class GestioneArea{
 			if(piano == null)
 				throw new DatabaseException("Impossibile trovare il piano");
 			
+			//TODO Impostare l'associazione con piano di ogni area come LAZY per evitare
+			//il fetch di oggetti inutili?
 			List<Area> listaAree = piano.getAree();
 			List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
 			Iterator<Area> it = listaAree.iterator();
