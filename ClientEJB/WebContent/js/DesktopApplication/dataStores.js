@@ -65,6 +65,7 @@ Ext.create('Ext.data.TreeStore', {
 	autoSync: true,
 	model: 'nodoGestioneMenu',
 	root: {
+		expanded: true,
         text: "Menù"
     },
     listeners: {
@@ -73,12 +74,14 @@ Ext.create('Ext.data.TreeStore', {
 			if( tipo == 1){			//CATEGORIA
 				newChildNode.set('leaf', false);
 				newChildNode.set('text', newChildNode.get('nome'));
+				newChildNode.set('qtip', newChildNode.get('descrizione'));
             	//newChildNode.set('id', 'P'+newChildNode.get('realId'));
             	//newChildNode.set('parentId', newChildNode.get('parentId'));
             	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
             }else if( tipo == 2){	//VOCE MENU
             	newChildNode.set('leaf', true);
-            	newChildNode.set('text', newChildNode.get('nome'));
+            	newChildNode.set('text', newChildNode.get('nome')+'['+newChildNode.get('prezzo')+']');
+            	newChildNode.set('qtip', newChildNode.get('descrizione'));
             	//newChildNode.set('id', 'A'+newChildNode.get('realId'));
             	//newChildNode.set('parentId', 'P'+newChildNode.get('parentId'));
             	//newChildNode.set('icon', newChildNode.get('profile_image_url'));

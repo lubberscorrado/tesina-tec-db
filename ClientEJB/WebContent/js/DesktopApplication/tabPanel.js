@@ -778,8 +778,144 @@ var _mainTabPanel = {
 		        //height: 500,
 		        //collapsible: true,
 		        useArrows: true,
-		        rootVisible: true,
+		        rootVisible: false,
 		        store: Ext.getStore('datastore_gestione_menu'),
+		        
+		        dockedItems: [{
+		            xtype: 'toolbar',
+		            dock: 'bottom',
+		            //height: 100,
+		            items: ['->',{
+		                text: 'Aggiorna',
+		                iconCls: 'icon-add',
+		                handler: function(){
+		                	Ext.getStore('datastore_gestione_menu').load();
+		                }
+		            }],
+		        }],
+		        
+		        viewConfig: {
+		        	//plugins: { ptype: 'treeviewdragdrop' },
+		            stripeRows: true,
+		            listeners: {
+		            	itemdblclick: function( view, rec,item,index,e,eOpts ){
+		            		var lastSelected = Ext.getCmp('albero_gestioneMenu').getSelectionModel().getLastSelected();
+		            		if(lastSelected.get('tipo')==3)
+		            			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
+		            	},
+		                itemcontextmenu: function(view, rec, node, index, e) {
+		                	var depth = rec.get("depth");
+		                	var contextMenu = null;
+		                	console.debug('PROFONDITA: '+depth);
+		                	
+		                	if(depth == 1){
+		                		contextMenu = Ext.create('Ext.menu.Menu', {
+			                        items: [
+			                            {
+			                            	text: 'Aggiungi voce di menù',
+			                        		handler: function(){
+			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                        			_mainTabPanel.addNewNodeGestioneMenu(rec,true);
+			                        		}
+			                            },{
+			                            	text: 'Aggiungi categoria',
+			                        		handler: function(){
+			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                        			_mainTabPanel.addNewNodeGestioneMenu(rec,false);
+			                        		}
+			                            },{
+			                            	text: 'Modifica categoria',
+			                            	handler: function(){
+			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                            		_mainTabPanel.updateNodeGestioneMenu(rec);
+			                            	}
+			                            }
+			                        ]
+			                    });
+		                	}else if(depth >= 2){
+		                		if(	rec.isLeaf() ){
+		                			contextMenu = Ext.create('Ext.menu.Menu', {
+				                        items: [
+				                            {text: 'Modifica voce menù',
+				                        		handler: function(){
+				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+				                        			_mainTabPanel.updateNodeGestioneMenu(rec);
+				                        		}
+				                            },{
+				                            	text: 'Rimuovi voce menù',
+				                            	handler: function(){
+				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+				                            		_mainTabPanel.deleteNodeGestioneMenu(rec);
+				                            	}
+				                            }
+				                        ]
+				                    });
+		                		}else{
+		                			contextMenu = Ext.create('Ext.menu.Menu', {
+				                        items: [
+				                            {
+				                            	text: 'Aggiungi voce di menù',
+				                        		handler: function(){
+				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+				                        			_mainTabPanel.addNewNodeGestioneMenu(rec,true);
+				                        		}
+				                            },{
+				                            	text: 'Aggiungi categoria',
+				                        		handler: function(){
+				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+				                        			_mainTabPanel.addNewNodeGestioneMenu(rec,false);
+				                        		}
+				                            },{
+				                            	text: 'Modifica categoria',
+				                            	handler: function(){
+				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+				                            		_mainTabPanel.updateNodeGestioneMenu(rec);
+				                            	}
+				                            },{
+				                            	text: 'Rimuovi categoria',
+				                            	handler: function(){
+				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+				                            		_mainTabPanel.deleteNodeGestioneMenu(rec);
+				                            	}
+				                            }
+				                        ]
+				                    });
+		                		}
+		                	}
+		                	/*
+		                	else if(depth == 3){
+		                		contextMenu = Ext.create('Ext.menu.Menu', {
+			                        items: [
+			                            {
+			                            	text: 'Modifica tavolo',
+			                            	handler: function(){
+			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                        			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
+			                            	}
+			                            },{
+			                            	text: 'Rimuovi tavolo',
+			                            	handler: function(){
+			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                            		_mainTabPanel.deleteNodeGestioneTavolo(lastSelected);
+			                            	}
+			                            }
+			                        ]
+			                    });
+		                	}else{
+		                		contextMenu = Ext.create('Ext.menu.Menu', {
+			                        items: [
+			                            buyAction,
+			                            sellAction
+			                        ]
+			                    });
+		                	}
+		                	*/
+		                	    
+		                    contextMenu.showAt(e.getXY());
+		                    return false;
+		                }
+		            }
+		        },
 		        //multiSelect: true,
 		        //singleExpand: true,
 		        //the 'columns' property is now 'headers'
@@ -835,9 +971,119 @@ var _mainTabPanel = {
 		
 			Ext.getCmp('main_tabPanel').add( Ext.getCmp('main_tabPanel_gestioneMenu') );
 		},
-		
-		addNewNodeGestioneMenu : function(parentNode){
+		createFormGestioneMenu : function(){
+			return Ext.create('Ext.form.Panel', {
+					id: 'form_gestioneMenu',
+					border: false,
+	    	        defaultType: 'textfield',
+	    	        url: 'gestioneMenu',
+	    	        items: [{
+				        fieldLabel: 'ID',
+				        name: 'id'
+				    },{
+				        fieldLabel: 'ParentId',
+				        name: 'parentId'
+				    },{
+				        fieldLabel: 'Depth',
+				        name: 'depth'
+				    },{
+				        fieldLabel: 'Nome',
+				        name: 'nome',
+				        allowBlank: false
+				    },{
+				        fieldLabel: 'Descrizione',
+				        name: 'descrizione'
+				    },{
+				        fieldLabel: 'Prezzo',
+				        name: 'prezzo'
+				    }],
+				    
+				    buttons: [{
+	    	            text: 'Reset',
+	    	            handler: function() {
+	    	                this.up('form').getForm().reset();
+	    	            }
+	    	        },{
+				        text: 'Submit',
+				        handler: function() {
+				            // The getForm() method returns the Ext.form.Basic instance:
+				            var form = this.up('form').getForm();
+				            if (form.isValid()) {
+				                // Submit the Ajax request and handle the response
+				                form.submit({
+				                	params : {
+				                    	action : 'create'
+				                    },
+				                    success: function(form, action) {
+				                    	Ext.getCmp('window_inserimentoNodoGestioneTavolo').destroy();
+				                    	var parentId = null;
+				                    	var nuovo_nodo = Ext.create('nodoGestioneTavolo', {
+				                    		id: 			action.result.data[0].id,
+				                    		parentId: 		action.result.data[0].parentId,
+				                    		nome: 			action.result.data[0].nome,
+					                    	tipo: 			action.result.data[0].tipo
+				                    	});
+				                    	
+				                    	
+				                    	
+				                    	
+				                    	
+				                    	switch(action.result.data[0].tipo){
+				                    		case 1: {
+							                    		nuovo_nodo.set('parentId','root');
+							                    		parentId = 'root';
+					                    				break;
+				                    		}
+				                    		case 2: {
+							                    		parentId = 'P'+action.result.data[0].parentId;
+							                    		break;
+						                    }
+				                    		case 3: {
+							                    		parentId = 'A'+action.result.data[0].parentId;
+							                    		break;
+						                    }
+				                    		default: {parentId = 'root';	break;}
+				                    	}
+				                    	console.debug("PARENT ID NUOVO NODO: "+parentId);
+				                    	console.debug('Nuovo nodo creato: '+nuovo_nodo.get('id')+' - '+nuovo_nodo.get('parentId')+' - '+nuovo_nodo.get('text')+' - '+nuovo_nodo.get('tipo'));
+				                    	var nodo_padre = Ext.getStore('datastore_gestione_tavolo').getNodeById(parentId);
+				                    	nodo_padre.appendChild(nuovo_nodo);
+				                    	
+				                    	Ext.Msg.alert('Info: ', action.result.message);
+				                    	
+				                    },
+				                    failure: function(form, action) {
+				                        Ext.Msg.alert('Errore: ', action.result.message);
+				                    }
+				                });
+				            }
+				        }
+				    }]
+				});
+		},
+		addNewNodeGestioneMenu : function(parentNode,isVoceMenu){
+			console.debug('NUOVO NODO MENU');
+			var form = this.createFormGestioneMenu();
+			//if(parentNode.)
+			var askWindow = Ext.create('Ext.window.Window', {
+				id: 'window_inserimentoNodoGestioneTavolo',
+        	    title: 'Hello',
+        	    //height: 400,
+        	    width: 400,
+        	    layout: 'fit'
+        	});
+			form.getForm().findField('id').hide();
+			form.getForm().findField('parentId').hide();
+			form.getForm().findField('depth').hide();
+			if(isVoceMenu == true){
+				askWindow.setTitle('Aggiungi nuova voce di menù');
+			}else{
+				askWindow.setTitle('Aggiungi nuova categoria');
+				form.getForm().findField('prezzo').hide();
+			}
 			
+			askWindow.add(form);
+			askWindow.show();
 		},
 		updateNodeGestioneMenu : function(selectedNode){
 			

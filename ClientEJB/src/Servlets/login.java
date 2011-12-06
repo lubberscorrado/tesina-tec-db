@@ -10,6 +10,8 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 
+import com.sun.mail.iap.Response;
+
 import Utilita.JSONResponse;
 
 /**
@@ -24,14 +26,13 @@ public class login extends HttpServlet {
      */
     public login() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		
 	}
 
 	/**

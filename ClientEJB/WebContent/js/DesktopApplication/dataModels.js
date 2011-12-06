@@ -101,7 +101,7 @@ Ext.define('nodoGestioneTavolo', {
     /*extend: 'Ext.data.NodeInterface',*/
 	extend: 'Ext.data.Model',
     fields: ['id','parentId','nome','descrizione','numeroPiano','tipo','enabled','numPosti','stato','text'],
-    store: Ext.getStore('datastore_gestione_tavolo'),
+    //store: Ext.getStore('datastore_gestione_tavolo'),
     proxy: {
         type: 'rest',
         url : 'gestioneTavolo',
@@ -131,10 +131,11 @@ Ext.define('nodoGestioneTavolo', {
 Ext.define('nodoGestioneMenu', {
 	extend: 'Ext.data.Model',
     fields: ['id','parentId','nome','descrizione','prezzo','tipo','text'],
-    store: Ext.getStore('datastore_gestione_menu'),
+    //store: Ext.getStore('datastore_gestione_menu'),
     proxy: {
         type: 'rest',
         url : 'gestioneMenu',
+        appendId : false,
         writer: {
             type: 'singlepost'
             //type: 'json'
@@ -143,6 +144,12 @@ Ext.define('nodoGestioneMenu', {
 	        type: 'json',
 	        idProperty: 'id',
 	        root: 'data'
-	    }
+	    },
+	    actionMethods : {
+            create : 'POST',
+            read   : 'GET',
+            update : 'POST',
+            destroy: 'POST'
+        }
     }
 });
