@@ -39,22 +39,30 @@ public class GestioneArea{
 										String descrizione, 
 										boolean enabled,
 										int idPiano) throws DatabaseException {
+		try {
+			Area area = new Area();
+			area.setIdTenant(idTenant);
+			area.setNome(nome);
+			area.setDescrizione(descrizione);
+			area.setEnabled(enabled);
 		
-		Area area = new Area();
-		area.setIdTenant(idTenant);
-		area.setNome(nome);
-		area.setDescrizione(descrizione);
-		area.setEnabled(enabled);
+			Piano piano = em.find(Piano.class, idPiano);
+					
+			if(piano == null)
+				throw new DatabaseException("Impossibile trovare il piano di appartenenza dell'area");
 		
-		Piano piano = em.find(Piano.class, idPiano);
-				
-		if(piano == null)
-			throw new DatabaseException("Impossibile trovare il piano di appartenenza dell'area");
+			area.setPianoAppartenenza(piano);
+			em.persist(area);
+			
+			return new TreeNodeArea(area);
 		
-		area.setPianoAppartenenza(piano);
-		em.persist(area);
+		} catch (Exception e) {
+			
+			throw new DatabaseException("Errore durante l'inserimento dell'area (" + e.toString() +")");
+			
+		}
 		
-		return new TreeNodeArea(area);
+		
 	}
 	
 	/**

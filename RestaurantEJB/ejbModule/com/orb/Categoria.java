@@ -9,10 +9,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
+@NamedQueries({
+	@NamedQuery(name = "getCategorie",
+				query = "SELECT c FROM Categoria c WHERE c.idTenant = :idTenant AND c.idCategoriaPadre= :idCategoriaPadre")})
 @Table(name="categoria")
 public class Categoria {
 	

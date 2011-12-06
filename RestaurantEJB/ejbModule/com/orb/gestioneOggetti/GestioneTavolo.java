@@ -56,29 +56,32 @@ public class GestioneTavolo{
 											boolean enabled,
 											int idArea) throws DatabaseException {
 		
-		// TODO Controllare che i valori passati non siano null
-		Tavolo tavolo = new Tavolo();
-		tavolo.setIdTenant(idTenant);
-		tavolo.setNome(nome);
-		tavolo.setDescrizione(descrizione);
-		tavolo.setEnabled(enabled);
-		tavolo.setStato(StatoTavoloEnum.LIBERO);
-		tavolo.setNumposti(numposti);
-		
-		Area area = em.find(Area.class, idArea);
-		if(area == null)
-			throw new DatabaseException("Impossibile trovare l'area di appartenenza del tavolo");
-		
-		tavolo.setAreaAppartenenza(area);
-		
 		try {
+			// TODO Controllare che i valori passati non siano null
+			Tavolo tavolo = new Tavolo();
+			tavolo.setIdTenant(idTenant);
+			tavolo.setNome(nome);
+			tavolo.setDescrizione(descrizione);
+			tavolo.setEnabled(enabled);
+			tavolo.setStato(StatoTavoloEnum.LIBERO);
+			tavolo.setNumposti(numposti);
+			
+			Area area = em.find(Area.class, idArea);
+			if(area == null)
+				throw new DatabaseException("Impossibile trovare l'area di appartenenza del tavolo");
+			
+			tavolo.setAreaAppartenenza(area);
+		
 			em.persist(tavolo);
+			
+			return new TreeNodeTavolo(tavolo);
+			
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante l'inserimento del tavolo + " +
 										"("+ e.toString()+")");
 			
 		}
-		return new TreeNodeTavolo(tavolo);
+		
 	}
 	
 	/**
