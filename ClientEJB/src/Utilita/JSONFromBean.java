@@ -99,5 +99,18 @@ public class JSONFromBean {
 		json_obj.put("statoTavolo", 	statotavolo.getStatoTavolo());
 		return json_obj;
 	}
+	
+	/*
+	 * JSON FROM GESTIONE MENU
+	 */
+	
+	public static JSONObject jsonFromOBJ(TreeNodeCategoria treeNodeCategoria){
+		JSONObject json_obj = new JSONObject();
+		json_obj.put("id", 		"C"+treeNodeCategoria.getIdCategoria());
+		//json_obj.put("parentId", 		"C"+treeNodeCategoria.);
+		json_obj.put("nome", 		treeNodeCategoria.getNome());
+		json_obj.put("descrizione", 		treeNodeCategoria.getDescrizione());
+		return json_obj;
+	}
 
 }
