@@ -31,7 +31,10 @@ public class gestioneMenu extends HttpServlet {
 	 */
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//AGGIUNGERE CONTROLLO PRIVILEGI
+    	//Controllo dei privilegi di accesso
+    	if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+    		return;
+    	}
     	
     	
     	String node = request.getParameter("node");
@@ -40,7 +43,13 @@ public class gestioneMenu extends HttpServlet {
 		}
 		
 		try{
-			
+			if(node.equals("root")){
+				
+			}else if(node.startsWith("C")){
+				
+			}else if(node.equals("V")){
+				
+			}
 			
 			
 		}catch(Exception e){
@@ -54,6 +63,30 @@ public class gestioneMenu extends HttpServlet {
 	 */
     @Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+    	//Controllo dei privilegi di accesso
+    	if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+    		return;
+    	}
+    	
+    	
+    	try{
+			//CREATE
+    		if(request.getParameter("action").equals("create")){
+    			
+    		//UPDATE
+    		}else if(request.getParameter("action").equals("update")){
+    			
+    		//DELETE
+    		}else if(request.getParameter("action").equals("delete")){
+    			
+    		}
+			
+    		//Caso del delete di default del datasource
+    		JSONResponse.WriteOutput(response, true, "OK"); return;
+			
+		}catch(Exception e){
+			JSONResponse.WriteOutput(response, false, "Eccezione generale");	return;
+		}
+    	
 	}
 }

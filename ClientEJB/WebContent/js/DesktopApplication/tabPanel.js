@@ -35,10 +35,11 @@ var _mainTabPanel = {
 			
 			this._tabella_stato_tavolo = Ext.create('Ext.grid.Panel', {
 				title: 'Stato: tavoli',
+				flex: 3,
 				id: 'tabella_stato_tavolo',
-				margin: '5 5 5 5',
+				margin: '2 2 2 2',
 				autoScroll: true,
-		        store: Ext.data.StoreManager.lookup('datastore_stato_tavolo'),
+		        store: Ext.getStore('datastore_stato_tavolo'),
 		        columns: [
 		            { header: 'IdTavolo',  	dataIndex: 'idTavolo', hidden: true },
 		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
@@ -116,9 +117,10 @@ var _mainTabPanel = {
 			
 			this._tabella_stato_cameriere = Ext.create('Ext.grid.Panel', {
 				id: 'tabella_statoCameriere',
+				flex: 1,
 				title: 'Stato: camerieri',
-				margin: '5 5 5 5',
-		        store: Ext.data.StoreManager.lookup('datastore_stato_tavoli'),
+				margin: '2 2 2 2',
+		        store: Ext.getStore('datastore_stato_tavolo'),
 		        columns: [
 		            { header: 'IdTavolo',  	dataIndex: 'idTavolo', hidden: true },
 		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
@@ -170,7 +172,7 @@ var _mainTabPanel = {
 		                }
 		            },'->',{
 		                text: 'Aggiorna',
-		                iconCls: 'icon-add',
+		                iconCls: '/ExtJS/resources/themes/images/gray/tree/drop-add.gif',
 		                handler: function(){
 		                    // empty record
 		                    store.load();
@@ -198,9 +200,10 @@ var _mainTabPanel = {
 			
 			this._tabella_stato_cuoco = Ext.create('Ext.grid.Panel', {
 				id: 'tabella_statoCuoco',
+				flex: 1,
 				title: 'Stato: cucina',
-				margin: '5 5 5 5',
-		        store: Ext.data.StoreManager.lookup('datastore_stato_tavoli'),
+				margin: '2 2 2 2',
+		        store: Ext.getStore('datastore_stato_tavolo'),
 		        columns: [
 		            { header: 'IdTavolo',  	dataIndex: 'idTavolo', hidden: true },
 		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
@@ -302,8 +305,9 @@ var _mainTabPanel = {
 			this._albero_gestioneTavolo = Ext.create('Ext.tree.Panel', {
 				id: 'albero_gestioneTavolo',
 			    title: 'Gestione ristorante: piani, aree, tavoli',
-			    width: 500,
-			    height: 500,
+			    width: '70%',
+			    //height: 500,
+			    flex: 1,
 			    rootVisible: true,
 			    useArrows: true,
 			    store: Ext.getStore('datastore_gestione_tavolo'),
@@ -340,7 +344,7 @@ var _mainTabPanel = {
 		            	itemdblclick: function( view, rec,item,index,e,eOpts ){
 		            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 		            		if(lastSelected.get('tipo')==3)
-		            			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
+		            			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
 		            	},
 		                itemcontextmenu: function(view, rec, node, index, e) {
 		                	var depth = rec.get("depth");
@@ -370,13 +374,13 @@ var _mainTabPanel = {
 			                            	text: 'Modifica piano',
 			                            	handler: function(){
 			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                        			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
+			                        			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
 			                            	}
 			                            },{
 			                            	text: 'Rimuovi piano',
 			                            	handler: function(){
 			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                            		_mainTabPanel.removeNodeGestioneTavolo(lastSelected);
+			                            		_mainTabPanel.deleteNodeGestioneTavolo(lastSelected);
 			                            	}
 			                            }
 			                        ]
@@ -393,13 +397,13 @@ var _mainTabPanel = {
 			                            	text: 'Modifica area',
 			                            	handler: function(){
 			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                        			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
+			                        			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
 			                            	}
 			                            },{
 			                            	text: 'Rimuovi area',
 			                            	handler: function(){
 			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                            		_mainTabPanel.removeNodeGestioneTavolo(lastSelected);
+			                            		_mainTabPanel.deleteNodeGestioneTavolo(lastSelected);
 			                            	}
 			                            }
 			                        ]
@@ -411,13 +415,13 @@ var _mainTabPanel = {
 			                            	text: 'Modifica tavolo',
 			                            	handler: function(){
 			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                        			_mainTabPanel.modifyNodeGestioneTavolo(lastSelected);
+			                        			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
 			                            	}
 			                            },{
 			                            	text: 'Rimuovi tavolo',
 			                            	handler: function(){
 			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                            		_mainTabPanel.removeNodeGestioneTavolo(lastSelected);
+			                            		_mainTabPanel.deleteNodeGestioneTavolo(lastSelected);
 			                            	}
 			                            }
 			                        ]
@@ -621,7 +625,7 @@ var _mainTabPanel = {
 			
 		},
 		
-		modifyNodeGestioneTavolo : function(selectedNode){
+		updateNodeGestioneTavolo : function(selectedNode){
 			var form_tmp = Ext.create('Ext.form.Panel', {
 				id: 'form_gestioneTavolo_updateNode',
 			    title: 'Simple Form',
@@ -742,7 +746,7 @@ var _mainTabPanel = {
 			Ext.getCmp('viewport_east').add(Ext.getCmp('form_gestioneTavolo_updateNode'));
 			
 		},
-		removeNodeGestioneTavolo : function(selectedNode){
+		deleteNodeGestioneTavolo : function(selectedNode){
 //			Ext.Msg.show({
 //			     title:'Save Changes?',
 //			     msg: 'You are closing a tab that has unsaved changes. Would you like to save your changes?',
@@ -770,7 +774,8 @@ var _mainTabPanel = {
 				id: 'albero_gestioneMenu',
 		        title: 'Gestione menù',
 		        width: 500,
-		        height: 500,
+		        flex: 1,
+		        //height: 500,
 		        //collapsible: true,
 		        useArrows: true,
 		        rootVisible: true,
@@ -829,6 +834,28 @@ var _mainTabPanel = {
 			});
 		
 			Ext.getCmp('main_tabPanel').add( Ext.getCmp('main_tabPanel_gestioneMenu') );
-		}
+		},
 		
+		addNewNodeGestioneMenu : function(parentNode){
+			
+		},
+		updateNodeGestioneMenu : function(selectedNode){
+			
+		},
+		deleteNodeGestioneMenu : function(selectedNode){
+			Ext.MessageBox.confirm('Conferma', 'Sei sicuro di voler rimuovere '+selectedNode.get('nome')+'?', function(btn){
+				if(btn == 'no') return;
+				selectedNode.destroy({
+	                params : {
+	                	action : 'delete'
+	                },
+	                success : function(record, action) {
+	                	Ext.Msg.alert('Success', action.result.message);
+	                },
+	                failure: function(form, action) {
+	                    Ext.Msg.alert('Failed', action.result.message);
+	                }
+	            });
+			});
+		}
 };

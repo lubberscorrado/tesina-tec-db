@@ -50,7 +50,7 @@ public class login extends HttpServlet {
 		
 		System.out.println("Login from: "+request.getRemoteAddr());
 		
-		response.getWriter().println(json_out);
+		JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");
 	}
 
 }

@@ -43,6 +43,27 @@ public class JSONResponse {
 		
 	}
 	
+	public static boolean WriteLoginPrivs(HttpServletRequest request, HttpServletResponse response, boolean success, String message){
+		HttpSession session = request.getSession();
+		int user_privs = (Integer) session.getAttribute("Privs");
+		
+		JSONObject json_out = new JSONObject();
+		json_out.put("success", success);
+		json_out.put("message", message);
+		JSONObject json_tmp = new JSONObject();
+			json_tmp.put("isCameriere", (user_privs & PRIV_Cameriere) == PRIV_Cameriere	);
+			json_tmp.put("isCuoco", 	(user_privs & PRIV_Cuoco) == PRIV_Cuoco	);
+			json_tmp.put("isCassiere", 	(user_privs & PRIV_Cassiere) == PRIV_Cassiere	);
+		json_out.put("privs", json_tmp);
+		
+		try {
+			response.getWriter().println(json_out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
 	
 	public static boolean WriteOutput(HttpServletResponse response, boolean success, String message){
 		JSONObject json_out = new JSONObject();
