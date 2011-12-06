@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,7 +33,10 @@ public class Categoria {
 	@Column(name="descrizione")
 	private String descrizione;
 		
-	@ManyToOne
+	/* Essendo l'associazione con la categoria padre molti a uno, il fetch è 
+	 * di default eager, ma diventa ricorsivo essendo l'associazione collegata
+	 * alla stessa entità */
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="idCategoriaPadre", referencedColumnName="idCategoria")
 	private Categoria categoriaPadre;
 	
