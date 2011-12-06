@@ -79,28 +79,31 @@ public class GestioneCategoria {
 	
 	public List<TreeNodeCategoria> getCategorie(int idTenant, int idPadre) throws DatabaseException {
 		
-		Query query = em.createNamedQuery("getCategorie");
-		query.setParameter("idTenant", idTenant);
-		query.setParameter("idCategoriaPadre", idPadre);
-		
-		List<Categoria> listaCategoria;
 		
 		try {
-			listaCategoria = (List<Categoria>)query.getResultList();
+			Categoria categoriaPadre = em.find(Categoria.class, idPadre);
+			
+			if(categoriaPadre ==null)
+				throw new DatabaseException("Impossibile trovare la categoria padre");
+			
+			/* Lazy initialization */
+			List<Categoria> listaCategoria = categoriaPadre.getCategorieFiglie();
+								
+			List<TreeNodeCategoria> listaTreeNodeCategoria= new ArrayList<TreeNodeCategoria>();
+			
+			Iterator<Categoria> it = listaCategoria.iterator();
+			
+			while(it.hasNext()) {
+				Categoria categoria = it.next();
+				listaTreeNodeCategoria.add(new TreeNodeCategoria(categoria));
+			}
+			
+			return listaTreeNodeCategoria;
+			
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante l'acquisizione delle categorie " +
 										"(" + e.toString() + ")");
 		}
-				
-		List<TreeNodeCategoria> listaTreeNodeCategoria= new ArrayList<TreeNodeCategoria>();
-		Iterator<Categoria> it = listaCategoria.iterator();
-		
-		while(it.hasNext()) {
-			Categoria categoria = it.next();
-			listaTreeNodeCategoria.add(new TreeNodeCategoria(categoria));
-		}
-		
-		return listaTreeNodeCategoria;
 	}
 }
 
