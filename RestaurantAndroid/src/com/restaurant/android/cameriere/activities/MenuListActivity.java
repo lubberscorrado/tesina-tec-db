@@ -1,4 +1,4 @@
-package com.restaurant.android;
+package com.restaurant.android.cameriere.activities;
 
 import android.app.ListActivity;
 import android.os.Bundle;

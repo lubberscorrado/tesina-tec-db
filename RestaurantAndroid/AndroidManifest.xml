@@ -18,9 +18,19 @@
             </intent-filter>
         </activity>
         
-            <activity
+         <activity
             android:label="@string/app_name"
-            android:name=".HomeActivity" >
+            android:name=".cameriere.activities.HomeActivity" >
+        </activity>
+        
+        <activity
+            android:label="@string/app_name"
+            android:name=".cameriere.activities.TablesListActivity" >
+        </activity>
+        
+        <activity
+            android:label="@string/app_name"
+            android:name=".cameriere.activities.NotificationActivity" >
         </activity>
     </application>
     

@@ -1,12 +1,12 @@
 package com.restaurant.android;
 
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -14,7 +14,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.apache.http.NameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,6 +30,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.restaurant.android.cameriere.activities.HomeActivity;
+
 public class LoginActivity extends Activity {
 	
 	/* Alcune variabili private per la gestione del login.  */
@@ -46,7 +47,7 @@ public class LoginActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.login_activity);
         
         /* Queste righe vanno DOPO "setContentView" */
         
@@ -85,7 +86,7 @@ public class LoginActivity extends Activity {
 		        editor.commit();
 		        
 		        HttpClient httpClient = new DefaultHttpClient();
-		        HttpPost httpPost = new HttpPost("http://192.168.1.101:8080/ClientEJB/login");
+		        HttpPost httpPost = new HttpPost("http://192.168.1.102:8080/ClientEJB/login");
 		        
 		        String responseBody = "";
 		        
