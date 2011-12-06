@@ -15,9 +15,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@NamedQueries({
-	@NamedQuery(name = "getCategorie",
-				query = "SELECT c FROM Categoria c WHERE c.idTenant = :idTenant AND c.idCategoriaPadre= :idCategoriaPadre")})
 @Table(name="categoria")
 public class Categoria {
 	
