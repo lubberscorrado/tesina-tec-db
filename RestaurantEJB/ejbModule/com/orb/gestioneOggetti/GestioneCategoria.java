@@ -84,6 +84,11 @@ public class GestioneCategoria {
 		
 		try {
 			
+			if(idPadre == 0) {
+				throw new DatabaseException("Non è possibile ritornare la categoria radice dal database, "+
+											"impossibile fare il JOIN");
+			}
+			
 			/* Acquisisco le categorie figlie dei nodi radici comuni limitando la selezione
 			 * al cliente di interesse  */
 			
