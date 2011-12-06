@@ -781,7 +781,7 @@ var _mainTabPanel = {
 		        rootVisible: true,
 		        store: Ext.getStore('datastore_gestione_menu'),
 		        //multiSelect: true,
-		        singleExpand: true,
+		        //singleExpand: true,
 		        //the 'columns' property is now 'headers'
 		        /*columns: [{
 		            xtype: 'treecolumn', //this is so we know which column will show the tree

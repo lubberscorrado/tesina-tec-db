@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.exceptions.DatabaseException;
 import com.orb.gestioneOggetti.*;
 import com.restaurant.*;
 
@@ -56,24 +57,40 @@ public class gestioneMenu extends HttpServlet {
 		
 		try{
 			if(node.equals("root")){
-				List<TreeNodeCategoria> listaCategorie = gestioneCategoria.getCategorie(idTenant, 0);
+				List<TreeNodeCategoria> listaCategorie = gestioneCategoria.getCategorie(idTenant, 1);
 				JSONArray json_array = new JSONArray();
 				JSONObject json_tmp = null;
 				if(listaCategorie != null){
 					for(int i=0; i<listaCategorie.size(); i++){
 						json_tmp = JSONFromBean.jsonFromOBJ(listaCategorie.get(i));
 						json_tmp.put("parentId","root");
+						json_tmp.put("tipo",1);	//Categoria
 						json_array.put(json_tmp);
 					}
 				}
 				JSONResponse.WriteOutput(response, true, "OK", "data", json_array); return;
 			}else if(node.startsWith("C")){
-				List<TreeNodeCategoria> listaCategorie = gestioneCategoria.getCategorie(idTenant, Integer.parseInt(request.getParameter("parentId").substring(1)));
+				int parentId = Integer.parseInt(	node.substring(1)	);
+				List<TreeNodeCategoria> listaCategorie = gestioneCategoria.getCategorie(idTenant, parentId);
+				JSONArray json_array = new JSONArray();
+				JSONObject json_tmp = null;
+				if(listaCategorie != null){
+					for(int i=0; i<listaCategorie.size(); i++){
+						json_tmp = JSONFromBean.jsonFromOBJ(listaCategorie.get(i));
+						json_tmp.put("parentId", node);
+						json_tmp.put("tipo",1);	//Categoria
+						json_array.put(json_tmp);
+					}
+				}
+				JSONResponse.WriteOutput(response, true, "OK", "data", json_array); return;
 			}else if(node.equals("V")){
 				
 			}
 			
 			
+		}catch (DatabaseException e) {
+			e.printStackTrace();
+			JSONResponse.WriteOutput(response, false, e.toString());			return;
 		}catch(Exception e){
 			JSONResponse.WriteOutput(response, false, "Eccezione generale");	return;
 		}
