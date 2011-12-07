@@ -86,7 +86,6 @@ public class gestioneMenu extends HttpServlet {
 					}
 				}
 				if(listaVociMenu != null){
-					System.out.println("DIMENSIONEEEE " + listaVociMenu.size());
 					for(int i=0; i<listaVociMenu.size(); i++){
 						json_tmp = JSONFromBean.jsonFromOBJ(listaVociMenu.get(i));
 						json_tmp.put("parentId", node);
@@ -95,21 +94,6 @@ public class gestioneMenu extends HttpServlet {
 					}
 				}
 				JSONResponse.WriteOutput(response, true, "OK", "data", json_array); return;
-			}else if(node.equals("V")){
-//				int parentId = Integer.parseInt(	node.substring(1)	);
-//				List<TreeNodeVoceMenu> listaVociMenu = gestioneVoceMenu.getVociMenuByCategoria(idTenant, parentId);
-//				JSONArray json_array = new JSONArray();
-//				JSONObject json_tmp = null;
-//				if(listaVociMenu != null){
-//					System.out.println("DIMENSIONEEEE " + listaVociMenu.size());
-//					for(int i=0; i<listaVociMenu.size(); i++){
-//						json_tmp = JSONFromBean.jsonFromOBJ(listaVociMenu.get(i));
-//						json_tmp.put("parentId", node);
-//						json_tmp.put("tipo",2);	//Voce Menu
-//						json_array.put(json_tmp);
-//					}
-//				}
-//				JSONResponse.WriteOutput(response, true, "OK", "data", json_array); return;
 			}
 			
 			
