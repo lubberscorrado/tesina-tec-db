@@ -76,6 +76,7 @@ public class GestioneVoceMenu{
 	 * @param idVoceMenu Id della voce di menu da modificare
 	 * @param nome Nome modificato della voce di menu
 	 * @param descrizione Descrizione modificata della voce di menu
+	 * @prezzo prezzo Prezzo modificato della voce di menu
 	 * @return Oggetto TreeNodeVoceMenu che rappresenta la nuova voce di menu
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
 	 * verificatosi
@@ -83,7 +84,8 @@ public class GestioneVoceMenu{
 	
 	public TreeNodeVoceMenu updateVoceMenu(	int idVoceMenu,
 			 									String nome,
-			 									String descrizione) throws DatabaseException {
+			 									String descrizione,
+			 									BigDecimal prezzo) throws DatabaseException {
 		try {
 			
 			VoceMenu voceMenu = em.find(VoceMenu.class, idVoceMenu);
@@ -93,6 +95,8 @@ public class GestioneVoceMenu{
 		
 			voceMenu.setNome(nome);
 			voceMenu.setDescrizione(descrizione);
+			voceMenu.setPrezzo(prezzo);
+			
 			return new TreeNodeVoceMenu(voceMenu);
 			
 		}catch(Exception e) {
