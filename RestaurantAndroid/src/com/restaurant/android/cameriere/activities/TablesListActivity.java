@@ -2,6 +2,7 @@ package com.restaurant.android.cameriere.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.restaurant.android.R;
 
@@ -16,6 +17,11 @@ public class TablesListActivity extends Activity {
 	  super.onCreate(savedInstanceState);
 	  setContentView(R.layout.cameriere_tables_list);
 	  
+	}
+	
+	public void onResume() {
+		super.onResume();
+		Toast.makeText(getApplicationContext(), "Resumed TablesListActivity", 5).show();
 	}
 
 }

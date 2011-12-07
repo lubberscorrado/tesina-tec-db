@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 /**
  *  Classe che mostra l'elenco del Menu
- * @author fabio
+ * 	@author fabio
  *
  */
 public class MenuListActivity extends ListActivity {
