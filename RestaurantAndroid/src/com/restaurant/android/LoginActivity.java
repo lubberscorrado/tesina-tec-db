@@ -1,25 +1,19 @@
 package com.restaurant.android;
 
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.HashMap;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.restaurant.android.cameriere.activities.HomeActivity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,8 +24,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.restaurant.android.cameriere.activities.HomeActivity;
-
 public class LoginActivity extends Activity {
 	
 	/* Alcune variabili private per la gestione del login.  */
@@ -41,6 +33,10 @@ public class LoginActivity extends Activity {
 	private Button btnCancel;
 	private RadioButton radioButtonCameriere;
 	private RadioButton radioButtonCucina;
+	
+	/* HashMap contenente i parametri da inviare nella richiesta post */
+	private HashMap<String, String> postParameters;
+	
 	TextView lblResult;
 	
     /** Called when the activity is first created. */
@@ -55,7 +51,7 @@ public class LoginActivity extends Activity {
         etPassword = (EditText)findViewById(R.id.password);
         btnLogin = (Button)findViewById(R.id.login_button);
         btnCancel = (Button)findViewById(R.id.cancel_button);
-//        lblResult = (TextView)findViewById(R.id.result);
+
         
         radioButtonCameriere = (RadioButton)findViewById(R.id.radioButtonCameriere);
         radioButtonCucina = (RadioButton)findViewById(R.id.radioButtonCucina);
@@ -68,91 +64,111 @@ public class LoginActivity extends Activity {
        
         /* Imposto il listener del bottone di Login */
         btnLogin.setOnClickListener(new OnClickListener() {
-		  	@Override
+		  	@SuppressWarnings("unchecked")
+			@Override
 		  	public void onClick(View v) {
+		  		
 		  		// Check Login
 		  		String username = etUsername.getText().toString();
 		  		String password = etPassword.getText().toString();
-		  		boolean logged = false;
+		  		
 		        // We need an Editor object to make preference changes.
 		        // All objects are from android.context.Context
-		  		
-		        SharedPreferences settings = getSharedPreferences("NextActivity", 0);
+		  		SharedPreferences settings = getSharedPreferences("NextActivity", 0);
 		        SharedPreferences.Editor editor = settings.edit();
 		        editor.putString("username", username);
 		        editor.putString("password", password);
 		        
 		        // Commit the edits!
 		        editor.commit();
+		  
+		        postParameters = new HashMap<String,String>();
+		        postParameters.put("user", username);
+		        postParameters.put("password", password);
 		        
-		        HttpClient httpClient = new DefaultHttpClient();
-		        HttpPost httpPost = new HttpPost("http://192.168.1.103:8080/ClientEJB/login");
-		        
-		        String responseBody = "";
-		        
-		        try {
-		        	List<NameValuePair> postParameters = new ArrayList<NameValuePair>(2);
-		        	postParameters.add(new BasicNameValuePair("user", username));
-		        	postParameters.add(new BasicNameValuePair("password", password ));
-		        	httpPost.setEntity(new UrlEncodedFormEntity(postParameters));
-		        	
-		        	HttpResponse response = httpClient.execute(httpPost);
-		        	responseBody = EntityUtils.toString(response.getEntity());
-		        	
-		        	Log.e("LoginActivity", responseBody);
-		        	//Toast.makeText(getApplicationContext(), responseBody, 20).show();
-		        			        	
-		        } catch (ClientProtocolException e) {
-		        	Toast.makeText(getApplicationContext(), "Errore durante la comunicazione con il server", 20).show();
-		        	Log.e("LoginActivity", e.toString());
-		        } catch (IOException e) {
-		        	Toast.makeText(getApplicationContext(), "Impossibile contattare il server", 20).show();
-		        	Log.e("LoginActivity", e.toString());
-		        }
-		        
-		        
-		        try {
-					
-		        	
-		        	JSONObject jObject = new JSONObject(responseBody);
-					
-		        	if(jObject.getBoolean("success") == true) 
-		        		logged = true;
-		        	
-					Log.e("LoginActivity", "isCassiere: " + jObject.getJSONObject("privs").getString("isCassiere"));
-					Log.e("LoginActivity", "isCuoco: " + jObject.getJSONObject("privs").getString("isCuoco"));
-					
-					if(logged) {
-						if(radioButtonCameriere.isChecked() && jObject.getJSONObject("privs").getString("isCassiere").equals("true"))
-							Toast.makeText(getApplicationContext(), "Hai i privilegi per essere cameriere", 20).show();
-						else if(radioButtonCucina.isChecked() && jObject.getJSONObject("privs").getString("isCuoco").equals("true"))
-							Toast.makeText(getApplicationContext(), "Hai i privilegi per essere cuoco", 20).show();
-					
-						//-----------------------
-				        // Open New Activity
-				  		//-----------------------
-				  		Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
-				  		LoginActivity.this.startActivity(myIntent);
-				  		
-					} else {
-						Toast.makeText(getApplicationContext(), "Login failed. Username and/or password doesn't match", 20).show();
-					}
-					
-		        } catch (JSONException e) {
-					Log.e("LoginActivity", e.toString());
-				}
+		        new LoginTask().execute(postParameters);
 
 		  	}
-		  });
-		  
-        
-        /* Se clicco su "Cancel", esce */
-          btnCancel.setOnClickListener(new OnClickListener() {
+        });
+
+     /* Se clicco su "Cancel", esce */
+     btnCancel.setOnClickListener(new OnClickListener() {
 		  	@Override
 		  	public void onClick(View v) {
 		  		// Close the application
 		  		finish();
 		  	}
 		  });
+    }
+    
+	 /*****************************************************************
+	  * Async Task che gestisce le richieste di login verso il server *
+	  *****************************************************************/
+     class LoginTask extends AsyncTask<HashMap<String, String>, Object, Error> {
+        	  
+     	@Override
+		protected Error doInBackground(HashMap<String, String>... hashMap) {
+		    		
+       		Boolean logged = false;
+			RestaurantApplication restApp = ((RestaurantApplication)getApplication());
+			
+			try {
+				String responseBody = restApp.makeHttpPostRequest("http://192.168.1.101:8080/ClientEJB/login", hashMap[0]);
+			        					
+				/*****************************************
+				 * Decodifica della risposta del server **
+				 *****************************************/
+					
+				JSONObject jObject = new JSONObject(responseBody);
+					
+		        if(jObject.getBoolean("success") == true) 
+		        	logged = true;
+		        	
+				Log.e("LoginTask", "isCassiere: " + jObject.getJSONObject("privs").getString("isCassiere"));
+				Log.e("LoginTask", "isCuoco: " + jObject.getJSONObject("privs").getString("isCuoco"));
+					
+				if(logged) {
+						
+					if( (radioButtonCameriere.isChecked() && !jObject.getJSONObject("privs").getString("isCassiere").equals("true")) ||
+						(radioButtonCucina.isChecked() && !jObject.getJSONObject("privs").getString("isCuoco").equals("true"))) {
+							
+						/* Il login è stato effettuato correttamente ma non sia hanno i privilegi per accedere alla 
+						 * funzionalità richiesta  */
+				
+						logged = false;
+					}
+				}
+						
+			} catch (ClientProtocolException e) {
+				Log.e("LoginTask", "Eccezione ClientProtocolException");
+				return  new Error("Errore durante la comunicazione con il server", true);
+			} catch (IOException e) {
+				Log.e("LoginTask", "Eccezione IO" + e.toString());
+				return  new Error("Errore di connettività", true);
+			} catch (JSONException e) {
+				return  new Error("Errore durante la lettura della risposta dal server", true);
+				
+			} 
+
+			return new Error("Log in effettuato con successo", false);
+		}
+        	
+        /* Metodo chiamato dal thread che crea l'oggetto AsyncTask */
+        @Override
+        protected void onPostExecute(Error error) {
+        	if(error.errorOccurred()) { 
+        		
+        		Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+        		
+        	} else {
+        		/* Apro la nuova attività a seconda della funzionalità richiesta dall'utente */
+				
+				Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+		  		LoginActivity.this.startActivity(myIntent);
+		  		Toast.makeText(getApplicationContext(), "Login effettuato con successo!", 20).show();
+		  		
+        	}
+        }
+   
     }
 }
