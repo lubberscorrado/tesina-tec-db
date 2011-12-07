@@ -1,6 +1,7 @@
 package Servlets;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -30,6 +31,7 @@ public class gestioneMenu extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private int idTenant = -1;
 	@EJB	private GestioneCategoria	gestioneCategoria;
+	@EJB	private GestioneVoceMenu	gestioneVoceMenu;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -72,6 +74,7 @@ public class gestioneMenu extends HttpServlet {
 			}else if(node.startsWith("C")){
 				int parentId = Integer.parseInt(	node.substring(1)	);
 				List<TreeNodeCategoria> listaCategorie = gestioneCategoria.getCategorie(idTenant, parentId);
+				List<TreeNodeVoceMenu> listaVociMenu = gestioneVoceMenu.getVociMenuByCategoria(idTenant, parentId);
 				JSONArray json_array = new JSONArray();
 				JSONObject json_tmp = null;
 				if(listaCategorie != null){
@@ -82,9 +85,31 @@ public class gestioneMenu extends HttpServlet {
 						json_array.put(json_tmp);
 					}
 				}
+				if(listaVociMenu != null){
+					System.out.println("DIMENSIONEEEE " + listaVociMenu.size());
+					for(int i=0; i<listaVociMenu.size(); i++){
+						json_tmp = JSONFromBean.jsonFromOBJ(listaVociMenu.get(i));
+						json_tmp.put("parentId", node);
+						json_tmp.put("tipo",2);	//Voce Menu
+						json_array.put(json_tmp);
+					}
+				}
 				JSONResponse.WriteOutput(response, true, "OK", "data", json_array); return;
 			}else if(node.equals("V")){
-				
+//				int parentId = Integer.parseInt(	node.substring(1)	);
+//				List<TreeNodeVoceMenu> listaVociMenu = gestioneVoceMenu.getVociMenuByCategoria(idTenant, parentId);
+//				JSONArray json_array = new JSONArray();
+//				JSONObject json_tmp = null;
+//				if(listaVociMenu != null){
+//					System.out.println("DIMENSIONEEEE " + listaVociMenu.size());
+//					for(int i=0; i<listaVociMenu.size(); i++){
+//						json_tmp = JSONFromBean.jsonFromOBJ(listaVociMenu.get(i));
+//						json_tmp.put("parentId", node);
+//						json_tmp.put("tipo",2);	//Voce Menu
+//						json_array.put(json_tmp);
+//					}
+//				}
+//				JSONResponse.WriteOutput(response, true, "OK", "data", json_array); return;
 			}
 			
 			
@@ -106,24 +131,81 @@ public class gestioneMenu extends HttpServlet {
     	if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
     		return;
     	}
+    	JSONObject json_tmp = null;
+    	idTenant = (Integer) request.getSession().getAttribute("idTenant");
+    	String action = request.getParameter("action");
+    	
     	
     	
     	try{
 			//CREATE
-    		if(request.getParameter("action").equals("create")){
+    		if(action.equals("create")){
+    			
+    			int tipo = Integer.parseInt(request.getParameter("tipo"));
+    			int parentId = Integer.parseInt( request.getParameter("parentId").substring(1) );
+    			String nome = request.getParameter("nome");
+    			String descrizione = request.getParameter("descrizione");
+    			JSONArray json_array = new JSONArray();
+    			if( tipo == 1){	//Categoria
+    				TreeNodeCategoria treeNodeCategoria = gestioneCategoria.aggiungiCategoria(idTenant, nome, descrizione, parentId);
+    				json_tmp = JSONFromBean.jsonFromOBJ(treeNodeCategoria);
+    				json_tmp.put("parentId", request.getParameter("parentId"));
+    				json_tmp.put("tipo", 1);
+    				json_array.put(json_tmp);
+    			}else{
+    				BigDecimal prezzo = BigDecimal.valueOf(Double.parseDouble( request.getParameter("prezzo") ));
+    				TreeNodeVoceMenu treeNodeVoceMenu = gestioneVoceMenu.aggiungiVoceMenu(idTenant, parentId, nome, descrizione, prezzo);
+    				json_tmp = JSONFromBean.jsonFromOBJ(treeNodeVoceMenu);
+    				json_tmp.put("parentId", request.getParameter("parentId"));
+    				json_tmp.put("tipo", 2);
+    				json_array.put(json_tmp);
+    			}
+    			
+    			
+    			JSONResponse.WriteOutput(response, true, "Elemento creato correttamente", "create", "data", json_array);	return;
     			
     		//UPDATE
-    		}else if(request.getParameter("action").equals("update")){
-    			
+    		}else if(action.equals("update")){
+    			JSONArray json_array = new JSONArray();
+    			String idString = request.getParameter("id");
+    			String nome = request.getParameter("nome");
+    			String descrizione = request.getParameter("descrizione");
+    			int id = Integer.parseInt( idString.substring(1));
+    			if(idString.startsWith("C")){
+    				TreeNodeCategoria treeNodeCategoria = gestioneCategoria.updateCategoria(id, nome, descrizione);
+    				json_tmp = JSONFromBean.jsonFromOBJ(treeNodeCategoria);
+    				json_tmp.put("parentId", request.getParameter("parentId"));
+    				json_tmp.put("tipo", 1);
+    				json_array.put(json_tmp);
+    			}else if(idString.startsWith("V")){
+    				BigDecimal prezzo = BigDecimal.valueOf(Double.parseDouble( request.getParameter("prezzo") ));
+    				TreeNodeVoceMenu treeNodeVoceMenu = gestioneVoceMenu.updateVoceMenu(id, nome, descrizione,prezzo);
+    				json_tmp = JSONFromBean.jsonFromOBJ(treeNodeVoceMenu);
+    				json_tmp.put("parentId", request.getParameter("parentId"));
+    				json_tmp.put("tipo", 2);
+    				json_array.put(json_tmp);
+    			}
+    			JSONResponse.WriteOutput(response, true, "Elemento modificato correttamente.", "update", "data", json_array);	return;
     		//DELETE
-    		}else if(request.getParameter("action").equals("delete")){
-    			
+    		}else if(action.equals("delete")){
+    			String idString = request.getParameter("id");
+    			int id = Integer.parseInt( idString.substring(1));
+    			if(idString.startsWith("C")){
+    				gestioneCategoria.deleteCategoria(id);
+    			}else if(idString.startsWith("V")){
+    				gestioneVoceMenu.deleteVoceMenu(id);
+    			}
+    			JSONResponse.WriteOutput(response, true, "Elemento cancellato correttamente."); return;
     		}
 			
     		//Caso del delete di default del datasource
     		JSONResponse.WriteOutput(response, true, "OK"); return;
 			
+    	}catch (DatabaseException e) {
+			e.printStackTrace();
+			JSONResponse.WriteOutput(response, false, e.toString());			return;
 		}catch(Exception e){
+			e.printStackTrace();
 			JSONResponse.WriteOutput(response, false, "Eccezione generale");	return;
 		}
     	

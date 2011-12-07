@@ -112,5 +112,15 @@ public class JSONFromBean {
 		json_obj.put("descrizione", 		treeNodeCategoria.getDescrizione());
 		return json_obj;
 	}
+	
+	public static JSONObject jsonFromOBJ(TreeNodeVoceMenu treeNodeVoceMenu){
+		JSONObject json_obj = new JSONObject();
+		json_obj.put("id", 		"V"+treeNodeVoceMenu.getIdVoceMenu());
+		//json_obj.put("parentId", 		"C"+treeNodeVoceMenu.);
+		json_obj.put("nome", 		treeNodeVoceMenu.getNome());
+		json_obj.put("descrizione", 		treeNodeVoceMenu.getDescrizione());
+		json_obj.put("prezzo", 		treeNodeVoceMenu.getPrezzo());
+		return json_obj;
+	}
 
 }

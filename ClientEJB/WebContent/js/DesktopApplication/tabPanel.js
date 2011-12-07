@@ -823,13 +823,13 @@ var _mainTabPanel = {
 			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                        			_mainTabPanel.addNewNodeGestioneMenu(rec,false);
 			                        		}
-			                            },{
+			                            }/*,{
 			                            	text: 'Modifica categoria',
 			                            	handler: function(){
 			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                            		_mainTabPanel.updateNodeGestioneMenu(rec);
 			                            	}
-			                            }
+			                            }*/
 			                        ]
 			                    });
 		                	}else if(depth >= 2){
@@ -987,6 +987,9 @@ var _mainTabPanel = {
 				        fieldLabel: 'Depth',
 				        name: 'depth'
 				    },{
+				        fieldLabel: 'Tipo',
+				        name: 'tipo'
+				    },{
 				        fieldLabel: 'Nome',
 				        name: 'nome',
 				        allowBlank: false
@@ -1012,44 +1015,46 @@ var _mainTabPanel = {
 				                // Submit the Ajax request and handle the response
 				                form.submit({
 				                	params : {
-				                    	action : 'create'
+				                    	action : this.up('form').action
 				                    },
 				                    success: function(form, action) {
-				                    	Ext.getCmp('window_inserimentoNodoGestioneTavolo').destroy();
-				                    	var parentId = null;
-				                    	var nuovo_nodo = Ext.create('nodoGestioneTavolo', {
-				                    		id: 			action.result.data[0].id,
-				                    		parentId: 		action.result.data[0].parentId,
-				                    		nome: 			action.result.data[0].nome,
-					                    	tipo: 			action.result.data[0].tipo
-				                    	});
+				                    	console.debug('OK');
+				                    	if( action.result.action == 'create' ){
+				                    		console.debug('OK SUCCESSO CREATE');
+				                    		var nuovo_nodo = Ext.create('nodoGestioneMenu', {
+					                    		id: 			action.result.data[0].id,
+					                    		parentId: 		action.result.data[0].parentId,
+					                    		nome: 			action.result.data[0].nome,
+					                    		tipo: 			action.result.data[0].tipo,
+					                    		descrizione:	action.result.data[0].descrizione,
+					                    		prezzo:			action.result.data[0].prezzo
+					                    	});
+				                    		Ext.getStore('datastore_gestione_menu').getNodeById(nuovo_nodo.get('parentId')).appendChild(nuovo_nodo);
 				                    	
-				                    	
-				                    	
-				                    	
-				                    	
-				                    	switch(action.result.data[0].tipo){
-				                    		case 1: {
-							                    		nuovo_nodo.set('parentId','root');
-							                    		parentId = 'root';
-					                    				break;
-				                    		}
-				                    		case 2: {
-							                    		parentId = 'P'+action.result.data[0].parentId;
-							                    		break;
-						                    }
-				                    		case 3: {
-							                    		parentId = 'A'+action.result.data[0].parentId;
-							                    		break;
-						                    }
-				                    		default: {parentId = 'root';	break;}
+				                    	}else if ( action.result.action == 'update' ){
+				                    		console.debug('OK SUCCESSO UPDATE');
+				                    		var updatedNode = Ext.getStore('datastore_gestione_menu').getNodeById(action.result.data[0].id);
+					                    		updatedNode.set('id',action.result.data[0].id);
+					                    		updatedNode.set('id',action.result.data[0].parentId);
+					                    		updatedNode.set('id',action.result.data[0].nome);
+					                    		updatedNode.set('id',action.result.data[0].tipo);
+					                    		updatedNode.set('id',action.result.data[0].descrizione);
+					                    		updatedNode.set('id',action.result.data[0].prezzo);
+					                    		if(action.result.data[0].tipo == 1){
+					                    			updatedNode.set('text',action.result.data[0].nome);
+					                    		}else{
+					                    			updatedNode.set('text',action.result.data[0].nome+' - ['+action.result.data[0].prezzo+'€]');
+					                    		}
 				                    	}
-				                    	console.debug("PARENT ID NUOVO NODO: "+parentId);
-				                    	console.debug('Nuovo nodo creato: '+nuovo_nodo.get('id')+' - '+nuovo_nodo.get('parentId')+' - '+nuovo_nodo.get('text')+' - '+nuovo_nodo.get('tipo'));
-				                    	var nodo_padre = Ext.getStore('datastore_gestione_tavolo').getNodeById(parentId);
-				                    	nodo_padre.appendChild(nuovo_nodo);
 				                    	
+				                    	
+				                    	
+				                    	
+				                    	
+				                    	Ext.getCmp('viewport_east').collapse();
 				                    	Ext.Msg.alert('Info: ', action.result.message);
+				                    	Ext.getCmp('window_inserimentoNodoGestioneMenu').destroy();
+				                    	Ext.getCmp('form_gestioneMenu').destroy();
 				                    	
 				                    },
 				                    failure: function(form, action) {
@@ -1063,30 +1068,61 @@ var _mainTabPanel = {
 		},
 		addNewNodeGestioneMenu : function(parentNode,isVoceMenu){
 			console.debug('NUOVO NODO MENU');
+			var a = Ext.getCmp('window_inserimentoNodoGestioneMenu');
+			var b = Ext.getCmp('form_gestioneMenu');
+			if(a != undefined) a.destroy();
+			if(b != undefined) b.destroy();
 			var form = this.createFormGestioneMenu();
+			form.action = 'create';
+			form.isVoceMenu = isVoceMenu;
 			//if(parentNode.)
 			var askWindow = Ext.create('Ext.window.Window', {
-				id: 'window_inserimentoNodoGestioneTavolo',
+				id: 'window_inserimentoNodoGestioneMenu',
         	    title: 'Hello',
         	    //height: 400,
-        	    width: 400,
+        	    //width: 400,
         	    layout: 'fit'
         	});
 			form.getForm().findField('id').hide();
 			form.getForm().findField('parentId').hide();
+			form.getForm().findField('parentId').setValue(parentNode.get('id'));
 			form.getForm().findField('depth').hide();
+			form.getForm().findField('tipo').hide();
 			if(isVoceMenu == true){
 				askWindow.setTitle('Aggiungi nuova voce di menù');
+				form.getForm().findField('tipo').setValue(2);
 			}else{
 				askWindow.setTitle('Aggiungi nuova categoria');
 				form.getForm().findField('prezzo').hide();
+				form.getForm().findField('parentId').setValue(parentNode.get('id'));
+				form.getForm().findField('tipo').setValue(1);
 			}
 			
 			askWindow.add(form);
 			askWindow.show();
 		},
 		updateNodeGestioneMenu : function(selectedNode){
+			var a = Ext.getCmp('form_gestioneMenu');
+			if(a != undefined) a.destroy();
+			var form = this.createFormGestioneMenu();
+			form.action = 'update';
+			form.selectedNode = selectedNode;
+			form.getForm().findField('id').hide();
+			form.getForm().findField('parentId').hide();
+			form.getForm().findField('depth').hide();
+			form.getForm().findField('tipo').hide();
+			if(selectedNode.get('tipo') == 2){
+				form.setTitle('Modifica voce di menù');
+			}else{
+				form.setTitle('Modifica categoria');
+				form.getForm().findField('prezzo').hide();
+			}
 			
+			form.getForm().loadRecord(selectedNode);
+			
+			Ext.getCmp('viewport_east').removeAll();
+			Ext.getCmp('viewport_east').expand();
+			Ext.getCmp('viewport_east').add(Ext.getCmp('form_gestioneMenu'));
 		},
 		deleteNodeGestioneMenu : function(selectedNode){
 			Ext.MessageBox.confirm('Conferma', 'Sei sicuro di voler rimuovere '+selectedNode.get('nome')+'?', function(btn){

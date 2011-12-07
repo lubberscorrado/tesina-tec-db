@@ -80,7 +80,7 @@ Ext.create('Ext.data.TreeStore', {
             	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
             }else if( tipo == 2){	//VOCE MENU
             	newChildNode.set('leaf', true);
-            	newChildNode.set('text', newChildNode.get('nome')+'['+newChildNode.get('prezzo')+']');
+            	newChildNode.set('text', newChildNode.get('nome')+' - ['+newChildNode.get('prezzo')+'€]');
             	newChildNode.set('qtip', newChildNode.get('descrizione'));
             	//newChildNode.set('id', 'A'+newChildNode.get('realId'));
             	//newChildNode.set('parentId', 'P'+newChildNode.get('parentId'));
