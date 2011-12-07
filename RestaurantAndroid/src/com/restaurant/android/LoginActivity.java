@@ -86,7 +86,7 @@ public class LoginActivity extends Activity {
 		        editor.commit();
 		        
 		        HttpClient httpClient = new DefaultHttpClient();
-		        HttpPost httpPost = new HttpPost("http://192.168.1.102:8080/ClientEJB/login");
+		        HttpPost httpPost = new HttpPost("http://192.168.1.103:8080/ClientEJB/login");
 		        
 		        String responseBody = "";
 		        
