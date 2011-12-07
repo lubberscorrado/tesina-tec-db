@@ -67,6 +67,57 @@ public class GestioneCategoria {
 		}
 		
 	}
+			
+	/**
+	 * Modifica una categoria a partire dal suo id
+	 * @param idCategoria Id della categoria da modificare
+	 * @param nome Nome della categoria modificata
+	 * @param descrizione Descrizione della cateogoria modificata
+	 * @return Oggetto TreeNodeCategoria che rappresenta la categoria modificata
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
+	 */
+	 
+	 public TreeNodeCategoria updateCategoria(	int idCategoria,
+			 									String nome,
+			 									String descrizione) throws DatabaseException {
+			
+		
+		try {
+			
+			Categoria categoria = em.find(Categoria.class, idCategoria);
+			
+			if(categoria == null)
+				throw new DatabaseException("Errore durante la ricerca della categoria da aggiornare");
+		
+			categoria.setNome(nome);
+			categoria.setDescrizione(descrizione);
+			
+			return new TreeNodeCategoria(categoria);
+			
+		}catch(Exception e) {
+			
+			throw new DatabaseException("Errore durante la modifica della categoria (" +e.toString() +")");
+			
+		}
+	 }
+	 
+	 /**
+	  * Elimina una categoria a partire dall'id
+	  * @param idCategoria Id della categoria da elimiare
+	  * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore che si è verificato
+	  */
+	 public void deleteCategoria(int idCategoria) throws DatabaseException {
+		 try {
+			 Categoria categoria = em.find(Categoria.class, idCategoria);
+			 if(categoria == null)
+				 throw new DatabaseException("Errore durante la ricerca della categoria da eliminare");
+			 em.remove(categoria);
+		 } catch (Exception e) {
+			 throw new DatabaseException("Errore durante l'eliminazione della categoria ("+ e.toString() +")");
+		 }
+	  }
+	 
+	 
 	
 	/**
 	 * Ritorna una lista delle categorie appartenenti ad un cliente e figlie di una determinata

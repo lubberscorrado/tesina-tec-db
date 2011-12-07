@@ -102,7 +102,7 @@ public class GestioneArea{
 	 }
 	 
 	 /**
-	  * Elimina un'are a partire dall'id.
+	  * Elimina un'area a partire dall'id.
 	  * @param idArea id dell'area da eliminare
 	  * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore che si è verificato
 	  */

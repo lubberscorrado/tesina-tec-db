@@ -70,6 +70,53 @@ public class GestioneVoceMenu{
 			
 		}
 	}
+	
+	/**
+	 * Aggiorna una voce di menu a partire dall'id
+	 * @param idVoceMenu Id della voce di menu da modificare
+	 * @param nome Nome modificato della voce di menu
+	 * @param descrizione Descrizione modificata della voce di menu
+	 * @return Oggetto TreeNodeVoceMenu che rappresenta la nuova voce di menu
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 */
+	
+	public TreeNodeVoceMenu updateVoceMenu(	int idVoceMenu,
+			 									String nome,
+			 									String descrizione) throws DatabaseException {
+		try {
+			
+			VoceMenu voceMenu = em.find(VoceMenu.class, idVoceMenu);
+			
+			if(voceMenu == null)
+				throw new DatabaseException("Errore durante la ricerca della voce di menu da eliminare");
+		
+			voceMenu.setNome(nome);
+			voceMenu.setDescrizione(descrizione);
+			return new TreeNodeVoceMenu(voceMenu);
+			
+		}catch(Exception e) {
+			throw new DatabaseException("Errore durante la modifica della voce di menu (" +e.toString() +")");
+		}
+	 }
+	 	 
+	 
+	/**
+	 * Elimina una voce di menu a partire dall'id
+	 * @param idVoceMenu Id della voce di menu da eliminare
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore verificatosi
+	 */
+	 
+	 public void deleteVoceMenu(int idVoceMenu) throws DatabaseException {
+		 try {
+			 VoceMenu  voceMenu = em.find(VoceMenu.class, idVoceMenu);
+			 if(voceMenu == null)
+				 throw new DatabaseException("Errore durante la ricerca della voce di menu da eliminare");
+			 em.remove(voceMenu);
+		 } catch (Exception e) {
+			 throw new DatabaseException("Errore durante l'eliminazione della voce di menu ("+ e.toString() +")");
+		 }
+	  }
 		
 	/**
 	 * Ritorna tutte le voci di menu associate ad una categoria. L'id del cliente è necessario
