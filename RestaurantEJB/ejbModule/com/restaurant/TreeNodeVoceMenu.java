@@ -12,6 +12,7 @@ public class TreeNodeVoceMenu {
 	private BigDecimal prezzo;
 	
 	public TreeNodeVoceMenu(VoceMenu voceMenu) {
+		
 		this.idVoceMenu = voceMenu.getIdVoceMenu();
 		this.nome = voceMenu.getNome();
 		this.descrizione = voceMenu.getDescrizione();
