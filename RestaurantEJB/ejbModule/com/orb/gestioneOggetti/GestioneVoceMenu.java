@@ -63,7 +63,7 @@ public class GestioneVoceMenu{
 			
 			em.persist(voceMenu);
 			
-			return new TreeNodeVoceMenu(null);
+			return new TreeNodeVoceMenu(voceMenu);
 		
 		}catch (Exception e) {
 			throw new DatabaseException("Errore durante l'inserimento della voce di menu (" + e.toString() +")");
