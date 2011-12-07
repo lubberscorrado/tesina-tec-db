@@ -4,9 +4,48 @@ var _viewPort;
 var _viewPort_panel_east;
 var _viewPort_panel_west;
 
+var _global = {
+		_restaurant : 'BOH',
+		_user : 'Gennaro',
+		_isCameriere : false,
+		_isCuoco : false,
+		_isCassiere : false,
+		_isAdministrator : false
+};
+
+
+function main(){
+	Ext.Ajax.request({
+	    url: 'login',
+	    method: 'POST',
+	    params: {
+	        action: 'login_info'
+	    },
+	    success: function(response){
+	    	var json_response = Ext.JSON.decode(response.responseText);
+	    	console.debug('Logged '+json_response.logged);
+
+	    	if( json_response.logged == true){
+	    		_global._restaurant = 		json_response.restaurant;
+		    	_global._user = 			json_response.user;
+		    	_global._isCameriere = 		json_response.isCameriere;
+		    	_global._isCuoco = 			json_response.isCuoco;
+		    	_global._isCassiere = 		json_response.isCassiere;
+		    	_global._isAdministrator = 	json_response.isAdministrator;
+		    	if( _global._isCassiere == true){
+		    		desktop_main();
+		    	}
+	    	}else{
+	    		location.replace('index_login.jsp');
+	    	}
+	    	
+	    }
+	});
+};
+
 
 /* Funzione main */
-var desktop_main = function desktop_main(){
+function desktop_main(){
 	
 	document.getElementById('center').innerHTML = '';
 	
@@ -52,6 +91,9 @@ var desktop_main = function desktop_main(){
 	});
 	
 	_mainTabPanel.addTabStato();
-	_mainTabPanel.addTabGestioneTavolo();
-	_mainTabPanel.addTabGestioneMenu();
+	
+	if(_global._isAdministrator == true){
+		_mainTabPanel.addTabGestioneTavolo();
+		_mainTabPanel.addTabGestioneMenu();
+	}
 };

@@ -79,7 +79,12 @@ var registration_main = function registration_main(){
 	        fieldLabel: 'Nome utente',
 	        name: 'username',
 	        allowBlank: false
-	    }],
+	    },{
+            xtype: 'displayfield',
+            //name: 'displayfield1',
+            //fieldLabel: 'Registrati',
+            value: 'Se sei già registrato e vuoi effettuare l\'accesso clicca <a href="index_login.jsp">qui</a>!'
+        }],
 
 	    // Reset and Submit buttons
 	    buttons: [{

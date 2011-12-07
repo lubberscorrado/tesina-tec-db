@@ -2,7 +2,7 @@ function get_main_toolbar(){
 	tmp = Ext.create('Ext.toolbar.Toolbar', {
 		id: 'main_toolbar',
 		region: 'north',
-		items: [
+		items: [	'Utente: '+_global._user+' @ '+_global._restaurant,/*
 		               {
 		                   // xtype: 'button', // default for Toolbars
 		                   text: 'Button'
@@ -43,9 +43,24 @@ function get_main_toolbar(){
 		               { xtype: 'tbspacer' },// same as ' ' to create Ext.toolbar.Spacer
 		               'text 2',
 		               { xtype: 'tbspacer', width: 50 }, // add a 50px space
-		               'text 3',{
+		               'text 3',
+		               
+		               */
+		               '->',{
 		                   xtype: 'button',
-		                   text: 'LogOut'
+		                   text: 'LogOut',
+		                   handler: function(){
+		                	   Ext.Ajax.request({
+		                		    url: 'login',
+		                		    method: 'POST',
+		                		    params: {
+		                		        action: 'logout'
+		                		    },
+		                		    success: function(response){
+		                		    	location.replace('index_login.jsp');
+		                		    }
+		                		});
+		                   }
 		               }
 		]
 	});

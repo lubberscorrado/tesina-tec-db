@@ -710,7 +710,7 @@ var _mainTabPanel = {
 			                       }else{
 			                    	   updatedNode.set('enabled','off');
 			                       }
-			                      
+			                       Ext.getCmp('viewport_east').collapse();
 			                    },
 			                    failure: function(form, action) {
 			                        Ext.Msg.alert('Failed', action.result.message);
@@ -1045,13 +1045,14 @@ var _mainTabPanel = {
 					                    		}else{
 					                    			updatedNode.set('text',action.result.data[0].nome+' - ['+action.result.data[0].prezzo+'€]');
 					                    		}
+					                    	Ext.getCmp('viewport_east').collapse();
 				                    	}
 				                    	
 				                    	
 				                    	
 				                    	
 				                    	
-				                    	Ext.getCmp('viewport_east').collapse();
+				                    	
 				                    	Ext.Msg.alert('Info: ', action.result.message);
 				                    	Ext.getCmp('window_inserimentoNodoGestioneMenu').destroy();
 				                    	Ext.getCmp('form_gestioneMenu').destroy();

@@ -39,7 +39,12 @@ var login_main = function registration_main(){
 	        name: 'password',
 	        inputType: 'password',
 	        allowBlank: false
-	    }],
+	    },{
+            xtype: 'displayfield',
+            //name: 'displayfield1',
+            //fieldLabel: 'Registrati',
+            value: 'Se non hai ancora registrato il tuo ristorante clicca <a href="index_registrazione.jsp">qui</a>!'
+        }],
 
 	    // Reset and Submit buttons
 	    buttons: [{
