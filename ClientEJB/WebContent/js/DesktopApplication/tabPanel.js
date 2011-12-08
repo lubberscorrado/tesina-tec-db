@@ -40,6 +40,11 @@ var _mainTabPanel = {
 				align : 'stretch',
 				id: 'tabella_stato_tavolo',
 				margin: '2 2 2 2',
+//				css:'background-color: #000000;border-style:solid;border-color:#0000ff;',
+//				bodyStyle: {
+//				    background: '#000000',
+//				    padding: '10px'
+//				},
 				autoScroll: true,
 		        store: Ext.getStore('datastore_stato_tavolo'),
 		        columns: [
@@ -272,9 +277,32 @@ var _mainTabPanel = {
 			this._tab_stato = Ext.create('Ext.panel.Panel', {
 				id:	'main_tabPanel_stato',
 				
-				layout: {
-			        type: 'vbox',
-			        align: 'stretch'
+//				layout: {
+//			        type: 'vbox',
+//			        align: 'stretch'
+//			    },
+			    
+			    layout: {
+			        type: 'accordion',
+			        align: 'stretch',
+			        //itemCls: 'Css/custom.css'
+			        //multi: true
+			        //css:'background-color: #000000;border-style:solid;border-color:#0000ff;'
+			    },
+			    defaults: {
+			        // applied to each contained panel
+			        //bodyStyle: 'padding:15px'
+//			    	bodyStyle: {
+//					    background: '#000000',
+//					    padding: '10px'
+//					}
+			    },
+			    layoutConfig: {
+			        // layout-specific configs go here
+			        titleCollapse: false,
+			        animate: true,
+			        activeOnTop: true
+			        
 			    },
 				
 				title: 'Stato locale',

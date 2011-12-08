@@ -1,0 +1,51 @@
+#tabella_stato_tavolo .x-panel-header-default{
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #909090)  !important;
+}
+
+#tabella_stato_tavolo .x-panel-header-default .x-component-default .x-panel-header-text-default{
+	font-size: medium;
+}
+
+#tabella_statoCameriere .x-panel-header-default{
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #909090)  !important;
+}
+
+#tabella_statoCameriere .x-panel-header-default .x-component-default .x-panel-header-text-default{
+	font-size: medium;
+}
+
+#tabella_statoCuoco .x-panel-header-default{
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #909090)  !important;
+}
+
+#tabella_statoCuoco .x-panel-header-default .x-component-default .x-panel-header-text-default{
+	font-size: medium;
+}
+
+/*
+#header-1099{
+	color: aqua;
+	background: aqua;
+	background-color: blue;
+}
+*/
+/*
+.x-panel-header-default {
+    background-color: #D7D2D2;
+    background-image: -moz-linear-gradient(center top , #F0F0F0, #D7D7D7);
+    border-color: #D0D0D0;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 0 0 #EFEDED inset;
+    font-size: 11px;
+    line-height: 15px;
+}
+*/
+/*stili per il layout fisso con background*/
+/*
+html,body{margin: 0;padding:0}
+body{font-family: arial,sans-serif;
+	font-size: 100%;
+	text-align: center;
+}
+*/
