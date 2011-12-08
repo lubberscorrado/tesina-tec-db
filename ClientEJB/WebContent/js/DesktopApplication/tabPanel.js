@@ -4,6 +4,7 @@ var _mainTabPanel = {
 		_panel: Ext.create('Ext.tab.Panel', {
 			id: 'main_tabPanel',
 			region: 'center',
+			layout: 'fit',
 			width: '100%',
 		    height: '100%',
 		    listeners: {
@@ -36,6 +37,7 @@ var _mainTabPanel = {
 			this._tabella_stato_tavolo = Ext.create('Ext.grid.Panel', {
 				title: 'Stato: tavoli',
 				flex: 3,
+				align : 'stretch',
 				id: 'tabella_stato_tavolo',
 				margin: '2 2 2 2',
 				autoScroll: true,
@@ -93,21 +95,6 @@ var _mainTabPanel = {
 		                iconCls: 'icon-add',
 		                handler: function(){
 		                	Ext.getStore('datastore_stato_tavolo').load();
-		                }
-		            },{
-		                text: 'Add',
-		                iconCls: 'icon-add',
-		                handler: function(){
-		                    // empty record
-		                	Ext.getStore('datastore_stato_tavolo').insert(0, new StatoTavolo());
-		                    //rowEditing.startEdit(0, 0);
-		                }
-		            }, '-', {
-		                text: 'Delete',
-		                iconCls: 'icon-delete',
-		                handler: function(){
-		                    var selection = Ext.getStore('datastore_stato_tavolo').remove(Ext.getStore('datastore_stato_tavolo').getAt(0));
-		                    Ext.getStore('datastore_stato_tavolo').sync();
 		                }
 		            }]
 		        }]	//Fine dockeditems
@@ -284,7 +271,12 @@ var _mainTabPanel = {
 			
 			this._tab_stato = Ext.create('Ext.panel.Panel', {
 				id:	'main_tabPanel_stato',
-				layout: 'vbox',
+				
+				layout: {
+			        type: 'vbox',
+			        align: 'stretch'
+			    },
+				
 				title: 'Stato locale',
 				width: '100%',
 			    height: '100%',
@@ -305,9 +297,12 @@ var _mainTabPanel = {
 			this._albero_gestioneTavolo = Ext.create('Ext.tree.Panel', {
 				id: 'albero_gestioneTavolo',
 			    title: 'Gestione ristorante: piani, aree, tavoli',
-			    width: '70%',
+			    //,
+			    
 			    //height: 500,
+			    align : 'stretch',
 			    flex: 1,
+			    width: '75%',
 			    rootVisible: true,
 			    useArrows: true,
 			    store: Ext.getStore('datastore_gestione_tavolo'),
@@ -470,7 +465,10 @@ var _mainTabPanel = {
 			
 			this._tab_gestione_tavolo = Ext.create('Ext.panel.Panel', {
 				id:	'main_tabPanel_gestioneTavolo',
-				layout: 'vbox',
+				layout: {
+			        type: 'vbox',
+			        align: 'stretch'
+			    },
 				title: 'Gestione tavoli',
 				width: '100%',
 			    height: '100%',
@@ -773,7 +771,7 @@ var _mainTabPanel = {
 			var tree = Ext.create('Ext.tree.Panel', {
 				id: 'albero_gestioneMenu',
 		        title: 'Gestione menù',
-		        width: 500,
+		        width: '100%',
 		        flex: 1,
 		        //height: 500,
 		        //collapsible: true,
@@ -959,7 +957,10 @@ var _mainTabPanel = {
 			this.createTabGestioneMenu();
 			this._tab_menu = Ext.create('Ext.panel.Panel', {
 				id:	'main_tabPanel_gestioneMenu',
-				layout: 'vbox',
+				layout: {
+			        type: 'vbox',
+			        align: 'stretch'
+			    },
 				title: 'Gestione menù',
 				width: '100%',
 			    height: '100%',
