@@ -838,7 +838,7 @@ var _mainTabPanel = {
 		                		contextMenu = Ext.create('Ext.menu.Menu', {
 			                        items: [
 			                            {
-			                            	text: 'Aggiungi voce di men�',
+			                            	text: 'Aggiungi voce di menù',
 			                        		handler: function(){
 			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                        			_mainTabPanel.addNewNodeGestioneMenu(rec,true);
@@ -862,13 +862,13 @@ var _mainTabPanel = {
 		                		if(	rec.isLeaf() ){
 		                			contextMenu = Ext.create('Ext.menu.Menu', {
 				                        items: [
-				                            {text: 'Modifica voce men�',
+				                            {text: 'Modifica voce menù',
 				                        		handler: function(){
 				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 				                        			_mainTabPanel.updateNodeGestioneMenu(rec);
 				                        		}
 				                            },{
-				                            	text: 'Rimuovi voce men�',
+				                            	text: 'Rimuovi voce menù',
 				                            	handler: function(){
 				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 				                            		_mainTabPanel.deleteNodeGestioneMenu(rec);
@@ -880,7 +880,7 @@ var _mainTabPanel = {
 		                			contextMenu = Ext.create('Ext.menu.Menu', {
 				                        items: [
 				                            {
-				                            	text: 'Aggiungi voce di men�',
+				                            	text: 'Aggiungi voce di menù',
 				                        		handler: function(){
 				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 				                        			_mainTabPanel.addNewNodeGestioneMenu(rec,true);
@@ -1129,7 +1129,7 @@ var _mainTabPanel = {
 			form.getForm().findField('depth').hide();
 			form.getForm().findField('tipo').hide();
 			if(isVoceMenu == true){
-				askWindow.setTitle('Aggiungi nuova voce di men�');
+				askWindow.setTitle('Aggiungi nuova voce di menù');
 				form.getForm().findField('tipo').setValue(2);
 			}else{
 				askWindow.setTitle('Aggiungi nuova categoria');
@@ -1152,7 +1152,7 @@ var _mainTabPanel = {
 			form.getForm().findField('depth').hide();
 			form.getForm().findField('tipo').hide();
 			if(selectedNode.get('tipo') == 2){
-				form.setTitle('Modifica voce di men�');
+				form.setTitle('Modifica voce di menù');
 			}else{
 				form.setTitle('Modifica categoria');
 				form.getForm().findField('prezzo').hide();
