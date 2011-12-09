@@ -119,8 +119,6 @@ public class LoginActivity extends Activity {
 			RestaurantApplication restApp = ((RestaurantApplication)getApplication());
 
 			try {
-				
-				
 				String responseBody = restApp.makeHttpPostRequest(	"http://192.168.1.101:8080/ClientEJB/login", 
 																	hashMap[0]);
 			        			
@@ -158,11 +156,7 @@ public class LoginActivity extends Activity {
 				return  new Error("Errore di connettività", true);
 			} catch (JSONException e) {
 				return  new Error("Errore durante la lettura della risposta dal server", true);
-			
-				
 			} 
-		
-
 			return new Error("Log in effettuato con successo", false);
 		}
         	

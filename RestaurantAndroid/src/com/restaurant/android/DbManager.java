@@ -38,11 +38,13 @@ public class DbManager extends SQLiteOpenHelper {
 	public void dropTables() {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("drop table if exists categoria");
+		database.execSQL("drop table if exists vocemenu");
 	}
 	
 	public void createTables() {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("create table categoria (idCategoria int, idCategoriaPadre int, nome string, descrizione string)");
+		database.execSQL("create table vocemenu (idVoceMenu int, idCategoria int, nome string, descrizione string, prezzo string)");
 	}
 	
 
@@ -53,6 +55,10 @@ public class DbManager extends SQLiteOpenHelper {
 	
 	
 	public void BackUpDbToSD() {
+		
+		/************************************************************
+		 * Back up su scheda SD del database (entrambe le tabelle)
+		 ************************************************************/
 		
 	    try {
 	        File sd = Environment.getExternalStorageDirectory();
@@ -75,7 +81,7 @@ public class DbManager extends SQLiteOpenHelper {
 	    } catch (Exception e) {
 	    	Log.e("UpdataDatabaseService", "Errore copia DB su SD: " + e.toString());
 	    }
-
+	  
 	}
 	
 
