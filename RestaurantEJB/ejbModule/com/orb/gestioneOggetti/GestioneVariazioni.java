@@ -107,6 +107,23 @@ public class GestioneVariazioni {
 		}
 		
 		return listaWrapperVariazione;
+	}
 	
+	/**
+	 * Cancella una variazione a partire dal suo id
+	 * @param idVariazione Id della variazione da cancellare
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 */
+	public void deleteVariazione(int idVariazione) throws DatabaseException {
+		try {
+			Variazione variazione = em.find(Variazione.class, idVariazione);
+			if(variazione == null)
+				throw new DatabaseException("Errore durante la ricerca della variazione");
+			em.remove(variazione);
+		} catch (Exception e) {
+			throw new DatabaseException("Errore durante la cancellazione della variazione (" + e.toString() +")");
+			
+		}
 	}
 }
