@@ -19,8 +19,6 @@ import com.restaurant.TreeNodeArea;
 import com.restaurant.TreeNodePiano;
 import com.restaurant.WrapperVariazione;
 
-
-
 @SuppressWarnings("unchecked") 
 @Stateless
 
@@ -41,11 +39,11 @@ public class GestioneVariazioni {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo
 	 * errore verificatosi
 	 */
-	public WrapperVariazione aggiungiVariazione( int idTenant,
-											String nome,
-											String descrizione,
-											BigDecimal prezzo,
-											int idCategoria) throws DatabaseException {
+	public WrapperVariazione aggiungiVariazione(int idTenant,
+												String nome,
+												String descrizione,
+												BigDecimal prezzo,
+												int idCategoria) throws DatabaseException {
 		
 		try {
 			Variazione variazione = new Variazione();
@@ -70,6 +68,55 @@ public class GestioneVariazioni {
 		
 	}
 	
+	/**
+	 * Modifica una variazione a partire dal suo id
+	 * @param idVariazione Id della variazione da modificare
+	 * @param nome Nome dalla variazione modificata
+	 * @param descrizione Descrizione della variazione modificata
+	 * @param prezzo Prezzo della variazione modificata
+	 * @return Oggetto WrapperVariazione che rappresenta la variazione modificata
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 */
+	public WrapperVariazione updateVariazione(	int idVariazione,
+												String nome,
+												String descrizione,
+												BigDecimal prezzo) throws DatabaseException {
+		
+		try {
+			Variazione variazione = em.find(Variazione.class, idVariazione);
+			if(variazione == null)
+				throw new DatabaseException("Errore durante la ricerca della variazione per l'aggiornamento");
+			
+			variazione.setNome(nome);
+			variazione.setDescrizone(descrizione);
+			variazione.setPrezzo(prezzo);
+			
+			return new WrapperVariazione(variazione);
+			
+		} catch(Exception e) {
+			throw new DatabaseException("Errore durante l'aggiornamento della variazione (" + e.toString() +")");
+		}
+		
+	}
+	
+	/**
+	 * Cancella una variazione a partire dal suo id
+	 * @param idVariazione Id della variazione da cancellare
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 */
+	public void deleteVariazione(int idVariazione) throws DatabaseException {
+		try {
+			Variazione variazione = em.find(Variazione.class, idVariazione);
+			if(variazione == null)
+				throw new DatabaseException("Errore durante la ricerca della variazione");
+			em.remove(variazione);
+		} catch (Exception e) {
+			throw new DatabaseException("Errore durante la cancellazione della variazione (" + e.toString() +")");
+			
+		}
+	}
 	
 	/**
 	 * Ritorna la lista delle variazioni associate ad una categoria
@@ -108,22 +155,5 @@ public class GestioneVariazioni {
 		
 		return listaWrapperVariazione;
 	}
-	
-	/**
-	 * Cancella una variazione a partire dal suo id
-	 * @param idVariazione Id della variazione da cancellare
-	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
-	 * verificatosi
-	 */
-	public void deleteVariazione(int idVariazione) throws DatabaseException {
-		try {
-			Variazione variazione = em.find(Variazione.class, idVariazione);
-			if(variazione == null)
-				throw new DatabaseException("Errore durante la ricerca della variazione");
-			em.remove(variazione);
-		} catch (Exception e) {
-			throw new DatabaseException("Errore durante la cancellazione della variazione (" + e.toString() +")");
-			
-		}
-	}
+
 }

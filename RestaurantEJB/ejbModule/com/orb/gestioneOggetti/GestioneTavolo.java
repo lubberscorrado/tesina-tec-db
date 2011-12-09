@@ -107,11 +107,9 @@ public class GestioneTavolo{
 			
 			Tavolo tavolo = em.find(Tavolo.class, idTavolo);
 			
-			System.out.println("Looking for " + idTavolo);
 			if(tavolo == null)
 				throw new DatabaseException("Errore durante la ricerca del tavolo da aggiornare");
 		
-			//tavolo.setIdTenant(tavolo.getIdTenant());
 			tavolo.setNome(nome);
 			tavolo.setDescrizione(descrizione);
 			tavolo.setStato(stato);
