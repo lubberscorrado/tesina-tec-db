@@ -52,7 +52,7 @@ var _mainTabPanel = {
 		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
 		            { header: 'Piano',  	dataIndex: 'numeroPiano' },
 		            { header: 'Area',  		dataIndex: 'nomeArea' },
-		            { header: 'N°Posti', 	dataIndex: 'numPosti' },
+		            { header: 'NÂ°Posti', 	dataIndex: 'numPosti' },
 		            { header: 'Cameriere', 	dataIndex: 'cameriere' },
 		            { header: 'Stato', 		dataIndex: 'statoTavolo'}
 		        ],
@@ -118,7 +118,7 @@ var _mainTabPanel = {
 		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
 		            { header: 'Piano',  	dataIndex: 'numeroPiano' },
 		            { header: 'Area',  		dataIndex: 'nomeArea' },
-		            { header: 'N°Posti', 	dataIndex: 'numPosti' },
+		            { header: 'NÂ°Posti', 	dataIndex: 'numPosti' },
 		            { header: 'Cameriere', 	dataIndex: 'cameriere' },
 		            { header: 'Stato', 		dataIndex: 'statoTavolo'}
 		        ],
@@ -201,7 +201,7 @@ var _mainTabPanel = {
 		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
 		            { header: 'Piano',  	dataIndex: 'numeroPiano' },
 		            { header: 'Area',  		dataIndex: 'nomeArea' },
-		            { header: 'N°Posti', 	dataIndex: 'numPosti' },
+		            { header: 'Nï¿½Posti', 	dataIndex: 'numPosti' },
 		            { header: 'Cameriere', 	dataIndex: 'cameriere' },
 		            { header: 'Stato', 		dataIndex: 'statoTavolo'}
 		        ],
@@ -798,7 +798,7 @@ var _mainTabPanel = {
 		createTabGestioneMenu : function(){
 			var tree = Ext.create('Ext.tree.Panel', {
 				id: 'albero_gestioneMenu',
-		        title: 'Gestione menù',
+		        title: 'Gestione menÃ¹',
 		        width: '100%',
 		        flex: 1,
 		        //height: 500,
@@ -838,7 +838,7 @@ var _mainTabPanel = {
 		                		contextMenu = Ext.create('Ext.menu.Menu', {
 			                        items: [
 			                            {
-			                            	text: 'Aggiungi voce di menù',
+			                            	text: 'Aggiungi voce di menï¿½',
 			                        		handler: function(){
 			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                        			_mainTabPanel.addNewNodeGestioneMenu(rec,true);
@@ -862,13 +862,13 @@ var _mainTabPanel = {
 		                		if(	rec.isLeaf() ){
 		                			contextMenu = Ext.create('Ext.menu.Menu', {
 				                        items: [
-				                            {text: 'Modifica voce menù',
+				                            {text: 'Modifica voce menï¿½',
 				                        		handler: function(){
 				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 				                        			_mainTabPanel.updateNodeGestioneMenu(rec);
 				                        		}
 				                            },{
-				                            	text: 'Rimuovi voce menù',
+				                            	text: 'Rimuovi voce menï¿½',
 				                            	handler: function(){
 				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 				                            		_mainTabPanel.deleteNodeGestioneMenu(rec);
@@ -880,7 +880,7 @@ var _mainTabPanel = {
 		                			contextMenu = Ext.create('Ext.menu.Menu', {
 				                        items: [
 				                            {
-				                            	text: 'Aggiungi voce di menù',
+				                            	text: 'Aggiungi voce di menï¿½',
 				                        		handler: function(){
 				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 				                        			_mainTabPanel.addNewNodeGestioneMenu(rec,true);
@@ -999,7 +999,7 @@ var _mainTabPanel = {
 			        type: 'vbox',
 			        align: 'stretch'
 			    },
-				title: 'Gestione menù',
+				title: 'Gestione menÃ¹',
 				width: '100%',
 			    height: '100%',
 			    autoScroll : true,
@@ -1082,7 +1082,7 @@ var _mainTabPanel = {
 					                    		if(action.result.data[0].tipo == 1){
 					                    			updatedNode.set('text',action.result.data[0].nome);
 					                    		}else{
-					                    			updatedNode.set('text',action.result.data[0].nome+' - ['+action.result.data[0].prezzo+'€]');
+					                    			updatedNode.set('text',action.result.data[0].nome+' - ['+action.result.data[0].prezzo+'â‚¬]');
 					                    		}
 					                    	Ext.getCmp('viewport_east').collapse();
 				                    	}
@@ -1129,7 +1129,7 @@ var _mainTabPanel = {
 			form.getForm().findField('depth').hide();
 			form.getForm().findField('tipo').hide();
 			if(isVoceMenu == true){
-				askWindow.setTitle('Aggiungi nuova voce di menù');
+				askWindow.setTitle('Aggiungi nuova voce di menï¿½');
 				form.getForm().findField('tipo').setValue(2);
 			}else{
 				askWindow.setTitle('Aggiungi nuova categoria');
@@ -1152,7 +1152,7 @@ var _mainTabPanel = {
 			form.getForm().findField('depth').hide();
 			form.getForm().findField('tipo').hide();
 			if(selectedNode.get('tipo') == 2){
-				form.setTitle('Modifica voce di menù');
+				form.setTitle('Modifica voce di menï¿½');
 			}else{
 				form.setTitle('Modifica categoria');
 				form.getForm().findField('prezzo').hide();

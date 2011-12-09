@@ -86,7 +86,7 @@ public class login extends HttpServlet {
 				json_obj.put("isCassiere", 		((user_privs&JSONResponse.PRIV_Cassiere)==JSONResponse.PRIV_Cassiere));
 				json_obj.put("isAdministrator", ((user_privs&JSONResponse.PRIV_Administrator)==JSONResponse.PRIV_Administrator));
 				json_obj.put("restaurant", "La tana delle scimmie");
-				json_obj.put("user", "Gennaro lò pizzaiolo");
+				json_obj.put("user", "Gennaro lÃ² pizzaiolo");
 			}
 			
 			json_obj.put("success", true);
