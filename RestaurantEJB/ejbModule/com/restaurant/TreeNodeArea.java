@@ -4,15 +4,12 @@ import com.orb.Area;
 
 public class TreeNodeArea {
 
-	
 	private int idArea;
 	private int idTenant;
 	private String nome;
 	private String descrizione;
 	private boolean enabled;
-	
-	
-	
+
 	public TreeNodeArea(Area area) {
 		super();
 		this.idArea = area.getIdArea();

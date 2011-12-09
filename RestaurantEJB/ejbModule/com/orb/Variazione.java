@@ -11,11 +11,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="variazione")
 
+@NamedQueries({
+	@NamedQuery(name = "getVariazioniByCategoria",
+				query = "SELECT v FROM Variazione v JOIN v.categoriaAppartenenza c " +
+						"WHERE v.idTenant = :idTenant AND c.idCategoria = :idCategoria")})
 public class Variazione {
 	
 	@Id

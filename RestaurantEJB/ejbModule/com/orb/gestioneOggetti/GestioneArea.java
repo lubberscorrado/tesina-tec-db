@@ -27,13 +27,18 @@ public class GestioneArea{
 	
 	public GestioneArea() {}
 	
-	/** Ritorna l'elenco di tutte le aree appartenenti ad un cliente */
-	public List<Area> getAreeTenant(int idTenant) {
-		Query query = em.createQuery("SELECT a FROM Area a WHERE a.idTenant = :idTenant");
-		query.setParameter("idTenant", idTenant);
-		return (List<Area>)query.getResultList();
-	}
-	
+	/**
+	 * Aggiunge un area per un determinato cliente
+	 * @param idTenant Id del cliente a cui appartiene l'area
+	 * @param nome Nome dell'area
+	 * @param descrizione Descrizione dell'area
+	 * @param enabled Stato dell'area, abilitata o disabilitata
+	 * @param idPiano Id del piano a cui appartiene l'area
+	 * @return Oggetto TreeNodeArea che rappresenta la nuova area 
+	 * inserita
+	 * @throws DatabaseException Eccezione che incapsula le informazioni
+	 * sull'ultimo errore verificatosi
+	 */
 	public TreeNodeArea aggiungiArea(	int idTenant, 
 										String nome, 
 										String descrizione, 
@@ -117,6 +122,15 @@ public class GestioneArea{
 		 }
 	  }
 	 
+	
+	 /** Ritorna l'elenco di tutte le aree appartenenti ad un cliente */
+	public List<Area> getAreeTenant(int idTenant) {
+		Query query = em.createQuery("SELECT a FROM Area a WHERE a.idTenant = :idTenant");
+		query.setParameter("idTenant", idTenant);
+		return (List<Area>)query.getResultList();
+	}
+	
+	
 	/** 
 	 * Ritorna la lista delle aree associate ad un determinato piano
 	 * @param idPiano id del piano del quale si vuole ottenere la lista delle aree
