@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,6 +66,23 @@ public class TablesListActivity extends Activity {
   	    			  	m_adapter.getItem(position).getTableName() + ", che è " 
   	    			  + m_adapter.getItem(position).getTableStatus());
   	    	  
+  	    	  /* Apro una nuova activity con la scheda del tavolo */
+  	    	  Intent myIntent = new Intent(TablesListActivity.this, TableCardActivity.class);
+  	    	  // TablesListActivity.this.startActivity(myIntent);
+  	    	  
+  	    	  /* Creo un bundle per passare dei dati alla nuova activity */
+	  	      Bundle b = new Bundle();
+	  	      b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
+	  	      b.putString("tableName", m_adapter.getItem(position).getTableName());
+	  	      myIntent.putExtras(b);
+	  	      startActivity(myIntent);
+	  	      
+	  	      /* chiude definitivamente questa activity
+	  	       * (premendo il pulsante "indietro" dall'activity 
+	  	       * successiva si ritornerebbe direttamente all'activity
+	  	       * di Login) */
+	  	      // finish();
+  	    	
   	    	
 		      // When clicked, show a toast with the TextView text
 		      // Toast.makeText(getApplicationContext(), "Hai cliccato!", 20).show();

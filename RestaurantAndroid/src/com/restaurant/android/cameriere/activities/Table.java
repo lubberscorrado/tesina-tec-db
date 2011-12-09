@@ -1,13 +1,15 @@
 package com.restaurant.android.cameriere.activities;
 
-import android.R.string;
+import java.io.Serializable;
+
 
 /** 
  * Classe che rappresenta un tavolo normale
  * @author Fabio Pierazzi
  */
-public class Table {
+public class Table implements Serializable {
 	
+		private static final long serialVersionUID = 1L;
 		private int id = -1;
 	 	private String name = "";
 	    private String status = "";
@@ -59,5 +61,7 @@ public class Table {
 		public void setArea(String area) {
 			this.area = area;
 		}
+		
+		
 		
 }

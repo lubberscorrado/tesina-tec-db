@@ -38,6 +38,11 @@
             android:name=".cameriere.activities.NotificationActivity" >
         </activity>
         
+            <activity
+            android:label="@string/app_name"
+            android:name=".cameriere.activities.TableCardActivity" >
+        </activity>
+        
        	<activity
             android:label="@string/app_name"
             android:name=".cameriere.activities.MenuListActivity" 

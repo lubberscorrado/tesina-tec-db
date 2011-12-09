@@ -27,10 +27,8 @@ import android.widget.Toast;
 
 import com.restaurant.android.DbManager;
 import com.restaurant.android.Error;
-import com.restaurant.android.LoginActivity;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
-import com.restaurant.android.UpdateDatabaseService;
 
 
 /** 
