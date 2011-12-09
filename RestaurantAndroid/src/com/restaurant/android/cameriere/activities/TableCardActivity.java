@@ -30,7 +30,7 @@ public class TableCardActivity extends Activity {
 	  Log.d("Scheda Tavolo", "De-serializzato il tavolo: " + myTable.getTableName());
 	  
 	  /* Cambio il titolo della scheda del tavolo */
-	  TextView textView_tableName = (TextView) findViewById(R.id.tableCard_textView1);
+	  TextView textView_tableName = (TextView) findViewById(R.id.tableCard_textView_Title);
 	  textView_tableName.setText("Scheda " + tableName);
 	}
 }

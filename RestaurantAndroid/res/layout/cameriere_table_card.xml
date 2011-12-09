@@ -4,12 +4,144 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/tableCard_textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Scheda Tavolo"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+     <ScrollView 
+	      	android:layout_height="fill_parent"
+	    	android:layout_width="fill_parent">
+	    	
+         <LinearLayout 
+	       	android:orientation="vertical"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent">
+		    	
+	         	<!-- Titolo -->
+			    <TextView
+			        android:id="@+id/tableCard_textView_Title"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"
+			        android:layout_margin="10dp"
+			        android:text="Scheda Tavolo"
+			        android:textAppearance="?android:attr/textAppearanceLarge" />
+			
+			    <!-- Bottoni Menu -->
+			    <Button
+			        android:id="@+id/Button01"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:text="Occupa Tavolo" />
+			
+			    <Button
+			        android:id="@+id/Button02"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:text="Prendi Ordinazione" />
+			
+			    <Button
+			        android:id="@+id/Button03"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:text="Cedi Tavolo ad un'altro cameriere" />
+			
+			    <Button
+			        android:id="@+id/tableCard_button_occupa"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"
+			        android:text="Libera Tavolo" />
+			    
+			    
+			    
+			     <!-- Prenotazioni -->
+			     <TextView
+			        android:id="@+id/tableCard_textView_prenotations_title"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"
+			        android:layout_margin="10dp"
+			        android:text="Prenotazioni"
+			        android:textAppearance="?android:attr/textAppearanceLarge" />
+		    	
+			     
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1">
+
+    <TableRow>
+        <TextView
+            android:layout_column="1"
+            android:text="Open..."
+            android:padding="3dip" />
+        <TextView
+            android:text="Ctrl-O"
+            android:gravity="right"
+            android:padding="3dip" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_column="1"
+            android:text="Save..."
+            android:padding="3dip" />
+        <TextView
+            android:text="Ctrl-S"
+            android:gravity="right"
+            android:padding="3dip" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_column="1"
+            android:text="Save As..."
+            android:padding="3dip" />
+        <TextView
+            android:text="Ctrl-Shift-S"
+            android:gravity="right"
+            android:padding="3dip" />
+    </TableRow>
+
+    <View
+        android:layout_height="2dip"
+        android:background="#FF909090" />
+
+    <TableRow>
+        <TextView
+            android:text="X"
+            android:padding="3dip" />
+        <TextView
+            android:text="Import..."
+            android:padding="3dip" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:text="X"
+            android:padding="3dip" />
+        <TextView
+            android:text="Export..."
+            android:padding="3dip" />
+        <TextView
+            android:text="Ctrl-E"
+            android:gravity="right"
+            android:padding="3dip" />
+    </TableRow>
+
+    <View
+        android:layout_height="2dip"
+        android:background="#FF909090" />
+
+    <TableRow>
+        <TextView
+            android:layout_column="1"
+            android:text="Quit"
+            android:padding="3dip" />
+    </TableRow>
+</TableLayout>
+			     
+			     
+		    </LinearLayout>
+		
+		</ScrollView>
 
 </LinearLayout>
