@@ -122,5 +122,15 @@ public class JSONFromBean {
 		json_obj.put("prezzo", 		treeNodeVoceMenu.getPrezzo());
 		return json_obj;
 	}
+	
+	public static JSONObject jsonFromOBJ(WrapperVariazione wrapperVariazione){
+		JSONObject json_obj = new JSONObject();
+		json_obj.put("id", 			wrapperVariazione.getIdVariazione());
+		//json_obj.put("parentId", 		"C"+treeNodeVoceMenu.);
+		json_obj.put("nome", 		wrapperVariazione.getNome());
+		json_obj.put("descrizione", wrapperVariazione.getDescrizione());
+		json_obj.put("prezzo", 		wrapperVariazione.getPrezzoVariazione());
+		return json_obj;
+	}
 
 }

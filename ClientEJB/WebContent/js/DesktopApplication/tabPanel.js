@@ -898,6 +898,16 @@ var _mainTabPanel = {
 				                            		_mainTabPanel.updateNodeGestioneMenu(rec);
 				                            	}
 				                            },{
+				                            	xtype: 'menuseparator'
+				                            },{
+				                            	text: 'Visualizza variazioni',
+				                            	handler: function(){
+				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+				                            		_mainTabPanel.showGestioneVariazioniMenu(rec.get('parentId'));
+				                            	}
+				                            },{
+				                            	xtype: 'menuseparator'
+				                            },{
 				                            	text: 'Rimuovi categoria',
 				                            	handler: function(){
 				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
@@ -1169,5 +1179,129 @@ var _mainTabPanel = {
 	                }
 	            });
 			});
+		},
+		showGestioneVariazioniMenu : function(idCategoria){
+			var askWindow = Ext.create('Ext.window.Window', {
+				id: 'window_gestionevariazionivocemenu',
+        	    title: 'Elenco variazioni',
+        	    //height: 400,
+        	    //width: 400,
+        	    layout: 'fit'
+        	});
+			
+			var rowEditing = Ext.create('Ext.grid.plugin.RowEditing',{
+				listeners: {
+					beforeedit: function(editor, e, eOpts ){
+						if (editor.record.get('isEreditata') == true) {
+							return false;
+					  	}
+						return true;
+				    	}
+				  	}
+			});
+		    
+		    var grid = Ext.create('Ext.grid.Panel', {
+		        renderTo: document.body,
+		        plugins: [rowEditing],
+		        width: 400,
+		        height: 300,
+		        frame: true,
+		        //title: 'Users',
+		        store: Ext.getStore('datastore_variazione_voce_menu'),
+		        iconCls: 'icon-user',
+		        //fields: ['id','parentId','nome','descrizione','prezzo','tipo','text','isEreditata'],
+		        columns: [{
+		            text: 'ID',
+		            width: 40,
+		            sortable: true,
+		            dataIndex: 'id'
+		        }, {
+		            text: 'Nome',
+		            flex: 1,
+		            sortable: true,
+		            dataIndex: 'nome',
+		            field: {
+		                xtype: 'textfield'
+		            }
+		        }, {
+		            header: 'Descrizione',
+		            width: 80,
+		            sortable: true,
+		            dataIndex: 'descrizione',
+		            field: {
+		                xtype: 'textfield'
+		            }
+		        }, {
+		            text: 'Prezzo',
+		            width: 80,
+		            sortable: true,
+		            dataIndex: 'prezzo',
+		            field: {
+		                xtype: 'textfield'
+		            }
+		        }, {
+		            text: 'Categoria di appartenenza',
+		            width: 80,
+		            sortable: true,
+		            dataIndex: 'categoriaDiAppartenenza',
+		            field: {
+		                xtype: 'textfield'
+		            }
+		        }],
+		        dockedItems: [{
+		            xtype: 'toolbar',
+		            dock: 'bottom',
+		            items: ['->',{
+		                text: 'Aggiorna',
+		                iconCls: 'icon-add',
+		                handler: function(){
+		                	Ext.getStore('datastore_variazione_voce_menu').load();
+		                }
+		            },{
+		                text: 'Add',
+		                iconCls: 'icon-add',
+		                handler: function(){
+		                	var findNewRow = Ext.getStore('datastore_variazione_voce_menu').getById('new');
+//		                	if(findNewRow != undefined){
+//		                		findNewRow.destroy({
+//		                			params: {
+//		                				action: 'destroy'
+//		                			}
+//		                		});
+//		                	}
+		                	var emptyRecord = Ext.create('variazioneVoceMenu',{
+		                    	id: 'new'
+		                    });
+		                	Ext.getStore('datastore_variazione_voce_menu').insert(0,emptyRecord);
+		                    rowEditing.startEdit(0, 0);
+		                }
+		            }, '-', {
+		                itemId: 'delete',
+		                text: 'Delete',
+		                iconCls: 'icon-delete',
+		                disabled: true,
+		                handler: function(){
+		                    var selection = grid.getView().getSelectionModel().getSelection()[0];
+		                    if (selection) {
+		                    	//Ext.getStore('datastore_variazione_voce_menu').remove(selection);
+		                    	selection.destroy({
+		                			params: {
+		                				action: 'delete'
+		                			},
+		                			success: function(form, action){
+		                				Ext.getStore('datastore_variazione_voce_menu').remove(selection);
+		                			}
+		                		});
+		                    }
+		                }
+		            }]
+		        }]
+		        
+		    });
+		    grid.getSelectionModel().on('selectionchange', function(selModel, selections){
+		        grid.down('#delete').setDisabled(selections.length === 0);
+		    });
+		    askWindow.add(grid);
+			askWindow.show();
 		}
 };

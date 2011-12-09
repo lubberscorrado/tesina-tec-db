@@ -150,6 +150,38 @@ Ext.define('nodoGestioneMenu', {
             read   : 'GET',
             update : 'POST',
             destroy: 'POST'
+        },
+        listeners: {
+        	exception: function( thisProxy, response, operation, eOpts ){
+        		console.debug('Proxy exception');
+        		console.debug(eOpts);
+        	}
+        }
+    }
+});
+
+Ext.define('variazioneVoceMenu', {
+	extend: 'Ext.data.Model',
+    fields: ['id','parentId','nome','descrizione','prezzo','tipo','text','categoriaDiAppartenenza','isEreditata'],
+    //store: Ext.getStore('datastore_gestione_menu'),
+    proxy: {
+        type: 'rest',
+        url : 'variazioneVoceMenu',
+        appendId : false,
+        writer: {
+            type: 'singlepost'
+            //type: 'json'
+        },
+		reader: {
+	        type: 'json',
+	        idProperty: 'id',
+	        root: 'data'
+	    },
+	    actionMethods : {
+            create : 'POST',
+            read   : 'GET',
+            update : 'POST',
+            destroy: 'POST'
         }
     }
 });

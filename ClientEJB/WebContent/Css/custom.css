@@ -1,5 +1,5 @@
 #tabella_stato_tavolo .x-panel-header-default{
-	background-image: -moz-linear-gradient(center top , #FFFFFF, #909090)  !important;
+	background-image: -moz-linear-gradient(center top , #DDDDDD, #909090)  !important;
 }
 
 #tabella_stato_tavolo .x-panel-header-default .x-component-default .x-panel-header-text-default{
@@ -7,7 +7,7 @@
 }
 
 #tabella_statoCameriere .x-panel-header-default{
-	background-image: -moz-linear-gradient(center top , #FFFFFF, #909090)  !important;
+	background-image: -moz-linear-gradient(center top , #DDDDDD, #909090)  !important;
 }
 
 #tabella_statoCameriere .x-panel-header-default .x-component-default .x-panel-header-text-default{
@@ -15,11 +15,16 @@
 }
 
 #tabella_statoCuoco .x-panel-header-default{
-	background-image: -moz-linear-gradient(center top , #FFFFFF, #909090)  !important;
+	background-image: -moz-linear-gradient(center top , #DDDDDD, #909090)  !important;
 }
 
 #tabella_statoCuoco .x-panel-header-default .x-component-default .x-panel-header-text-default{
 	font-size: medium;
+}
+
+#center{
+	font-size: xx-large;
+	text-align: center;
 }
 
 /*
