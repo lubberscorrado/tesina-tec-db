@@ -3,6 +3,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 	<item android:id="@+id/syncMenu" android:title="Sincronizza Menu"
 			android:icon="@drawable/ic_launcher"></item>
-    
-
 </menu>
