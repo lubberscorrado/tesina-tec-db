@@ -1,58 +1,140 @@
 package com.restaurant.android;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.net.CookieStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 public class RestaurantApplication extends Application {
 	
+	
+	private DefaultHttpClient httpClient;
 	@Override
 	public void onCreate() {
-		
+		httpClient = new DefaultHttpClient();
 	}
 		
-	public synchronized String makeHttpPostRequest(String url, HashMap<String, String > postParametersMap) throws 	ClientProtocolException,
-																													IOException {
+	/**
+	 * Effettua una richiesta POST ad un URL con determinati parametri
+	 * @param url Url da contattare tramite la richiesta POST
+	 * @param postParametersMap Mappa dei parametri da passare nella richiesta
+	 * @return Corpo della risposta ricevuta dal server
+	 * @throws ClientProtocolException Eccezione che si verifica se non si riesce a decodificare la risposta del server
+	 * @throws IOException Eccezione che si verifica quando ci sono problemi di connettività
+	 */
+	public synchronized String makeHttpPostRequest(	String url, 
+													HashMap<String, String > postParametersMap) throws 	ClientProtocolException, IOException {
 		
-		HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://192.168.1.101:8080/ClientEJB/login");
-        
+		HttpPost httpPost = new HttpPost(url);
+      
        	List<NameValuePair> listPostParameters = new ArrayList<NameValuePair>(2);
         	
        	for(String key : postParametersMap.keySet()){
-        	
-        	/* Costruisco la lista dei parametri da passare alla richiesta POST */
-        	listPostParameters.add(new BasicNameValuePair(key, postParametersMap.get("key")));
+       		/* Costruisco la lista dei parametri da passare alla richiesta POST */
+        	listPostParameters.add(new BasicNameValuePair(key, postParametersMap.get(key)));
         }
-        
-        httpPost.setEntity(new UrlEncodedFormEntity(listPostParameters));
+       	
+       	/* Setto i parametri per la richiesta POST codificandoli come URL encoded */
+       	httpPost.setEntity(new UrlEncodedFormEntity(listPostParameters));
         	
+       	/* Effettuo la richiesta HTTP */
         HttpResponse response = httpClient.execute(httpPost);
-        String responseBody = EntityUtils.toString(response.getEntity());
+                
+        /* Log dei cookies */
+        List<Cookie> cookies = httpClient.getCookieStore().getCookies();
+
+       	if (cookies.isEmpty()) {
+       	   Log.d("RestaurantApplication", "POST REQUEST, No cookies");
+       	} else {
+       		for(Cookie c : cookies) {
+       		    if(c.getName().equals("JSESSIONID")) { 
+       				Log.e("POST REQUEST, JSESSIONID" , c.getValue());
+       			} else {
+       				Log.e("POST REQUEST, Cookie" , c.getName() + " - " + c.getValue());
+       			}
+       		}
+       	}
+       	String responseBody = EntityUtils.toString(response.getEntity());
         	
         return responseBody;
-		
 	}
+	
+	
+	/**
+	 * Effettua una richista GET ad un URL passando sulla query string dei parametri di input
+	 * @param url Url a cui effettuare la richiesta
+	 * @param getParametersMap Mappa dei parametri da passare tramite la richiesta GET
+	 * @return Corpo dalla risposta ricevuta dal server
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public synchronized String makeHttpGetRequest(	String url, 
+													HashMap<String, String > getParametersMap) throws	ClientProtocolException, IOException {
+
+				
+		List<NameValuePair> listGetParameters = new ArrayList<NameValuePair>(2);
+		
+		
+		/************************************************************************
+		 * Costruzione della lista di coppie chiave e valore che rappresentano i
+		 * parametri della query string 
+		 * **********************************************************************/
+		
+		for(String key : getParametersMap.keySet())
+			listGetParameters.add(new BasicNameValuePair(key, getParametersMap.get(key)));
+		
+		String queryString = URLEncodedUtils.format(listGetParameters, "utf-8");
+		String url_query_string = url + "?" +  queryString;
+		
+		HttpGet httpGet = new HttpGet(url_query_string);
+		HttpResponse response = httpClient.execute(httpGet);
+		
+		/********************************************************************************
+		 * Stampo tutto i cookies ritornati dal server e imposto, se ritornato l'id 
+		 * della sessione 
+		*********************************************************************************/
+		List<Cookie> cookies = httpClient.getCookieStore().getCookies();
+		
+		if (cookies.isEmpty()) {
+			Log.d("RestaurantApplication", "POST REQUEST, No cookies");
+		} else {
+			for(Cookie c : cookies) {
+		
+				if(c.getName().equals("JSESSIONID")) { 
+					Log.e("GET REQUEST, JSESSIONID" , c.getValue());
+				} else {
+					Log.e("GET REQUEST, Cookie" , c.getName() + " - " + c.getValue());
+				}
+			}
+		}
+		
+		String responseBody = EntityUtils.toString(response.getEntity());
+		return responseBody;
+
+	}
+	
 	
 	@Override
 	public void onTerminate() {
 		super.onTerminate();
+		
 	}
 }

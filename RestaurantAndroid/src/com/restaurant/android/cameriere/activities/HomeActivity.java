@@ -4,9 +4,12 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TabHost;
 
+import com.restaurant.android.DbManager;
 import com.restaurant.android.R;
+import com.restaurant.android.UpdateDatabaseService;
 
 /** 
  * Activity principale da mostrare al cameriere
@@ -44,6 +47,8 @@ public class HomeActivity extends TabActivity {
 
 	    tabHost.setCurrentTab(1);
 	    
+	    
+	    startService(new Intent(this, UpdateDatabaseService.class));
 	}
 
 }
