@@ -3,7 +3,7 @@ package com.restaurant.android.cameriere.activities;
 public class Ordinazione {
 	
 	private String nome;
-	private int quantità;
+	private int quantita;
 	private String stato;
 	
 	public String getNome() {
@@ -12,11 +12,11 @@ public class Ordinazione {
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
-	public int getQuantità() {
-		return quantità;
+	public int getQuantita() {
+		return quantita;
 	}
-	public void setQuantità(int quantità) {
-		this.quantità = quantità;
+	public void setQuantita(int quantità) {
+		this.quantita = quantità;
 	}
 	public String getStato() {
 		return stato;
