@@ -18,6 +18,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import com.restaurant.android.cameriere.activities.Table;
+
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -25,11 +27,12 @@ import android.util.Log;
 
 public class RestaurantApplication extends Application {
 	
-	
+	private ArrayList<Table> statoTavoli;
 	private DefaultHttpClient httpClient;
 	@Override
 	public void onCreate() {
 		httpClient = new DefaultHttpClient();
+		statoTavoli = new ArrayList<Table>();
 	}
 		
 	/**
@@ -91,8 +94,7 @@ public class RestaurantApplication extends Application {
 
 				
 		List<NameValuePair> listGetParameters = new ArrayList<NameValuePair>(2);
-		
-		
+				
 		/************************************************************************
 		 * Costruzione della lista di coppie chiave e valore che rappresentano i
 		 * parametri della query string 
@@ -132,6 +134,14 @@ public class RestaurantApplication extends Application {
 	}
 	
 	
+	public ArrayList<Table> getStatoTavoli() {
+		return statoTavoli;
+	}
+
+	public void setStatoTavoli(ArrayList<Table> statoTavoli) {
+		this.statoTavoli = statoTavoli;
+	}
+
 	@Override
 	public void onTerminate() {
 		super.onTerminate();

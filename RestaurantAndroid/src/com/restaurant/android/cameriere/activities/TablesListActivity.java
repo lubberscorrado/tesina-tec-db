@@ -1,12 +1,20 @@
 package com.restaurant.android.cameriere.activities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.Semaphore;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +26,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.restaurant.android.DbManager;
 import com.restaurant.android.R;
+import com.restaurant.android.RestaurantApplication;
 
 /** 
  * Activity per mostrare al cameriere l'elenco dei tavoli.
@@ -30,181 +40,202 @@ public class TablesListActivity extends Activity {
 	private static final String TAG = "TablesListActivity";
 	
 	private ListView tableListView;
+	private boolean runThread;
+	private boolean pauseThread;
 	private ProgressDialog m_ProgressDialog = null;
 	private ArrayList<Table> m_tables = null;
     private TableAdapter m_adapter;
-    private Runnable viewTables;
+    private UpdaterThread updaterThread;
+	private Semaphore sem;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
 	  super.onCreate(savedInstanceState);
 	  setContentView(R.layout.cameriere_tables_list);
-	  
+	 
 	  // Recupero il riferimento ad una ListView
 	  this.tableListView = (ListView) findViewById(R.id.listView_tablesList);
 	  
 	  // Operazioni necessarie al corretto funzionamento della listView
 	  m_tables = new ArrayList<Table>();
-      this.m_adapter = new TableAdapter(this, R.layout.cameriere_tables_list_row, m_tables);
+      this.m_adapter = new TableAdapter(getApplicationContext(), 
+    		  							R.layout.cameriere_tables_list_row, 
+    		  							m_tables);
+      
       tableListView.setAdapter(this.m_adapter);
+      
+      sem = new Semaphore(0);
+      
+      /**************************************************************
+       * Avvio del thread di aggiornamento della lista dei tavoli
+       **************************************************************/
+      updaterThread = new UpdaterThread();
+      runThread = true;
+      pauseThread = false;
+      Log.d("TablesListActivity","Avvio il thread di aggiornamento dei tavoli");
+      updaterThread.start();
+      
+      
+      /**************************************************************
+       * Listener per il click su un elemento della lista dei tavoli 
+       **************************************************************/
       
       tableListView.setOnItemClickListener(new OnItemClickListener() {
   	    public void onItemClick(AdapterView<?> parent, View view,
 		        int position, long id) {
+  	    
+  	    	/**************************************************
+  	    	 * Stop del thread di aggiornamento dei tavoli 
+  	    	 **************************************************/
   	    	
-  	    	
-//  	    	Log.d(TAG, "Hai cliccato una voce della lista" + 
-//  	    			  		"\n position: " + position + 
-//  	    			  		"\n parent: " + parent + 
-//  	    			  		"\n view: " + view +
-//  	    			  		"\n id: " + id);
-  	    	
-  	    	  /* Sapendo la posizione dell'elemento che è stato 
-  	    	   * cliccato, ricavo l'oggetto dell'adapter */
-  	    	  Log.i(TAG, "Hai cliccato su: " + 
-  	    			  	m_adapter.getItem(position).getTableName() + ", che è " 
-  	    			  + m_adapter.getItem(position).getTableStatus());
+  	    	Log.d("TablesListActivity","Stoppo il thread di aggiornamento dei tavoli");
+  			pauseThread = true;
+  			
+  	
+ 	    	 /* Sapendo la posizione dell'elemento che è stato 
+  	    	  * cliccato, ricavo l'oggetto dell'adapter */
+  	    	 Log.i(TAG, "Hai cliccato su: " + 
+  	    		  	m_adapter.getItem(position).getTableName() + ", che è " 
+  	    		  + m_adapter.getItem(position).getTableStatus());
   	    	  
-  	    	  /* Apro una nuova activity con la scheda del tavolo */
-  	    	  Intent myIntent = new Intent(TablesListActivity.this, TableCardActivity.class);
-  	    	  // TablesListActivity.this.startActivity(myIntent);
+  	    	 /* Apro una nuova activity con la scheda del tavolo */
+  	    	 Intent myIntent = new Intent(TablesListActivity.this, TableCardActivity.class);
+  	    	 // TablesListActivity.this.startActivity(myIntent);
   	    	  
-  	    	  /* Creo un bundle per passare dei dati alla nuova activity */
-	  	      Bundle b = new Bundle();
-	  	      b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
-	  	      b.putString("tableName", m_adapter.getItem(position).getTableName());
-	  	      myIntent.putExtras(b);
-	  	      startActivity(myIntent);
-	  	      
-	  	      /* chiude definitivamente questa activity
-	  	       * (premendo il pulsante "indietro" dall'activity 
-	  	       * successiva si ritornerebbe direttamente all'activity
-	  	       * di Login) */
-	  	      // finish();
-  	    	
-  	    	
-		      // When clicked, show a toast with the TextView text
-		      // Toast.makeText(getApplicationContext(), "Hai cliccato!", 20).show();
-//		      
-//		      //------------------------------
-//		      // OPEN NEW ACTIVITY!
-//		      //------------------------------
-//		      Intent myIntent = new Intent(TablesListActivity.this, NextActivity.class);
-//		      
-//		      // AGGIUNGO PARAMETRI DA PASSARE ALLA NUOVA ACTIVITY 
-//		      
-//		      //Next create the bundle and initialize it
-//		      Bundle bundle = new Bundle();
-//
-//		      //Add the parameters to bundle as
-//		      bundle.putString("NAME","my name");
-//
-//		      // bundle.putString("COMPANY","wissen");
-//
-//		      // bundle.putInt("AGE", 22);
-//
-//		      //Add this bundle to the intent
-//		      myIntent.putExtras(bundle);
-//		      
-//		      // Faccio partire la nuova activity
-//		      HomeActivity.this.startActivity(myIntent);
-		      
-		    }
+  	    	 /* Creo un bundle per passare dei dati alla nuova activity */
+	  	     Bundle b = new Bundle();
+	  	     b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
+	  	     b.putString("tableName", m_adapter.getItem(position).getTableName());
+	  	     myIntent.putExtras(b);
+	  	     startActivity(myIntent);
+  	    }
       });
-      
-      /* Creo un thread che andrà a prendere le
-       * informazioni dal database */
-      viewTables = new Runnable() {
-    	  @Override
-          public void run() {
-    		  /* Richiamo un metodo privato */
-              getTables();
-    	  }
-      };
-    	    
-	    Thread thread =  new Thread(null, viewTables, "TablesListThread");
-	    thread.start();
-	    m_ProgressDialog = ProgressDialog.show(TablesListActivity.this,    
-	          "Attendere...", "Scaricamento dati in corso...", true);
-	}
-	
-	
-	
+    }
 	
 	public void onResume() {
 		super.onResume();
- 
-		// Messaggio di prova
-		Toast.makeText(getApplicationContext(), "Resumed TablesListActivity", 5).show();
+		Log.d("TablesListActivity","OnResume");
+		/* Sveglio il thread sospeso */
+		pauseThread = false;
+		updaterThread.Signal();
 	}
 	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.d("TablesListActivity","OnDestroy");
+		
+		Log.d("TablesListActivity","Stoppo il thread di aggiornamento dei tavoli");
+		runThread =false;
+		try {
+			updaterThread.join();
+		} catch (InterruptedException e) {
+			Log.e("TablesListActivity","Errore durante il join del thread");
+		}
+	}
 
-	/** Definisco una variabile che mi consente di rieffettuare
-	 * la richiesta di risultati */
-	private Runnable returnRes = new Runnable() {
-
-        @Override
-        public void run() {
-            if(m_tables != null && m_tables.size() > 0){
-                m_adapter.notifyDataSetChanged();
-                for(int i=0;i<m_tables.size();i++)
-                	m_adapter.add(m_tables.get(i));
-            }
-            m_ProgressDialog.dismiss();
-            m_adapter.notifyDataSetChanged();
-        }
-    };
-    
-    /**
+	/**
      * Metodo per reperire l'elenco di tavoli da mostrare
      * all'interno della ListView. 
      * @author Fabio Pierazzi
      */
     private void getTables(){
           try{
-        	  /* m_orders contiene gli ordini da mostrare
-        	   * nella ListView */
-              m_tables = new ArrayList<Table>();
-              
-              /* Creo alcuni tavoli manualmente, 
-               * come test iniziale */
-              for(int i=0; i<100; ++i) {
-            	  
-            	  /* Creo un oggetto tavolo (test) 
-            	   * (potrei prenderlo da DB) */ 
-            	  Table t = new Table();
-            	  t.setTableName("Tavolo " + (i+1)); 
-            	  
-            	  if(i%3==0) {
-            		  t.setTableStatus("Libero"); 
-            	  } else {
-            		  t.setTableStatus("Occupato"); 
-            	  }
-            	  
-            	  /* Aggiungo l'oggetto tavolo all'array
-            	   * m_tables */
-            	  this.m_tables.add(t);
-            	  
-              }
-              
-              /* Impongo un'attesa di 5 secondi per simulare 
-               * il tempo necessario ad effettuare una richiesta
-               * remota */
-              Thread.sleep(5000);
-              
-              Log.i(TAG + ": getTables()", "Number of Tables Loaded: " + m_tables.size());
+        	  
+        	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
+        	  String response = restApplication.makeHttpGetRequest("http://192.168.1.101:8080/ClientEJB/statoTavolo", new HashMap<String, String>());
+        	  
+        	  m_tables.clear();
+        	  
+        	  /**********************************************************
+        	   * Decodifica della risposa del server contenente lo stato 
+        	   * dei tavoli.
+        	   **********************************************************/
+        	  JSONObject jsonObject = new JSONObject(response);
+        	  
+        	  if(jsonObject.getBoolean("success") == true) {
+        		  
+        		  JSONArray jsonArray = jsonObject.getJSONArray("statoTavolo");
+        		  
+        		  for(int i=0; i< jsonArray.length(); i++) {
+        			  Table t = new Table();
+        			  t.setTableName(jsonArray.getJSONObject(i).getString("nomeTavolo"));
+        			  t.setTableStatus(jsonArray.getJSONObject(i).getString("statoTavolo"));
+        			  String nomeTavolo = jsonArray.getJSONObject(i).getString("nomeTavolo");
+        			  t.setTableId(
+        					  Integer.parseInt(
+        							  nomeTavolo.substring(1, nomeTavolo.length())));
+        			  m_tables.add(t);
+          		  }
+          	  }
+        	  
+        	  /**************************************************************************
+        	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
+        	   * la view.
+        	   **************************************************************************/
+        	  runOnUiThread(new Runnable() {
+        		  public void run() {
+        			  m_adapter.notifyDataSetChanged();
+        		  }
+        	  });
+        	  
+        	  Log.i(	"TablesListService" + ": getTables()", "Number of Tables Loaded: " + 
+            		  	m_tables.size());
               
         } catch (Exception e) {
-              Log.e(TAG + ": BACKGROUND_PROC", e.getMessage());
-            }
-          
-          	/* Fa partire sull'interfaccia grafica il thread che 
-          	 * aggiunge all'adapter il contenuto */
-            runOnUiThread(returnRes);
+        	Log.e("TablesListService" + ": BACKGROUND_PROC", e.getMessage());
         }
-	
-	
+    }
+	   
+	/**********************************************
+	 * Thread per l'aggiornamento della lista view 
+	 **********************************************/
+	private class UpdaterThread extends Thread {
+		
+   		final int DELAY = 3000;
+   		public void run() {
+   			
+   			/* Eseguo il thread fintanto che il service di update
+   			 * non viene interrotto */
+   			while(runThread) {
+   				Log.d("UpdaterThread", "UPDATING...");
+   				getTables();
+   				
+   				try {
+					Thread.sleep(DELAY);
+				} catch (InterruptedException e) {
+					Log.d("UpdaterThread", "Errore durante lo sleep del thread");
+					
+				}
+   				
+   				if(pauseThread)
+					try {
+						Log.d("UpdaterThread", "Vado a letto");
+						this.Wait();
+					} catch (InterruptedException e) {
+						Log.d("UpdaterThread","Errore durante il wait()");
+					}
+   			}
+   		}
+   		
+   		
+   		public synchronized void Wait() throws InterruptedException {
+   			wait();
+   			
+   		}
+   		
+   		public synchronized void Signal() {
+   			notify();
+   		}
+   		
+   	}
+   	
+	/************************************************************************
+	 * Adapter per gestire il rendering personalizzato degli elementi della
+	 * lista 
+	 ************************************************************************/
+    
 	/* Adapter che stabilisce coem mostrare la roba in ordine */
     private class TableAdapter extends ArrayAdapter<Table> {
 
@@ -228,7 +259,8 @@ public class TablesListActivity extends Activity {
                 		TextView tt = (TextView) v.findViewById(R.id.toptext);
                         TextView bt = (TextView) v.findViewById(R.id.bottomtext);
                         if(tt != null) {
-                              tt.setText("Name: " + t.getTableName());                            }
+                              tt.setText("Name: " + t.getTableName());                            
+                        }
                         if(bt != null){
                               bt.setText("Status: "+ t.getTableStatus());
                         }
@@ -237,5 +269,4 @@ public class TablesListActivity extends Activity {
                 return v;
         }
     }
-
 }
