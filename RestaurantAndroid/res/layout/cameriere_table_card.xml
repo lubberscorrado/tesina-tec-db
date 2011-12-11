@@ -126,26 +126,26 @@
 			
 			    <!-- Bottoni Menu -->
 			    <Button
-			        android:id="@+id/Button01"
+			        android:id="@+id/button_tableCard_occupaTavolo"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
 			        android:text="Occupa Tavolo" />
 			
 			    <Button
-			        android:id="@+id/Button02"
+			        android:id="@+id/button_tableCard_prendiOrdinazione"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
 			        
 			        android:text="Prendi Ordinazione" />
 			
 			    <Button
-			        android:id="@+id/Button03"
+			        android:id="@+id/button_tableCard_cediTavolo"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
 			        android:text="Cedi Tavolo ad un'altro cameriere" />
 			
 			    <Button
-			        android:id="@+id/tableCard_button_occupa"
+			        android:id="@+id/button_tableCard_liberaTavolo"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
 			        android:layout_gravity="center"
@@ -334,7 +334,7 @@
 
 			     </LinearLayout>
 			     
-			     <!-- Prima riga -->    
+			     <!-- Prima riga  (manuale) -->    
 			     <LinearLayout
 			         android:id="@+id/linearLayout12"
 			         android:orientation="horizontal"
@@ -374,7 +374,7 @@
 
 			     </LinearLayout>
 
-			     <!-- Seconda riga -->			     
+			     <!-- Seconda riga (manuale) -->			     
 			     <LinearLayout
 			         android:id="@+id/linearLayout12"
 			         android:orientation="horizontal"
@@ -413,7 +413,13 @@
 			             android:textSize="14dp" />
 
 			     	</LinearLayout>
-             
+			     	
+			         <!-- ListView Vera e Propria -->
+		             <ListView 
+				        android:id="@+id/listView_contoList" 
+				        android:layout_width="fill_parent" 
+				        android:layout_height="wrap_content">
+				    </ListView>
 		    </LinearLayout>
 		    
               
