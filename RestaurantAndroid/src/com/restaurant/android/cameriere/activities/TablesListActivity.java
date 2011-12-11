@@ -2,19 +2,14 @@ package com.restaurant.android.cameriere.activities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.Semaphore;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,9 +19,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.restaurant.android.DbManager;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
 
@@ -42,11 +35,10 @@ public class TablesListActivity extends Activity {
 	private ListView tableListView;
 	private boolean runThread;
 	private boolean pauseThread;
-	private ProgressDialog m_ProgressDialog = null;
+	// private ProgressDialog m_ProgressDialog = null;
 	private ArrayList<Table> m_tables = null;
     private TableAdapter m_adapter;
     private UpdaterThread updaterThread;
-	private Semaphore sem;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,8 +56,6 @@ public class TablesListActivity extends Activity {
     		  							m_tables);
       
       tableListView.setAdapter(this.m_adapter);
-      
-      sem = new Semaphore(0);
       
       /**************************************************************
        * Avvio del thread di aggiornamento della lista dei tavoli
