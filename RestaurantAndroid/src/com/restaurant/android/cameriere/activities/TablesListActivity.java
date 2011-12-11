@@ -135,13 +135,22 @@ public class TablesListActivity extends Activity {
 		super.onDestroy();
 		Log.d("TablesListActivity","OnDestroy");
 		
+		
+		/* Imposto pauseThread a false in modo da non avere un problema di race
+		 * condition dovuto al fatto che il thread si sospende dopo la signal */
+		pauseThread = false;
+		runThread =false;
 		Log.d("TablesListActivity","Stoppo il thread di aggiornamento dei tavoli");
 		runThread =false;
-		try {
-			updaterThread.join();
-		} catch (InterruptedException e) {
-			Log.e("TablesListActivity","Errore durante il join del thread");
-		}
+		updaterThread.Signal();
+		
+		/* Non dovrebbe essere strettamente necessario, il thread dovrebbe terminare
+		 * ugualmente */
+//		try {
+//			updaterThread.join();
+//		} catch (InterruptedException e) {
+//			Log.e("TablesListActivity","Errore durante il join del thread");
+//		}
 	}
 
 	/**
