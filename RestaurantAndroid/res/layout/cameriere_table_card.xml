@@ -5,24 +5,124 @@
     android:orientation="vertical" >
 
     
+    <!-- Scrollview che contiene l'intera pagina -->
+    
+    <!-- Titolo -->
+	    <TextView
+	        android:id="@+id/tableCard_textView_Title"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:layout_margin="10dp"
+	        android:text="Scheda Tavolo"
+	        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
      <ScrollView 
 	      	android:layout_height="fill_parent"
 	    	android:layout_width="fill_parent">
+	    	
+         
 	    	
          <LinearLayout 
 	       	android:orientation="vertical"
 		    android:layout_width="fill_parent"
 		    android:layout_height="fill_parent">
 		    	
-	         	<!-- Titolo -->
-			    <TextView
-			        android:id="@+id/tableCard_textView_Title"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_gravity="center"
-			        android:layout_margin="10dp"
-			        android:text="Scheda Tavolo"
-			        android:textAppearance="?android:attr/textAppearanceLarge" />
+             <!-- Tabella caratteristiche generali del tavolo -->
+				<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				    android:layout_width="fill_parent"
+				    android:layout_height="fill_parent"
+				    android:stretchColumns="1"  
+    				android:layout_gravity="center"
+    				android:gravity="center"
+				    android:layout_margin="10dp">
+				
+				    
+				    
+				    <!-- Cameriere -->
+				    <TableRow>
+
+				        <TextView
+				            android:layout_column="1"
+				            android:text="Cameriere:"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				            android:text="Paolo Piccinini"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				    </TableRow>
+				
+				        <!-- Stato -->
+				    <TableRow>
+				       <TextView
+				            android:layout_column="1"
+				            android:text="Stato:"
+				             android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				            android:text="Prenotato"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				    </TableRow>
+				    
+				        <!-- Piano -->
+				   <TableRow>
+
+				        <TextView
+				            android:layout_column="1"
+				            android:text="Piano:"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				            android:text="Primo Piano"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				    </TableRow>
+				    
+				       <!-- Area -->
+				    <TableRow>
+
+				        <TextView
+				            android:layout_column="1"
+				            android:text="Area:"
+				             android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				            android:text="Giardino"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				    </TableRow>
+				
+				</TableLayout>
 			
 			    <!-- Bottoni Menu -->
 			    <Button
@@ -35,6 +135,7 @@
 			        android:id="@+id/Button02"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
+			        
 			        android:text="Prendi Ordinazione" />
 			
 			    <Button
@@ -53,94 +154,269 @@
 			    
 			    
 			     <!-- Prenotazioni -->
+
+
+				 <!-- Titolo prenotazioni -->
 			     <TextView
-			        android:id="@+id/tableCard_textView_prenotations_title"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_gravity="center"
-			        android:layout_margin="10dp"
-			        android:text="Prenotazioni"
-			        android:textAppearance="?android:attr/textAppearanceLarge" />
-		    	
+			         android:id="@+id/tableCard_textView_prenotations_title"
+			         android:layout_width="wrap_content"
+			         android:layout_height="wrap_content"
+			         android:layout_gravity="center"
+			         android:layout_marginBottom="2dp"
+			         android:layout_marginTop="10dp"
+			         android:text="Prenotazioni"
+			         android:textAppearance="?android:attr/textAppearanceLarge" />
+		    
+
+				 <!-- Tabella Prenotazioni -->
+			     <LinearLayout
+			         android:id="@+id/linearLayout1"
+			         android:orientation="horizontal"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content" >
+
+			         <TextView
+			             android:id="@+id/TextView02"
+			             android:layout_width="80dp"
+			             android:layout_height="wrap_content"
+			             android:layout_margin="1dp"
+			             android:gravity="center"
+			             android:background="#333333"
+			             android:text="Data:" />
+
+			         <TextView
+			             android:id="@+id/TextView04"
+			             android:layout_width="70dp"
+			             android:layout_height="wrap_content"
+			             android:layout_margin="1dp"
+			             android:background="#333333"
+			             android:gravity="center"
+			             android:text="Persone:" />
+
+			         <TextView
+			             android:id="@+id/TextView01"
+			             android:layout_width="fill_parent"
+			             android:layout_height="wrap_content"
+			             android:gravity="center"
+			             android:layout_margin="1dp"
+			             android:background="#333333"
+			             android:text="Nome Cliente:" />
+
+			     </LinearLayout>
 			     
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:stretchColumns="1">
+			         
+			     <LinearLayout
+			         android:id="@+id/linearLayout1"
+			         android:orientation="horizontal"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content" >
 
-    <TableRow>
-        <TextView
-            android:layout_column="1"
-            android:text="Open..."
-            android:padding="3dip" />
-        <TextView
-            android:text="Ctrl-O"
-            android:gravity="right"
-            android:padding="3dip" />
-    </TableRow>
+			         <TextView
+			             android:id="@+id/TextView01"
+			             android:layout_width="80dp"
+			             android:layout_height="wrap_content"
+			             android:layout_margin="1dp"
+			             android:text="21/10/2011 20:30"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:background="#111111"
+			             android:textSize="14dp" />
 
-    <TableRow>
-        <TextView
-            android:layout_column="1"
-            android:text="Save..."
-            android:padding="3dip" />
-        <TextView
-            android:text="Ctrl-S"
-            android:gravity="right"
-            android:padding="3dip" />
-    </TableRow>
+			         <TextView
+			             android:id="@+id/textView1"
+			             android:layout_width="70dp"
+			             android:layout_height="fill_parent"
+			             android:layout_margin="1dp"
+			             android:text="3"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:background="#111111"
+			             android:textSize="14dp" />
 
-    <TableRow>
-        <TextView
-            android:layout_column="1"
-            android:text="Save As..."
-            android:padding="3dip" />
-        <TextView
-            android:text="Ctrl-Shift-S"
-            android:gravity="right"
-            android:padding="3dip" />
-    </TableRow>
+			         <TextView
+			             android:id="@+id/TextView03"
+			             android:layout_width="fill_parent"
+			             android:layout_height="fill_parent"
+			             android:layout_margin="1dp"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:text="Pierazzi Fabio"
+			             android:background="#111111"
+			             android:textSize="14dp" />
 
-    <View
-        android:layout_height="2dip"
-        android:background="#FF909090" />
-
-    <TableRow>
-        <TextView
-            android:text="X"
-            android:padding="3dip" />
-        <TextView
-            android:text="Import..."
-            android:padding="3dip" />
-    </TableRow>
-
-    <TableRow>
-        <TextView
-            android:text="X"
-            android:padding="3dip" />
-        <TextView
-            android:text="Export..."
-            android:padding="3dip" />
-        <TextView
-            android:text="Ctrl-E"
-            android:gravity="right"
-            android:padding="3dip" />
-    </TableRow>
-
-    <View
-        android:layout_height="2dip"
-        android:background="#FF909090" />
-
-    <TableRow>
-        <TextView
-            android:layout_column="1"
-            android:text="Quit"
-            android:padding="3dip" />
-    </TableRow>
-</TableLayout>
+			     </LinearLayout>
 			     
+			     <LinearLayout
+			         android:id="@+id/linearLayout1"
+			         android:orientation="horizontal"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content" >
+
+			         <TextView
+			             android:id="@+id/TextView01"
+			             android:layout_width="80dp"
+			             android:layout_height="wrap_content"
+			             android:layout_margin="1dp"
+			             android:text="21/10/2011 20:30"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:background="#111111"
+			             android:textSize="14dp" />
+
+			         <TextView
+			             android:id="@+id/textView1"
+			             android:layout_width="70dp"
+			             android:layout_height="fill_parent"
+			             android:layout_margin="1dp"
+			             android:text="3"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:background="#111111"
+			             android:textSize="14dp" />
+
+			         <TextView
+			             android:id="@+id/TextView03"
+			             android:layout_width="fill_parent"
+			             android:layout_height="fill_parent"
+			             android:layout_margin="1dp"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:text="Pierazzi Fabio"
+			             android:background="#111111"
+			             android:textSize="14dp" />
+
+			     </LinearLayout>
 			     
+			         
+			         
+			         
+			         
+			    <!-- LAYOUT CONTO -->
+			        <TextView
+			            android:id="@+id/textView22"
+			            android:layout_width="fill_parent"
+			            android:layout_height="wrap_content"
+			            android:text="Conto"
+			            android:gravity="center"
+			            android:layout_margin="10dp"
+			            android:textAppearance="?android:attr/textAppearanceLarge" />
+                 
+			        <!-- Tabella Conto -->
+			        
+			        <!-- Intestazione tabella conto -->
+			        <LinearLayout
+			         android:id="@+id/linearLayout1212"
+			         android:orientation="horizontal"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content" >
+
+			         <TextView
+			             android:id="@+id/TextView022"
+			             android:layout_width="fill_parent"
+			             android:layout_height="wrap_content"
+			             android:layout_weight="1"
+			             android:layout_margin="1dp"
+			             android:gravity="center"
+			             android:background="#333333"
+			             android:text="Nome Ordinazione:" />
+
+			         <TextView
+			             android:id="@+id/TextView042"
+			             android:layout_width="50dp"
+			             android:layout_height="wrap_content"
+			             android:layout_margin="1dp"
+			             android:background="#333333"
+			             android:gravity="center"
+			             android:text="Qty:" />
+
+			         <TextView
+			             android:id="@+id/TextView012"
+			             android:layout_width="120dp"
+			             android:layout_height="wrap_content"
+			             android:gravity="center"
+			             android:layout_margin="1dp"
+			             android:background="#333333"
+			             android:text="Stato:" />
+
+			     </LinearLayout>
+			     
+			     <!-- Prima riga -->    
+			     <LinearLayout
+			         android:id="@+id/linearLayout12"
+			         android:orientation="horizontal"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content" >
+
+			         <TextView
+			             android:id="@+id/TextView012"
+			             android:layout_width="fill_parent"
+			             android:layout_height="wrap_content"
+			             android:layout_weight="1"
+			             android:layout_margin="1dp"
+			             android:text="Penne all'amatriciana con capperi e rucola"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:background="#111111"
+			             android:textSize="14dp" />
+
+			         <TextView
+			             android:id="@+id/textView12"
+			             android:layout_width="50dp"
+			             android:layout_height="fill_parent"
+			             android:layout_margin="1dp"
+			             android:text="3"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:background="#111111"
+			             android:textSize="14dp" />
+
+			         <TextView
+			             android:id="@+id/TextView032"
+			             android:layout_width="120dp"
+			             android:layout_height="fill_parent"
+			             android:layout_margin="1dp"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:text="Inviata in cucina"
+			             android:background="#111111"
+			             android:textSize="14dp" />
+
+			     </LinearLayout>
+
+			     <!-- Seconda riga -->			     
+			     <LinearLayout
+			         android:id="@+id/linearLayout12"
+			         android:orientation="horizontal"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content" >
+
+			         <TextView
+			             android:id="@+id/TextView012"
+			             android:layout_width="fill_parent"
+			             android:layout_height="wrap_content"
+			             android:layout_weight="1"
+			             android:layout_margin="1dp"
+			             android:text="21/10/2011 20:30"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:background="#111111"
+			             android:textSize="14dp" />
+
+			         <TextView
+			             android:id="@+id/textView23"
+			             android:layout_width="50dp"
+			             android:layout_height="fill_parent"
+			             android:layout_margin="1dp"
+			             android:text="3"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:background="#111111"
+			             android:textSize="14dp" />
+
+			         <TextView
+			             android:id="@+id/TextView032"
+			             android:layout_width="120dp"
+			             android:layout_height="fill_parent"
+			             android:layout_margin="1dp"
+			             android:gravity="center_vertical|center_horizontal"
+			             android:text="Pierazzi Fabio"
+			             android:background="#111111"
+			             android:textSize="14dp" />
+
+			     	</LinearLayout>
+             
 		    </LinearLayout>
+		    
+              
 		
 		</ScrollView>
 
