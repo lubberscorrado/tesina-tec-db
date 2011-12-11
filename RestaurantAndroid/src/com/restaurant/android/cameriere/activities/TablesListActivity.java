@@ -162,10 +162,9 @@ public class TablesListActivity extends Activity {
         			  Table t = new Table();
         			  t.setTableName(jsonArray.getJSONObject(i).getString("nomeTavolo"));
         			  t.setTableStatus(jsonArray.getJSONObject(i).getString("statoTavolo"));
-        			  String nomeTavolo = jsonArray.getJSONObject(i).getString("nomeTavolo");
         			  t.setTableId(
         					  Integer.parseInt(
-        							  nomeTavolo.substring(1, nomeTavolo.length())));
+        							  jsonArray.getJSONObject(i).getString("idTavolo")));
         			  m_tables.add(t);
           		  }
           	  }
@@ -195,9 +194,6 @@ public class TablesListActivity extends Activity {
 		
    		final int DELAY = 3000;
    		public void run() {
-   			
-   			/* Eseguo il thread fintanto che il service di update
-   			 * non viene interrotto */
    			while(runThread) {
    				Log.d("UpdaterThread", "UPDATING...");
    				getTables();
@@ -206,9 +202,7 @@ public class TablesListActivity extends Activity {
 					Thread.sleep(DELAY);
 				} catch (InterruptedException e) {
 					Log.d("UpdaterThread", "Errore durante lo sleep del thread");
-					
 				}
-   				
    				if(pauseThread)
 					try {
 						Log.d("UpdaterThread", "Vado a letto");
@@ -218,17 +212,13 @@ public class TablesListActivity extends Activity {
 					}
    			}
    		}
-   		
-   		
    		public synchronized void Wait() throws InterruptedException {
    			wait();
    			
    		}
-   		
    		public synchronized void Signal() {
    			notify();
    		}
-   		
    	}
    	
 	/************************************************************************
