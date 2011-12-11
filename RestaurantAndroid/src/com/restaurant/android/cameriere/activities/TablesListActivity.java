@@ -85,14 +85,7 @@ public class TablesListActivity extends Activity {
   	    public void onItemClick(AdapterView<?> parent, View view,
 		        int position, long id) {
   	    
-  	    	/**************************************************
-  	    	 * Stop del thread di aggiornamento dei tavoli 
-  	    	 **************************************************/
-  	    	
-  	    	Log.d("TablesListActivity","Stoppo il thread di aggiornamento dei tavoli");
-  			pauseThread = true;
-  			
-  	
+  	    		
  	    	 /* Sapendo la posizione dell'elemento che è stato 
   	    	  * cliccato, ricavo l'oggetto dell'adapter */
   	    	 Log.i(TAG, "Hai cliccato su: " + 
@@ -113,12 +106,28 @@ public class TablesListActivity extends Activity {
       });
     }
 	
+	@Override
 	public void onResume() {
 		super.onResume();
 		Log.d("TablesListActivity","OnResume");
 		/* Sveglio il thread sospeso */
 		pauseThread = false;
 		updaterThread.Signal();
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		Log.d("TablesListActivity","OnStart");
+		pauseThread = false;
+		updaterThread.Signal();
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		Log.d("TablesListActivity","OnStop");
+		pauseThread = true;
 	}
 	
 	@Override
@@ -144,7 +153,8 @@ public class TablesListActivity extends Activity {
           try{
         	  
         	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
-        	  String response = restApplication.makeHttpGetRequest("http://192.168.1.101:8080/ClientEJB/statoTavolo", new HashMap<String, String>());
+        	  String url = ((RestaurantApplication)getApplication()).getHost();
+        	  String response = restApplication.makeHttpGetRequest(url + "ClientEJB/statoTavolo", new HashMap<String, String>());
         	  
         	  m_tables.clear();
         	  

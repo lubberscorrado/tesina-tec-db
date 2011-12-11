@@ -27,12 +27,10 @@ import android.util.Log;
 
 public class RestaurantApplication extends Application {
 	
-	private ArrayList<Table> statoTavoli;
 	private DefaultHttpClient httpClient;
 	@Override
 	public void onCreate() {
 		httpClient = new DefaultHttpClient();
-		statoTavoli = new ArrayList<Table>();
 	}
 		
 	/**
@@ -133,15 +131,10 @@ public class RestaurantApplication extends Application {
 
 	}
 	
+	public String getHost() {
+		return "http://192.168.1.101:8080/";
+	}
 	
-	public ArrayList<Table> getStatoTavoli() {
-		return statoTavoli;
-	}
-
-	public void setStatoTavoli(ArrayList<Table> statoTavoli) {
-		this.statoTavoli = statoTavoli;
-	}
-
 	@Override
 	public void onTerminate() {
 		super.onTerminate();

@@ -119,7 +119,9 @@ public class LoginActivity extends Activity {
 			RestaurantApplication restApp = ((RestaurantApplication)getApplication());
 
 			try {
-				String responseBody = restApp.makeHttpPostRequest(	"http://192.168.1.101:8080/ClientEJB/login", 
+				
+				String url = ((RestaurantApplication)getApplication()).getHost();
+				String responseBody = restApp.makeHttpPostRequest(	url + "ClientEJB/login", 
 																	hashMap[0]);
 			        			
 				Log.e("ResponseBody", responseBody);
