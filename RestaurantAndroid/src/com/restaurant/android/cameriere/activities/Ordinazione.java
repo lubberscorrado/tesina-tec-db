@@ -15,8 +15,8 @@ public class Ordinazione {
 	public int getQuantita() {
 		return quantita;
 	}
-	public void setQuantita(int quantità) {
-		this.quantita = quantità;
+	public void setQuantita(int quantita) {
+		this.quantita = quantita;
 	}
 	public String getStato() {
 		return stato;
