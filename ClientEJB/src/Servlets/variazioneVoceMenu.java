@@ -62,7 +62,6 @@ public class variazioneVoceMenu extends HttpServlet {
 		try {
 			while(idCategoria > 0){
 				treeNodeCategoria = gestioneCategorie.getCategoriaById(idCategoria);
-				System.out.print(treeNodeCategoria.getNome() +" - ");
 				listaVariazioni = gestioneVariazioni.getVariazioniByCategoria(idCategoria, idTenant);
 				if(listaVariazioni != null){
 					for(int i=0; i<listaVariazioni.size(); i++){

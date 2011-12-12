@@ -956,12 +956,7 @@ var _mainTabPanel = {
 		                    return false;
 		                }
 		            },
-		            forceFit: true,
-		            showPreview: true, // custom property
-		            enableRowBody: true,
-		            getRowClass: function(record, rowIndex, rowParams, store){
-		                return record.get('isEreditata') ? "rowGridVariazioniMenuNonModificabili" : "row-error";
-		            }
+		            
 
 		        },
 		        //multiSelect: true,
@@ -1051,6 +1046,8 @@ var _mainTabPanel = {
 				        fieldLabel: 'Descrizione',
 				        name: 'descrizione'
 				    },{
+				    	xtype: 'numberfield',
+				    	step: 0.1,
 				        fieldLabel: 'Prezzo',
 				        name: 'prezzo'
 				    }],
@@ -1300,7 +1297,7 @@ var _mainTabPanel = {
 				listeners: {
 					beforeedit: function(editor, e, eOpts ){
 						if (editor.record.get('isEreditata') == true) {
-							Ext.Msg.alert('Info: ', 'Non puoi modificare le variazioni di categorie di livello superiore!');
+							Ext.Msg.alert('Info: ', 'Non è possibile modificare variazioni ereditate da altre categorie. Per modificarle, occorre visualizzare le variazione dell\'apposita categoria a cui sono associate.');
 							return false;
 					  	}
 						return true;
@@ -1360,7 +1357,7 @@ var _mainTabPanel = {
 		            sortable: true,
 		            dataIndex: 'prezzo',
 		            field: {
-		                xtype: 'textfield'
+		            	xtype: 'numberfield'
 		            }
 		        }, {
 		            text: 'Categoria di appartenenza',
@@ -1400,7 +1397,7 @@ var _mainTabPanel = {
 		                    var selection = grid.getView().getSelectionModel().getSelection()[0];
 		                    if (selection) {
 		                    	if(selection.get('isEreditata')){//Se è una variazione ereditata non la posso cancellare
-		                    		Ext.Msg.alert('Info: ', 'Non puoi modificare le variazioni di categorie di livello superiore!');
+		                    		Ext.Msg.alert('Info: ', 'Non è possibile modificare variazioni ereditate da altre categorie. Per modificarle, occorre visualizzare le variazione dell\'apposita categoria a cui sono associate.');
 		                    		return;	
 		                    	}
 		                    	
@@ -1430,7 +1427,29 @@ var _mainTabPanel = {
 		                    }
 		                }
 		            }]
-		        }]
+		        }],
+		        features: [
+					Ext.create('Ext.grid.feature.Grouping', {
+						groupHeaderTpl: 'Group: {name} {[(name>0) ? "Editabili" : "Ereditate"]} {[readOut(values)]} ({rows.length})',
+//						groupHeaderTpl: 'Group: {name} ({rows.length})',
+//					    groupHeaderTpl: 'Group: {name} ({rows.length})', //print the number of items in the group
+					    startCollapsed: true // start all groups collapsed
+					})
+		        ],
+		        viewConfig: {
+		        	emptyText:'Non ci sono variazioni disponibili.',
+				    forceFit: true,
+		            showPreview: true, // custom property
+		            enableRowBody: true,
+		            getRowClass: function(record, rowIndex, rowParams, store){
+		                return record.get('isEreditata') ? 'red-row' : '';
+		            }
+		        }
+		        ,
+//		        view: new Ext.grid.GroupingView({
+//		            forceFit:true,
+//		            groupTextTpl: '{text} ({[values.rs.length]} {[values.rs.length > 1 ? "Items" : "Item"]})'
+//		        }),
 		        
 		    });
 		    grid.getSelectionModel().on('selectionchange', function(selModel, selections){
@@ -1446,5 +1465,10 @@ var _mainTabPanel = {
         	});
 		    askWindow.add(grid);
 			askWindow.show();
+			Ext.getStore('datastore_variazione_voce_menu').group('isEreditata');
 		}
+};
+
+function readOut(values) {
+    console.log(values);
 };

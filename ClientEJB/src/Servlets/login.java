@@ -81,14 +81,15 @@ public class login extends HttpServlet {
 					json_obj.put("user", "Gennaro lò pizzaiolo");
 				}
 			}catch(Exception e){
-				int user_privs = (Integer) session.getAttribute("Privs");
-				json_obj.put("logged", true);
-				json_obj.put("isCameriere", 	((user_privs&JSONResponse.PRIV_Cameriere)==JSONResponse.PRIV_Cameriere));
-				json_obj.put("isCuoco", 		((user_privs&JSONResponse.PRIV_Cuoco)==JSONResponse.PRIV_Cuoco));
-				json_obj.put("isCassiere", 		((user_privs&JSONResponse.PRIV_Cassiere)==JSONResponse.PRIV_Cassiere));
-				json_obj.put("isAdministrator", ((user_privs&JSONResponse.PRIV_Administrator)==JSONResponse.PRIV_Administrator));
-				json_obj.put("restaurant", "La tana delle scimmie");
-				json_obj.put("user", "Gennaro lò pizzaiolo");
+				json_obj.put("logged", false);
+//				int user_privs = (Integer) session.getAttribute("Privs");
+//				json_obj.put("logged", true);
+//				json_obj.put("isCameriere", 	((user_privs&JSONResponse.PRIV_Cameriere)==JSONResponse.PRIV_Cameriere));
+//				json_obj.put("isCuoco", 		((user_privs&JSONResponse.PRIV_Cuoco)==JSONResponse.PRIV_Cuoco));
+//				json_obj.put("isCassiere", 		((user_privs&JSONResponse.PRIV_Cassiere)==JSONResponse.PRIV_Cassiere));
+//				json_obj.put("isAdministrator", ((user_privs&JSONResponse.PRIV_Administrator)==JSONResponse.PRIV_Administrator));
+//				json_obj.put("restaurant", "La tana delle scimmie");
+//				json_obj.put("user", "Gennaro lò pizzaiolo");
 			}
 			json_obj.put("success", true);
 			response.getWriter().println(json_obj);
