@@ -45,9 +45,9 @@
         
        	<activity
             android:label="@string/app_name"
-            android:name=".cameriere.activities.MenuListActivity" 
-            android:theme="@android:style/Theme.NoTitleBar">
+            android:name=".cameriere.activities.MenuListActivity" >
         </activity>
+    
     </application>
    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
    <uses-permission android:name="android.permission.INTERNET" />
