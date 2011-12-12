@@ -201,7 +201,7 @@ var _mainTabPanel = {
 		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
 		            { header: 'Piano',  	dataIndex: 'numeroPiano' },
 		            { header: 'Area',  		dataIndex: 'nomeArea' },
-		            { header: 'N�Posti', 	dataIndex: 'numPosti' },
+		            { header: 'N°Posti', 	dataIndex: 'numPosti' },
 		            { header: 'Cameriere', 	dataIndex: 'cameriere' },
 		            { header: 'Stato', 		dataIndex: 'statoTavolo'}
 		        ],
@@ -511,9 +511,14 @@ var _mainTabPanel = {
 			this._panel.add(this._tab_gestione_tavolo);
 		},
 		addNewNodeGestioneTavolo : function(parentNode){
+			var tmp = Ext.getCmp('window_inserimentoNodoGestioneTavolo');
+			if(tmp) tmp.destroy();
+			tmp = Ext.getCmp('form_gestioneTavolo');
+			if(tmp) tmp.destroy();
 			var askWindow = Ext.create('Ext.window.Window', {
 				id: 'window_inserimentoNodoGestioneTavolo',
         	    title: 'Hello',
+        	    modal: true,
         	    height: 400,
         	    width: 400,
         	    layout: 'fit'
@@ -601,8 +606,8 @@ var _mainTabPanel = {
 					                    }
 			                    		default: {parentId = 'root';	break;}
 			                    	}
-			                    	console.debug("PARENT ID NUOVO NODO: "+parentId);
-			                    	console.debug('Nuovo nodo creato: '+nuovo_nodo.get('id')+' - '+nuovo_nodo.get('parentId')+' - '+nuovo_nodo.get('text')+' - '+nuovo_nodo.get('tipo'));
+//			                    	console.debug("PARENT ID NUOVO NODO: "+parentId);
+//			                    	console.debug('Nuovo nodo creato: '+nuovo_nodo.get('id')+' - '+nuovo_nodo.get('parentId')+' - '+nuovo_nodo.get('text')+' - '+nuovo_nodo.get('tipo'));
 			                    	var nodo_padre = Ext.getStore('datastore_gestione_tavolo').getNodeById(parentId);
 			                    	nodo_padre.appendChild(nuovo_nodo);
 			                    	
@@ -832,7 +837,7 @@ var _mainTabPanel = {
 		                itemcontextmenu: function(view, rec, node, index, e) {
 		                	var depth = rec.get("depth");
 		                	var contextMenu = null;
-		                	console.debug('PROFONDITA: '+depth);
+//		                	console.debug('PROFONDITA: '+depth);
 		                	
 		                	if(depth == 1){
 		                		contextMenu = Ext.create('Ext.menu.Menu', {
@@ -903,7 +908,7 @@ var _mainTabPanel = {
 				                            	text: 'Visualizza variazioni',
 				                            	handler: function(){
 				                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-				                            		_mainTabPanel.showGestioneVariazioniMenu(rec.get('parentId'));
+				                            		_mainTabPanel.showGestioneVariazioniMenu(rec.get('id').substring(1),rec.get('nome'));
 				                            	}
 				                            },{
 				                            	xtype: 'menuseparator'
@@ -950,7 +955,14 @@ var _mainTabPanel = {
 		                    contextMenu.showAt(e.getXY());
 		                    return false;
 		                }
+		            },
+		            forceFit: true,
+		            showPreview: true, // custom property
+		            enableRowBody: true,
+		            getRowClass: function(record, rowIndex, rowParams, store){
+		                return record.get('isEreditata') ? "rowGridVariazioniMenuNonModificabili" : "row-error";
 		            }
+
 		        },
 		        //multiSelect: true,
 		        //singleExpand: true,
@@ -1011,6 +1023,9 @@ var _mainTabPanel = {
 			Ext.getCmp('main_tabPanel').add( Ext.getCmp('main_tabPanel_gestioneMenu') );
 		},
 		createFormGestioneMenu : function(){
+			var tmp = Ext.getCmp('form_gestioneMenu');
+			if(tmp) tmp.destroy();
+			
 			return Ext.create('Ext.form.Panel', {
 					id: 'form_gestioneMenu',
 					border: false,
@@ -1043,7 +1058,10 @@ var _mainTabPanel = {
 				    buttons: [{
 	    	            text: 'Reset',
 	    	            handler: function() {
-	    	                this.up('form').getForm().reset();
+	    	            	this.up('form').getForm().findField('nome').setValue('');
+	    	            	this.up('form').getForm().findField('descrizione').setValue('');
+	    	            	this.up('form').getForm().findField('prezzo').setValue('');
+	    	            	
 	    	            }
 	    	        },{
 				        text: 'Submit',
@@ -1057,9 +1075,9 @@ var _mainTabPanel = {
 				                    	action : this.up('form').action
 				                    },
 				                    success: function(form, action) {
-				                    	console.debug('OK');
+//				                    	console.debug('OK');
 				                    	if( action.result.action == 'create' ){
-				                    		console.debug('OK SUCCESSO CREATE');
+//				                    		console.debug('OK SUCCESSO CREATE');
 				                    		var nuovo_nodo = Ext.create('nodoGestioneMenu', {
 					                    		id: 			action.result.data[0].id,
 					                    		parentId: 		action.result.data[0].parentId,
@@ -1071,7 +1089,7 @@ var _mainTabPanel = {
 				                    		Ext.getStore('datastore_gestione_menu').getNodeById(nuovo_nodo.get('parentId')).appendChild(nuovo_nodo);
 				                    	
 				                    	}else if ( action.result.action == 'update' ){
-				                    		console.debug('OK SUCCESSO UPDATE');
+//				                    		console.debug('OK SUCCESSO UPDATE');
 				                    		var updatedNode = Ext.getStore('datastore_gestione_menu').getNodeById(action.result.data[0].id);
 					                    		updatedNode.set('id',action.result.data[0].id);
 					                    		updatedNode.set('id',action.result.data[0].parentId);
@@ -1107,7 +1125,7 @@ var _mainTabPanel = {
 				});
 		},
 		addNewNodeGestioneMenu : function(parentNode,isVoceMenu){
-			console.debug('NUOVO NODO MENU');
+//			console.debug('NUOVO NODO MENU');
 			var a = Ext.getCmp('window_inserimentoNodoGestioneMenu');
 			var b = Ext.getCmp('form_gestioneMenu');
 			if(a != undefined) a.destroy();
@@ -1119,6 +1137,7 @@ var _mainTabPanel = {
 			var askWindow = Ext.create('Ext.window.Window', {
 				id: 'window_inserimentoNodoGestioneMenu',
         	    title: 'Hello',
+        	    modal: true,
         	    //height: 400,
         	    //width: 400,
         	    layout: 'fit'
@@ -1180,31 +1199,148 @@ var _mainTabPanel = {
 	            });
 			});
 		},
-		showGestioneVariazioniMenu : function(idCategoria){
+		showGestioneVariazioniMenu : function(idCategoria,nomeCategoria){
+			console.debug('IdCategoria '+idCategoria);
+			var store = Ext.getStore('datastore_variazione_voce_menu');
+			if(store) store.destroy();
+			store = Ext.create('Ext.data.Store', {
+				storeId: 'datastore_variazione_voce_menu',
+				//groupField: 'nomeArea',
+				model: 'variazioneVoceMenu',
+				autoLoad: true,
+				//autoSync: true,
+				pageSize: 50,
+				remoteFilter : true,
+			
+				listeners: {
+					beforeload: function( store, operation, eOpts ){
+						store.proxy.extraParams.idCategoria=idCategoria;
+					},
+					beforesync: function( options, eOpts ){
+									console.debug('beforesync');
+									console.debug(options);
+						//			console.debug(eOpts);
+									if(options.update){
+										console.debug('Create OR Update');
+									}
+					},
+					write: function(store, operation, eOpts ){
+						console.debug('writerello');
+						console.debug(eOpts);
+						console.debug(operation);
+						console.debug(store);
+						
+						operation.request.params.action = 'Cicisbeo';
+						
+					},
+					update: function( store, record, operation, eOpts ){
+						console.debug('updaterello');
+						console.debug(eOpts);
+						console.debug(operation);
+						console.debug(store);
+			//			Ext.data.Model.EDIT
+			//			Ext.data.Model.REJECT
+			//			Ext.data.Model.COMMIT
+						
+					},
+					remove: function( store, record, index, eOpts ){
+						console.debug('removerello');
+						console.debug(eOpts);
+						console.debug(index);
+						console.debug(record);
+						console.debug(store);
+					},
+					
+					beforeappend: function( thisNode, newChildNode, eOpts ){
+						var tipo = newChildNode.get("tipo");
+						if( tipo == 1){			//CATEGORIA
+							newChildNode.set('leaf', false);
+							newChildNode.set('text', newChildNode.get('nome'));
+							newChildNode.set('qtip', newChildNode.get('descrizione'));
+			            	//newChildNode.set('id', 'P'+newChildNode.get('realId'));
+			            	//newChildNode.set('parentId', newChildNode.get('parentId'));
+			            	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
+			            }else if( tipo == 2){	//VOCE MENU
+			            	newChildNode.set('leaf', true);
+			            	newChildNode.set('text', newChildNode.get('nome')+' - ['+newChildNode.get('prezzo')+'€]');
+			            	newChildNode.set('qtip', newChildNode.get('descrizione'));
+			            	//newChildNode.set('id', 'A'+newChildNode.get('realId'));
+			            	//newChildNode.set('parentId', 'P'+newChildNode.get('parentId'));
+			            	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
+			            }
+					},
+					append: function( thisNode, newChildNode, index, eOpts ) {
+						
+				    }
+			    },
+//			    proxy: {
+//			        type: 'rest',
+//			        url : 'variazioneVoceMenu',
+//			        appendId : false,
+//			        writer: {
+//			            type: 'singlepostnoaction'
+//			            //type: 'json'
+//			        },
+//					reader: {
+//				        type: 'json',
+//				        idProperty: 'id',
+//				        root: 'data'
+//				    },
+//				    actionMethods : {
+//			            create : 'POST',
+//			            read   : 'GET',
+//			            update : 'POST',
+//			            destroy: 'POST'
+//			        }
+//			    }
+				
+			});
+			
 			var askWindow = Ext.create('Ext.window.Window', {
 				id: 'window_gestionevariazionivocemenu',
-        	    title: 'Elenco variazioni',
-        	    //height: 400,
-        	    //width: 400,
-        	    layout: 'fit'
+        	    title: 'Elenco variazioni '+nomeCategoria,
+        	    height: 500,
+        	    width: 500,
+        	    //layout: 'fit',
+        	    layout: 'vbox',
+//        	    layout: {
+//        	        type: 'vbox',
+//        	        align: 'stretch'
+//        	    },
+        	    modal: true
         	});
 			
 			var rowEditing = Ext.create('Ext.grid.plugin.RowEditing',{
 				listeners: {
 					beforeedit: function(editor, e, eOpts ){
 						if (editor.record.get('isEreditata') == true) {
+							Ext.Msg.alert('Info: ', 'Non puoi modificare le variazioni di categorie di livello superiore!');
 							return false;
 					  	}
 						return true;
-				    	}
-				  	}
+				    },
+				    canceledit: function( grid, eOpts ){
+				    	
+				    },
+				    edit: function( editor, e, eOpts ){
+				    	console.debug('EDITED KISSES');
+				    	console.debug(editor);
+//				    	editor.record.save();
+				    	editor.store.sync();
+				    	
+				    },
+				    validateedit: function( editor, e, eOpts ){
+				    	
+				    }
+				}
 			});
-		    
+			
 		    var grid = Ext.create('Ext.grid.Panel', {
 		        renderTo: document.body,
 		        plugins: [rowEditing],
-		        width: 400,
-		        height: 300,
+		        //height: 500,
+		        flex: 1,
+        	    width: '100%',
 		        frame: true,
 		        //title: 'Users',
 		        store: Ext.getStore('datastore_variazione_voce_menu'),
@@ -1214,7 +1350,8 @@ var _mainTabPanel = {
 		            text: 'ID',
 		            width: 40,
 		            sortable: true,
-		            dataIndex: 'id'
+		            dataIndex: 'id',
+		            hidden: true
 		        }, {
 		            text: 'Nome',
 		            flex: 1,
@@ -1225,7 +1362,7 @@ var _mainTabPanel = {
 		            }
 		        }, {
 		            header: 'Descrizione',
-		            width: 80,
+		            flex: 1,
 		            sortable: true,
 		            dataIndex: 'descrizione',
 		            field: {
@@ -1233,7 +1370,7 @@ var _mainTabPanel = {
 		            }
 		        }, {
 		            text: 'Prezzo',
-		            width: 80,
+		            width: 60,
 		            sortable: true,
 		            dataIndex: 'prezzo',
 		            field: {
@@ -1241,7 +1378,7 @@ var _mainTabPanel = {
 		            }
 		        }, {
 		            text: 'Categoria di appartenenza',
-		            width: 80,
+		            flex: 1,
 		            sortable: true,
 		            dataIndex: 'categoriaDiAppartenenza',
 		            field: {
@@ -1261,16 +1398,9 @@ var _mainTabPanel = {
 		                text: 'Add',
 		                iconCls: 'icon-add',
 		                handler: function(){
-		                	var findNewRow = Ext.getStore('datastore_variazione_voce_menu').getById('new');
-//		                	if(findNewRow != undefined){
-//		                		findNewRow.destroy({
-//		                			params: {
-//		                				action: 'destroy'
-//		                			}
-//		                		});
-//		                	}
 		                	var emptyRecord = Ext.create('variazioneVoceMenu',{
-		                    	id: 'new'
+		                    	action: 'create',
+		                    	idCategoria: idCategoria
 		                    });
 		                	Ext.getStore('datastore_variazione_voce_menu').insert(0,emptyRecord);
 		                    rowEditing.startEdit(0, 0);
@@ -1283,15 +1413,34 @@ var _mainTabPanel = {
 		                handler: function(){
 		                    var selection = grid.getView().getSelectionModel().getSelection()[0];
 		                    if (selection) {
+		                    	if(selection.get('isEreditata')){//Se è una variazione ereditata non la posso cancellare
+		                    		Ext.Msg.alert('Info: ', 'Non puoi modificare le variazioni di categorie di livello superiore!');
+		                    		return;	
+		                    	}
+		                    	
+		                    	Ext.getStore('datastore_variazione_voce_menu').remove(selection);
+		                    	Ext.getStore('datastore_variazione_voce_menu').sync();
+		                    	
+//		                    	selection.set('action','delete');
+//		                    	Ext.getStore('datastore_variazione_voce_menu').remove(selection);
+//		                    	selection.destroy({
+//		                			params: {
+//		                				action: 'delete'
+//		                			},
+//		                			success: function(form, action){
+//		                				Ext.getStore('datastore_variazione_voce_menu').remove(selection);
+//		                			}
+//		                		});
+		                    	
 		                    	//Ext.getStore('datastore_variazione_voce_menu').remove(selection);
-		                    	selection.destroy({
-		                			params: {
-		                				action: 'delete'
-		                			},
-		                			success: function(form, action){
-		                				Ext.getStore('datastore_variazione_voce_menu').remove(selection);
-		                			}
-		                		});
+//		                    	selection.destroy({
+//		                			params: {
+//		                				action: 'delete'
+//		                			},
+//		                			success: function(form, action){
+//		                				Ext.getStore('datastore_variazione_voce_menu').remove(selection);
+//		                			}
+//		                		});
 		                    }
 		                }
 		            }]

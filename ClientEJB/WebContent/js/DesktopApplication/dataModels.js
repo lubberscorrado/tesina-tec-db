@@ -11,6 +11,20 @@ Ext.define('Ext.data.writer.SinglePost', {
     }
 });
 
+Ext.define('Ext.data.writer.SinglePostNoAction', {
+    extend: 'Ext.data.writer.Writer',
+    alternateClassName: 'Ext.data.SinglePostNoActionWriter',
+    alias: 'writer.singlepostnoaction',
+
+    writeRecords: function(request, data) {
+    	console.debug(request);
+    	console.debug(data);
+    	//data[0].action = request.params.action;
+        request.params = data[0];
+        return request;
+    }
+});
+
 
 /*Definisco il modello dei dati*/
 Ext.define('StatoTavolo', {
@@ -162,14 +176,15 @@ Ext.define('nodoGestioneMenu', {
 
 Ext.define('variazioneVoceMenu', {
 	extend: 'Ext.data.Model',
-    fields: ['id','parentId','nome','descrizione','prezzo','tipo','text','categoriaDiAppartenenza','isEreditata'],
-    //store: Ext.getStore('datastore_gestione_menu'),
+    fields: ['id','parentId','nome','descrizione','prezzo','tipo','text','categoriaDiAppartenenza','isEreditata','action','idCategoria'],
+    phantom : true,
+//    store: Ext.getStore('datastore_gestione_menu'),
     proxy: {
         type: 'rest',
         url : 'variazioneVoceMenu',
         appendId : false,
         writer: {
-            type: 'singlepost'
+            type: 'singlepostnoaction'
             //type: 'json'
         },
 		reader: {

@@ -55,7 +55,7 @@ function desktop_main(){
 	/* Genero il tab panel*/
 	//_tabPanel = get_main_tabPanel();
 	
-	/* Genero i pannelli laterali per permettere le modifiche successive: ViewPort una volta creato non può esser modificato*/
+	/* Genero i pannelli laterali per permettere le modifiche successive: ViewPort una volta creato non puï¿½ esser modificato*/
 	_viewPort_panel_east = Ext.create('Ext.panel.Panel', {
 		id: 'viewport_east',
 		region: 'east',
@@ -89,6 +89,8 @@ function desktop_main(){
 	            _viewPort_panel_west
 	   ]
 	});
+	
+	initStores();
 	
 	_mainTabPanel.addTabStato();
 	
