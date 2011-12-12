@@ -176,11 +176,11 @@ public class TableCardActivity extends Activity {
 		
 		Log.d("TableCardActivity","Stoppo il thread di aggiornamento dei tavoli");
 		runThread =false;
-		try {
-			updaterThread.join();
-		} catch (InterruptedException e) {
-			Log.e("TableCardActivity","Errore durante il join del thread");
-		}
+//		try {
+//			updaterThread.join();
+//		} catch (InterruptedException e) {
+//			Log.e("TableCardActivity","Errore durante il join del thread");
+//		}
 	}
 	
 	/**
