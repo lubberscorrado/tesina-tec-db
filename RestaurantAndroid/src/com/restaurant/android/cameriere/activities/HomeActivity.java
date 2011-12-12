@@ -178,7 +178,7 @@ public class HomeActivity extends TabActivity {
     			getParametersMap.put("node", "C" + idCategoria.toString());
     			
     			String response =  ((RestaurantApplication)getApplication()).
-    										makeHttpGetRequest(	"http://192.168.1.101:8080/ClientEJB/gestioneMenu", 
+    										makeHttpGetRequest(((RestaurantApplication)getApplication()).getHost() + "ClientEJB/gestioneMenu", 
     															getParametersMap);
     			
     			Log.d("UpdataDatabaseService", response);
