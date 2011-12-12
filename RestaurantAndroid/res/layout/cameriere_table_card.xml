@@ -21,8 +21,6 @@
 	      	android:layout_height="fill_parent"
 	    	android:layout_width="fill_parent">
 	    	
-         
-	    	
          <LinearLayout 
 	       	android:orientation="vertical"
 		    android:layout_width="fill_parent"
@@ -37,8 +35,6 @@
     				android:gravity="center"
 				    android:layout_margin="10dp">
 				
-				    
-				    
 				    <!-- Cameriere -->
 				    <TableRow>
 
@@ -60,7 +56,7 @@
 				            android:textAppearance="?android:attr/textAppearanceMedium"/>
 				    </TableRow>
 				
-				        <!-- Stato -->
+				    <!-- Stato -->
 				    <TableRow>
 				       <TextView
 				            android:layout_column="1"
@@ -80,7 +76,7 @@
 				            android:textAppearance="?android:attr/textAppearanceMedium"/>
 				    </TableRow>
 				    
-				        <!-- Piano -->
+				   <!-- Piano -->
 				   <TableRow>
 
 				        <TextView
@@ -204,86 +200,23 @@
 
 			     </LinearLayout>
 			     
-			         
-			     <LinearLayout
-			         android:id="@+id/linearLayout1"
+			         <!-- Contenitore della ListView per le prenotazioni -->
+			         <LinearLayout
+			         android:id="@+id/linearLayout_contains_prenotationListView"
 			         android:orientation="horizontal"
 			         android:layout_width="fill_parent"
-			         android:layout_height="wrap_content" >
-
-			         <TextView
-			             android:id="@+id/TextView01"
-			             android:layout_width="80dp"
-			             android:layout_height="wrap_content"
-			             android:layout_margin="1dp"
-			             android:text="21/10/2011 20:30"
-			             android:gravity="center_vertical|center_horizontal"
-			             android:background="#111111"
-			             android:textSize="14dp" />
-
-			         <TextView
-			             android:id="@+id/textView1"
-			             android:layout_width="70dp"
-			             android:layout_height="fill_parent"
-			             android:layout_margin="1dp"
-			             android:text="3"
-			             android:gravity="center_vertical|center_horizontal"
-			             android:background="#111111"
-			             android:textSize="14dp" />
-
-			         <TextView
-			             android:id="@+id/TextView03"
-			             android:layout_width="fill_parent"
-			             android:layout_height="fill_parent"
-			             android:layout_margin="1dp"
-			             android:gravity="center_vertical|center_horizontal"
-			             android:text="Pierazzi Fabio"
-			             android:background="#111111"
-			             android:textSize="14dp" />
-
-			     </LinearLayout>
+			         android:layout_height="wrap_content"
+			         android:layout_weight="0.1" >
 			     
-			     <LinearLayout
-			         android:id="@+id/linearLayout1"
-			         android:orientation="horizontal"
-			         android:layout_width="fill_parent"
-			         android:layout_height="wrap_content" >
-
-			         <TextView
-			             android:id="@+id/TextView01"
-			             android:layout_width="80dp"
-			             android:layout_height="wrap_content"
-			             android:layout_margin="1dp"
-			             android:text="21/10/2011 20:30"
-			             android:gravity="center_vertical|center_horizontal"
-			             android:background="#111111"
-			             android:textSize="14dp" />
-
-			         <TextView
-			             android:id="@+id/textView1"
-			             android:layout_width="70dp"
-			             android:layout_height="fill_parent"
-			             android:layout_margin="1dp"
-			             android:text="3"
-			             android:gravity="center_vertical|center_horizontal"
-			             android:background="#111111"
-			             android:textSize="14dp" />
-
-			         <TextView
-			             android:id="@+id/TextView03"
-			             android:layout_width="fill_parent"
-			             android:layout_height="fill_parent"
-			             android:layout_margin="1dp"
-			             android:gravity="center_vertical|center_horizontal"
-			             android:text="Pierazzi Fabio"
-			             android:background="#111111"
-			             android:textSize="14dp" />
-
-			     </LinearLayout>
+				         <!-- ListView Vera e Propria -->
+			             <ListView 
+					        android:id="@+id/listView_prenotationList" 
+					        android:layout_width="fill_parent" 
+					        android:layout_height="wrap_content" >
+					    </ListView>
+		                 
+		          </LinearLayout>
 			     
-			         
-			         
-			         
 			         
 			    <!-- LAYOUT CONTO -->
 			        <TextView
@@ -334,22 +267,34 @@
 
 			     </LinearLayout>
 			     
-			         <!-- ListView Vera e Propria -->
-		             <ListView 
-				        android:id="@+id/listView_contoList" 
-				        android:layout_width="fill_parent" 
-				        android:layout_height="wrap_content">
-				    </ListView>
+			     
+			     <LinearLayout
+			         android:id="@+id/linearLayout12122"
+			         android:orientation="horizontal"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content"
+			         android:layout_weight="0.1" >
+			     
+				         <!-- ListView Vera e Propria -->
+			             <ListView 
+					        android:id="@+id/listView_contoList" 
+					        android:layout_width="fill_parent" 
+					        android:layout_height="wrap_content"
+					        >
+					    </ListView>
+		                 
+		          </LinearLayout>
 				    
-		             <TextView
+			         <!-- Prova (da rimuovere)  -->
+		          	<TextView
 			            android:id="@+id/textView22"
 			            android:layout_width="fill_parent"
 			            android:layout_height="wrap_content"
-			            android:text="Conto"
+			            android:text="TextView di prova (cavare!)"
 			            android:gravity="center"
 			            android:layout_margin="10dp"
 			            android:textAppearance="?android:attr/textAppearanceLarge" />
-		    </LinearLayout>
+		    		</LinearLayout>
 		    
              
 		    
