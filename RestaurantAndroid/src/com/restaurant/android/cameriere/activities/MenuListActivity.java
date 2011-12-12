@@ -81,6 +81,8 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			cursorCategoria.moveToFirst();
 			
 			while(!cursorCategoria.isAfterLast()) {
+				
+				
 				temp.add(new VoceMenu(	cursorCategoria.getString(0),
 										cursorCategoria.getString(1),
 										cursorCategoria.getInt(2),
@@ -100,7 +102,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 				while(!cursorVoceMenu.isAfterLast()) {
 					temp.add(new VoceMenu(	cursorVoceMenu.getString(0),
 											cursorVoceMenu.getString(1),
-											cursorVoceMenu.getInt(2),
+											0,
 											false));
 					cursorVoceMenu.moveToNext();
 				}
@@ -124,7 +126,10 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			/* Aggiungo alla lista vociMenu tutte le voci di menu restanti */
 			for(VoceMenu v : temp) 
 				vociMenu.add(v);
-						
+					
+			/* Per la voce indietro l'id categoria è considerato come l'id della categoria padre
+			 * delle voci correntemente visualizzate */
+			vociMenu.add(new VoceMenu("..Indietro..", "", idCategoriaPadre, false));
 			listAdapter.notifyDataSetChanged();
 			
 			cursorCategoria.close();
@@ -181,7 +186,37 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
 		VoceMenu voceMenu = vociMenu.get(position);
-		fillListView(voceMenu.getId());
+		
+		
+		if(voceMenu.getNome().equals("..Indietro..")) {
+			DbManager dbManager =  new DbManager(getApplicationContext());
+			SQLiteDatabase db = dbManager.getWritableDatabase();
+			
+			/*************************************************************
+			 * Ricerco l'id della categoria padre che ha come idCategoria 
+			 * l'idCategoriaPadre attuale 
+			 *************************************************************/
+			Cursor cursorPrecedente;
+			cursorPrecedente = db.query("categoria", 
+										new String[] {"nome", "descrizione", "idCategoriaPadre"}, 
+										"idCategoria=" + voceMenu.getIdCategoria(), null ,null, null,null,null);
+			
+			cursorPrecedente.moveToFirst();
+			int idPrecedente = cursorPrecedente.getInt(2);
+			cursorPrecedente.close();
+			
+			db.close();
+			dbManager.close();
+			
+			Log.d("MenuListActivity", "L'id precedente è " + idPrecedente);
+			fillListView(idPrecedente);
+		
+		} else {
+			if(!voceMenu.isCategoria()) 
+				Toast.makeText(getApplicationContext(), "VOCE MENU", 30);
+			else
+				fillListView(voceMenu.getIdCategoria());
+		}
 	}
 
 
