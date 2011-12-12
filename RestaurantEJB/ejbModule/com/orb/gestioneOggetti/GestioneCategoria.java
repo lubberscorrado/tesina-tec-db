@@ -149,16 +149,14 @@ public class GestioneCategoria {
 			
 			
 			List<Categoria> listaCategoria = (List<Categoria>)query.getResultList();
-								
 			List<TreeNodeCategoria> listaTreeNodeCategoria= new ArrayList<TreeNodeCategoria>();
 			
-			Iterator<Categoria> it = listaCategoria.iterator();
-			
-			while(it.hasNext()) {
-				Categoria categoria = it.next();
-				listaTreeNodeCategoria.add(new TreeNodeCategoria(categoria));
+			for(Categoria categoria : listaCategoria) {
+				TreeNodeCategoria temp = new TreeNodeCategoria(categoria);
+				temp.setIdCategoriaPadre(idPadre);
+				listaTreeNodeCategoria.add(temp);
 			}
-			
+	
 			return listaTreeNodeCategoria;
 			
 		} catch (Exception e) {
@@ -174,7 +172,21 @@ public class GestioneCategoria {
 			if(categoria == null)
 				throw new DatabaseException("Errore durante la ricerca della categoria");
 			
-			return new TreeNodeCategoria(categoria);
+			TreeNodeCategoria treeNodeCategoria = new TreeNodeCategoria(categoria);
+			
+			/******************************************************
+			 * Ricerco l'id della categoria padre. Se la categoria
+			 * padre è null significa che è una categoria radice.
+			 ******************************************************/
+			
+			Categoria categoriaPadre = categoria.getCategoriaPadre();
+			
+			if(categoriaPadre == null)
+				treeNodeCategoria.setIdCategoriaPadre(0);
+			else
+				treeNodeCategoria.setIdCategoriaPadre(categoriaPadre.getIdCategoria());
+			
+			return treeNodeCategoria;
 			
 		}catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca della categoria (" + e.toString() + ")");

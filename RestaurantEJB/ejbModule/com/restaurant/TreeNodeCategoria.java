@@ -5,6 +5,7 @@ import com.orb.Categoria;
 public class TreeNodeCategoria {
 	
 	private int idCategoria;
+	private int idCategoriaPadre;
 	private String nome;
 	private String descrizione;
 	
@@ -32,8 +33,11 @@ public class TreeNodeCategoria {
 	public void setDescrizione(String descrizione) {
 		this.descrizione = descrizione;
 	}
-	
-	
-	
+	public int getIdCategoriaPadre() {
+		return idCategoriaPadre;
+	}
+	public void setIdCategoriaPadre(int idCategoriaPadre) {
+		this.idCategoriaPadre = idCategoriaPadre;
+	}
 
 }
