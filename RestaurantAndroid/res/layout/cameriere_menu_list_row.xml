@@ -20,11 +20,11 @@
             android:id="@+id/textVoceMenu"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_gravity="center"
+          
             android:minHeight="60dp"
             android:layout_marginLeft="10dp"
-            android:text="Large Text"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:gravity="center_vertical|center_horizontal"
+          	 android:textAppearance="?android:attr/textAppearanceLarge" />
 
     </LinearLayout>
     
