@@ -1296,20 +1296,6 @@ var _mainTabPanel = {
 				
 			});
 			
-			var askWindow = Ext.create('Ext.window.Window', {
-				id: 'window_gestionevariazionivocemenu',
-        	    title: 'Elenco variazioni '+nomeCategoria,
-        	    height: 500,
-        	    width: 500,
-        	    //layout: 'fit',
-        	    layout: 'vbox',
-//        	    layout: {
-//        	        type: 'vbox',
-//        	        align: 'stretch'
-//        	    },
-        	    modal: true
-        	});
-			
 			var rowEditing = Ext.create('Ext.grid.plugin.RowEditing',{
 				listeners: {
 					beforeedit: function(editor, e, eOpts ){
@@ -1336,11 +1322,11 @@ var _mainTabPanel = {
 			});
 			
 		    var grid = Ext.create('Ext.grid.Panel', {
-		        renderTo: document.body,
+		        //renderTo: document.body,
 		        plugins: [rowEditing],
-		        //height: 500,
-		        flex: 1,
-        	    width: '100%',
+		        //height: '100%',
+//		        flex: 1,
+        	    //width: '100%',
 		        frame: true,
 		        //title: 'Users',
 		        store: Ext.getStore('datastore_variazione_voce_menu'),
@@ -1450,6 +1436,14 @@ var _mainTabPanel = {
 		    grid.getSelectionModel().on('selectionchange', function(selModel, selections){
 		        grid.down('#delete').setDisabled(selections.length === 0);
 		    });
+		    var askWindow = Ext.create('Ext.window.Window', {
+				id: 'window_gestionevariazionivocemenu',
+        	    title: 'Elenco variazioni: '+nomeCategoria,
+        	    height: 300,
+        	    width: 550,
+        	    layout: 'fit',
+        	    modal: true
+        	});
 		    askWindow.add(grid);
 			askWindow.show();
 		}
