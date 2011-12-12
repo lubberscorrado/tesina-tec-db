@@ -121,8 +121,7 @@ public class HomeActivity extends TabActivity {
     		
     		List<Integer> categorieFiglie;
     		try {
-    			categorieFiglie = getChild(categoriePadre);
-    		
+    			    		
     			while(categoriePadre.size() != 0) {
     				categorieFiglie = getChild(categoriePadre);
     			
@@ -231,7 +230,7 @@ public class HomeActivity extends TabActivity {
     						values.put("idCategoria", Integer.parseInt(idPadre.substring(1, idPadre.length())));
     						values.put("nome", categories.getJSONObject(i).getString("nome"));
     						values.put("descrizione", categories.getJSONObject(i).getString("descrizione"));
-    						values.put("nome", categories.getJSONObject(i).getString("prezzo"));
+    						values.put("prezzo", categories.getJSONObject(i).getString("prezzo"));
     						
     						db.insertOrThrow("vocemenu", null, values);
     				  						

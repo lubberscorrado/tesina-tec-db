@@ -2,6 +2,9 @@ package com.restaurant.android.cameriere.activities;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.restaurant.android.DbManager;
 import com.restaurant.android.R;
@@ -9,6 +12,8 @@ import com.restaurant.android.R;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -19,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,10 +34,10 @@ import android.widget.Toast;
  * 	@author fabio
  *
  */
-public class MenuListActivity extends Activity {
+public class MenuListActivity extends Activity implements OnItemClickListener {
 	
+	private ArrayList<VoceMenu> vociMenu;
 	
-	private ArrayList<String> vociMenu;
 	private ListView tableListView;
 	private ListAdapter listAdapter;
 	
@@ -39,43 +45,107 @@ public class MenuListActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
 
-	  vociMenu = new ArrayList<String>();
+	  vociMenu = new ArrayList<VoceMenu>();
 	
 	  setContentView(R.layout.cameriere_menu_list);
 	  tableListView = (ListView) findViewById(R.id.list_view_voci_menu);
+	  tableListView.setOnItemClickListener(this);
 	  
 	  listAdapter = new ListAdapter(getApplicationContext(), R.layout.cameriere_menu_list_row, vociMenu);
 	  tableListView.setAdapter(listAdapter);
 			  
-	  DbManager dbManager =  new DbManager(getApplicationContext());
-	  dbManager.dropTables();
-	  SQLiteDatabase db = dbManager.getWritableDatabase();
-	  
-	  try {
-		  
-		  Cursor cursor = db.query("categoria", new String[] {"nome", "descrizione"} , null, null ,null, null,null,null);
-		  cursor.moveToFirst();
-		  while(!cursor.isAfterLast()) {
-			  vociMenu.add(cursor.getString(0));
-			  cursor.moveToNext();
-		  }
-		  
-	  } catch (Exception e) {
-		  Log.e("MenuListActivity", "Errore query database " + e.toString());
-	  }
+	  fillListView(1);
+	}
 	
+	/************************************************************************
+	 * Popola la list View con categorie e voci di menu
+	 ************************************************************************/
+	
+	public void fillListView(int idCategoriaPadre) {
+		DbManager dbManager =  new DbManager(getApplicationContext());
+		SQLiteDatabase db = dbManager.getWritableDatabase();
+		
+		Cursor cursorCategoria = null;
+		Cursor cursorVoceMenu = null;
+		
+		/* Lista temporanea che contiene le voci recuperate dal database
+		 * che devono poi essere riportate nella lista vociMenu */
+		List<VoceMenu> temp = new LinkedList<VoceMenu>();
+		
+		vociMenu.clear();
+		
+		try {
+			cursorCategoria = db.query(	"categoria", 
+										new String[] {"nome", "descrizione", "idCategoria"}, 
+										"idCategoriaPadre=" + idCategoriaPadre, null ,null, null,null,null);
+			cursorCategoria.moveToFirst();
+			
+			while(!cursorCategoria.isAfterLast()) {
+				temp.add(new VoceMenu(	cursorCategoria.getString(0),
+										cursorCategoria.getString(1),
+										cursorCategoria.getInt(2),
+										true));
+				
+				/*********************************************************
+				 * Aquisizione delle voci di menu associate alla categoria
+				 * corrente
+				 *********************************************************/
+				cursorVoceMenu = db.query(	"vocemenu", 
+											new String[] {"nome", "descrizione", "idCategoria"} , 
+											"idCategoria=" + cursorCategoria.getInt(2), 
+											null, null, null, null, null);
+			
+				cursorVoceMenu.moveToFirst();
+				
+				while(!cursorVoceMenu.isAfterLast()) {
+					temp.add(new VoceMenu(	cursorVoceMenu.getString(0),
+											cursorVoceMenu.getString(1),
+											cursorVoceMenu.getInt(2),
+											false));
+					cursorVoceMenu.moveToNext();
+				}
+				cursorVoceMenu.close();
+				
+				
+				cursorCategoria.moveToNext();
+			}
+			
+			/* Aggiungo alla lista vociMenu tutte le categorie */
+			Iterator<VoceMenu> it = temp.iterator();
+			
+			while(it.hasNext()) {
+				VoceMenu v = it.next();
+				if(v.isCategoria()) {
+					vociMenu.add(v);
+					it.remove();
+				}
+			}
+			
+			/* Aggiungo alla lista vociMenu tutte le voci di menu restanti */
+			for(VoceMenu v : temp) 
+				vociMenu.add(v);
+						
+			listAdapter.notifyDataSetChanged();
+			
+			cursorCategoria.close();
+			db.close();
+			dbManager.close();
+			
+		  } catch (Exception e) {
+			  e.printStackTrace();
+			  Log.e("MenuListActivity", "Errore query database " + e.toString());
+		  }
 	}
 
 	/************************************************************************
 	 * Adapter per gestire il rendering personalizzato degli elementi della
 	 * lista 
 	 ************************************************************************/
+	private class ListAdapter extends ArrayAdapter<VoceMenu> {
 	
-	private class ListAdapter extends ArrayAdapter<String> {
+	    private ArrayList<VoceMenu> items;
 	
-	    private ArrayList<String> items;
-	
-	    public ListAdapter(Context context, int textViewResourceId, ArrayList<String> items) {
+	    public ListAdapter(Context context, int textViewResourceId, ArrayList<VoceMenu> items) {
 	            super(context, textViewResourceId, items);
 	            this.items = items;
 	    }
@@ -88,16 +158,31 @@ public class MenuListActivity extends Activity {
 	                v = vi.inflate(R.layout.cameriere_menu_list_row, null);
 	            }
 	            
-	            String s = items.get(position);
-	            if (s != null) {
+	            VoceMenu voceMenu = items.get(position);
+	            if (voceMenu != null) {
 	                    
-	            		TextView tt = (TextView) v.findViewById(R.id.textVoceMenu);
-	                    if(tt != null) {
-	                          tt.setText(s);                            
+	            		TextView textView = (TextView) v.findViewById(R.id.textVoceMenu);
+	                    if(textView != null) {
+	                          textView.setText(voceMenu.getNome());                            
 	                    }
-	                    
+	        	                    
+	                    ImageView imageView = (ImageView)v.findViewById(R.id.imageVoceMenu);
+	                    if(imageView != null) {
+	                    	if(voceMenu.isCategoria())
+	                    		imageView.setImageResource(R.drawable.ic_launcher);
+	                    	else
+	                    		imageView.setImageResource(R.drawable.ic_food);
+	                    }
 	            }
 	            return v;
 	    }
 	}
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+		VoceMenu voceMenu = vociMenu.get(position);
+		fillListView(voceMenu.getId());
+	}
+
+
 }
