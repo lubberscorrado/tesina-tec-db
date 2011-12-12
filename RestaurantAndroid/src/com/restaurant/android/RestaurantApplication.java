@@ -132,7 +132,7 @@ public class RestaurantApplication extends Application {
 	}
 	
 	public String getHost() {
-		return "http://192.168.1.101:8080/";
+		return "http://192.168.1.102:8080/";
 	}
 	
 	@Override

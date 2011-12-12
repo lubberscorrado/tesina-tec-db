@@ -54,19 +54,19 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 	  listAdapter = new ListAdapter(getApplicationContext(), R.layout.cameriere_menu_list_row, vociMenu);
 	  tableListView.setAdapter(listAdapter);
 			  
+	  
+
 	  fillListView(1);
 	}
 	
-	/************************************************************************
-	 * Popola la list View con categorie e voci di menu
-	 ************************************************************************/
-	
+		
 	public void fillListView(int idCategoriaPadre) {
 		DbManager dbManager =  new DbManager(getApplicationContext());
 		SQLiteDatabase db = dbManager.getWritableDatabase();
 		
 		Cursor cursorCategoria = null;
 		Cursor cursorVoceMenu = null;
+		
 		
 		/* Lista temporanea che contiene le voci recuperate dal database
 		 * che devono poi essere riportate nella lista vociMenu */
@@ -75,6 +75,11 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 		vociMenu.clear();
 		
 		try {
+		
+			/*********************************************************
+			 * Aquisizione delle categorie figlie della categoria 
+			 * con id idCategoriaPadre
+			 *********************************************************/
 			cursorCategoria = db.query(	"categoria", 
 										new String[] {"nome", "descrizione", "idCategoria"}, 
 										"idCategoriaPadre=" + idCategoriaPadre, null ,null, null,null,null);
@@ -88,29 +93,32 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 										cursorCategoria.getInt(2),
 										true));
 				
-				/*********************************************************
-				 * Aquisizione delle voci di menu associate alla categoria
-				 * corrente
-				 *********************************************************/
-				cursorVoceMenu = db.query(	"vocemenu", 
-											new String[] {"nome", "descrizione", "idCategoria"} , 
-											"idCategoria=" + cursorCategoria.getInt(2), 
-											null, null, null, null, null);
-			
-				cursorVoceMenu.moveToFirst();
-				
-				while(!cursorVoceMenu.isAfterLast()) {
-					temp.add(new VoceMenu(	cursorVoceMenu.getString(0),
-											cursorVoceMenu.getString(1),
-											0,
-											false));
-					cursorVoceMenu.moveToNext();
-				}
-				cursorVoceMenu.close();
-				
-				
+						
 				cursorCategoria.moveToNext();
 			}
+			cursorCategoria.close();
+			
+			/*********************************************************
+			 * Aquisizione delle voci di menu associate alla categoria
+			 * padre corrente
+			 *********************************************************/
+			cursorVoceMenu = db.query(	"vocemenu", 
+										new String[] {"nome", "descrizione", "idCategoria"} , 
+										"idCategoria=" + idCategoriaPadre, 
+										null, null, null, null, null);
+		
+			cursorVoceMenu.moveToFirst();
+			
+
+			while(!cursorVoceMenu.isAfterLast()) {
+				temp.add(new VoceMenu(	cursorVoceMenu.getString(0),
+										cursorVoceMenu.getString(1),
+										0,
+										false));
+				
+				cursorVoceMenu.moveToNext();
+			}
+			cursorVoceMenu.close();
 			
 			/* Aggiungo alla lista vociMenu tutte le categorie */
 			Iterator<VoceMenu> it = temp.iterator();
@@ -128,11 +136,15 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 				vociMenu.add(v);
 					
 			/* Per la voce indietro l'id categoria è considerato come l'id della categoria padre
-			 * delle voci correntemente visualizzate */
-			vociMenu.add(new VoceMenu("..Indietro..", "", idCategoriaPadre, false));
+			 * delle voci correntemente visualizzate. La voce indietro non è mostrata per le 
+			 * categoria di primo livello (subito sotto la radice) */
+			
+			if(idCategoriaPadre != 1)
+				vociMenu.add(new VoceMenu("..Indietro..", "", idCategoriaPadre, false));
+			
 			listAdapter.notifyDataSetChanged();
 			
-			cursorCategoria.close();
+			
 			db.close();
 			dbManager.close();
 			
@@ -170,10 +182,15 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 	                    if(textView != null) {
 	                          textView.setText(voceMenu.getNome());                            
 	                    }
-	        	                    
+	        	                
+	                    
 	                    ImageView imageView = (ImageView)v.findViewById(R.id.imageVoceMenu);
+	                    imageView.setVisibility(0);
+	                    
 	                    if(imageView != null) {
-	                    	if(voceMenu.isCategoria())
+	                    	if(voceMenu.getNome().equals("..Indietro..")) 
+	                    		imageView.setImageResource(R.drawable.ic_notifications);
+	                    	else if (voceMenu.isCategoria())
 	                    		imageView.setImageResource(R.drawable.ic_launcher);
 	                    	else
 	                    		imageView.setImageResource(R.drawable.ic_food);

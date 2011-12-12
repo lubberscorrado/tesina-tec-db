@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import com.restaurant.android.cameriere.activities.HomeActivity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -30,7 +31,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends Activity implements OnClickListener {
 	
 	/* Alcune variabili private per la gestione del login.  */
 	private EditText etUsername;
@@ -39,6 +40,7 @@ public class LoginActivity extends Activity {
 	private Button btnCancel;
 	private RadioButton radioButtonCameriere;
 	private RadioButton radioButtonCucina;
+	private ProgressDialog progressDialog;
 	
 	/* HashMap contenente i parametri da inviare nella richiesta post */
 	private HashMap<String, String> postParameters;
@@ -69,42 +71,16 @@ public class LoginActivity extends Activity {
         etPassword.setText(password);
        
         /* Imposto il listener del bottone di Login */
-        btnLogin.setOnClickListener(new OnClickListener() {
-		  	@SuppressWarnings("unchecked")
-			@Override
-		  	public void onClick(View v) {
-		  		
-		  		// Check Login
-		  		String username = etUsername.getText().toString();
-		  		String password = etPassword.getText().toString();
-		  		
-		        // We need an Editor object to make preference changes.
-		        // All objects are from android.context.Context
-		  		SharedPreferences settings = getSharedPreferences("RESTAURANT", 0);
-		        SharedPreferences.Editor editor = settings.edit();
-		        editor.putString("username", username);
-		        editor.putString("password", password);
-		        
-		        // Commit the edits!
-		        editor.commit();
-		  
-		        postParameters = new HashMap<String,String>();
-		        postParameters.put("user", username);
-		        postParameters.put("password", password);
-		        
-		        new LoginTask().execute(postParameters);
-
-		  	}
-        });
-
-     /* Se clicco su "Cancel", esce */
-     btnCancel.setOnClickListener(new OnClickListener() {
-		  	@Override
-		  	public void onClick(View v) {
-		  		// Close the application
-		  		finish();
-		  	}
-		  });
+        btnLogin.setOnClickListener(this);
+        
+	     /* Se clicco su "Cancel", esce */
+	     btnCancel.setOnClickListener(new OnClickListener() {
+			  	@Override
+			  	public void onClick(View v) {
+			  		// Close the application
+			  		finish();
+			  	}
+	    });
     }
     
 	 /*****************************************************************
@@ -149,6 +125,7 @@ public class LoginActivity extends Activity {
 						logged = false;
 					}
 				}
+				
 						
 			} catch (ClientProtocolException e) {
 				Log.e("LoginTask", "Eccezione ClientProtocolException");
@@ -158,7 +135,9 @@ public class LoginActivity extends Activity {
 				return  new Error("Errore di connettività", true);
 			} catch (JSONException e) {
 				return  new Error("Errore durante la lettura della risposta dal server", true);
-			} 
+			} finally {
+				progressDialog.dismiss();
+			}
 			return new Error("Log in effettuato con successo", false);
 		}
         	
@@ -180,4 +159,30 @@ public class LoginActivity extends Activity {
         }
    
     }
+
+	@Override
+	public void onClick(View v) {
+		// Check Login
+  		String username = etUsername.getText().toString();
+  		String password = etPassword.getText().toString();
+  		
+        // We need an Editor object to make preference changes.
+        // All objects are from android.context.Context
+  		SharedPreferences settings = getSharedPreferences("RESTAURANT", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("username", username);
+        editor.putString("password", password);
+        
+        // Commit the edits!
+        editor.commit();
+  
+        postParameters = new HashMap<String,String>();
+        postParameters.put("user", username);
+        postParameters.put("password", password);
+        
+        progressDialog = ProgressDialog.show(this, "Attendere", "Logging in...");
+            
+        new LoginTask().execute(postParameters);
+		
+	}
 }
