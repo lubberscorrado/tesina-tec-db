@@ -166,5 +166,19 @@ public class GestioneCategoria {
 										"(" + e.toString() + ")");
 		}
 	}
+	
+	public TreeNodeCategoria getCategoriaById(int idCategoria) throws DatabaseException {
+		
+		try {
+			Categoria categoria = em.find(Categoria.class, idCategoria);
+			if(categoria == null)
+				throw new DatabaseException("Errore durante la ricerca della categoria");
+			
+			return new TreeNodeCategoria(categoria);
+			
+		}catch(Exception e) {
+			throw new DatabaseException("Errore durante la ricerca della categoria (" + e.toString() + ")");
+		}
+	}
 }
 
