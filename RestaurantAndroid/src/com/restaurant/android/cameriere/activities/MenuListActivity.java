@@ -12,6 +12,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +41,6 @@ public class MenuListActivity extends Activity {
 
 	  vociMenu = new ArrayList<String>();
 	
-	  
-	  
 	  setContentView(R.layout.cameriere_menu_list);
 	  tableListView = (ListView) findViewById(R.id.list_view_voci_menu);
 	  
@@ -49,17 +48,23 @@ public class MenuListActivity extends Activity {
 	  tableListView.setAdapter(listAdapter);
 			  
 	  DbManager dbManager =  new DbManager(getApplicationContext());
+	  dbManager.dropTables();
 	  SQLiteDatabase db = dbManager.getWritableDatabase();
 	  
-	  Cursor cursor = db.query("categoria", new String[] {"nome", "descrizione"} , null, null ,null, null,null,null);
-	  
-	  cursor.moveToFirst();
-	  while(!cursor.isAfterLast()) {
-		  vociMenu.add(cursor.getString(0));
-		  cursor.moveToNext();
+	  try {
+		  
+		  Cursor cursor = db.query("categoria", new String[] {"nome", "descrizione"} , null, null ,null, null,null,null);
+		  cursor.moveToFirst();
+		  while(!cursor.isAfterLast()) {
+			  vociMenu.add(cursor.getString(0));
+			  cursor.moveToNext();
+		  }
+		  
+	  } catch (Exception e) {
+		  Log.e("MenuListActivity", "Errore query database " + e.toString());
 	  }
+	
 	}
-
 
 	/************************************************************************
 	 * Adapter per gestire il rendering personalizzato degli elementi della
