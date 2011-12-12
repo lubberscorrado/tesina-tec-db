@@ -53,21 +53,17 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 	  
 	  listAdapter = new ListAdapter(getApplicationContext(), R.layout.cameriere_menu_list_row, vociMenu);
 	  tableListView.setAdapter(listAdapter);
-			  
-	  
 
 	  fillListView(1);
 	}
 	
-		
 	public void fillListView(int idCategoriaPadre) {
 		DbManager dbManager =  new DbManager(getApplicationContext());
 		SQLiteDatabase db = dbManager.getWritableDatabase();
 		
 		Cursor cursorCategoria = null;
 		Cursor cursorVoceMenu = null;
-		
-		
+			
 		/* Lista temporanea che contiene le voci recuperate dal database
 		 * che devono poi essere riportate nella lista vociMenu */
 		List<VoceMenu> temp = new LinkedList<VoceMenu>();
@@ -93,7 +89,6 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 										cursorCategoria.getInt(2),
 										true));
 				
-						
 				cursorCategoria.moveToNext();
 			}
 			cursorCategoria.close();
@@ -109,7 +104,6 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 		
 			cursorVoceMenu.moveToFirst();
 			
-
 			while(!cursorVoceMenu.isAfterLast()) {
 				temp.add(new VoceMenu(	cursorVoceMenu.getString(0),
 										cursorVoceMenu.getString(1),
@@ -135,7 +129,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			for(VoceMenu v : temp) 
 				vociMenu.add(v);
 					
-			/* Per la voce indietro l'id categoria è considerato come l'id della categoria padre
+			/* Per la voce "Indietro", l'id categoria è considerato come l'id della categoria padre
 			 * delle voci correntemente visualizzate. La voce indietro non è mostrata per le 
 			 * categoria di primo livello (subito sotto la radice) */
 			
@@ -153,6 +147,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			  Log.e("MenuListActivity", "Errore query database " + e.toString());
 		  }
 	}
+	
 
 	/************************************************************************
 	 * Adapter per gestire il rendering personalizzato degli elementi della
@@ -182,8 +177,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 	                    if(textView != null) {
 	                          textView.setText(voceMenu.getNome());                            
 	                    }
-	        	                
-	                    
+	        	              	                    
 	                    ImageView imageView = (ImageView)v.findViewById(R.id.imageVoceMenu);
 	                    imageView.setVisibility(0);
 	                    
@@ -235,6 +229,4 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 				fillListView(voceMenu.getIdCategoria());
 		}
 	}
-
-
 }
