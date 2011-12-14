@@ -33,9 +33,16 @@ public class TreeNodeCategoria {
 	public void setDescrizione(String descrizione) {
 		this.descrizione = descrizione;
 	}
+	
+	/**
+	 * Ritorna l'id della categoria padre o 0 se la categoria considerata
+	 * è una categoria radice.
+	 * @return Id della categoria padre
+	 */
 	public int getIdCategoriaPadre() {
 		return idCategoriaPadre;
 	}
+	
 	public void setIdCategoriaPadre(int idCategoriaPadre) {
 		this.idCategoriaPadre = idCategoriaPadre;
 	}
