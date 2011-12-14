@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 
 import com.orb.Area;
 import com.orb.Prenotazione;
+import com.orb.StatoTavoloEnum;
 import com.orb.Tavolo;
 
 public class TreeNodeTavolo {
@@ -20,7 +21,7 @@ public class TreeNodeTavolo {
 	private String nome;
 	private String descrizione;
 	private boolean enabled;
-	private String stato;
+	private StatoTavoloEnum stato;
 	private int idTenant;
 	private int numposti;
 	
@@ -30,7 +31,7 @@ public class TreeNodeTavolo {
 		this.nome = tavolo.getNome();
 		this.descrizione = tavolo.getDescrizione();
 		this.enabled = tavolo.isEnabled();
-		this.stato = tavolo.getStato().toString();
+		this.stato = tavolo.getStato();
 		this.idTenant = tavolo.getIdTenant();
 		this.numposti = tavolo.getNumposti();
 	}
@@ -40,7 +41,7 @@ public class TreeNodeTavolo {
 							String nome, 
 							String descrizione,
 							boolean enabled, 
-							String stato, 
+							StatoTavoloEnum stato, 
 							int idTenant, 
 							int numposti) {
 		super();
@@ -88,10 +89,10 @@ public class TreeNodeTavolo {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-	public String getStato() {
+	public StatoTavoloEnum getStato() {
 		return stato;
 	}
-	public void setStato(String stato) {
+	public void setStato(StatoTavoloEnum stato) {
 		this.stato = stato;
 	}
 	public int getIdTenant() {
@@ -100,7 +101,5 @@ public class TreeNodeTavolo {
 	public void setIdTenant(int idTenant) {
 		this.idTenant = idTenant;
 	}
-	
-	
 	
 }

@@ -17,6 +17,7 @@ import com.exceptions.DatabaseException;
 import com.orb.Area;
 import com.orb.Piano;
 import com.orb.Prenotazione;
+import com.orb.StatoContoEnum;
 import com.orb.Tavolo;
 import com.orb.StatoTavoloEnum;
 import com.orb.UtentePersonale;
@@ -203,7 +204,7 @@ public class GestioneTavolo{
 														"LEFT JOIN c.tavoloAppartenenza t " +
 														"WHERE c.stato = :stato AND t.idTavolo = :idTavolo");
 				
-				queryCameriere.setParameter("stato", "Aperto");
+				queryCameriere.setParameter("stato", StatoContoEnum.APERTO);
 				queryCameriere.setParameter("idTavolo", tavolo.getIdTavolo());
 		
 				List<UtentePersonale> listaCamerieri = queryCameriere.getResultList();
@@ -281,6 +282,26 @@ public class GestioneTavolo{
 		}
 		
 		return listaTreeNodeTavolo;
+	}
+	
+	/**
+	 * Ritorna un tavolo a partire dal suo Id
+	 * @param idTavolo Id del tavolo
+	 * @return Oggetto TreeNodeTavolo, wrapper per le informazioni sul tavolo
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo
+	 * errore verificatosi
+	 */
+	public TreeNodeTavolo getTavoloById(int idTavolo) throws DatabaseException {
+		
+		try {
+			Tavolo tavolo = em.find(Tavolo.class, idTavolo);
+			if(tavolo == null) 
+				throw new DatabaseException("Impossibile trovare il tavolo");
+			return new TreeNodeTavolo(tavolo);
+			
+		}catch(Exception e) {
+			throw new DatabaseException("Errore durante la ricerca del tavolo (" + e.toString() + ")");
+		}
 	}
 	
 }

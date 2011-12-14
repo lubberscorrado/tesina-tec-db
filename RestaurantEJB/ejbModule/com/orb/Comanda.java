@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,7 +35,8 @@ public class Comanda {
 	private int quantita;
 	
 	@Column(name="stato")
-	private String stato;
+	@Enumerated(EnumType.STRING)
+	private StatoComandaEnum stato;
 	
 	@Column(name="idTenant")
 	private int idTenant;
@@ -50,11 +53,14 @@ public class Comanda {
 	@JoinColumn(name="idVoceMenu", referencedColumnName="idVoceMenu")
 	private VoceMenu voceMenuAssociata;
 	
+	@ManyToOne
+	@JoinColumn(name="idConto", referencedColumnName="idConto")
+	private Conto contoAppartenenza;
+		
 	@ManyToMany
 	@JoinTable(	name="comandavariazione",
 				joinColumns = @JoinColumn(name="idComanda", referencedColumnName="idComanda"),
 				inverseJoinColumns = @JoinColumn(name="idVariazione", referencedColumnName="idVariazione"))
-	
 	private List<Variazione> variazioniAssociate;
 
 	public int getIdComanda() {
@@ -89,11 +95,11 @@ public class Comanda {
 		this.quantita = quantita;
 	}
 
-	public String getStato() {
+	public StatoComandaEnum getStato() {
 		return stato;
 	}
 
-	public void setStato(String stato) {
+	public void setStato(StatoComandaEnum stato) {
 		this.stato = stato;
 	}
 
@@ -136,5 +142,15 @@ public class Comanda {
 	public void setVariazioniAssociate(List<Variazione> variazioniAssociate) {
 		this.variazioniAssociate = variazioniAssociate;
 	}
+
+	public Conto getContoAppartenenza() {
+		return contoAppartenenza;
+	}
+
+	public void setContoAppartenenza(Conto contoAppartenenza) {
+		this.contoAppartenenza = contoAppartenenza;
+	}
+	
+	
 	
 }
