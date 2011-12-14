@@ -52,7 +52,6 @@ public class GestioneArea{
 			area.setEnabled(enabled);
 		
 			Piano piano = em.find(Piano.class, idPiano);
-					
 			if(piano == null)
 				throw new DatabaseException("Impossibile trovare il piano di appartenenza dell'area");
 		
@@ -62,14 +61,10 @@ public class GestioneArea{
 			return new TreeNodeArea(area);
 		
 		} catch (Exception e) {
-			
 			throw new DatabaseException("Errore durante l'inserimento dell'area (" + e.toString() +")");
-			
 		}
-		
-		
 	}
-	
+
 	/**
 	 * Modifica un'area a partire dal suo id
 	 * @param idArea Id dell'area da modificare
@@ -79,17 +74,14 @@ public class GestioneArea{
 	 * @return Oggetto TreeNodeArea che rappresenta la nuova area modificata
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
 	 */
-	 
-	 public TreeNodeArea updateArea(	int idArea,
-			 							String nome,
-										String descrizione,
-										boolean enabled) throws DatabaseException {
+	 public TreeNodeArea updateArea(int idArea,
+			 						String nome,
+									String descrizione,
+									boolean enabled) throws DatabaseException {
 			
-		
 		try {
 			
 			Area area = em.find(Area.class, idArea);
-			
 			if(area == null)
 				throw new DatabaseException("Errore durante la ricerca dell'area da aggiornare");
 		
@@ -100,9 +92,7 @@ public class GestioneArea{
 			return new TreeNodeArea(area);
 			
 		}catch(Exception e) {
-			
 			throw new DatabaseException("Errore durante la modifica del tavolo (" +e.toString() +")");
-			
 		}
 	 }
 	 
@@ -111,6 +101,7 @@ public class GestioneArea{
 	  * @param idArea id dell'area da eliminare
 	  * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore che si è verificato
 	  */
+	 
 	 public void deleteArea(int idArea) throws DatabaseException {
 		 try {
 			 Area area = em.find(Area.class, idArea);
@@ -121,13 +112,31 @@ public class GestioneArea{
 			 throw new DatabaseException("Errore durante l'eliminazione dell'area ("+ e.toString() +")");
 		 }
 	  }
+		
+	/** 
+	 * Ritorna l'elenco di tutte le aree appartenenti ad un cliente 
+	 * @param idTenant Id del cliente
+	 * @return Oggetto TreeNodeArea che rappresenta un area di un cliente
+	 * @throws DatabaseException Eccezione che incapsula le informazioni
+	 * sull'ultimo errore verificatosi
+	 */
 	 
-	
-	 /** Ritorna l'elenco di tutte le aree appartenenti ad un cliente */
-	public List<Area> getAreeTenant(int idTenant) {
-		Query query = em.createQuery("SELECT a FROM Area a WHERE a.idTenant = :idTenant");
-		query.setParameter("idTenant", idTenant);
-		return (List<Area>)query.getResultList();
+	public List<TreeNodeArea> getAreeTenant(int idTenant) throws DatabaseException {
+		try {
+			
+			Query query = em.createQuery("SELECT a FROM Area a WHERE a.idTenant = :idTenant");
+			query.setParameter("idTenant", idTenant);
+			List<Area> listaAree = (List<Area>)query.getResultList();
+			List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
+			
+			for(Area area : listaAree) 
+				listaTreeNodeArea.add(new TreeNodeArea(area));
+					
+			return listaTreeNodeArea;
+					
+		}catch(Exception e) {
+			throw new DatabaseException("Errore durante la ricerca delle aree (" + e.toString() +")");
+		}
 	}
 	
 	
@@ -148,17 +157,14 @@ public class GestioneArea{
 			if(piano == null)
 				throw new DatabaseException("Impossibile trovare il piano");
 			
-			//TODO Impostare l'associazione con piano di ogni area come LAZY per evitare
-			//il fetch di oggetti inutili?
+			/* TODO Impostare l'associazione con piano di ogni area come LAZY per evitare
+			il fetch di oggetti inutili? */
 			List<Area> listaAree = piano.getAree();
 			List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
-			Iterator<Area> it = listaAree.iterator();
 			
-			while(it.hasNext()) {
-				Area area = it.next();
+			for(Area area : listaAree) 
 				listaTreeNodeArea.add(new TreeNodeArea(area));
-			}
-			
+				
 			return listaTreeNodeArea;
 				
 		} catch(Exception e) {

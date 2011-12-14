@@ -83,9 +83,9 @@ public class GestioneVoceMenu{
 	 */
 	
 	public TreeNodeVoceMenu updateVoceMenu(	int idVoceMenu,
-			 									String nome,
-			 									String descrizione,
-			 									BigDecimal prezzo) throws DatabaseException {
+			 								String nome,
+			 								String descrizione,
+			 								BigDecimal prezzo) throws DatabaseException {
 		try {
 			
 			VoceMenu voceMenu = em.find(VoceMenu.class, idVoceMenu);
@@ -141,12 +141,8 @@ public class GestioneVoceMenu{
 			List<VoceMenu> listaVociMenu = query.getResultList();
 			List<TreeNodeVoceMenu> listaTreeNodeVoceMenu = new ArrayList<TreeNodeVoceMenu>();
 			
-			Iterator<VoceMenu> it = listaVociMenu.iterator();
-			
-			while(it.hasNext()) {
-				VoceMenu voceMenu = it.next();
+			for(VoceMenu voceMenu : listaVociMenu) 
 				listaTreeNodeVoceMenu.add(new TreeNodeVoceMenu(voceMenu));
-			}
 			
 			return listaTreeNodeVoceMenu;
 			

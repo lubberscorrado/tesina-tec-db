@@ -130,30 +130,28 @@ public class GestioneVariazioni {
 	
 	public List<WrapperVariazione> getVariazioniByCategoria(int idCategoria, int idTenant) throws DatabaseException {
 		
-		Query query = em.createNamedQuery("getVariazioniByCategoria");
-		query.setParameter("idCategoria", idCategoria);
-		
-		/* Per le variazioni non è sufficiente l'id della categoria di appartenenza,
-		 * poichè le categorie radice sono condivise da tutti gli utenti */
-		query.setParameter("idTenant", idTenant);
-		
-		List<Variazione> listaVariazione;
-		
 		try {
-			listaVariazione = (List<Variazione>)query.getResultList();
+			Query query = em.createNamedQuery("getVariazioniByCategoria");
+			query.setParameter("idCategoria", idCategoria);
+			
+			/* Per le variazioni non è sufficiente l'id della categoria di appartenenza,
+			 * poichè le categorie radice sono condivise da tutti gli utenti */
+			query.setParameter("idTenant", idTenant);
+		
+			List<Variazione> listaVariazione = (List<Variazione>)query.getResultList();
+			List<WrapperVariazione> listaWrapperVariazione = new ArrayList<WrapperVariazione>();
+		
+			for(Variazione variazione : listaVariazione) 
+				listaWrapperVariazione.add(new WrapperVariazione(variazione));
+
+			return listaWrapperVariazione;
+					
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante l'acquisizione delle variazioni (" + e.toString() + ")");
 		}
 				
-		List<WrapperVariazione> listaWrapperVariazione = new ArrayList<WrapperVariazione>();
-		Iterator<Variazione> it = listaVariazione.iterator();
 		
-		while(it.hasNext()) {
-			Variazione variazione = it.next();
-			listaWrapperVariazione.add(new WrapperVariazione(variazione));
-		}
 		
-		return listaWrapperVariazione;
 	}
 
 }

@@ -79,9 +79,7 @@ public class GestioneTavolo{
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante l'inserimento del tavolo + " +
 										"("+ e.toString()+")");
-			
-		}
-		
+		}		
 	}
 	
 	/**
@@ -163,28 +161,29 @@ public class GestioneTavolo{
 		 * (eager) è a discrezione  del persistence framework */
 		
 		// TODO Lasciare la gestione del metodo di fetch al persistence framework?
-		
-		Query query = em.createQuery(	"SELECT t FROM Tavolo t LEFT JOIN FETCH t.areaAppartenenza a " +
-										"LEFT JOIN FETCH a.pianoAppartenenza WHERE t.idTenant = :idTenant");	
-		
-		query.setParameter("idTenant", idTenant);
-		
 		List<Tavolo> listTavoli = null;
 		
 		try {
+			Query query = em.createQuery(	"SELECT t FROM Tavolo t LEFT JOIN FETCH t.areaAppartenenza a " +
+											"LEFT JOIN FETCH a.pianoAppartenenza WHERE t.idTenant = :idTenant");	
+			
+			query.setParameter("idTenant", idTenant);
 			listTavoli = query.getResultList();
+			
 		} catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca dei tavoli ("+ e.toString()+")");
 		}
 		
-		Iterator<Tavolo> it = listTavoli.iterator();
+		/*****************************************************************************
+		 * Recupero tutte le informazioni associate al tavolo (area, piano, cameriere)
+		 *****************************************************************************/
+		
 		List<StatoTavolo> listaStatoTavolo = new ArrayList<StatoTavolo>();
+		
 		Area area;
 		Piano piano;
 		
-		while(it.hasNext()) {
-			
-			Tavolo tavolo = it.next();
+		for(Tavolo tavolo : listTavoli) {
 			try {
 				area = tavolo.getAreaAppartenenza();
 				piano = area.getPianoAppartenenza();
@@ -192,40 +191,45 @@ public class GestioneTavolo{
 				throw new DatabaseException("Errore durante la ricerca dei piani e delle aree " +
 											"(" + e.toString() + ")");
 			}
+		
 			
-			//TODO Verificare la correttezza della query
-			/* Reupero il cameriere associato al tavolo */
-			Query queryCameriere = em.createQuery(	"SELECT u FROM UtentePersonale u " +
-													"LEFT JOIN u.conti c " +
-													"LEFT JOIN c.tavoloAppartenenza t " +
-													"WHERE c.stato = :stato AND t.idTavolo = :idTavolo");
-			
-			queryCameriere.setParameter("stato", "Aperto");
-			queryCameriere.setParameter("idTavolo", tavolo.getIdTavolo());
-			List<UtentePersonale> listaCamerieri = null;
-			
+			/**********************************************************
+			 * Recupero il cameriere correntemente associato al tavolo
+			 ***********************************************************/
 			try {
-				listaCamerieri = queryCameriere.getResultList();
+			
+				Query queryCameriere = em.createQuery(	"SELECT u FROM UtentePersonale u " +
+														"LEFT JOIN u.conti c " +
+														"LEFT JOIN c.tavoloAppartenenza t " +
+														"WHERE c.stato = :stato AND t.idTavolo = :idTavolo");
+				
+				queryCameriere.setParameter("stato", "Aperto");
+				queryCameriere.setParameter("idTavolo", tavolo.getIdTavolo());
+		
+				List<UtentePersonale> listaCamerieri = queryCameriere.getResultList();
+						
+				
+				if(listaCamerieri.size() == 0) {
+					/* Al tavolo non è associato alcun cameriere, probabilmente poichè non c'è 
+					 * alcun conto aperto */
+					listaStatoTavolo.add(new StatoTavolo(tavolo, area, piano, null));
+				}else {
+					
+					if(listaCamerieri.size()> 1)
+						System.out.println(	"WARNING: Ad un unico tavolo sono associati più camerieri, " +
+											"non sono stati probabilmente chiusi conti precedenti");
+				
+					/* Se ci sono più camerieri associati allo stesso tavolo riporto l'ultimo cameriere 
+					 * in ordine temporale  */
+					listaStatoTavolo.add(new StatoTavolo(	tavolo, 
+															area, 
+															piano, 
+															listaCamerieri.get(listaCamerieri.size() - 1)));
+				}
+		
 			}catch(Exception e) {
 				throw new DatabaseException("Errore durante la ricerca del cameriere associato " +
 											"al tavolo (" + e.toString() + ")");
-			}
-			
-			if(listaCamerieri.size() == 0) {
-				/* Al tavolo non è associato alcun cameriere, probabilmente poichè non c'è 
-				 * alcun conto aperto */
-				listaStatoTavolo.add(new StatoTavolo(tavolo, area, piano, null));
-			}else {
-				if(listaCamerieri.size()> 1)
-					System.out.println(	"WARNING: Ad un unico tavolo sono associati più camerieri, " +
-										"non sono stati probabilmente chiusi conti precedenti");
-				
-				/* Se ci sono più camerieri associati allo stesso tavolo riporto l'ultimo cameriere 
-				 * in ordine temporale  */
-				listaStatoTavolo.add(new StatoTavolo(	tavolo, 
-														area, 
-														piano, 
-														listaCamerieri.get(listaCamerieri.size() - 1)));
 			}
 		}
 		
@@ -250,18 +254,13 @@ public class GestioneTavolo{
 		
 		Area area;
 		
-		/* Lista dei tavoli associati all'area */
 		List<Tavolo> listaTavoli;
-		
-		/* Lista degli oggetti TreeNodeTavolo ritornati dalla ricerca */
 		List<TreeNodeTavolo> listaTreeNodeTavolo;
 		
 		try {
-		
 			area = em.find(Area.class, idArea);
 			if(area == null) 
 				throw new DatabaseException("Errore durante la ricerca dell'area");
-		
 		} catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca dell'area +("+ e.toString() +")");
 		}
@@ -273,13 +272,9 @@ public class GestioneTavolo{
 			listaTavoli = area.getTavoli();	
 			listaTreeNodeTavolo = new ArrayList<TreeNodeTavolo>();
 		
-			Iterator<Tavolo> it = listaTavoli.iterator();
-		
-			while(it.hasNext()) {
-				Tavolo tavolo = it.next();
+			for(Tavolo tavolo : listaTavoli) 
 				listaTreeNodeTavolo.add(new TreeNodeTavolo(tavolo));
-			}
-		
+			
 		}catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca dei tavoli associati ad un area " +
 										"(" + e.getMessage() +")");

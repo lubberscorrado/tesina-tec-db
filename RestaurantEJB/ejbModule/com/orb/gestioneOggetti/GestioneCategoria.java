@@ -146,8 +146,7 @@ public class GestioneCategoria {
 			Query query= em.createNamedQuery("getCategorieFiglieDi");
 			query.setParameter("idCategoriaPadre", idPadre);
 			query.setParameter("idTenant", idTenant);
-			
-			
+						
 			List<Categoria> listaCategoria = (List<Categoria>)query.getResultList();
 			List<TreeNodeCategoria> listaTreeNodeCategoria= new ArrayList<TreeNodeCategoria>();
 			
@@ -165,6 +164,13 @@ public class GestioneCategoria {
 		}
 	}
 	
+	/**
+	 * Ritorna una categoria a partire dal suo id
+	 * @param idCategoria Id della categoria da cercare
+	 * @return Oggetto TreeNodeCategoria che rappresenta la categoria trovata
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore che si
+	 * è verificato
+	 */
 	public TreeNodeCategoria getCategoriaById(int idCategoria) throws DatabaseException {
 		
 		try {

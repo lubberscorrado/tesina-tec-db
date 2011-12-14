@@ -30,7 +30,7 @@ public class GestionePrenotazione {
 												String stato,
 												int idTavolo) throws DatabaseException {
 		
-				Prenotazione prenotazione = new Prenotazione();
+		Prenotazione prenotazione = new Prenotazione();
 		prenotazione.setIdTenant(idTenant);
 		prenotazione.setData(data);
 		prenotazione.setOra(ora);

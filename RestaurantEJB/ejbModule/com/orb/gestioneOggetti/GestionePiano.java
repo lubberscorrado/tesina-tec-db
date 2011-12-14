@@ -45,8 +45,7 @@ public class GestionePiano {
 										String nome, 
 										String descrizione, 
 										boolean enabled) throws DatabaseException {
-		
-		
+			
 		Piano piano = new Piano();
 		piano.setIdTenant(idTenant);
 		piano.setNumero(numero);
@@ -62,7 +61,6 @@ public class GestionePiano {
 		}
 		
 		return new TreeNodePiano(piano);
-	
 	}
 	
 	/**
@@ -121,7 +119,7 @@ public class GestionePiano {
 	}
 	
 	/**
-	 * Ritorna i piani associati ad un cliente
+	 * Ritorna i piani appartenenti ad un cliente
 	 * @param idTenant Id del cliente
 	 * @return Lista di oggetti TreeNodePiano che incapsulano le informazioni
 	 * sui piani.
@@ -130,26 +128,22 @@ public class GestionePiano {
 	
 	public List<TreeNodePiano> getPiani(int idTenant) throws DatabaseException {
 		
-		Query query = em.createNamedQuery("getPiani");
-		query.setParameter("idTenant", idTenant);
-		
-		List<Piano> listaPiano;
-		
 		try {
-			listaPiano = (List<Piano>)query.getResultList();
+			Query query = em.createNamedQuery("getPiani");
+			query.setParameter("idTenant", idTenant);
+			
+			List<Piano> listaPiano = (List<Piano>)query.getResultList();
+			List<TreeNodePiano> listaTreeNodePiano = new ArrayList<TreeNodePiano>();
+		
+			for(Piano piano : listaPiano) 
+				listaTreeNodePiano.add(new TreeNodePiano(piano));
+					
+			return listaTreeNodePiano;
+		
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante l'acquisizione dei piani (" + e.toString() + ")");
 		}
-				
-		List<TreeNodePiano> listaTreeNodePiano = new ArrayList<TreeNodePiano>();
-		Iterator<Piano> it = listaPiano.iterator();
 		
-		while(it.hasNext()) {
-			Piano piano = it.next();
-			listaTreeNodePiano.add(new TreeNodePiano(piano));
-		}
-		
-		return listaTreeNodePiano;
 	}
 
 }
