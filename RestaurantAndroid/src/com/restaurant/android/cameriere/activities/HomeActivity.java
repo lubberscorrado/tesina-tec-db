@@ -173,14 +173,54 @@ public class HomeActivity extends TabActivity {
     		
     		for(Integer idCategoria : categoriePadre) {
     			
+    			/*************************************************************************
+    			 * Acquisizione di tutte le variazioni associate alla categoria corrente
+    			 *************************************************************************/
+    			getParametersMap = new HashMap<String,String>();
+    			getParametersMap.put("idCategoria", idCategoria.toString());
+    			
+    			Log.d("Ricerca variazioni", "Ricerco variazione per " + idCategoria);
+    			
+    			String response = ((RestaurantApplication)getApplication()).
+    										makeHttpGetRequest(((RestaurantApplication)getApplication()).getHost() + "ClientEJB/variazioneVoceMenu",
+    															getParametersMap);
+    			
+    			//Log.d("UpdateDatabaseService (variazioni)", response);
+    			
+    			JSONObject jsonObject = new JSONObject(response);
+    			if(jsonObject.getString("success").equals("true")) {
+    				JSONArray variazioni =  jsonObject.getJSONArray("data"); 
+    				for(int i = 0; i< variazioni.length(); i++) {
+    					if(variazioni.getJSONObject(i).getBoolean("isEreditata") == false) {
+    						
+    						/* Inserisco nel database solamente le variazioni non ereditate */
+    						
+    						Log.d("UpdateDatabaseService","Ottenuta variazione " + variazioni.getJSONObject(i).getString("nome"));
+    						ContentValues values = new ContentValues();
+	    					values.clear();
+	    					values.put("idVariazione", variazioni.getJSONObject(i).getInt("id"));
+	    					values.put("idCategoria", variazioni.getJSONObject(i).getInt("idCategoria"));
+	    					values.put("nome", variazioni.getJSONObject(i).getString("nome"));
+	    					values.put("descrizione", variazioni.getJSONObject(i).getString("descrizione"));
+	    					values.put("prezzo", variazioni.getJSONObject(i).getString("prezzo"));
+    					
+	    					db.insertOrThrow("variazione", null, values);
+    					}
+    				}
+    			}
+    			  			
+    			/**************************************************************************
+    			 * Acquisizione di tutte le categorie figlie della categoria corrente 
+    			 **************************************************************************/
+    			
     			getParametersMap = new HashMap<String,String>();
     			getParametersMap.put("node", "C" + idCategoria.toString());
     			
-    			String response =  ((RestaurantApplication)getApplication()).
-    										makeHttpGetRequest(((RestaurantApplication)getApplication()).getHost() + "ClientEJB/gestioneMenu", 
-    															getParametersMap);
+    			response =  ((RestaurantApplication)getApplication()).
+    									makeHttpGetRequest(((RestaurantApplication)getApplication()).getHost() + "ClientEJB/gestioneMenu", 
+    														getParametersMap);
     			
-    			Log.d("UpdataDatabaseService", response);
+    			//Log.d("UpdataDatabaseService (categorie)", response);
     			
     			/**************************************************************************
     			 * Tutte le categoria ritornate dal server vengono inserite all'interno
@@ -188,8 +228,8 @@ public class HomeActivity extends TabActivity {
     			 * figlie
     			 **************************************************************************/
     			
-    			JSONObject jsonObject = new JSONObject(response);
-    			if(jsonObject.getString("message").equals("OK")) {
+    			jsonObject = new JSONObject(response);
+    			if(jsonObject.getString("success").equals("true")) {
     				
     				JSONArray categories = jsonObject.getJSONArray("data");
     				

@@ -39,12 +39,16 @@ public class DbManager extends SQLiteOpenHelper {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("drop table if exists categoria");
 		database.execSQL("drop table if exists vocemenu");
+		database.execSQL("drop table if exists variazione");
+		database.close();
 	}
 	
 	public void createTables() {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("create table categoria (idCategoria int, idCategoriaPadre int, nome string, descrizione string)");
 		database.execSQL("create table vocemenu (idVoceMenu int, idCategoria int, nome string, descrizione string, prezzo string)");
+		database.execSQL("create table variazione (idVariazione int, idCategoria int,  nome string, descrizione string, prezzo string)");
+		database.close();
 	}
 	
 
