@@ -97,5 +97,6 @@ function desktop_main(){
 	if(_global._isAdministrator == true){
 		_mainTabPanel.addTabGestioneTavolo();
 		_mainTabPanel.addTabGestioneMenu();
+		_mainTabPanel.addTabGestionePersonale();
 	}
 };

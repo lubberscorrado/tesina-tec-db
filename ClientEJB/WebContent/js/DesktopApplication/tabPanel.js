@@ -20,6 +20,7 @@ var _mainTabPanel = {
 			_tabella_stato_tavolo: null,
 			_tabella_stato_cameriere: null,
 			_tabella_stato_cuoco: null,
+			_tabella_gestione_personale: null,
 		_tab_menu: null,
 		_tab_camerieri: null,
 		_tab_opzioni: null,
@@ -854,6 +855,12 @@ var _mainTabPanel = {
 			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                        			_mainTabPanel.addNewNodeGestioneMenu(rec,false);
 			                        		}
+			                            },{
+			                            	text: 'Visualizza variazioni',
+			                            	handler: function(){
+			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                            		_mainTabPanel.showGestioneVariazioniMenu(rec.get('id').substring(1),rec.get('nome'));
+			                            	}
 			                            }/*,{
 			                            	text: 'Modifica categoria',
 			                            	handler: function(){
@@ -1319,14 +1326,16 @@ var _mainTabPanel = {
 			});
 			
 		    var grid = Ext.create('Ext.grid.Panel', {
+		    	id: 'tabella_gestioneVariazioni',
 		        //renderTo: document.body,
 		        plugins: [rowEditing],
 		        //height: '100%',
 //		        flex: 1,
         	    //width: '100%',
 		        frame: true,
+		        autoscroll: true,
 		        //title: 'Users',
-		        store: Ext.getStore('datastore_variazione_voce_menu'),
+//		        store: Ext.getStore('datastore_variazione_voce_menu'),
 		        iconCls: 'icon-user',
 		        //fields: ['id','parentId','nome','descrizione','prezzo','tipo','text','isEreditata'],
 		        columns: [{
@@ -1365,9 +1374,18 @@ var _mainTabPanel = {
 		            sortable: true,
 		            dataIndex: 'categoriaDiAppartenenza',
 		            field: {
-		                xtype: 'textfield'
+		            	xtype: 'displayfield'
 		            }
 		        }],
+		        features: [
+					Ext.create('Ext.grid.feature.Grouping', {
+						groupHeaderTpl: '{[titoloRaggruppamentoVariazioni(values)]} ({rows.length})',
+//						groupHeaderTpl: 'Group: {name} {[(name=="true")]} {[(name==="true") ? "Editabili" : "Ereditate"]} {[readOut(values)]} ({rows.length})',
+					//	groupHeaderTpl: 'Group: {name} ({rows.length})',
+					//    groupHeaderTpl: 'Group: {name} ({rows.length})', //print the number of items in the group
+					    //startCollapsed: true // start all groups collapsed
+					})
+				],
 		        dockedItems: [{
 		            xtype: 'toolbar',
 		            dock: 'bottom',
@@ -1376,6 +1394,8 @@ var _mainTabPanel = {
 		                iconCls: 'icon-add',
 		                handler: function(){
 		                	Ext.getStore('datastore_variazione_voce_menu').load();
+		                	Ext.getCmp('tabella_gestioneVariazioni').determineScrollbars();
+		                	Ext.getCmp('tabella_gestioneVariazioni').forceComponentLayout();
 		                }
 		            },{
 		                text: 'Add',
@@ -1383,10 +1403,13 @@ var _mainTabPanel = {
 		                handler: function(){
 		                	var emptyRecord = Ext.create('variazioneVoceMenu',{
 		                    	action: 'create',
+		                    	isEreditata: false,
 		                    	idCategoria: idCategoria
 		                    });
 		                	Ext.getStore('datastore_variazione_voce_menu').insert(0,emptyRecord);
 		                    rowEditing.startEdit(0, 0);
+		                    Ext.getCmp('tabella_gestioneVariazioni').determineScrollbars();
+		                    Ext.getCmp('tabella_gestioneVariazioni').forceComponentLayout();
 		                }
 		            }, '-', {
 		                itemId: 'delete',
@@ -1403,7 +1426,7 @@ var _mainTabPanel = {
 		                    	
 		                    	Ext.getStore('datastore_variazione_voce_menu').remove(selection);
 		                    	Ext.getStore('datastore_variazione_voce_menu').sync();
-		                    	
+		                    	Ext.getCmp('tabella_gestioneVariazioni').forceComponentLayout();
 //		                    	selection.set('action','delete');
 //		                    	Ext.getStore('datastore_variazione_voce_menu').remove(selection);
 //		                    	selection.destroy({
@@ -1428,29 +1451,21 @@ var _mainTabPanel = {
 		                }
 		            }]
 		        }],
-		        features: [
-					Ext.create('Ext.grid.feature.Grouping', {
-						groupHeaderTpl: 'Group: {name} {[(name>0) ? "Editabili" : "Ereditate"]} {[readOut(values)]} ({rows.length})',
-//						groupHeaderTpl: 'Group: {name} ({rows.length})',
-//					    groupHeaderTpl: 'Group: {name} ({rows.length})', //print the number of items in the group
-					    startCollapsed: true // start all groups collapsed
-					})
-		        ],
 		        viewConfig: {
 		        	emptyText:'Non ci sono variazioni disponibili.',
 				    forceFit: true,
 		            showPreview: true, // custom property
 		            enableRowBody: true,
 		            getRowClass: function(record, rowIndex, rowParams, store){
-		                return record.get('isEreditata') ? 'red-row' : '';
+		                return record.get('isEreditata') ? 'gray-row' : '';
 		            }
-		        }
-		        ,
+		        },
+		        
 //		        view: new Ext.grid.GroupingView({
 //		            forceFit:true,
 //		            groupTextTpl: '{text} ({[values.rs.length]} {[values.rs.length > 1 ? "Items" : "Item"]})'
 //		        }),
-		        
+		        store: Ext.getStore('datastore_variazione_voce_menu')
 		    });
 		    grid.getSelectionModel().on('selectionchange', function(selModel, selections){
 		        grid.down('#delete').setDisabled(selections.length === 0);
@@ -1466,9 +1481,149 @@ var _mainTabPanel = {
 		    askWindow.add(grid);
 			askWindow.show();
 			Ext.getStore('datastore_variazione_voce_menu').group('isEreditata');
+		},
+
+
+		createTabGestionePersonale : function(){
+			
+			var rowEditing = Ext.create('Ext.grid.plugin.RowEditing',{
+				listeners: {
+					beforeedit: function(editor, e, eOpts ){
+//						if (editor.record.get('isEreditata') == true) {
+//							Ext.Msg.alert('Info: ', 'Non è possibile modificare variazioni ereditate da altre categorie. Per modificarle, occorre visualizzare le variazione dell\'apposita categoria a cui sono associate.');
+//							return false;
+//					  	}
+//						return true;
+				    },
+				    canceledit: function( grid, eOpts ){
+				    	
+				    },
+				    edit: function( editor, e, eOpts ){
+				    	console.debug('EDITED KISSES');
+				    	console.debug(editor);
+//				    	editor.record.save();
+				    	editor.store.sync();
+				    	
+				    },
+				    validateedit: function( editor, e, eOpts ){
+				    	
+				    }
+				}
+			});
+			
+			this._tabella_gestione_personale = Ext.create('Ext.grid.Panel', {
+				title: 'Gestione personale',
+				flex: 3,
+				align : 'stretch',
+				id: 'tabella_gestionePersonale',
+				margin: '2 2 2 2',
+				autoScroll: true,
+				plugins: [rowEditing],
+		        store: Ext.getStore('datastore_gestione_personale'),
+		        columns: [
+
+		            { text:	'Id',  			flex: 1,	dataIndex: 'id', hidden: true },
+		            { text:	'Username',  	flex: 1,	dataIndex: 'username'	},
+		            { text:	'Password',  	flex: 1,	dataIndex: 'passwd'		},
+		            { text:	'Nome',  		flex: 1,	dataIndex: 'nome'		},
+		            { text:	'Cognome', 		flex: 1,	dataIndex: 'cognome'	},
+		            { text:	'Cameriere', 	flex: 1,	dataIndex: 'isCameriere',	/*xtype: 'checkcolumn'*/	},
+		            { text:	'Cassiere', 	flex: 1,	dataIndex: 'isCassiere',	/*xtype: 'checkcolumn'*/	},
+		            { text:	'Cucina', 		flex: 1,	dataIndex: 'isCucina',		/*xtype: 'checkcolumn'*/	},
+		            { text:	'Admin', 		flex: 1,	dataIndex: 'isAdmin',		/*xtype: 'checkcolumn'*/	}
+		        ],
+//		        features: [{ftype:'grouping'}],
+		        listeners:{
+		        	itemdblclick: function(view, record, item, index, e, eOpts){
+//			        	_viewPort_panel_east.removeAll();
+//			        	_viewPort_panel_east.setTitle(index);
+//			        	_viewPort_panel_east.add({
+//			        		xtype: 'label',
+//			        		text: '<h1>Tavolo:</h1> '+record.get('Tavolo')
+//			        	});
+//			        	_viewPort_panel_east.expand(true);
+			        }
+		        },
+			    dockedItems: [{
+		            xtype: 'toolbar',
+		            dock: 'bottom',
+		            items: ['Raggruppamenti: ',{
+		                tooltip: 'Toggle the visibility of the summary row',
+		                text: 'None',
+		                handler: function(){
+		                	Ext.getStore('datastore_stato_tavolo').clearGrouping();
+		                }
+		            },{
+		                tooltip: 'Toggle the visibility of the summary row',
+		                text: 'Piano',
+		                handler: function(){
+		                	Ext.getStore('datastore_stato_tavolo').group('nomePiano');
+		                }
+		            },{
+		                tooltip: 'Toggle the visibility of the summary row',
+		                text: 'Area',
+		                handler: function(){
+		                	Ext.getStore('datastore_stato_tavolo').group('nomeArea');
+		                }
+		            },{
+		                tooltip: 'Toggle the visibility of the summary row',
+		                text: 'Stato',
+		                handler: function(){
+		                	Ext.getStore('datastore_stato_tavolo').group('statoTavolo');
+		                }
+		            },'->',{
+		            	text: 'Aggiungi',
+		            	handler: function(){
+		            		var emptyRecord = Ext.create('personale',{
+		                    	action: 'create'
+		                    });
+		            		Ext.getStore('datastore_gestione_personale').insert(0,emptyRecord);
+		                    rowEditing.startEdit(0, 0);
+		                }
+		            },{
+		            	text: 'Rimuovi',
+		            	handler: function(){
+		                	Ext.getStore('datastore_gestione_personale').load();
+		                }
+		            },'|',{
+		                text: 'Aggiorna',
+		                iconCls: 'icon-add',
+		                handler: function(){
+		                	Ext.getStore('datastore_gestione_personale').load();
+		                }
+		            }]
+		        }]	//Fine dockeditems
+
+		        
+			});
+		},
+		addTabGestionePersonale : function(){
+			this.createTabGestionePersonale();
+			this._tab_gestione_personale = Ext.create('Ext.panel.Panel', {
+				id:	'main_tabPanel_gestionePersonale',
+				layout: {
+			        type: 'vbox',
+			        align: 'stretch'
+			    },
+				title: 'Gestione personale',
+				width: '100%',
+			    height: '100%',
+			    autoScroll : true,
+			    items: [
+			            Ext.getCmp('tabella_gestionePersonale')
+			    ]
+			});
+		
+			Ext.getCmp('main_tabPanel').add( Ext.getCmp('main_tabPanel_gestionePersonale') );
 		}
+
 };
 
-function readOut(values) {
-    console.log(values);
+function titoloRaggruppamentoVariazioni(values) {
+    //console.log(values);
+    if(values.name){
+    	return values.name = 'Variazioni ereditate';
+    }else{
+    	return values.name = 'Variazioni';
+    }
 };

@@ -200,3 +200,35 @@ Ext.define('variazioneVoceMenu', {
         }
     }
 });
+
+Ext.define('personale', {
+	extend: 'Ext.data.Model',
+    fields: ['id','action','username','passwd','nome','cognome',
+             {name: 'isCameriere', 	type: 'bool'},
+             {name: 'isCassiere', 	type: 'bool'},
+             {name: 'isCucina', 	type: 'bool'},
+             {name: 'isAdmin', 		type: 'bool'}
+    ],
+    phantom : true,
+//    store: Ext.getStore('datastore_gestione_menu'),
+    proxy: {
+        type: 'rest',
+        url : 'gestionePersonale',
+        appendId : false,
+        writer: {
+            type: 'singlepostnoaction'
+            //type: 'json'
+        },
+		reader: {
+	        type: 'json',
+	        idProperty: 'id',
+	        root: 'data'
+	    },
+	    actionMethods : {
+            create : 'POST',
+            read   : 'GET',
+            update : 'POST',
+            destroy: 'POST'
+        }
+    }
+});

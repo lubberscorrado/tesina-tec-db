@@ -5,6 +5,7 @@
 	
 	<!--  <script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all-debug.js"></script> -->
 	<script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all.js"></script>
+	<link rel="stylesheet" type="text/css" href="./ExtJS/resources/css/CheckHeader.css">
 	<link rel="stylesheet" type="text/css" href="./ExtJS/resources/css/ext-all-gray.css" />
 	<link rel="stylesheet" type="text/css" href="./Css/custom.css" />
 	
