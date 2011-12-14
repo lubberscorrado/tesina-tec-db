@@ -57,6 +57,10 @@ public class GestioneUtentePersonale{
 		try {
 			UtentePersonale utentePersonale = new UtentePersonale();
 			
+			if(password.length() < 8){
+				throw new DatabaseException("Password troppo breve! La password deve esser di almeno 8 caratteri.)");
+			}//altri eventuali controlli
+			
 			utentePersonale.setIdTenant(idTenant);
 //			utentePersonale.setIdUtente(idUtente)
 			utentePersonale.setNome(nome);
@@ -81,11 +85,15 @@ public class GestioneUtentePersonale{
 
 	/**
 	 * Modifica un'area a partire dal suo id
-	 * @param idArea Id dell'area da modificare
-	 * @param nome Nome dell'area modificata
-	 * @param descrizione Descrizione dell'area modificata
-	 * @param enabled Stato dell'area modificata
-	 * @return Oggetto TreeNodeArea che rappresenta la nuova area modificata
+	 * @param idUtentePersonale
+	 * @param nome 
+	 * @param cognome
+	 * @param username
+	 * @param password
+	 * @param isCameriere
+	 * @param isCassiere
+	 * @param isCucina
+	 * @param isAdmin
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
 	 */
 	 public WrapperUtentePersonale updateUtentePersonale(int idUtentePersonale,
@@ -105,15 +113,7 @@ public class GestioneUtentePersonale{
 			if(utentePersonale == null)
 				throw new DatabaseException("Errore durante la ricerca dell'utente da aggiornare");
 		
-			utentePersonale.setNome(nome);
-			utentePersonale.setCognome(cognome);
-			utentePersonale.setUsername(username);
-			utentePersonale.setCameriere(isCameriere);
-			utentePersonale.setCassiere(isCassiere);
-			utentePersonale.setCucina(isCucina);
-			utentePersonale.setAdmin(isAdmin);
-
-			if(password == null){	
+			if(password == null || password.length() == 0){	
 				//La password non viene modificata
 			}else{
 				if(password.length() < 8){
@@ -125,10 +125,20 @@ public class GestioneUtentePersonale{
 				}
 			}
 			
+			utentePersonale.setNome(nome);
+			utentePersonale.setCognome(cognome);
+			utentePersonale.setUsername(username);
+			utentePersonale.setCameriere(isCameriere);
+			utentePersonale.setCassiere(isCassiere);
+			utentePersonale.setCucina(isCucina);
+			utentePersonale.setAdmin(isAdmin);
+
+			
+			
 			return new WrapperUtentePersonale(utentePersonale);
 			
 		}catch(Exception e) {
-			throw new DatabaseException("Errore durante la modifica del tavolo (" +e.toString() +")");
+			throw new DatabaseException("Errore durante la modifica dell'utente (" +e.toString() +")");
 		}
 	 }
 	 
@@ -149,6 +159,7 @@ public class GestioneUtentePersonale{
 		 }
 	  }
 		
+	 
 	/** 
 	 * Ritorna l'elenco di tutti gli utenti appartenenti ad un cliente 
 	 * @param idTenant Id del cliente
@@ -176,36 +187,36 @@ public class GestioneUtentePersonale{
 	}
 	
 	
-	/** 
-	 * Ritorna la lista delle aree associate ad un determinato piano
-	 * @param idPiano id del piano del quale si vuole ottenere la lista delle aree
-	 * @return Lista di oggetti TreeNodeArea che incapsulano di dati di un area
-	 * @throws DatabaseException Eccezione di errore durante l'accesso al database
-	 */
-	
-	// TODO Forzare il fetch con una query FETCH per ottenere le aree di un piano in un' unica query?
-	
-	public List<TreeNodeArea> getAreeByPiano(int idPiano) throws DatabaseException {
-	
-		try {
-			
-			Piano piano = em.find(Piano.class, idPiano);
-			if(piano == null)
-				throw new DatabaseException("Impossibile trovare il piano");
-			
-			/* TODO Impostare l'associazione con piano di ogni area come LAZY per evitare
-			il fetch di oggetti inutili? */
-			List<Area> listaAree = piano.getAree();
-			List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
-			
-			for(Area area : listaAree) 
-				listaTreeNodeArea.add(new TreeNodeArea(area));
-				
-			return listaTreeNodeArea;
-				
-		} catch(Exception e) {
-			throw new DatabaseException("Impossibile ottenere le aree associate al piano " +
-										"(" + e.toString()+")");
-		}
-	}
+//	/** 
+//	 * Ritorna la lista delle aree associate ad un determinato piano
+//	 * @param idPiano id del piano del quale si vuole ottenere la lista delle aree
+//	 * @return Lista di oggetti TreeNodeArea che incapsulano di dati di un area
+//	 * @throws DatabaseException Eccezione di errore durante l'accesso al database
+//	 */
+//	
+//	// TODO Forzare il fetch con una query FETCH per ottenere le aree di un piano in un' unica query?
+//	
+//	public List<TreeNodeArea> getAreeByPiano(int idPiano) throws DatabaseException {
+//	
+//		try {
+//			
+//			Piano piano = em.find(Piano.class, idPiano);
+//			if(piano == null)
+//				throw new DatabaseException("Impossibile trovare il piano");
+//			
+//			/* TODO Impostare l'associazione con piano di ogni area come LAZY per evitare
+//			il fetch di oggetti inutili? */
+//			List<Area> listaAree = piano.getAree();
+//			List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
+//			
+//			for(Area area : listaAree) 
+//				listaTreeNodeArea.add(new TreeNodeArea(area));
+//				
+//			return listaTreeNodeArea;
+//				
+//		} catch(Exception e) {
+//			throw new DatabaseException("Impossibile ottenere le aree associate al piano " +
+//										"(" + e.toString()+")");
+//		}
+//	}
 }
