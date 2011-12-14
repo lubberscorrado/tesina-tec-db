@@ -43,6 +43,11 @@
             android:name=".cameriere.activities.TableCardActivity" >
         </activity>
         
+        <activity
+            android:label="@string/app_name"
+            android:name=".cameriere.activities.GestioneOrdinazioneActivity" >
+        </activity>
+        
        	<activity
             android:label="@string/app_name"
             android:name=".cameriere.activities.MenuListActivity" >

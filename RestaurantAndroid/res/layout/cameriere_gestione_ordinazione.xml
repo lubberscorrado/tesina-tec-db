@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <ScrollView 
+	      	android:layout_height="fill_parent"
+	    	android:layout_width="fill_parent">
+	    	
+     <LinearLayout 
+	       	android:orientation="vertical"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent">
+				    	
+			    <!-- Titolo dell'Activity -->
+			    <TextView
+			        android:id="@+id/textView_gestioneOrdinazione_title"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="Gestione Comanda"
+			        android:padding="10dp"
+			        android:layout_gravity="center"
+			        android:textAppearance="?android:attr/textAppearanceLarge" />
+				
+				 <!-- Tabella caratteristiche generali dell'ordinazione -->
+					<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+					    android:layout_width="fill_parent"
+					    android:layout_height="wrap_content"
+					    android:stretchColumns="1"  
+				 				android:layout_gravity="center"
+				 				android:gravity="center"
+					    android:layout_margin="10dp">
+					
+					    <!-- Nome Comanda -->
+					    <TableRow>
+				
+					        <TextView
+					            android:layout_column="1"
+					            android:text="Nome:"
+					            android:layout_margin="3dp" 
+					            android:padding="3dp"
+					            android:background="#111111"
+					            android:textAppearance="?android:attr/textAppearanceMedium" />
+					        
+					        <TextView
+					            android:id="@+id/textView_gestioneOrdinazione_nomeComanda_value"
+					            android:text="Penne all'arrabbiata magiche"
+					            android:gravity="right"
+					            android:layout_width="190dp"
+					            android:layout_margin="3dp" 
+					            android:padding="3dp"
+					            android:background="#111111"
+					            android:textAppearance="?android:attr/textAppearanceMedium"/>
+					    </TableRow>
+					
+					    <!-- Cameriere che ha ordinato la coamnda -->
+					    <TableRow>
+					       <TextView
+					            android:layout_column="1"
+					            android:text="Cameriere:"
+					             android:layout_margin="3dp" 
+					            android:padding="3dp"
+					            android:background="#111111"
+					            android:textAppearance="?android:attr/textAppearanceMedium" />
+					        
+					        <TextView
+					            android:id="@+id/textView_gestioneOrdinazione_nomeCameriere_value"
+					            android:text="Picchio Picchiarello"
+					            android:gravity="right"
+					            android:layout_width="190dp"
+					            android:layout_margin="3dp" 
+					            android:padding="3dp"
+					            android:background="#111111"
+					            android:textAppearance="?android:attr/textAppearanceMedium"/>
+					    </TableRow>
+					    
+					</TableLayout>
+					
+					 <!-- Modifica quantita selezionata  -->
+					<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+					    android:layout_width="fill_parent"
+					    android:layout_height="fill_parent"
+					    android:orientation="vertical" >
+			
+					    <!-- Modifica quantita -->
+						<TextView
+						    android:layout_width="wrap_content"
+						    android:layout_height="wrap_content"
+						    android:paddingTop="10dp"
+						    android:text="Quantità:"
+						    android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+						<EditText
+						    android:id="@+id/editText_gestioneOrdinazione_quantita"
+						    android:paddingTop="10dp"
+						    android:layout_width="fill_parent"
+						    android:layout_height="wrap_content"
+						    android:inputType="number" >
+			
+						    <requestFocus />
+						</EditText>
+						
+						<!-- Aggiungi note -->
+						<TextView
+						    android:layout_width="wrap_content"
+						    android:layout_height="wrap_content"
+						    android:paddingTop="10dp"
+						    android:text="Note:"
+						    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+						<EditText
+						    android:id="@+id/editText_gestioneOrdinazione_note"
+						    android:layout_width="fill_parent"
+						    android:layout_height="wrap_content"
+						    android:paddingTop="10dp"
+						    android:inputType="textMultiLine" />
+						
+						
+						
+					    
+						<!-- Elenco variazioni -->
+
+						
+
+						<TextView
+						    android:id="@+id/textView_gestioneOrdinazione_elencoVariazioniSelezionate"
+						    android:layout_width="wrap_content"
+						    android:layout_height="wrap_content"
+						    android:text="Elenco Variazioni: "
+						    android:paddingTop="20dp"
+						    android:textAppearance="?android:attr/textAppearanceMedium" />
+						
+						<!-- Contenitore della ListView per le variazioni selezionate -->
+				         <LinearLayout
+					         android:id="@+id/linearLayout_gestioneOrdinazione_contains_variazioniListView"
+					         android:orientation="horizontal"
+					         android:layout_width="fill_parent"
+					         android:layout_height="wrap_content"
+					         android:layout_weight="0.1" >
+					     
+						         <!-- Variazioni -->
+					             <ListView 
+							        android:id="@+id/listView_gestioneOrdinazioni_variazioniList" 
+							        android:layout_width="fill_parent" 
+							        android:layout_height="wrap_content" >
+							    </ListView>
+			                 
+			         	 </LinearLayout>
+						       
+					          <Button
+								    android:id="@+id/button_gestioneOrdinazione_modificaVariazioni"
+								    android:layout_width="fill_parent"
+								    android:layout_height="wrap_content"
+								    android:padding="20dp"
+								    android:text="Modifica Variazioni" />
+					          
+					            <Button
+								    android:id="@+id/button_gestioneOrdinazione_confermaOrdinazione"
+								    android:layout_width="fill_parent"
+								    android:layout_height="wrap_content"
+								    android:padding="20dp"
+								    android:text="Conferma Ordinazione" />
+					</LinearLayout>
+					
+		</LinearLayout>
+		
+	</ScrollView>
+			
+</LinearLayout>

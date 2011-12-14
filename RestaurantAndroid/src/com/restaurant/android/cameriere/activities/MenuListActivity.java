@@ -7,14 +7,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.restaurant.android.DbManager;
-import com.restaurant.android.R;
-
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -29,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.restaurant.android.DbManager;
+import com.restaurant.android.R;
 
 /**
  *  Classe che mostra l'elenco del Menu

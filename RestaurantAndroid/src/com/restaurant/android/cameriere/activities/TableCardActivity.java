@@ -96,6 +96,60 @@ public class TableCardActivity extends Activity {
 
 		  
 		  
+	      /** *****************************************
+		   * Configuro ListView per le Prenotazioni
+		   * *****************************************/
+	      
+		  this.prenotationListView = (ListView) findViewById(R.id.listView_prenotationList);
+		  
+		  this.prenotationListView_arrayPrenotazioni = new ArrayList<Prenotazione>();
+		  
+		  this.prenotationListView_adapter = new PrenotationAdapter(getApplicationContext(), 
+					R.layout.cameriere_table_card_prenotation_list_row, 
+					prenotationListView_arrayPrenotazioni);
+		  
+		  this.prenotationListView.setAdapter(this.prenotationListView_adapter);
+		  
+		  /* *************************************************************
+	       * Avvio del thread di aggiornamento della lista dei tavoli
+	       **************************************************************/
+	      this.prenotationListView_updaterThread = new UpdaterThread_PrenotationListView();
+	      
+	      runThread_prenotationListView = true;
+	      pauseThread_prenotationListView = false;
+	      
+	      Log.d("TableCardActivity","Avvio il thread di aggiornamento delle prenotazioni");
+	      
+	      try {
+	    	  prenotationListView_updaterThread.start();
+	      } catch(Exception e) {
+	    	  Log.d(TAG, "Eccezione nel thread dell'aggiornamento delle prenotazioni");
+	      }
+	      
+		  
+		  /* *************************************************************
+	       * Listener per il click su un elemento della lista dei tavoli 
+	       **************************************************************/
+	      prenotationListView.setOnItemClickListener(new OnItemClickListener() {
+		  	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		  	    	 Log.i(TAG, "Hai cliccato su una prenotazione: " + prenotationListView_adapter.getItem(position).getNomeCliente());
+
+		  	    	 /* Apro una nuova finestra con l'opzione di occupare il tavolo 
+		  	    	  * secondo la prenotazione */
+		  	    	 
+//		  	   	Intent myIntent = new Intent(TableCardActivity.this, TableCardActivity.class);
+//		  	    	  
+//		  	     /* Creo un bundle per passare dei dati alla nuova activity */
+//			  	     Bundle b = new Bundle();
+//			  	     b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
+//			  	     b.putString("tableName", m_adapter.getItem(position).getTableName());
+//			  	     myIntent.putExtras(b);
+//			  	     startActivity(myIntent);
+		  	    	 
+		  	    } 
+		  	    
+      }); // fine itemClickListener
+		  
 		  /** *****************************************
 		   * Configuro ListView per il Conto
 		   * *****************************************/
@@ -153,60 +207,7 @@ public class TableCardActivity extends Activity {
 		  	    
       }); // fine itemClickListener
 
-	      
-	      /** *****************************************
-		   * Configuro ListView per le Prenotazioni
-		   * *****************************************/
-	      
-		  this.prenotationListView = (ListView) findViewById(R.id.listView_prenotationList);
-		  
-		  this.prenotationListView_arrayPrenotazioni = new ArrayList<Prenotazione>();
-		  
-		  this.prenotationListView_adapter = new PrenotationAdapter(getApplicationContext(), 
-					R.layout.cameriere_table_card_prenotation_list_row, 
-					prenotationListView_arrayPrenotazioni);
-		  
-		  this.prenotationListView.setAdapter(this.prenotationListView_adapter);
-		  
-		  /* *************************************************************
-	       * Avvio del thread di aggiornamento della lista dei tavoli
-	       **************************************************************/
-	      this.prenotationListView_updaterThread = new UpdaterThread_PrenotationListView();
-	      
-	      runThread_prenotationListView = true;
-	      pauseThread_prenotationListView = false;
-	      
-	      Log.d("TableCardActivity","Avvio il thread di aggiornamento delle prenotazioni");
-	      
-	      try {
-	    	  prenotationListView_updaterThread.start();
-	      } catch(Exception e) {
-	    	  Log.d(TAG, "Eccezione nel thread dell'aggiornamento delle prenotazioni");
-	      }
-	      
-		  
-		  /* *************************************************************
-	       * Listener per il click su un elemento della lista dei tavoli 
-	       **************************************************************/
-	      contoListView.setOnItemClickListener(new OnItemClickListener() {
-		  	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		  	    	 Log.i(TAG, "Hai cliccato su un'ordinazione: " + prenotationListView_adapter.getItem(position).getNomeCliente());
-
-		  	    	 /* Apro una nuova finestra con l'opzione di occupare il tavolo 
-		  	    	  * secondo la prenotazione */
-		  	    	 
-//		  	   	Intent myIntent = new Intent(TableCardActivity.this, TableCardActivity.class);
-//		  	    	  
-//		  	     /* Creo un bundle per passare dei dati alla nuova activity */
-//			  	     Bundle b = new Bundle();
-//			  	     b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
-//			  	     b.putString("tableName", m_adapter.getItem(position).getTableName());
-//			  	     myIntent.putExtras(b);
-//			  	     startActivity(myIntent);
-		  	    	 
-		  	    } 
-		  	    
-      }); // fine itemClickListener
+	     
 		  
 	}
 	

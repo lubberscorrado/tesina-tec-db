@@ -36,7 +36,7 @@ public class NotificationActivity extends Activity {
 		  		//-----------------------
 		        // Open New Activity
 		  		//-----------------------
-		  		Intent myIntent = new Intent(NotificationActivity.this, MenuListActivity.class);
+		  		Intent myIntent = new Intent(NotificationActivity.this, GestioneOrdinazioneActivity.class);
 		  		NotificationActivity.this.startActivity(myIntent);
 		  	}
 		  });
