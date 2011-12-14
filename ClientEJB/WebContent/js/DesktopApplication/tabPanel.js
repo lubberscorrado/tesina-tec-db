@@ -1322,7 +1322,10 @@ var _mainTabPanel = {
 				    validateedit: function( editor, e, eOpts ){
 				    	
 				    }
-				}
+				},
+				failure: function(form, action) {
+                    Ext.Msg.alert('Errore: ', 'sadsasdasd');
+                }
 			});
 			
 		    var grid = Ext.create('Ext.grid.Panel', {
@@ -1506,6 +1509,10 @@ var _mainTabPanel = {
 				    	
 				    },
 				    validateedit: function( editor, e, eOpts ){
+				    	console.debug('VALIDAMELOOO');
+				    	console.debug(editor);
+				    	console.debug(e);
+				    	console.debug(eOpts);
 				    	
 				    }
 				}
@@ -1523,14 +1530,14 @@ var _mainTabPanel = {
 		        columns: [
 
 		            { text:	'Id',  			flex: 1,	dataIndex: 'id', hidden: true },
-		            { text:	'Username',  	flex: 1,	dataIndex: 'username'	},
-		            { text:	'Password',  	flex: 1,	dataIndex: 'passwd'		},
-		            { text:	'Nome',  		flex: 1,	dataIndex: 'nome'		},
-		            { text:	'Cognome', 		flex: 1,	dataIndex: 'cognome'	},
-		            { text:	'Cameriere', 	flex: 1,	dataIndex: 'isCameriere',	/*xtype: 'checkcolumn'*/	},
-		            { text:	'Cassiere', 	flex: 1,	dataIndex: 'isCassiere',	/*xtype: 'checkcolumn'*/	},
-		            { text:	'Cucina', 		flex: 1,	dataIndex: 'isCucina',		/*xtype: 'checkcolumn'*/	},
-		            { text:	'Admin', 		flex: 1,	dataIndex: 'isAdmin',		/*xtype: 'checkcolumn'*/	}
+		            { text:	'Username',  	flex: 1,	dataIndex: 'username',		field: {xtype: 'textfield'}	},
+		            { text:	'Password',  	flex: 1,	dataIndex: 'passwd',		field: {xtype: 'textfield'}	},
+		            { text:	'Nome',  		flex: 1,	dataIndex: 'nome',			field: {xtype: 'textfield'}	},
+		            { text:	'Cognome', 		flex: 1,	dataIndex: 'cognome',		field: {xtype: 'textfield'}	},
+		            { text:	'Cameriere', 	width: 80,	dataIndex: 'isCameriere',	field: {xtype: 'checkbox'}	},
+		            { text:	'Cassiere', 	width: 80,	dataIndex: 'isCassiere',	field: {xtype: 'checkbox'}	},
+		            { text:	'Cucina', 		width: 80,	dataIndex: 'isCucina',		field: {xtype: 'checkbox'}	},
+		            { text:	'Admin', 		width: 80,	dataIndex: 'isAdmin',		field: {xtype: 'checkbox'}	}
 		        ],
 //		        features: [{ftype:'grouping'}],
 		        listeners:{
@@ -1582,6 +1589,7 @@ var _mainTabPanel = {
 		                }
 		            },{
 		            	text: 'Rimuovi',
+		            	disabled: true,
 		            	handler: function(){
 		                	Ext.getStore('datastore_gestione_personale').load();
 		                }
@@ -1596,6 +1604,10 @@ var _mainTabPanel = {
 
 		        
 			});
+			
+			Ext.getCmp('tabella_gestionePersonale').getSelectionModel().on('selectionchange', function(selModel, selections){
+				Ext.getCmp('tabella_gestionePersonale').down('#Rimuovi').setDisabled(selections.length === 0);
+		    });
 		},
 		addTabGestionePersonale : function(){
 			this.createTabGestionePersonale();

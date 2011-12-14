@@ -232,3 +232,13 @@ Ext.define('personale', {
         }
     }
 });
+
+var originalModelSave = Ext.data.Model.prototype.save;
+Ext.override(Ext.data.Model, {
+    save: function( options ) {
+    	//alert('KAsdasd');
+    	console.debug('TANTE TROIE DI ALTRI TEMPII DAI CAZZOOO');
+    	//originalModelSave.apply(this, arguments);
+    	 this.callOverridden(options);
+    }
+});

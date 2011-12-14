@@ -132,5 +132,18 @@ public class JSONFromBean {
 		json_obj.put("prezzo", 		wrapperVariazione.getPrezzoVariazione());
 		return json_obj;
 	}
+	
+	public static JSONObject jsonFromOBJ(WrapperUtentePersonale wrapperUtentePersonale){
+		JSONObject json_obj = new JSONObject();
+		json_obj.put("id",wrapperUtentePersonale.getIdUtentePersonale());
+		json_obj.put("nome",wrapperUtentePersonale.getNome());
+		json_obj.put("cognome",wrapperUtentePersonale.getCognome());
+		json_obj.put("username",wrapperUtentePersonale.getUsername());
+		json_obj.put("isAdmin",wrapperUtentePersonale.isAdmin());
+		json_obj.put("isCameriere",wrapperUtentePersonale.isCameriere());
+		json_obj.put("isCassiere",wrapperUtentePersonale.isCassiere());
+		json_obj.put("isCucina",wrapperUtentePersonale.isCucina());
+		return json_obj;
+	}
 
 }
