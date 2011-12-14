@@ -1,18 +1,21 @@
 package com.restaurant.android.cameriere.activities;
 
+import java.math.BigDecimal;
+
 public class VoceMenu {
 	private String nome;
 	private String descrizione;
 	private int idCategoria;
-	private int idCategoriaPadre;
+	private BigDecimal prezzo;
 	private boolean categoria;
 	
-	public VoceMenu(String nome, String descrizione, int idCategoria, boolean categoria) {
+	public VoceMenu(String nome, String descrizione, int idCategoria, BigDecimal prezzo, boolean categoria) {
 		super();
 		this.nome = nome;
 		this.descrizione = descrizione;
 		this.idCategoria = idCategoria;
 		this.categoria = categoria;
+		this.prezzo = prezzo;
 	}
 	
 	public String getNome() {
@@ -40,5 +43,10 @@ public class VoceMenu {
 	public void setIdCategoria(int idCategoria) {
 		this.idCategoria = idCategoria;
 	}
-	
+	public BigDecimal getPrezzo() {
+		return prezzo;
+	}
+	public void setPrezzo(BigDecimal prezzo) {
+		this.prezzo = prezzo;
+	}
 }

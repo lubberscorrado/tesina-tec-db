@@ -1,6 +1,7 @@
 package com.restaurant.android.cameriere.activities;
 
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -87,6 +88,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 				temp.add(new VoceMenu(	cursorCategoria.getString(0),
 										cursorCategoria.getString(1),
 										cursorCategoria.getInt(2),
+										null,
 										true));
 				
 				cursorCategoria.moveToNext();
@@ -98,7 +100,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			 * padre corrente
 			 *********************************************************/
 			cursorVoceMenu = db.query(	"vocemenu", 
-										new String[] {"nome", "descrizione", "idCategoria"} , 
+										new String[] {"nome", "descrizione", "idCategoria", "prezzo"} , 
 										"idCategoria=" + idCategoriaPadre, 
 										null, null, null, null, null);
 		
@@ -108,6 +110,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 				temp.add(new VoceMenu(	cursorVoceMenu.getString(0),
 										cursorVoceMenu.getString(1),
 										0,
+										new BigDecimal(Double.parseDouble(cursorVoceMenu.getString(3))),
 										false));
 				
 				cursorVoceMenu.moveToNext();
@@ -134,7 +137,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			 * categoria di primo livello (subito sotto la radice) */
 			
 			if(idCategoriaPadre != 1)
-				vociMenu.add(new VoceMenu("..Indietro..", "", idCategoriaPadre, false));
+				vociMenu.add(new VoceMenu("..Indietro..", "", idCategoriaPadre, new BigDecimal(0.0), false));
 			
 			listAdapter.notifyDataSetChanged();
 			
@@ -174,10 +177,18 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 	            if (voceMenu != null) {
 	                    
 	            		TextView textView = (TextView) v.findViewById(R.id.textVoceMenu);
-	                    if(textView != null) {
+	                    if(textView != null) 
 	                          textView.setText(voceMenu.getNome());                            
+	                    
+	                    
+	                    TextView textViewPrezzo = (TextView) v.findViewById(R.id.textPrezzoVoceMenu);
+	                    
+	                    if(!voceMenu.isCategoria() && !voceMenu.getNome().equals("..Indietro..")) {
+	                    	if(textViewPrezzo != null) 
+	                    		textViewPrezzo.setText("Prezzo: "+voceMenu.getPrezzo().toString() + "€");
+	                    } else { 
+	                    	textViewPrezzo.setText("");
 	                    }
-	        	              	                    
 	                    ImageView imageView = (ImageView)v.findViewById(R.id.imageVoceMenu);
 	                    imageView.setVisibility(0);
 	                    
