@@ -40,16 +40,57 @@
 .yellow-row{ background-color: #FBF8BF !important; } 
 .green-row{ background-color: #99CC99 !important; }
 
+.icon-add{				background-image:url(../icons/add.png) 				! important;}
+.icon-refresh{			background-image:url(../icons/refresh.png) 			! important;}
+.icon-update{			background-image:url(../icons/refresh.png) 			! important;}
+.icon-delete{			background-image:url(../icons/remove.png) 			! important;}
+.icon-exclamation{		background-image:url(../icons/exclamation.png) 		! important;}
+
 
 /* TOAST */
-.error{background-image:url(../images/icons/gif/exclamation.gif);}
+.error{background-image:url(./icons/exclamation.gif);}
 .information{background-image:url(../images/icons/gif/information.gif) ! important;}
-.x-icon-error{background-image:url(exclamation.gif) ! important;}
-.x-icon-information{background-image:url(information.gif) ! important;}
+
+.x-icon-error{			background-image:url(../icons/exclamation.gif) 		! important;}
+.x-icon-information{	background-image:url(../icons/icon-info.gif) 		! important;}
+
 .x-notification .x-window-body{margin: 0;padding:1em ! important; width: auto ! important;}
 .x-notification .x-tool-close{display: none}
 .x-notification.fixed .x-tool-close{display: block}
 
+
+.example-info{
+	width:150px;
+	border:1px solid #c3daf9;
+	border-top:1px solid #DCEAFB;
+	border-left:1px solid #DCEAFB;
+	background:#ecf5fe url(info-bg.gif) repeat-x;
+	font-size:10px;
+	padding:8px;
+}
+pre.code{
+	background: #F8F8F8;
+	border: 1px solid #e8e8e8;
+	padding:10px;
+	margin:10px;
+	margin-left:0px;
+	border-left:5px solid #e8e8e8;
+	font-size: 12px !important;
+	line-height:14px !important;
+}
+.msg .x-box-mc {
+    font-size:14px;
+}
+#msg-div {
+    position:absolute;
+    left:35%;
+    top:10px;
+    width:250px;
+    z-index:20000;
+}
+.x-grid3-row-body p {
+    margin:5px 5px 10px 5px !important;
+}
 /*
 #header-1099{
 	color: aqua;

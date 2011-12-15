@@ -98,7 +98,7 @@ var _mainTabPanel = {
 		                }
 		            },'->',{
 		                text: 'Aggiorna',
-		                iconCls: 'icon-add',
+		                iconCls: 'icon-refresh',
 		                handler: function(){
 		                	Ext.getStore('datastore_stato_tavolo').load();
 		                }
@@ -248,7 +248,7 @@ var _mainTabPanel = {
 		                }
 		            },'->',{
 		                text: 'Aggiorna',
-		                iconCls: 'icon-add',
+		                iconCls: 'icon-refresh',
 		                handler: function(){
 		                    // empty record
 		                    store.load();
@@ -341,7 +341,7 @@ var _mainTabPanel = {
 		            //height: 100,
 		            items: ['->',{
 		                text: 'Aggiorna',
-		                iconCls: 'icon-add',
+		                iconCls: 'icon-refresh',
 		                handler: function(){
 		                	Ext.getStore('datastore_gestione_tavolo').load();
 		                }
@@ -819,7 +819,7 @@ var _mainTabPanel = {
 		            //height: 100,
 		            items: ['->',{
 		                text: 'Aggiorna',
-		                iconCls: 'icon-add',
+		                iconCls: 'icon-refresh',
 		                handler: function(){
 		                	Ext.getStore('datastore_gestione_menu').load();
 		                }
@@ -1179,11 +1179,11 @@ var _mainTabPanel = {
 			//askWindow.add(form);
 			
 			new Ext.ux.Notification({
-				iconCls:	'x-icon-error',
+				iconCls:	'x-icon-information',
 				title:	  'Ruh-row',
 				html:		'This is just a stub.  This is only a stub.  If this would have been a real functioning doo-dad, you never would have even seen this stub.',
 				autoDestroy: true,
-				hideDelay:  5000,
+				hideDelay:  2000,
 				listeners: {
 					'beforerender': function(){
 //						Sound.enable();
@@ -1425,7 +1425,7 @@ var _mainTabPanel = {
 		            dock: 'bottom',
 		            items: ['->',{
 		                text: 'Aggiorna',
-		                iconCls: 'icon-add',
+		                iconCls: 'icon-update',
 		                handler: function(){
 		                	Ext.getStore('datastore_variazione_voce_menu').load();
 		                	Ext.getCmp('tabella_gestioneVariazioni').determineScrollbars();
@@ -1590,7 +1590,7 @@ var _mainTabPanel = {
 		            dock: 'bottom',
 		            items: ['->',{
 		                text: 'Aggiorna',
-		                iconCls: 'icon-add',
+		                iconCls: 'icon-refresh',
 		                handler: function(){
 		                	Ext.getStore('datastore_gestione_personale').load();
 		                }

@@ -83,3 +83,22 @@ Ext.ux.Notification = Ext.extend(Ext.Window, {
 	focus: Ext.emptyFn 
 
 }); 
+
+
+/*UTILIZZO
+ * 
+ * 			new Ext.ux.Notification({
+				iconCls:	'x-icon-information',
+				title:	  'Ruh-row',
+				html:		'This is just a stub.  This is only a stub.  If this would have been a real functioning doo-dad, you never would have even seen this stub.',
+				autoDestroy: true,
+				hideDelay:  2000,
+				listeners: {
+					'beforerender': function(){
+//						Sound.enable();
+//						Sound.play('notify.wav');
+//						Sound.disable();
+					}
+				}
+			}).show(document);
+ * */
