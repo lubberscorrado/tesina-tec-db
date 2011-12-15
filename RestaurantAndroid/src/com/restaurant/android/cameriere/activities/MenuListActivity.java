@@ -110,7 +110,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 										cursorVoceMenu.getString(1),
 										cursorVoceMenu.getString(2),
 										0,
-										new BigDecimal(Double.parseDouble(cursorVoceMenu.getString(4))),
+										new BigDecimal(cursorVoceMenu.getString(4)),
 										false));
 				
 				cursorVoceMenu.moveToNext();

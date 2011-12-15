@@ -179,7 +179,7 @@ public class HomeActivity extends TabActivity {
     			getParametersMap = new HashMap<String,String>();
     			getParametersMap.put("idCategoria", idCategoria.toString());
     			
-    			Log.d("Ricerca variazioni", "Ricerco variazione per " + idCategoria);
+    			//Log.d("Ricerca variazioni", "Ricerco variazione per " + idCategoria);
     			
     			String response = ((RestaurantApplication)getApplication()).
     										makeHttpGetRequest(((RestaurantApplication)getApplication()).getHost() + "ClientEJB/variazioneVoceMenu",
@@ -195,7 +195,7 @@ public class HomeActivity extends TabActivity {
     						
     						/* Inserisco nel database solamente le variazioni non ereditate */
     						
-    						Log.d("UpdateDatabaseService","Ottenuta variazione " + variazioni.getJSONObject(i).getString("nome"));
+    						//Log.d("UpdateDatabaseService","Ottenuta variazione " + variazioni.getJSONObject(i).getString("nome"));
     						ContentValues values = new ContentValues();
 	    					values.clear();
 	    					values.put("idVariazione", variazioni.getJSONObject(i).getInt("id"));
@@ -220,7 +220,7 @@ public class HomeActivity extends TabActivity {
     									makeHttpGetRequest(((RestaurantApplication)getApplication()).getHost() + "ClientEJB/gestioneMenu", 
     														getParametersMap);
     			
-    			//Log.d("UpdataDatabaseService (categorie)", response);
+    			Log.d("UpdataDatabaseService (categorie)", response);
     			
     			/**************************************************************************
     			 * Tutte le categoria ritornate dal server vengono inserite all'interno
