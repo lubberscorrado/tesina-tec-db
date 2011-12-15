@@ -118,9 +118,15 @@ Ext.define('nodoGestioneTavolo', {
     //store: Ext.getStore('datastore_gestione_tavolo'),
     proxy: {
         type: 'rest',
-        url : 'gestioneTavolo',
+//        url : 'gestioneTavolo',
         //url : 'services/gestioneTavolo',
         appendId : false,
+        api: {
+            create: 	'gestioneTavolo?action=create',
+            read: 		'gestioneTavolo?action=read',
+            update: 	'gestioneTavolo?action=update',
+            destroy: 	'gestioneTavolo',
+        },
         writer: {
         	//type: 'json'
         		type: 'singlepost'/*,
@@ -154,7 +160,7 @@ Ext.define('nodoGestioneMenu', {
             create: 	'gestioneMenu?action=create',
             read: 		'gestioneMenu?action=read',
             update: 	'gestioneMenu?action=update',
-            destroy: 	'gestioneMenu?action=destroy',
+            destroy: 	'gestioneMenu',
         },
         writer: {
             type: 'singlepost'
@@ -193,7 +199,7 @@ Ext.define('variazioneVoceMenu', {
             create: 	'variazioneVoceMenu?action=create',
             read: 		'variazioneVoceMenu?action=read',
             update: 	'variazioneVoceMenu?action=update',
-            destroy: 	'variazioneVoceMenu?action=destroy',
+            destroy: 	'variazioneVoceMenu',
         },
         writer: {
             type: 'singlepost'
@@ -230,7 +236,7 @@ Ext.define('personale', {
             create: 	'gestionePersonale?action=create',
             read: 		'gestionePersonale?action=read',
             update: 	'gestionePersonale?action=update',
-            destroy: 	'gestionePersonale?action=destroy',
+            destroy: 	'gestionePersonale',
         },
         writer: {
             type: 'singlepost'

@@ -60,8 +60,15 @@ public class gestioneTavolo extends HttpServlet {
 		
 		idTenant = (Integer) request.getSession().getAttribute("idTenant");
 		JSONArray json_array = new JSONArray();
-		JSONObject json_out = new JSONObject();
 		JSONObject json_tmp = null;
+		String parentNode = request.getParameter("node");
+		
+		if(parentNode == null || parentNode.length() == 0){
+			JSONResponse.WriteOutput(response, false, "Nodo non valido.");
+			return;
+		}
+		
+		
 		
 		try {
 		
@@ -138,7 +145,11 @@ public class gestioneTavolo extends HttpServlet {
 		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
 			return;
 		}
-		
+		String action = request.getParameter("action");
+		if(action == null || action.length() == 0){
+			JSONResponse.WriteOutput(response, true, "No Action");
+		}
+
 		idTenant = (Integer) request.getSession().getAttribute("idTenant");
 		JSONArray json_array = new JSONArray();
 		JSONObject json_tmp = null;
@@ -172,7 +183,7 @@ public class gestioneTavolo extends HttpServlet {
 		
 		
 		//UPDATE
-		if(request.getParameter("action").equals("update")){
+		if(action.equals("update")){
 			int id = Integer.parseInt( request.getParameter("id").substring(1) );
 			int numPosti = Integer.parseInt(request.getParameter("numPosti"));
 			switch(tipo){
@@ -197,7 +208,7 @@ public class gestioneTavolo extends HttpServlet {
 			return;
 		
 		//DELETE
-		}else if(request.getParameter("action").equals("delete")){
+		}else if(action.equals("delete")){
 			String sid = request.getParameter("id");
 			int id = Integer.parseInt( sid.substring(1) );
 			
@@ -213,7 +224,7 @@ public class gestioneTavolo extends HttpServlet {
 			return;
 			
 		//CREATE
-		}else if(request.getParameter("action").equals("create")){
+		}else if(action.equals("create")){
 			//ADD
 			
 			String numPosti = request.getParameter("numPosti");

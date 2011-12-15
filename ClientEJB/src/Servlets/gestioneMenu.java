@@ -119,6 +119,10 @@ public class gestioneMenu extends HttpServlet {
     	idTenant = (Integer) request.getSession().getAttribute("idTenant");
     	String action = request.getParameter("action");
     	
+    	if(action == null || action.length() == 0){
+    		JSONResponse.WriteOutput(response, true, "No action.");
+    		return;
+    	}
     	
     	
     	try{

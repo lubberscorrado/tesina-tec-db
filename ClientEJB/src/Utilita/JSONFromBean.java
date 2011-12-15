@@ -79,7 +79,7 @@ public class JSONFromBean {
 			//json_obj.put("idTenant", treeNodeTavolo.getIdTenant());
 			json_obj.put("descrizione", treeNodeTavolo.getDescrizione());
 			json_obj.put("nome", 		treeNodeTavolo.getNome());
-			json_obj.put("stato", 		treeNodeTavolo.getStato());
+			//json_obj.put("stato", 		treeNodeTavolo.getStato());
 			json_obj.put("numPosti", 	treeNodeTavolo.getNumposti());
 			json_obj.put("enabled", 	treeNodeTavolo.isEnabled());
 		return json_obj;

@@ -520,8 +520,8 @@ var _mainTabPanel = {
 				id: 'window_inserimentoNodoGestioneTavolo',
         	    title: 'Hello',
         	    modal: true,
-        	    height: 400,
-        	    width: 400,
+//        	    height: 400,
+//        	    width: 400,
         	    layout: 'fit'
         	});
 			
@@ -1129,7 +1129,7 @@ var _mainTabPanel = {
 				});
 		},
 		addNewNodeGestioneMenu : function(parentNode,isVoceMenu){
-//			console.debug('NUOVO NODO MENU');
+
 			var a = Ext.getCmp('window_inserimentoNodoGestioneMenu');
 			var b = Ext.getCmp('form_gestioneMenu');
 			if(a != undefined) a.destroy();
@@ -1137,31 +1137,48 @@ var _mainTabPanel = {
 			var form = this.createFormGestioneMenu();
 			form.action = 'create';
 			form.isVoceMenu = isVoceMenu;
-			//if(parentNode.)
-			var askWindow = Ext.create('Ext.window.Window', {
-				id: 'window_inserimentoNodoGestioneMenu',
-        	    title: 'Hello',
-        	    modal: true,
-        	    //height: 400,
-        	    //width: 400,
-        	    layout: 'fit'
-        	});
+			var title = 'titolo';
+			
+			
 			form.getForm().findField('id').hide();
 			form.getForm().findField('parentId').hide();
 			form.getForm().findField('parentId').setValue(parentNode.get('id'));
 			form.getForm().findField('depth').hide();
 			form.getForm().findField('tipo').hide();
+			
 			if(isVoceMenu == true){
-				askWindow.setTitle('Aggiungi nuova voce di menù');
+				title = 'Aggiungi nuova voce di menù';
 				form.getForm().findField('tipo').setValue(2);
 			}else{
-				askWindow.setTitle('Aggiungi nuova categoria');
+				title = 'Aggiungi nuova categoria';
 				form.getForm().findField('prezzo').hide();
 				form.getForm().findField('parentId').setValue(parentNode.get('id'));
 				form.getForm().findField('tipo').setValue(1);
 			}
 			
-			askWindow.add(form);
+			var askWindow = Ext.create('Ext.window.Window', {
+				id: 'window_inserimentoNodoGestioneMenu',
+        	    title: title,
+        	    expandOnShow : true,
+        	    modal: true,
+        	    //height: 400,
+        	    //width: 400,
+//        	    layout: 'fit',
+//        	    layout: 'auto',
+        	    layout: {
+			        type: 'auto',
+			        pack: 'center'
+			    },
+        	    items:[form],
+        	    listeners:{
+        	    	deactivate: function( thisWindow, eOpts ){
+        	    		console.debug('DEATTIVATAAAA');
+        	    		thisWindow.destroy();
+        	    		thisWindow.destroy();
+        	    	}
+        	    }
+        	});
+			//askWindow.add(form);
 			askWindow.show();
 		},
 		updateNodeGestioneMenu : function(selectedNode){
@@ -1557,51 +1574,56 @@ var _mainTabPanel = {
 			    dockedItems: [{
 		            xtype: 'toolbar',
 		            dock: 'bottom',
-		            items: ['Raggruppamenti: ',{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'None',
+		            items: ['->',{
+		                text: 'Aggiorna',
+		                iconCls: 'icon-add',
 		                handler: function(){
-		                	Ext.getStore('datastore_stato_tavolo').clearGrouping();
+		                	Ext.getStore('datastore_gestione_personale').load();
 		                }
 		            },{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'Piano',
+		                text: 'Add',
+		                iconCls: 'icon-add',
 		                handler: function(){
-		                	Ext.getStore('datastore_stato_tavolo').group('nomePiano');
-		                }
-		            },{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'Area',
-		                handler: function(){
-		                	Ext.getStore('datastore_stato_tavolo').group('nomeArea');
-		                }
-		            },{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'Stato',
-		                handler: function(){
-		                	Ext.getStore('datastore_stato_tavolo').group('statoTavolo');
-		                }
-		            },'->',{
-		            	text: 'Aggiungi',
-		            	handler: function(){
-		            		var emptyRecord = Ext.create('personale',{
+		                	var emptyRecord = Ext.create('personale',{
 		                    	action: 'create'
 		                    });
 		            		Ext.getStore('datastore_gestione_personale').insert(0,emptyRecord);
 		                    rowEditing.startEdit(0, 0);
 		                }
-		            },{
-		            	itemId: 'delete_gestione_personale',
-		            	text: 'Rimuovi',
-		            	disabled: true,
-		            	handler: function(){
-		                	Ext.getStore('datastore_gestione_personale').load();
-		                }
-		            },'|',{
-		                text: 'Aggiorna',
-		                iconCls: 'icon-add',
+		            }, '-', {
+//		                itemId: 'delete',
+		                text: 'Delete',
+		                iconCls: 'icon-delete',
+//		                disabled: true,
 		                handler: function(){
-		                	Ext.getStore('datastore_gestione_personale').load();
+		                    var selection = Ext.getCmp('tabella_gestionePersonale').getView().getSelectionModel().getSelection()[0];
+		                    if (selection) {
+		                    	Ext.MessageBox.confirm('Conferma', 'Sei sicuro di voler rimuovere l\'utente '+selection.get('cognome')+' '+selection.get('nome')+'?', function(btn){
+		            				if(btn == 'no') return;
+		            				
+		            				if(selection.get('id') == ''){
+			                    		Ext.getStore('datastore_gestione_personale').remove(selection);
+			                    		return;
+			                    	}
+		            				
+		            				selection.destroy({
+		            	                success : function(record, action) {
+		            	                	console.debug('result action');
+		            	                	console.debug(action);
+		            	                	Ext.Msg.alert('Success', action.resultSet.message);
+		            	                	Ext.getStore('datastore_gestione_personale').remove(selection);
+		            	                },
+		            	                failure: function(form, action) {
+		            	                    Ext.Msg.alert('Failed', action.result.message);
+		            	                }
+		            	            });
+		            			});
+		                    	
+//		                    	Ext.getStore('datastore_variazione_voce_menu').remove(selection);
+//		                    	Ext.getStore('datastore_variazione_voce_menu').sync();
+//		                    	Ext.getCmp('tabella_gestioneVariazioni').forceComponentLayout();
+
+		                    }
 		                }
 		            }]
 		        }]	//Fine dockeditems
