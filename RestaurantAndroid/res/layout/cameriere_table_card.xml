@@ -40,6 +40,7 @@
 
 				        <TextView
 				            android:layout_column="1"
+				            
 				            android:text="Cameriere:"
 				            android:layout_margin="3dp" 
 				            android:padding="3dp"
@@ -47,7 +48,8 @@
 				            android:textAppearance="?android:attr/textAppearanceMedium" />
 				        
 				        <TextView
-				            android:text="Paolo Piccinini"
+				           
+				            android:id="@+id/textNomeCameriere"
 				            android:gravity="right"
 				            android:layout_width="190dp"
 				            android:layout_margin="3dp" 
@@ -61,13 +63,14 @@
 				       <TextView
 				            android:layout_column="1"
 				            android:text="Stato:"
-				             android:layout_margin="3dp" 
+				            android:layout_margin="3dp" 
 				            android:padding="3dp"
 				            android:background="#111111"
 				            android:textAppearance="?android:attr/textAppearanceMedium" />
 				        
 				        <TextView
-				            android:text="Prenotato"
+				           
+				            android:id="@+id/textStato"
 				            android:gravity="right"
 				            android:layout_width="190dp"
 				            android:layout_margin="3dp" 
@@ -82,13 +85,14 @@
 				        <TextView
 				            android:layout_column="1"
 				            android:text="Piano:"
+				           
 				            android:layout_margin="3dp" 
 				            android:padding="3dp"
 				            android:background="#111111"
 				            android:textAppearance="?android:attr/textAppearanceMedium" />
 				        
 				        <TextView
-				            android:text="Primo Piano"
+				            android:id="@+id/textNumeroPiano"
 				            android:gravity="right"
 				            android:layout_width="190dp"
 				            android:layout_margin="3dp" 
@@ -103,13 +107,14 @@
 				        <TextView
 				            android:layout_column="1"
 				            android:text="Area:"
+				           
 				             android:layout_margin="3dp" 
 				            android:padding="3dp"
 				            android:background="#111111"
 				            android:textAppearance="?android:attr/textAppearanceMedium" />
 				        
 				        <TextView
-				            android:text="Giardino"
+				            android:id="@+id/textNomeArea"
 				            android:gravity="right"
 				            android:layout_width="190dp"
 				            android:layout_margin="3dp" 

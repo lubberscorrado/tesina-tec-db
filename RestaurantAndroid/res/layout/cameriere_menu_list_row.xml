@@ -26,7 +26,7 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="fill_parent"
 	          
-	            android:minHeight="40dp"
+	            android:minHeight="30dp"
 	            android:layout_marginLeft="10dp"
 	            android:gravity="center_vertical|center_horizontal"
 	          	android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -35,10 +35,10 @@
 	            android:id="@+id/textPrezzoVoceMenu"
 	            android:layout_width="wrap_content"
 	            android:layout_height="fill_parent"
-	            android:minHeight="40dp"
+	            android:minHeight="30dp"
 	            android:layout_marginLeft="10dp"
 	            android:gravity="center_vertical|center_horizontal"
-	          	android:textAppearance="?android:attr/textAppearanceLarge" />
+	          	/>
 	          
 	     </LinearLayout>
 

@@ -104,6 +104,12 @@ public class TablesListActivity extends Activity {
 		pauseThread = false;
 		updaterThread.Signal();
 	}
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.d("TablesListActivity","OnPause");
+		pauseThread = true;
+	}
 	
 	@Override
 	public void onStart() {

@@ -1,10 +1,19 @@
 package com.restaurant.android.cameriere.activities;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,9 +26,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.restaurant.android.Error;
 import com.restaurant.android.R;
+import com.restaurant.android.RestaurantApplication;
 import com.restaurant.android.Utility;
+import com.restaurant.android.cameriere.activities.HomeActivity.MenuSyncTask;
 
 /**
  * Activity che rappresenta la scheda di un singolo
@@ -39,24 +52,14 @@ public class TableCardActivity extends Activity {
 	private ListView contoListView = null;
 	private ContoAdapter contoListView_adapter = null;
 	private ArrayList<Ordinazione> contoListView_arrayOrdinazioni = null;
-	private UpdaterThread_ContoListView updaterThread = null;
-	private boolean runThread_contoListView = false;
-	private boolean pauseThread_contoListView = false;
-	
+			
 	/* Variabili necessarie alla ListView per mostrare
 	 * l'elenco delle prenotazioni effettuate */
 	private ListView prenotationListView = null;
 	private ArrayList<Prenotazione> prenotationListView_arrayPrenotazioni = null;
 	private PrenotationAdapter prenotationListView_adapter;
-	private UpdaterThread_PrenotationListView prenotationListView_updaterThread = null;
-	private boolean runThread_prenotationListView = false;
-	private boolean pauseThread_prenotationListView = false;
 	
-	/* Variabili utili per la gestione del thread */
-	
-	
-	/* ProgressDialog per mostrare una barra di caricamento */
-	// private ProgressDialog progressDialog = null;
+	Table myTable;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +73,7 @@ public class TableCardActivity extends Activity {
 		   * ***************************************** */
 		  Bundle b = getIntent().getExtras();
 		  String tableName = b.getString("tableName");
-		  Table myTable= (Table) b.getSerializable("tableObject");
+		  myTable= (Table) b.getSerializable("tableObject");
 		  
 		  /* Tavolo de-serializzato */
 		  Log.d("Scheda Tavolo", "De-serializzato il tavolo: " + myTable.getTableName());
@@ -109,23 +112,6 @@ public class TableCardActivity extends Activity {
 					prenotationListView_arrayPrenotazioni);
 		  
 		  this.prenotationListView.setAdapter(this.prenotationListView_adapter);
-		  
-		  /* *************************************************************
-	       * Avvio del thread di aggiornamento della lista dei tavoli
-	       **************************************************************/
-	      this.prenotationListView_updaterThread = new UpdaterThread_PrenotationListView();
-	      
-	      runThread_prenotationListView = true;
-	      pauseThread_prenotationListView = false;
-	      
-	      Log.d("TableCardActivity","Avvio il thread di aggiornamento delle prenotazioni");
-	      
-	      try {
-	    	  prenotationListView_updaterThread.start();
-	      } catch(Exception e) {
-	    	  Log.d(TAG, "Eccezione nel thread dell'aggiornamento delle prenotazioni");
-	      }
-	      
 		  
 		  /* *************************************************************
 	       * Listener per il click su un elemento della lista dei tavoli 
@@ -167,21 +153,6 @@ public class TableCardActivity extends Activity {
 		  
 		  
 		  /* *************************************************************
-	       * Avvio del thread di aggiornamento della lista dei tavoli
-	       **************************************************************/
-	      this.updaterThread = new UpdaterThread_ContoListView();
-	      runThread_contoListView = true;
-	      pauseThread_contoListView = false;
-	      Log.d("TableCardActivity","Avvio il thread di aggiornamento delle ordinazioni");
-	      
-	      try {
-	    	  updaterThread.start();
-	      } catch(Exception e) {
-	    	  Log.d(TAG, "Eccezione nel thread");
-	      }
-	      
-		  
-		  /* *************************************************************
 	       * Listener per il click su un elemento della lista dei tavoli 
 	       **************************************************************/
 	      contoListView.setOnItemClickListener(new OnItemClickListener() {
@@ -215,35 +186,23 @@ public class TableCardActivity extends Activity {
 	public void onResume() {
 		super.onResume();
 		Log.d("TableCardActivity","OnResume");
-		/* Sveglio il thread sospeso */
-		pauseThread_contoListView = false;
-		updaterThread.Signal();
+		new TableListAsyncTask().execute(null);
 		
-		/* Thread Prenotazioni */
-		pauseThread_prenotationListView = false;
-		prenotationListView_updaterThread.Signal();
 	}
 	
 	@Override
 	public void onStart() {
 		super.onStart();
 		Log.d("TableCardActivity","OnStart");
-		pauseThread_contoListView = false;
-		updaterThread.Signal();
 		
-		/* Thread Prenotazioni */
-		pauseThread_prenotationListView = false;
-		prenotationListView_updaterThread.Signal();
+	
 	}
 	
 	@Override
 	public void onStop() {
 		super.onStop();
 		Log.d("TableCardActivity","OnStop");
-		pauseThread_contoListView = true;
-		
-		/* Thread Prenotazioni */
-		pauseThread_prenotationListView = true;
+	
 	}
 	
 	@Override
@@ -253,15 +212,7 @@ public class TableCardActivity extends Activity {
 		
 		Log.d("TableCardActivity","Stoppo il thread di aggiornamento dei tavoli");
 		
-		runThread_contoListView =false;
 		
-//		try {
-//			updaterThread.join();
-//		} catch (InterruptedException e) {
-//			Log.e("TableCardActivity","Errore durante il join del thread");
-//		}
-		
-		runThread_prenotationListView = false;
 	}
 	
 	/**
@@ -339,47 +290,7 @@ public class TableCardActivity extends Activity {
         Log.i(TAG, "Uscito da getOrders()");
     }
     
-    
-	private class UpdaterThread_ContoListView extends Thread {
-		
-   		final int DELAY = 30000;
-   		public void run() {
-
-   			Log.d(TAG, "Entrato in run() di UpdaterThread");
-   			
-   			while(runThread_contoListView) {
-   				Log.d("UpdaterThread (TableCardActivity)", "UPDATING...");
-   				getOrders();
-   				
-   				try {
-					Thread.sleep(DELAY);
-				} catch (InterruptedException e) {
-					Log.d("UpdaterThread (TableCardActivity)", "Errore durante lo sleep del thread");
-				}
-   				if(pauseThread_contoListView)
-					try {
-						Log.d("UpdaterThread (TableCardActivity)", "Vado a letto");
-						this.Wait();
-					} catch (InterruptedException e) {
-						Log.d("UpdaterThread (TableCardActivity)","Errore durante il wait()");
-					}
-   			}
-   		}
-   		
-   		public synchronized void Wait() throws InterruptedException {
-   			Log.d(TAG, "Entrato in Wait() di UpdaterThread");
-   			wait();
-   			
-   		}
-   		
-   		public synchronized void Signal() {
-   			Log.d(TAG, "Entrato in Signal() di UpdaterThread");
-   			notify();
-   		}
-   	}
-
-	
-	/************************************************************************
+    /************************************************************************
 	 * Adapter per gestire il rendering personalizzato degli elementi
 	 * della lista con le ordinazioni del conto
 	 ************************************************************************/
@@ -507,51 +418,6 @@ public class TableCardActivity extends Activity {
         Log.i(TAG, "Uscito da getPrenotations()");
     }
     
-    
-    
-    /**
-     * Thread per l'aggiornamento della lista delle prenotazioni.
-     * @author Fabio Pierazzi
-     */
-    private class UpdaterThread_PrenotationListView extends Thread {
-		
-   		final int DELAY = 30000;
-   		public void run() {
-
-   			Log.d(TAG, "Entrato in run() di UpdaterThread_PrenotationListView.");
-   			
-   			while(runThread_prenotationListView) {
-   				Log.d("UpdaterThread (TableCardActivity)", "UPDATING Prenotations...");
-   				getPrenotations();
-   				
-   				try {
-					Thread.sleep(DELAY);
-				} catch (InterruptedException e) {
-					Log.d("UpdaterThread (TableCardActivity)", "Errore durante lo sleep del thread");
-				}
-   				if(pauseThread_prenotationListView)
-					try {
-						Log.d("UpdaterThread (TableCardActivity)", "Vado a letto");
-						this.Wait();
-					} catch (InterruptedException e) {
-						Log.d("UpdaterThread (TableCardActivity)","Errore durante il wait()");
-					}
-   			}
-   		}
-   		
-		public synchronized void Wait() throws InterruptedException {
-   			Log.d(TAG, "Entrato in Wait() di UpdaterThread");
-   			wait();
-   			
-   		}
-   		
-   		public synchronized void Signal() {
-   			Log.d(TAG, "Entrato in Signal() di UpdaterThread");
-   			notify();
-   		}
-   	}
-    
-    
     /**
      * Adapter le prenotazioni. 
      * @author Fabio Pierazzi
@@ -603,4 +469,110 @@ public class TableCardActivity extends Activity {
         }
     } // end of PrenotationAdapter
     
+    
+    public void updateStatoTavolo() {
+    	TextView nomeTavolo = (TextView)findViewById(R.id.textNomeCameriere);
+		nomeTavolo.setText(myTable.getCameriere());
+		
+		TextView nomeArea = (TextView)findViewById(R.id.textNomeArea);
+		nomeArea.setText(myTable.getArea());
+		
+		TextView stato = (TextView)findViewById(R.id.textStato);
+		stato.setText(myTable.getTableStatus());
+
+		if(myTable.getTableStatus().equals("LIBERO")) {
+			Button btnOrdina = (Button)findViewById(R.id.button_tableCard_prendiOrdinazione);
+			btnOrdina.setVisibility(4);
+			Button btnCedi= (Button)findViewById(R.id.button_tableCard_cediTavolo);
+			btnCedi.setVisibility(4);
+			Button btnLibera = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
+			btnLibera.setVisibility(4);
+		}
+		TextView numeroPiano = (TextView)findViewById(R.id.textNumeroPiano);
+		numeroPiano.setText(myTable.getPiano());
+    }
+    
+    
+    /**
+     * Async Task per l'aggiornamento delle informazioni della scheda 
+     * del tavolo
+     * @author Marco Guerri
+     *
+     */
+    class TableListAsyncTask extends AsyncTask<Object, Object, Error> {
+
+    	private ProgressDialog progressDialog;
+    	   	
+    	@Override
+    	protected void onPreExecute() {
+    		progressDialog = ProgressDialog.show(TableCardActivity.this, "Attendere", "Caricamento tavolo");
+    	}
+    	
+    	@Override
+		protected Error doInBackground(Object... params) {
+			
+			RestaurantApplication restApp = (RestaurantApplication)getApplication();
+			String response = "";
+					
+			try {
+				response = restApp.makeHttpGetRequest(restApp.getHost() + "ClientEJB/statoTavolo", new HashMap<String,String>());
+			} catch (ClientProtocolException e) {
+				
+			} catch (IOException e) {
+				return new Error("Richiesta effettuata correttamente", false );
+			}
+			
+			Log.d("TableListAsyncTask" , response);
+			
+			/*****************************************************************
+			 * Aggiornamento dell'interfaccia grafica dello stato del tavolo
+			 *****************************************************************/
+			try {
+				
+				JSONObject jsonObject = new JSONObject(response);
+			
+						
+				if(jsonObject.getString("success").equals("true")) {
+				
+					JSONArray jsonArray = jsonObject.getJSONArray("statoTavolo");
+					
+					int i=0;
+					while(jsonArray.getJSONObject(i).getInt("idTavolo") != myTable.getTableId())
+						i++;
+					
+					if(i == jsonArray.length()) {
+						/* Non sono stati trovati tavoli che fanno match con l'id */
+						return new Error("Impossibile trovare il tavolo richiesto", true);
+					}
+					myTable.setArea(jsonArray.getJSONObject(i).getString("nomeArea"));
+					myTable.setTableName(jsonArray.getJSONObject(i).getString("nomeTavolo"));
+					myTable.setTableStatus(jsonArray.getJSONObject(i).getString("statoTavolo"));
+					myTable.setPiano(jsonArray.getJSONObject(i).getString("numeroPiano"));
+					myTable.setCameriere(jsonArray.getJSONObject(i).getString("cameriere"));
+					runOnUiThread(new Runnable() {
+						public void run() {
+							updateStatoTavolo();
+						}
+					});
+								
+					return new Error("Richiesta effettuata correttamente", false );
+			
+				} else {
+					return new Error("Errore durante l'aggiornamento del tavolo", true);
+				}
+				
+			} catch (JSONException e) {
+				
+				return new Error("Errore durante l'aggiornamento del tavolo (" + e.toString() + ")", true);
+			}
+		}
+    	
+    	@Override
+    	protected void onPostExecute(Error error) {
+     	   progressDialog.dismiss();
+     	   if(error.errorOccurred()) 
+     		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+     	 }
+    
+    }
 }
