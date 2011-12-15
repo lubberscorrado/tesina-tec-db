@@ -1172,7 +1172,7 @@ var _mainTabPanel = {
         	    listeners:{
         	    	afterrender: function( thisWindow, eOpts ){
         	    		console.debug('Altezzaaaa');
-        	    		thisWindow.setHeight( Ext.getCmp('form_gestioneMenu').getHeight()+35 );
+        	    		thisWindow.setHeight( Ext.getCmp('form_gestioneMenu').getHeight()+37 );
         	    	}
         	    }
         	});
