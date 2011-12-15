@@ -30,10 +30,7 @@ public class DbManager extends SQLiteOpenHelper {
 	/* Metodo chiamato se il DB_NAME non esiste */
 	@Override
 	public void onCreate(SQLiteDatabase database) {
-		
-		
 	}
-	
 	
 	public void dropTables() {
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -49,6 +46,12 @@ public class DbManager extends SQLiteOpenHelper {
 		database.execSQL("create table vocemenu (idVoceMenu int, idCategoria int, nome string, descrizione string, prezzo string)");
 		database.execSQL("create table variazione (idVariazione int, idCategoria int,  nome string, descrizione string, prezzo string)");
 		database.close();
+	}
+	
+	public void createTablesComande() {
+		SQLiteDatabase database = this.getWritableDatabase();
+		database.execSQL("create table if not exists comanda (idComanda integer primary key autoincrement, idVoceMenu int, idTavolo int, quantita int, note string)");
+		database.execSQL("create table if not exists variazionecomanda (idVariazioneComanda integer primary key autoincrement, idComanda int, idVariazione)");
 	}
 	
 

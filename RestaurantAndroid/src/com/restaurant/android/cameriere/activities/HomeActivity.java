@@ -66,6 +66,9 @@ public class HomeActivity extends TabActivity {
 	    tabHost.addTab(spec);
 
 	    tabHost.setCurrentTab(1);
+	    
+	    DbManager dbManager = new DbManager(getApplicationContext());
+	    dbManager.createTablesComande();
 	}
 	
 	@Override
