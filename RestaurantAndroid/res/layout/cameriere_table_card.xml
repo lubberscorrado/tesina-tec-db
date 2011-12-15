@@ -130,19 +130,21 @@
 			        android:id="@+id/button_tableCard_occupaTavolo"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
+			      
 			        android:text="Occupa Tavolo" />
 			
 			    <Button
 			        android:id="@+id/button_tableCard_prendiOrdinazione"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
-			        
+			      
 			        android:text="Prendi Ordinazione" />
 			
 			    <Button
 			        android:id="@+id/button_tableCard_cediTavolo"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
+			       
 			        android:text="Cedi Tavolo ad un'altro cameriere" />
 			
 			    <Button
@@ -150,9 +152,8 @@
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
 			        android:layout_gravity="center"
+			      
 			        android:text="Libera Tavolo" />
-			    
-			    
 			    
 			     <!-- Prenotazioni -->
 

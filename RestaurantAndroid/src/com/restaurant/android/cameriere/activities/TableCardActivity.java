@@ -471,6 +471,10 @@ public class TableCardActivity extends Activity {
     
     
     public void updateStatoTavolo() {
+    	
+    	/**************************************************
+    	 * Aggiornamento delle textbox
+    	 **************************************************/
     	TextView nomeTavolo = (TextView)findViewById(R.id.textNomeCameriere);
 		nomeTavolo.setText(myTable.getCameriere());
 		
@@ -479,17 +483,38 @@ public class TableCardActivity extends Activity {
 		
 		TextView stato = (TextView)findViewById(R.id.textStato);
 		stato.setText(myTable.getTableStatus());
-
-		if(myTable.getTableStatus().equals("LIBERO")) {
-			Button btnOrdina = (Button)findViewById(R.id.button_tableCard_prendiOrdinazione);
-			btnOrdina.setVisibility(4);
-			Button btnCedi= (Button)findViewById(R.id.button_tableCard_cediTavolo);
-			btnCedi.setVisibility(4);
-			Button btnLibera = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
-			btnLibera.setVisibility(4);
-		}
+		
 		TextView numeroPiano = (TextView)findViewById(R.id.textNumeroPiano);
 		numeroPiano.setText(myTable.getPiano());
+
+		/****************************************************
+		 * Visibilità dei pulsanti
+		 ****************************************************/
+		
+		if(myTable.getTableStatus().equals("LIBERO")) {
+			
+			Button btnOccupa = (Button)findViewById(R.id.button_tableCard_occupaTavolo);
+			btnOccupa.setEnabled(true);
+			Button btnOrdina = (Button)findViewById(R.id.button_tableCard_prendiOrdinazione);
+			btnOrdina.setEnabled(false);
+			Button btnCedi= (Button)findViewById(R.id.button_tableCard_cediTavolo);
+			btnCedi.setEnabled(false);
+			Button btnLibera = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
+			btnLibera.setEnabled(false);
+			
+		} else if(myTable.getTableStatus().equals("OCCUPATO")) {
+			
+			Button btnOccupa = (Button)findViewById(R.id.button_tableCard_occupaTavolo);
+			btnOccupa.setEnabled(false);
+			Button btnOrdina = (Button)findViewById(R.id.button_tableCard_prendiOrdinazione);
+			btnOrdina.setEnabled(true);
+			Button btnCedi= (Button)findViewById(R.id.button_tableCard_cediTavolo);
+			btnCedi.setEnabled(true);
+			Button btnLibera = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
+			btnLibera.setEnabled(true);
+			
+		}
+		
     }
     
     
