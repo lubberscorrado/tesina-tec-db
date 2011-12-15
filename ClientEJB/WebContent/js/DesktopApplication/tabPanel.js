@@ -1139,7 +1139,6 @@ var _mainTabPanel = {
 			form.isVoceMenu = isVoceMenu;
 			var title = 'titolo';
 			
-			
 			form.getForm().findField('id').hide();
 			form.getForm().findField('parentId').hide();
 			form.getForm().findField('parentId').setValue(parentNode.get('id'));
@@ -1171,10 +1170,9 @@ var _mainTabPanel = {
 			    },
         	    items:[form],
         	    listeners:{
-        	    	deactivate: function( thisWindow, eOpts ){
-        	    		console.debug('DEATTIVATAAAA');
-        	    		thisWindow.destroy();
-        	    		thisWindow.destroy();
+        	    	afterrender: function( thisWindow, eOpts ){
+        	    		console.debug('Altezzaaaa');
+        	    		thisWindow.setHeight( Ext.getCmp('form_gestioneMenu').getHeight()+35 );
         	    	}
         	    }
         	});
