@@ -49,7 +49,6 @@ public class GestioneOrdinazioneActivity extends Activity {
 		menuVoiceId = bundle_received.getInt("menuVoiceId");
 		menuVoiceName = bundle_received.getString("menuVoiceName");
 		nomeCameriere = bundle_received.getString("cameriere");
-		
 		Log.d("GestioneOrdinazioneActivity", "Dati ricevuti dall'activity precedente: tableId: " + 
 				tableId + ", menuVoiceId: " + menuVoiceId + ", menuVoiceName: " + menuVoiceName + ".");
 		
