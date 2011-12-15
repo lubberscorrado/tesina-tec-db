@@ -45,6 +45,10 @@ public class variazioneVoceMenu extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//Controllo dei privilegi di accesso
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+			return;
+		}
 		idTenant = (Integer) request.getSession().getAttribute("idTenant");
 		String idCategoriaString = request.getParameter("idCategoria");
 		int idCategoria = 0;
@@ -92,8 +96,18 @@ public class variazioneVoceMenu extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		idTenant = (Integer) request.getSession().getAttribute("idTenant");
+		//Controllo dei privilegi di accesso
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+			return;
+		}
+		
 		String action = request.getParameter("action");
+		if(action == null || action.length()==0){
+			JSONResponse.WriteOutput(response, false, "No action."); return;
+		}
+		
+		idTenant = (Integer) request.getSession().getAttribute("idTenant");
+		
 		String idCategoriaString = request.getParameter("idCategoria");
 		
 		JSONArray json_array = new JSONArray();
@@ -113,7 +127,7 @@ public class variazioneVoceMenu extends HttpServlet {
 			String descrizione = request.getParameter("descrizione");
 			int idCategoria = Integer.parseInt(idCategoriaString);
 			
-			if(action != null && action.equals("create")){
+			if(action.equals("create")){
 				if(nome.length() == 0 && descrizione.length() == 0){
 					JSONResponse.WriteOutput(response, false, "Campi vuoti"); return;
 				}
@@ -126,11 +140,11 @@ public class variazioneVoceMenu extends HttpServlet {
 				json_array.put(json_tmp);
 				JSONResponse.WriteOutput(response, true, "Inserimento effettuato correttamente!","data",json_array); return;
 			
-			}else if(action != null && action.equals("delete")){
+			}else if(action.equals("delete")){
 				gestioneVariazioni.deleteVariazione(Integer.parseInt(id));
 				JSONResponse.WriteOutput(response, true, "Rimozione effettuata correttamente!","data",json_array); return;
 			
-			}else{
+			}else if(action.equals("update")){
 				WrapperVariazione wrapperVariazione = gestioneVariazioni.updateVariazione(Integer.parseInt(id), nome, descrizione, prezzo);
 				json_tmp = JSONFromBean.jsonFromOBJ(wrapperVariazione);
 				json_tmp.put("isEreditata", false);
@@ -143,7 +157,7 @@ public class variazioneVoceMenu extends HttpServlet {
 			}
 			
 			
-			
+			JSONResponse.WriteOutput(response, false, "No action."); return;
 			
 		} catch (DatabaseException e) {
 			e.printStackTrace();

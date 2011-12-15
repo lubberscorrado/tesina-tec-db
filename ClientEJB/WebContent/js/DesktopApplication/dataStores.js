@@ -163,18 +163,18 @@ function initStores(){
 					
 			    },
 			    update: function( thisStore, record, operation, eOpts ){
-			    	if(operation == Ext.data.Model.EDIT){
-			    		console.debug('xedit');
-			    	}else if(operation == Ext.data.Model.REJECT){
-			    		console.debug('xreject');
-			    	}else if(operation == Ext.data.Model.COMMIT){
-			    		console.debug('xcommit');
-			    	}
+//			    	if(operation == Ext.data.Model.EDIT){
+//			    		console.debug('xedit');
+//			    	}else if(operation == Ext.data.Model.REJECT){
+//			    		console.debug('xreject');
+//			    	}else if(operation == Ext.data.Model.COMMIT){
+//			    		console.debug('xcommit');
+//			    	}
 			    },
 			    datachanged: function( thisStore, eOpts ){
-			    	console.debug('DATACHANGED');
-			    	console.debug(thisStore);
-			    	console.debug(eOpts);
+//			    	console.debug('DATACHANGED');
+//			    	console.debug(thisStore);
+//			    	console.debug(eOpts);
 			    }
 		    }
 		});

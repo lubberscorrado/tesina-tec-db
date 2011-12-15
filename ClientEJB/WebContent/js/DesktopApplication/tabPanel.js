@@ -1204,7 +1204,7 @@ var _mainTabPanel = {
 			});
 		},
 		showGestioneVariazioniMenu : function(idCategoria,nomeCategoria){
-			console.debug('IdCategoria '+idCategoria);
+//			console.debug('IdCategoria '+idCategoria);
 			var store = Ext.getStore('datastore_variazione_voce_menu');
 			if(store) store.destroy();
 			store = Ext.create('Ext.data.Store', {
@@ -1221,38 +1221,38 @@ var _mainTabPanel = {
 						store.proxy.extraParams.idCategoria=idCategoria;
 					},
 					beforesync: function( options, eOpts ){
-									console.debug('beforesync');
-									console.debug(options);
-						//			console.debug(eOpts);
-									if(options.update){
-										console.debug('Create OR Update');
-									}
+////									console.debug('beforesync');
+////									console.debug(options);
+//						//			console.debug(eOpts);
+//									if(options.update){
+////										console.debug('Create OR Update');
+//									}
 					},
 					write: function(store, operation, eOpts ){
-						console.debug('writerello');
-						console.debug(eOpts);
-						console.debug(operation);
-						console.debug(store);
-						
-						operation.request.params.action = 'Cicisbeo';
-						
+//						console.debug('writerello');
+//						console.debug(eOpts);
+//						console.debug(operation);
+//						console.debug(store);
+//						
+//						operation.request.params.action = 'Cicisbeo';
+//						
 					},
 					update: function( store, record, operation, eOpts ){
-						console.debug('updaterello');
-						console.debug(eOpts);
-						console.debug(operation);
-						console.debug(store);
-			//			Ext.data.Model.EDIT
-			//			Ext.data.Model.REJECT
-			//			Ext.data.Model.COMMIT
-						
+//						console.debug('updaterello');
+//						console.debug(eOpts);
+//						console.debug(operation);
+//						console.debug(store);
+//			//			Ext.data.Model.EDIT
+//			//			Ext.data.Model.REJECT
+//			//			Ext.data.Model.COMMIT
+//						
 					},
 					remove: function( store, record, index, eOpts ){
-						console.debug('removerello');
-						console.debug(eOpts);
-						console.debug(index);
-						console.debug(record);
-						console.debug(store);
+//						console.debug('removerello');
+//						console.debug(eOpts);
+//						console.debug(index);
+//						console.debug(record);
+//						console.debug(store);
 					},
 					
 					beforeappend: function( thisNode, newChildNode, eOpts ){
@@ -1313,8 +1313,8 @@ var _mainTabPanel = {
 				    	
 				    },
 				    edit: function( editor, e, eOpts ){
-				    	console.debug('EDITED KISSES');
-				    	console.debug(editor);
+//				    	console.debug('EDITED KISSES');
+//				    	console.debug(editor);
 //				    	editor.record.save();
 				    	editor.store.sync();
 				    	
@@ -1502,18 +1502,18 @@ var _mainTabPanel = {
 				    	
 				    },
 				    edit: function( editor, e, eOpts ){
-				    	console.debug('EDITED KISSES');
-				    	console.debug(editor);
+//				    	console.debug('EDITED KISSES');
+//				    	console.debug(editor);
 //				    	editor.record.save();
 				    	editor.store.sync();
 				    	
 				    },
 				    validateedit: function( editor, e, eOpts ){
-				    	console.debug('VALIDAMELOOO');
-				    	console.debug(editor);
-				    	console.debug(e);
-				    	console.debug(eOpts);
-				    	
+//				    	console.debug('VALIDAMELOOO');
+//				    	console.debug(editor);
+//				    	console.debug(e);
+//				    	console.debug(eOpts);
+//				    	
 				    }
 				}
 			});
@@ -1549,7 +1549,10 @@ var _mainTabPanel = {
 //			        		text: '<h1>Tavolo:</h1> '+record.get('Tavolo')
 //			        	});
 //			        	_viewPort_panel_east.expand(true);
-			        }
+			        },
+//					selectionchange: function(view, records) {
+//						grid.down('#delete_gestione_personale').setDisabled(!records.length);
+//					}
 		        },
 			    dockedItems: [{
 		            xtype: 'toolbar',
@@ -1588,6 +1591,7 @@ var _mainTabPanel = {
 		                    rowEditing.startEdit(0, 0);
 		                }
 		            },{
+		            	itemId: 'delete_gestione_personale',
 		            	text: 'Rimuovi',
 		            	disabled: true,
 		            	handler: function(){
@@ -1604,10 +1608,6 @@ var _mainTabPanel = {
 
 		        
 			});
-			
-			Ext.getCmp('tabella_gestionePersonale').getSelectionModel().on('selectionchange', function(selModel, selections){
-				Ext.getCmp('tabella_gestionePersonale').down('#Rimuovi').setDisabled(selections.length === 0);
-		    });
 		},
 		addTabGestionePersonale : function(){
 			this.createTabGestionePersonale();

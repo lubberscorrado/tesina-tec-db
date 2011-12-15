@@ -41,6 +41,11 @@ public class gestionePersonale extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//Controllo dei privilegi di accesso
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+			return;
+		}
+		
 		JSONArray json_array = new JSONArray();
 		JSONObject json_tmp = null;
 		idTenant = (Integer) request.getSession().getAttribute("idTenant");
@@ -88,13 +93,22 @@ public class gestionePersonale extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//Controllo dei privilegi di accesso
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+			return;
+		}
 		JSONArray json_array = new JSONArray();
 		JSONObject json_tmp = null;
 		idTenant = (Integer) request.getSession().getAttribute("idTenant");
 		String action = request.getParameter("action");
-		
+		System.out.println("AZIONEEEEEEEEEEE: "+action);
+		int id;
 		try {
-			int id = Integer.parseInt(request.getParameter("id"));
+			try{
+				id = Integer.parseInt(request.getParameter("id"));
+			}catch(Exception e){
+				id = -1;
+			}
 			String nome = request.getParameter("nome");
 			String cognome = request.getParameter("cognome");
 			String username = request.getParameter("username");
@@ -105,14 +119,17 @@ public class gestionePersonale extends HttpServlet {
 			boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
 			
 			if(action.equals("create")){
-				WrapperUtentePersonale wrapperUtentePersonale = gestioneUtentePersonale.aggiungiUtentePersonale(idTenant, "nome", "cognome", "asd", "asd", true, true, true, true);
+				WrapperUtentePersonale wrapperUtentePersonale = gestioneUtentePersonale.aggiungiUtentePersonale(idTenant, nome, cognome, username, password, isCameriere, isCassiere, isCucina, isAdmin);
 				json_tmp = JSONFromBean.jsonFromOBJ(	wrapperUtentePersonale	);
 				json_array.put(json_tmp);
 				
-				JSONResponse.WriteOutput(response, true, "Caricamento effettuato correttamente.", "data", json_array); return;
+				JSONResponse.WriteOutput(response, true, "Inserimento effettuato correttamente.", "data", json_array); return;
+			
 			}else if(action.equals("delete")){
-				
-			}else{
+				gestioneUtentePersonale.deleteUtentePersonale(id);
+				JSONResponse.WriteOutput(response, true, "Rimozione effettuata correttamente."); return;
+			
+			}else if(action.equals("update")){
 				WrapperUtentePersonale wrapperUtentePersonale = gestioneUtentePersonale.updateUtentePersonale(id, nome, cognome, username, password, isCameriere, isCassiere, isCucina, isAdmin);
 				json_tmp = JSONFromBean.jsonFromOBJ(	wrapperUtentePersonale	);
 				json_array.put(json_tmp);
@@ -121,7 +138,7 @@ public class gestionePersonale extends HttpServlet {
 			}
 			
 			
-			
+			JSONResponse.WriteOutput(response, false, "No Action."); return;
 			
 		} catch (DatabaseException e) {
 			e.printStackTrace();

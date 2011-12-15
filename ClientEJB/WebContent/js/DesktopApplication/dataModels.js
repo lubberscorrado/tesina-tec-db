@@ -11,19 +11,19 @@ Ext.define('Ext.data.writer.SinglePost', {
     }
 });
 
-Ext.define('Ext.data.writer.SinglePostNoAction', {
-    extend: 'Ext.data.writer.Writer',
-    alternateClassName: 'Ext.data.SinglePostNoActionWriter',
-    alias: 'writer.singlepostnoaction',
-
-    writeRecords: function(request, data) {
-    	console.debug(request);
-    	console.debug(data);
-    	//data[0].action = request.params.action;
-        request.params = data[0];
-        return request;
-    }
-});
+//Ext.define('Ext.data.writer.SinglePostNoAction', {
+//    extend: 'Ext.data.writer.Writer',
+//    alternateClassName: 'Ext.data.SinglePostNoActionWriter',
+//    alias: 'writer.singlepostnoaction',
+//
+//    writeRecords: function(request, data) {
+////    	console.debug(request);
+////    	console.debug(data);
+//    	//data[0].action = request.params.action;
+//        request.params = data[0];
+//        return request;
+//    }
+//});
 
 
 /*Definisco il modello dei dati*/
@@ -148,8 +148,14 @@ Ext.define('nodoGestioneMenu', {
     //store: Ext.getStore('datastore_gestione_menu'),
     proxy: {
         type: 'rest',
-        url : 'gestioneMenu',
+//        url : 'gestioneMenu',
         appendId : false,
+        api: {
+            create: 	'gestioneMenu?action=create',
+            read: 		'gestioneMenu?action=read',
+            update: 	'gestioneMenu?action=update',
+            destroy: 	'gestioneMenu?action=destroy',
+        },
         writer: {
             type: 'singlepost'
             //type: 'json'
@@ -176,16 +182,21 @@ Ext.define('nodoGestioneMenu', {
 
 Ext.define('variazioneVoceMenu', {
 	extend: 'Ext.data.Model',
-    fields: ['id','parentId','nome','descrizione','prezzo','tipo','text','categoriaDiAppartenenza','isEreditata','action','idCategoria'],
+    fields: ['id','parentId','nome','descrizione','prezzo','tipo','text','categoriaDiAppartenenza','isEreditata',/*'action',*/'idCategoria'],
     phantom : true,
 //    store: Ext.getStore('datastore_gestione_menu'),
     proxy: {
         type: 'rest',
-        url : 'variazioneVoceMenu',
+//        url : 'variazioneVoceMenu',
         appendId : false,
+        api: {
+            create: 	'variazioneVoceMenu?action=create',
+            read: 		'variazioneVoceMenu?action=read',
+            update: 	'variazioneVoceMenu?action=update',
+            destroy: 	'variazioneVoceMenu?action=destroy',
+        },
         writer: {
-            type: 'singlepostnoaction'
-            //type: 'json'
+            type: 'singlepost'
         },
 		reader: {
 	        type: 'json',
@@ -203,7 +214,7 @@ Ext.define('variazioneVoceMenu', {
 
 Ext.define('personale', {
 	extend: 'Ext.data.Model',
-    fields: ['id','action','username','passwd','nome','cognome',
+    fields: ['id','username','passwd','nome','cognome',
              {name: 'isCameriere', 	type: 'bool'},
              {name: 'isCassiere', 	type: 'bool'},
              {name: 'isCucina', 	type: 'bool'},
@@ -213,11 +224,16 @@ Ext.define('personale', {
 //    store: Ext.getStore('datastore_gestione_menu'),
     proxy: {
         type: 'rest',
-        url : 'gestionePersonale',
+//        url : 'gestionePersonale',
         appendId : false,
+        api: {
+            create: 	'gestionePersonale?action=create',
+            read: 		'gestionePersonale?action=read',
+            update: 	'gestionePersonale?action=update',
+            destroy: 	'gestionePersonale?action=destroy',
+        },
         writer: {
-            type: 'singlepostnoaction'
-            //type: 'json'
+            type: 'singlepost'
         },
 		reader: {
 	        type: 'json',
@@ -229,16 +245,30 @@ Ext.define('personale', {
             read   : 'GET',
             update : 'POST',
             destroy: 'POST'
+        },
+        afterRequest:function(request,success){
+//        	console.debug('inizio AFTEREQUEST');
+//        	console.debug(request);
+//        	console.debug(success);
+//        	console.debug('fine AFTEREQUEST');
+            
         }
     }
 });
 
-var originalModelSave = Ext.data.Model.prototype.save;
-Ext.override(Ext.data.Model, {
-    save: function( options ) {
-    	//alert('KAsdasd');
-    	console.debug('TANTE TROIE DI ALTRI TEMPII DAI CAZZOOO');
-    	//originalModelSave.apply(this, arguments);
-    	 this.callOverridden(options);
-    }
-});
+//var originalModelSave = Ext.data.Model.prototype.save;
+//Ext.override(Ext.data.Model, {
+//    save: function() {
+//    	//alert('KAsdasd');
+//    	console.debug('TANTE TROIE DI ALTRI TEMPII DAI CAZZOOO');
+//    	//originalModelSave.apply(this, arguments);
+//    	 this.callOverridden({
+//    		success: function(rec, op) {
+//    			Ext.Msg.alert("Failed",'Successo lento');
+//    		},
+//    		failure: function(rec, op) {
+//    			Ext.Msg.alert("Failed",'Fallimento lento');
+//    		}
+//    	 });
+//    }
+//});
