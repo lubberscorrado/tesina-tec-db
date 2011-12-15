@@ -113,7 +113,6 @@ public class GestioneTavolo{
 			tavolo.setDescrizione(descrizione);
 			tavolo.setStato(stato);
 			tavolo.setEnabled(enabled);
-			tavolo.setAreaAppartenenza(tavolo.getAreaAppartenenza());
 			tavolo.setNumposti(numposti);
 						
 			return new TreeNodeTavolo(tavolo);
