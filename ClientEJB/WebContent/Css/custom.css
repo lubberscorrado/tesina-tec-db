@@ -41,6 +41,15 @@
 .green-row{ background-color: #99CC99 !important; }
 
 
+/* TOAST */
+.error{background-image:url(../images/icons/gif/exclamation.gif);}
+.information{background-image:url(../images/icons/gif/information.gif) ! important;}
+.x-icon-error{background-image:url(exclamation.gif) ! important;}
+.x-icon-information{background-image:url(information.gif) ! important;}
+.x-notification .x-window-body{margin: 0;padding:1em ! important; width: auto ! important;}
+.x-notification .x-tool-close{display: none}
+.x-notification.fixed .x-tool-close{display: block}
+
 /*
 #header-1099{
 	color: aqua;

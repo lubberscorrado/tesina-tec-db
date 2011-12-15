@@ -11,6 +11,12 @@ Ext.define('Ext.data.writer.SinglePost', {
     }
 });
 
+/* DEFINIZIONE DI UN TOAST */
+Ext.ux.ToastWindowMgr = {
+	    positions: [] 
+};
+  
+
 //Ext.define('Ext.data.writer.SinglePostNoAction', {
 //    extend: 'Ext.data.writer.Writer',
 //    alternateClassName: 'Ext.data.SinglePostNoActionWriter',

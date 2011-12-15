@@ -15,6 +15,9 @@
 	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/dataModels.js"></script>
 	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/dataStores.js"></script>
 	
+	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/classes/Ext.ux.Notification.js"></script>
+	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/classes/protoculous-packer.js"></script>
+	
 	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/main.js"></script>
 	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/tabPanel.js"></script>
 	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/toolbar.js"></script>

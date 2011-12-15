@@ -141,7 +141,12 @@ public class gestioneMenu extends HttpServlet {
     				json_tmp.put("tipo", 1);
     				json_array.put(json_tmp);
     			}else{
-    				BigDecimal prezzo = BigDecimal.valueOf(Double.parseDouble( request.getParameter("prezzo") ));
+    				BigDecimal prezzo;
+    				try{
+    					prezzo = BigDecimal.valueOf(Double.parseDouble( request.getParameter("prezzo") ));
+    				}catch(Exception e){
+    					JSONResponse.WriteOutput(response, false, "Prezzo mancante.");	return;
+    				}
     				TreeNodeVoceMenu treeNodeVoceMenu = gestioneVoceMenu.aggiungiVoceMenu(idTenant, parentId, nome, descrizione, prezzo);
     				json_tmp = JSONFromBean.jsonFromOBJ(treeNodeVoceMenu);
     				json_tmp.put("parentId", request.getParameter("parentId"));
@@ -166,7 +171,13 @@ public class gestioneMenu extends HttpServlet {
     				json_tmp.put("tipo", 1);
     				json_array.put(json_tmp);
     			}else if(idString.startsWith("V")){
-    				BigDecimal prezzo = BigDecimal.valueOf(Double.parseDouble( request.getParameter("prezzo") ));
+    				BigDecimal prezzo;
+    				try{
+    					prezzo = BigDecimal.valueOf(Double.parseDouble( request.getParameter("prezzo") ));
+    				}catch(Exception e){
+    					JSONResponse.WriteOutput(response, false, "Prezzo mancante.");	return;
+    				}
+    				
     				TreeNodeVoceMenu treeNodeVoceMenu = gestioneVoceMenu.updateVoceMenu(id, nome, descrizione,prezzo);
     				json_tmp = JSONFromBean.jsonFromOBJ(treeNodeVoceMenu);
     				json_tmp.put("parentId", request.getParameter("parentId"));
