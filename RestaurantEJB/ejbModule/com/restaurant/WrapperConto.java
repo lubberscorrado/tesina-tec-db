@@ -1,19 +1,20 @@
 package com.restaurant;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import com.orb.Conto;
 
 public class WrapperConto {
-	private int idTenant;
+	
 	private int idConto;
 	private BigDecimal prezzo;
-	private Date timestampApertura;
-	private Date timestampChiusura;
+	private Timestamp timestampApertura;
+	private Timestamp timestampChiusura;
 	
 	public WrapperConto(Conto conto) {
-		this.idTenant = conto.getIdTenant();
+	
 		this.idConto = conto.getIdConto();
 		this.prezzo = conto.getPrezzo();
 		this.timestampApertura = conto.getTimeStampApertura();
@@ -32,17 +33,22 @@ public class WrapperConto {
 	public void setPrezzo(BigDecimal prezzo) {
 		this.prezzo = prezzo;
 	}
-	public Date getTimestampApertura() {
+
+	public Timestamp getTimestampApertura() {
 		return timestampApertura;
 	}
-	public void setTimestampApertura(Date timestampApertura) {
+
+	public void setTimestampApertura(Timestamp timestampApertura) {
 		this.timestampApertura = timestampApertura;
 	}
-	public Date getTimestampChiusura() {
+
+	public Timestamp getTimestampChiusura() {
 		return timestampChiusura;
 	}
-	public void setTimestampChiusura(Date timestampChiusura) {
+
+	public void setTimestampChiusura(Timestamp timestampChiusura) {
 		this.timestampChiusura = timestampChiusura;
 	}
+	
 		
 }

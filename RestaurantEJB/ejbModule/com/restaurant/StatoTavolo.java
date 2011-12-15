@@ -28,7 +28,7 @@ public class StatoTavolo {
 		
 		/* Setto il cameriere associato al tavolo solo se non è nullo */
 		if(u != null)
-			this.cameriere = u.getNome() + u.getCognome();
+			this.cameriere = u.getNome() + " " + u.getCognome();
 		else
 			this.cameriere = "Non definito";
 	}
