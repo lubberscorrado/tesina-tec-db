@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -176,15 +177,19 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 	            		TextView textView = (TextView) v.findViewById(R.id.textVoceMenu);
 	                    if(textView != null) 
 	                          textView.setText(voceMenu.getNome());                            
-	                    
+	                     
 	                    
 	                    TextView textViewPrezzo = (TextView) v.findViewById(R.id.textPrezzoVoceMenu);
 	                    
 	                    if(!voceMenu.isCategoria() && !voceMenu.getNome().equals("..Indietro..")) {
-	                    	if(textViewPrezzo != null) 
+	                    	if(textViewPrezzo != null) {
 	                    		textViewPrezzo.setText("Prezzo: "+voceMenu.getPrezzo().toString() + "€");
+	                    		textViewPrezzo.setVisibility(View.VISIBLE);
+	                    		textView.setMinHeight(30);
+	                    	}
 	                    } else { 
-	                    	textViewPrezzo.setText("");
+	                    	textView.setMinHeight(50);
+	                    	textViewPrezzo.setVisibility(View.GONE);
 	                    }
 	                    ImageView imageView = (ImageView)v.findViewById(R.id.imageVoceMenu);
 	                    imageView.setVisibility(0);

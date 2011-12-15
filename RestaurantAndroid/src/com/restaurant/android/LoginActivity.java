@@ -153,7 +153,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 				
 				Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
 		  		LoginActivity.this.startActivity(myIntent);
-		  		Toast.makeText(getApplicationContext(), "Login effettuato con successo!", 20).show();
+		  		//Toast.makeText(getApplicationContext(), "Login effettuato con successo!", 20).show();
 		  		
         	}
         }

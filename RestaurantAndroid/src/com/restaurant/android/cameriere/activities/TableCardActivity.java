@@ -1,6 +1,7 @@
 package com.restaurant.android.cameriere.activities;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -82,10 +83,31 @@ public class TableCardActivity extends Activity {
 		  TextView textView_tableName = (TextView) findViewById(R.id.tableCard_textView_Title);
 		  textView_tableName.setText("Scheda " + tableName);
 		  
+		  /*************************************************************
+		   * Bottone per l'occupazione del tavolo e l'apertura del conto
+		   *************************************************************/
+		  Button occupaTavolo = (Button) findViewById(R.id.button_tableCard_occupaTavolo);
+		  occupaTavolo.setOnClickListener(new OnClickListener() {
+			  @Override
+			  public void onClick(View c) {
+				  new OccupaTavoloAsyncTask().execute(null);
+			  }
+		  });
+		 	  
+		  /*************************************************************
+		   * Bottone per la liberazione del tavolo e il passaggio del 
+		   * conto allo stato DA PAGARE
+		   *************************************************************/
+		  Button liberaTavolo = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
+		  liberaTavolo.setOnClickListener(new OnClickListener() {
+			  @Override
+			  public void onClick(View c) {
+				  new LiberaTavoloAsyncTask().execute(null);
+			  }
+		  });
+		  	  
 		  // Aggiungo Listener al bottone di "Prendi Ordinazione"
 		  Button button_prendiOrdinazione = (Button) findViewById(R.id.button_tableCard_prendiOrdinazione);
-			
-			// Provo a cambiare activity
 		  button_prendiOrdinazione.setOnClickListener(new OnClickListener() {
 			  	@Override
 			  	public void onClick(View v) {
@@ -95,10 +117,8 @@ public class TableCardActivity extends Activity {
 			  		Intent myIntent = new Intent(TableCardActivity.this, MenuListActivity.class);
 			  		TableCardActivity.this.startActivity(myIntent);
 			  	}
-		});
+		  });
 
-		  
-		  
 	      /** *****************************************
 		   * Configuro ListView per le Prenotazioni
 		   * *****************************************/
@@ -187,32 +207,25 @@ public class TableCardActivity extends Activity {
 		super.onResume();
 		Log.d("TableCardActivity","OnResume");
 		new TableListAsyncTask().execute(null);
-		
 	}
 	
 	@Override
 	public void onStart() {
 		super.onStart();
 		Log.d("TableCardActivity","OnStart");
-		
-	
 	}
 	
 	@Override
 	public void onStop() {
 		super.onStop();
 		Log.d("TableCardActivity","OnStop");
-	
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		Log.d("TableCardActivity","OnDestroy");
-		
 		Log.d("TableCardActivity","Stoppo il thread di aggiornamento dei tavoli");
-		
-		
 	}
 	
 	/**
@@ -469,14 +482,18 @@ public class TableCardActivity extends Activity {
         }
     } // end of PrenotationAdapter
     
+    /**
+     * Aggiorna le textbox con le informazioni sul tavolo
+     * @author Guerri Marco
+     */
     
     public void updateStatoTavolo() {
     	
     	/**************************************************
     	 * Aggiornamento delle textbox
     	 **************************************************/
-    	TextView nomeTavolo = (TextView)findViewById(R.id.textNomeCameriere);
-		nomeTavolo.setText(myTable.getCameriere());
+    	TextView nomeCameriere= (TextView)findViewById(R.id.textNomeCameriere);
+		nomeCameriere.setText(myTable.getCameriere());
 		
 		TextView nomeArea = (TextView)findViewById(R.id.textNomeArea);
 		nomeArea.setText(myTable.getArea());
@@ -514,15 +531,12 @@ public class TableCardActivity extends Activity {
 			btnLibera.setEnabled(true);
 			
 		}
-		
-    }
-    
-    
+	}
+        
     /**
      * Async Task per l'aggiornamento delle informazioni della scheda 
      * del tavolo
-     * @author Marco Guerri
-     *
+     * @author Guerri Marco
      */
     class TableListAsyncTask extends AsyncTask<Object, Object, Error> {
 
@@ -598,6 +612,121 @@ public class TableCardActivity extends Activity {
      	   if(error.errorOccurred()) 
      		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
      	 }
-    
     }
+   
+    /**
+    * Async Task per l'occupazione del tavolo e l'apertura del conto
+    * @author Guerri Marco
+    *
+    */
+   class OccupaTavoloAsyncTask extends AsyncTask<Object, Object, Error> {
+
+	   	@Override
+   		protected void onPreExecute() {
+	   	}
+   	
+	   	@Override
+		protected Error doInBackground(Object... params) {
+				
+	   		RestaurantApplication restApp = (RestaurantApplication)getApplication();
+	   		HashMap<String,String> requestParameters = new HashMap<String,String>();
+	   		requestParameters.put("action","OCCUPA_TAVOLO");
+	   		requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
+		  
+	   		try {
+	   			String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneOrdinazioni", 
+																requestParameters);
+	   			Log.d("OccupaTavoloAsyncTask", response);
+	   			JSONObject jsonObject = new JSONObject(response);
+	   			
+	   			if(jsonObject.getString("success").equals("true")) {
+					
+	   				myTable.setTableStatus("OCCUPATO");
+					myTable.setCameriere(jsonObject.getString("cameriere"));
+					
+				} else {
+					return new Error(jsonObject.getString("message"),true);
+	   			}
+	   			
+	   		} catch (ClientProtocolException e) {
+	   			return new Error("Errore durante la comunicazione con il server",true);
+	   		} catch (IOException e) {
+	   			return new Error("Errore durante la comunicazione con il server",true);
+	   		} catch (JSONException e) {
+	   			return new Error("Errore durante la lettura della risposta dal server",true);
+	   		} finally {
+	   			runOnUiThread(new Runnable() {
+	   				@Override
+	   				public void run() {
+	   					updateStatoTavolo();
+	   				}
+	   			});
+	   		}
+	   		return new Error("",false);
+	   	}
+   	
+	   	@Override
+	   	protected void onPostExecute(Error error) {
+	    	  if(error.errorOccurred()) 
+	    		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+	    }
+   }
+   
+   
+   /**
+    * Async Task per liberare il tavolo e settare lo stato del conto su
+    * DAPAGARE
+    * @author Guerri Marco
+    *
+    */
+   class LiberaTavoloAsyncTask extends AsyncTask<Object, Object, Error> {
+
+	   	@Override
+   		protected void onPreExecute() {
+	   	}
+   	
+	   	@Override
+		protected Error doInBackground(Object... params) {
+				
+	   		RestaurantApplication restApp = (RestaurantApplication)getApplication();
+			HashMap<String,String> requestParameters = new HashMap<String,String>();
+			requestParameters.put("action","LIBERA_TAVOLO");
+			requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
+			  
+			try {
+				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneOrdinazioni", 
+																requestParameters);
+				Log.d("TableCardActivity", response);
+				
+				JSONObject jsonObject = new JSONObject(response);
+				if(jsonObject.getString("success").equals("true")) {
+					myTable.setTableStatus("LIBERO");
+					myTable.setCameriere("Non definito");
+				} else {
+					return new Error(jsonObject.getString("message"),true);
+				}
+			} catch (ClientProtocolException e) {
+			  return new Error("Errore durante la comunicazione con il server",true);
+			} catch (IOException e) {
+			  return new Error("Errore durante la comunicazione con il server",true);
+			} catch (JSONException e) {
+			  return new Error("Errore durante la lettura della risposta dal server",true);
+			} finally {
+				runOnUiThread(new Runnable() {
+	   				@Override
+	   				public void run() {
+	   					updateStatoTavolo();
+	   				}
+	   			});
+			}
+			return new Error("",false);
+	   	}
+	
+	   	@Override
+	   	protected void onPostExecute(Error error) {
+	    	  if(error.errorOccurred()) 
+	    		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+	    }
+   }  
+ 
 }
