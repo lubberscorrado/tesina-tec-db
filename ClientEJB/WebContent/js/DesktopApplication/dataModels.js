@@ -238,7 +238,11 @@ Ext.define('personale', {
 		reader: {
 	        type: 'json',
 	        idProperty: 'id',
-	        root: 'data'
+	        root: 'data',
+	        messageProperty : 'message',
+	        failure: function(form, action) {
+                Ext.Msg.alert('Errore: ', action.result.message);
+            }
 	    },
 	    actionMethods : {
             create : 'POST',
@@ -252,6 +256,11 @@ Ext.define('personale', {
 //        	console.debug(success);
 //        	console.debug('fine AFTEREQUEST');
             
+        },
+        listeners: {
+        	write: function (proxy, action) {
+        	    console.log('proxy-write');
+        	}
         }
     }
 });

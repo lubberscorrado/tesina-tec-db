@@ -105,14 +105,20 @@ function initStores(){
 			listeners: {
 				beforeload: function( store, operation, eOpts ){
 //					store.proxy.extraParams.idCategoria=idCategoria;
+					console.debug('BEFORE LOAD');
 				},
 				beforesync: function( options, eOpts ){
 //								console.debug('beforesync');
-//								console.debug(options);
+								console.debug(options);
 //					//			console.debug(eOpts);
 //								if(options.update){
 //									console.debug('Create OR Update');
 //								}
+					console.debug('BEFORE SYNC');
+					alert('BEFORE SYNC');
+				},
+				beforeprefetch: function( thisStore, operation, eOpts ){
+					console.debug('BEFORE PREFETCH');
 				},
 				write: function(store, operation, eOpts ){
 //					console.debug('writerello');
@@ -122,8 +128,9 @@ function initStores(){
 //					
 //					operation.request.params.action = 'Cicisbeo';
 //					
+					console.debug('WRITE');
 				},
-				update: function( store, record, operation, eOpts ){
+				update: function( thisStore, record, operation, eOpts ){
 //					console.debug('updaterello');
 //					console.debug(eOpts);
 //					console.debug(operation);
@@ -131,7 +138,10 @@ function initStores(){
 //		//			Ext.data.Model.EDIT
 //		//			Ext.data.Model.REJECT
 //		//			Ext.data.Model.COMMIT
-					
+					console.debug('UPDATE');
+					var r = thisStore.getProxy().getReader().jsonData;
+			    	if(!r.success)
+			    		alert(r.message);
 				},
 				remove: function( store, record, index, eOpts ){
 //					console.debug('removerello');
@@ -139,6 +149,7 @@ function initStores(){
 //					console.debug(index);
 //					console.debug(record);
 //					console.debug(store);
+					console.debug('REMOVE');
 				},
 				
 				beforeappend: function( thisNode, newChildNode, eOpts ){
@@ -158,23 +169,22 @@ function initStores(){
 //		            	//newChildNode.set('parentId', 'P'+newChildNode.get('parentId'));
 //		            	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
 //		            }
+					console.debug('BEFORE APPEND');
 				},
 				append: function( thisNode, newChildNode, index, eOpts ) {
-					
-			    },
-			    update: function( thisStore, record, operation, eOpts ){
-//			    	if(operation == Ext.data.Model.EDIT){
-//			    		console.debug('xedit');
-//			    	}else if(operation == Ext.data.Model.REJECT){
-//			    		console.debug('xreject');
-//			    	}else if(operation == Ext.data.Model.COMMIT){
-//			    		console.debug('xcommit');
-//			    	}
+					console.debug('APPEND');
 			    },
 			    datachanged: function( thisStore, eOpts ){
-//			    	console.debug('DATACHANGED');
+			    	console.debug('DATACHANGED');
 //			    	console.debug(thisStore);
 //			    	console.debug(eOpts);
+			    },
+			    load: function( thisStore, records, successful, operation, eOpts ){
+			    	console.debug('PROVIAMOLOO');
+			    	console.debug(thisStore);
+			    	var r = thisStore.getProxy().getReader().jsonData;
+			    	if(!r.success)
+			    		alert(r.message);
 			    }
 		    }
 		});

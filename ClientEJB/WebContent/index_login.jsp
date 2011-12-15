@@ -2,9 +2,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
-	<!--  <script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all-debug.js"></script> -->
-	<script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all.js"></script>
-	<link rel="stylesheet" type="text/css" href="./ExtJS/ext-all-gray.css" />
+	
+	<!-- 
+		<script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all.js"></script>
+		<link rel="stylesheet" type="text/css" href="./ExtJS/resources/css/ext-all-gray.css" />
+	-->
+	<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.0.7-gpl/resources/css/ext-all-gray.css" />
 	
 	<script type="text/javascript" language="Javascript" SRC="./js/Login/main.js"></script>
 	<script type="text/javascript" language="javascript">

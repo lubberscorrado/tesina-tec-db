@@ -177,10 +177,11 @@ public class gestioneTavolo extends HttpServlet {
 			int numPosti = Integer.parseInt(request.getParameter("numPosti"));
 			switch(tipo){
 				case 1:{
-					
+					// TODO
 					break;
 				}
 				case 2:{
+					//TODO
 					break;
 				}
 				case 3:{

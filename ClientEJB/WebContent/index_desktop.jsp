@@ -3,10 +3,13 @@
 
 <html>
 	
-	<!--  <script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all-debug.js"></script> -->
-	<script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all.js"></script>
-	<link rel="stylesheet" type="text/css" href="./ExtJS/resources/css/CheckHeader.css">
-	<link rel="stylesheet" type="text/css" href="./ExtJS/resources/css/ext-all-gray.css" />
+	<!-- 
+		<script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all.js"></script>
+		<link rel="stylesheet" type="text/css" href="./ExtJS/resources/css/ext-all-gray.css" />
+	-->
+	<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.0.7-gpl/resources/css/ext-all-gray.css" />
+	
 	<link rel="stylesheet" type="text/css" href="./Css/custom.css" />
 	
 	<script type="text/javascript" language="Javascript" SRC="./js/DesktopApplication/dataModels.js"></script>
