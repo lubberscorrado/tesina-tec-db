@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
 import com.business.GestioneOrdinazioni;
 import com.exceptions.DatabaseException;
 import com.orb.StatoContoEnum;
@@ -21,7 +23,7 @@ import com.orb.gestioneOggetti.GestioneConto;
 import Utilita.JSONResponse;
 
 
-@WebServlet("/gestioneConto")
+@WebServlet("/gestioneOrdinazioni")
 public class gestioneOrdinazioni extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
@@ -34,6 +36,10 @@ public class gestioneOrdinazioni extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
+		
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere))
 			return;
 
@@ -47,21 +53,39 @@ public class gestioneOrdinazioni extends HttpServlet {
 		
 		if(action.equals("OCCUPA_TAVOLO")) {
 			
-				/**************************************************
-				 * Occupazione del tavolo
-				 **************************************************/
-				try {
-					gestioneOrdinazioni.occupaTavolo(idTavolo,  idTenant, idCameriere);
-				} catch (DatabaseException e) {
-					JSONResponse.WriteOutput(response, false, e.toString());
-				}
-				
-				JSONResponse.WriteOutput(response, true, "");
-		} 
-	}
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	
+			/******************************************************
+			 * Viene occupato il tavolo e aperto il conto associato
+			 ******************************************************/
+			try {
+				gestioneOrdinazioni.occupaTavolo(idTavolo,  idTenant, idCameriere);
+			} catch (DatabaseException e) {
+				JSONResponse.WriteOutput(response, false, e.toString());
+				return;
+			}
+			
+			// TODO Acquisire il nome dell'utente 
+			
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("cameriere", "Marco Guerri");
+			jsonObject.put("success", true);
+			
+			response.getWriter().print(jsonObject);
+		
+		} else if(action.equals("LIBERA_TAVOLO")) {
+			
+			/******************************************************
+			 * Viene liberato il tavolo e settato il conto come 
+			 * DAPAGARE
+			 ******************************************************/
+			try {
+				gestioneOrdinazioni.liberaTavolo(idTavolo);
+			} catch (DatabaseException e) {
+				JSONResponse.WriteOutput(response, false, e.toString());
+				return;
+			}
+			JSONResponse.WriteOutput(response, true, "");
+			
+		}
 	}
 
 }
