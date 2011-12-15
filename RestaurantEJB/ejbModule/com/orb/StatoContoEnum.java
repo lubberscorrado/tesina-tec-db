@@ -1,5 +1,5 @@
 package com.orb;
 
 public enum StatoContoEnum {
-	APERTO, CHIUSO
+	APERTO, CHIUSO, DAPAGARE
 }
