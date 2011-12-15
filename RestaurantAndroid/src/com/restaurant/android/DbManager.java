@@ -52,6 +52,7 @@ public class DbManager extends SQLiteOpenHelper {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("create table if not exists comanda (idComanda integer primary key autoincrement, idVoceMenu int, idTavolo int, quantita int, note string)");
 		database.execSQL("create table if not exists variazionecomanda (idVariazioneComanda integer primary key autoincrement, idComanda int, idVariazione)");
+		database.close();
 	}
 	
 
