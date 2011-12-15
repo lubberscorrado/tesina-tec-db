@@ -2,6 +2,7 @@ package com.restaurant.android.cameriere.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,14 +29,41 @@ public class GestioneOrdinazioneActivity extends Activity {
 	private ArrayAdapter elencoVariazioni_adapter = null;
 	private Button button_modificaVariazioni = null; 
 	
+	/* Alcuni dati passati dall'Activity precedente */
+	private int tableId = -1;
+	private int menuVoiceId= -1;
+	private String menuVoiceName = "";
+	private String nomeCameriere = "";
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) { 
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.cameriere_gestione_ordinazione);
+		
+		/* Recupero i parametri che mi sono stati passati dall'Activity
+		 * che mi ha invocato */
+		Bundle bundle_received = getIntent().getExtras();
+		
+		tableId = bundle_received.getInt("tableId");
+		menuVoiceId = bundle_received.getInt("menuVoiceId");
+		menuVoiceName = bundle_received.getString("menuVoiceName");
+		nomeCameriere = bundle_received.getString("cameriere");
+		
+		Log.d("GestioneOrdinazioneActivity", "Dati ricevuti dall'activity precedente: tableId: " + 
+				tableId + ", menuVoiceId: " + menuVoiceId + ", menuVoiceName: " + menuVoiceName + ".");
 		
 		/* Recupero i vari elementi della GUI */
 		textView_nomeComanda = (TextView) findViewById(R.id.textView_gestioneOrdinazione_nomeComanda_value);
 		textView_nomeCameriere = (TextView) findViewById(R.id.textView_gestioneOrdinazione_nomeCameriere_value);
+		
+		textView_nomeComanda.setText(menuVoiceName);
+		if(nomeCameriere == "") {
+			textView_nomeCameriere.setText("Non definito");
+		} else {
+			textView_nomeCameriere.setText(nomeCameriere);
+		}
+		
 		
 		editText_quantita = (EditText) findViewById(R.id.editText_gestioneOrdinazione_quantita);
 		editText_note = (EditText) findViewById(R.id.editText_gestioneOrdinazione_note);

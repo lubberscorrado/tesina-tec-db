@@ -9,6 +9,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ import com.restaurant.android.R;
 
 /**
  *  Classe che mostra l'elenco del Menu
- * 	@author fabio
+ * 	@author Marco Guerri, Fabio Pierazzi
  *
  */
 public class MenuListActivity extends Activity implements OnItemClickListener {
@@ -76,14 +77,14 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			 * con id idCategoriaPadre
 			 *********************************************************/
 			cursorCategoria = db.query(	"categoria", 
-										new String[] {"nome", "descrizione", "idCategoria"}, 
+										new String[] { "nome", "descrizione", "idCategoria"}, 
 										"idCategoriaPadre=" + idCategoriaPadre, null ,null, null,null,null);
 			cursorCategoria.moveToFirst();
 			
 			while(!cursorCategoria.isAfterLast()) {
 				
-				
-				temp.add(new VoceMenu(	cursorCategoria.getString(0),
+				temp.add(new VoceMenu(	-1,
+										cursorCategoria.getString(0),
 										cursorCategoria.getString(1),
 										cursorCategoria.getInt(2),
 										null,
@@ -98,17 +99,18 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			 * padre corrente
 			 *********************************************************/
 			cursorVoceMenu = db.query(	"vocemenu", 
-										new String[] {"nome", "descrizione", "idCategoria", "prezzo"} , 
+										new String[] {"idVoceMenu", "nome", "descrizione", "idCategoria", "prezzo"} , 
 										"idCategoria=" + idCategoriaPadre, 
 										null, null, null, null, null);
 		
 			cursorVoceMenu.moveToFirst();
 			
 			while(!cursorVoceMenu.isAfterLast()) {
-				temp.add(new VoceMenu(	cursorVoceMenu.getString(0),
+				temp.add(new VoceMenu(	cursorVoceMenu.getInt(0),
 										cursorVoceMenu.getString(1),
+										cursorVoceMenu.getString(2),
 										0,
-										new BigDecimal(Double.parseDouble(cursorVoceMenu.getString(3))),
+										new BigDecimal(Double.parseDouble(cursorVoceMenu.getString(4))),
 										false));
 				
 				cursorVoceMenu.moveToNext();
@@ -135,7 +137,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			 * categoria di primo livello (subito sotto la radice) */
 			
 			if(idCategoriaPadre != 1)
-				vociMenu.add(new VoceMenu("..Indietro..", "", idCategoriaPadre, new BigDecimal(0.0), false));
+				vociMenu.add(new VoceMenu(-1, "..Indietro..", "", idCategoriaPadre, new BigDecimal(0.0), false));
 			
 			listAdapter.notifyDataSetChanged();
 			
@@ -236,8 +238,47 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			fillListView(idPrecedente);
 		
 		} else {
-			if(!voceMenu.isCategoria()) 
+			
+			/* Se clicco su una voce di menu, si apre l'activity 
+			 * per effettuare l'ordinazione. 
+			 * @author Fabio Pierazzi
+			 */
+			if(!voceMenu.isCategoria()) {
+				
+				/* TODO:
+				 * Creare una nuova entry nell'elenco delle ordinazioni
+				 * in sospeso (se il cameriere clicca su un'activity, 
+				 * in SQL-Lite va aggiunta una entry)  */
+				
+				// Debug
 				Toast.makeText(getApplicationContext(), "VOCE MENU", 30);
+				
+				/* ***********************************************************
+				 * Apro l'activity e gli passo alcune informazioni importanti 
+				 * *********************************************************** */
+	  	    	Intent myIntent = new Intent(MenuListActivity.this, GestioneOrdinazioneActivity.class);
+	  	    	  
+	  	    	/* Recupero alcuni valori che mi sono stati passati dall'Activity
+	  	    	 * che mi ha invocato (cioe' dall'Activity della scheda tavolo */
+	  	    	Bundle bundle_received = getIntent().getExtras();
+	  	    	
+	  	    	int tableId = bundle_received.getInt("tableId");
+	  	    	int menuVoiceId = voceMenu.getIdVoceMenu();
+	  	    	String menuVoiceName = voceMenu.getNome();
+	  	    	
+	  	    	/* Creo un bundle per passare dei dati alla nuova activity */
+		  	    
+	  	    	Bundle b = new Bundle();
+		  	    b.putInt("tableId", tableId);
+		  	    b.putString("menuVoiceName", menuVoiceName);
+		  	    b.putInt("menuVoiceId", menuVoiceId);
+
+		  	     myIntent.putExtras(b);
+		  	     
+		  	     /* Lancio la nuova activity passandogli queste informazioni
+		  	      * come parametro */
+		  	     startActivity(myIntent);
+			}
 			else
 				fillListView(voceMenu.getIdCategoria());
 		}

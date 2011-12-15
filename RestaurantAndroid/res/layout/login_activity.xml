@@ -36,8 +36,6 @@
 		    android:inputType="number"
 		    android:layout_marginLeft="10px"
 	    	android:layout_marginRight="10px" >
-	
-		    <requestFocus />
 		</EditText>
 	
 		<TextView

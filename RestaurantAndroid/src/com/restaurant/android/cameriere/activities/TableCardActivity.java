@@ -106,15 +106,37 @@ public class TableCardActivity extends Activity {
 			  }
 		  });
 		  	  
+		  
 		  // Aggiungo Listener al bottone di "Prendi Ordinazione"
 		  Button button_prendiOrdinazione = (Button) findViewById(R.id.button_tableCard_prendiOrdinazione);
+			
+		/**	Bottone per prendere le ordinazioni per il tavolo */
+
 		  button_prendiOrdinazione.setOnClickListener(new OnClickListener() {
 			  	@Override
 			  	public void onClick(View v) {
 			  		//-----------------------
 			        // Open New Activity
 			  		//-----------------------
+			  		
 			  		Intent myIntent = new Intent(TableCardActivity.this, MenuListActivity.class);
+			  		 
+			  		/* Reperisco alcuni dati dall'oggetto che ha attivato l'activity precedente  */
+
+			  		// TODO:
+			  		// Reperire l'id del tavolo 
+			  		// myTable.getId();
+			  		
+			  		/* Incapsulo i dati da inviare in un bundle */
+			  		Bundle b = new Bundle();
+			  		
+			  		b.putInt("tableId", myTable.getTableId());
+			  		b.putString("tableName", myTable.getTableName());
+			  		b.putString("cameriere", myTable.getCameriere());
+			  		
+			  		myIntent.putExtras(b);
+			  		
+					/* Apro la MenuListActivity */
 			  		TableCardActivity.this.startActivity(myIntent);
 			  	}
 		  });

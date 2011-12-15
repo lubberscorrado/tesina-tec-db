@@ -88,6 +88,8 @@ public class TablesListActivity extends Activity {
   	    	  
   	    	 /* Creo un bundle per passare dei dati alla nuova activity */
 	  	     Bundle b = new Bundle();
+	  	     
+	  	     
 	  	     b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
 	  	     b.putString("tableName", m_adapter.getItem(position).getTableName());
 	  	     myIntent.putExtras(b);
