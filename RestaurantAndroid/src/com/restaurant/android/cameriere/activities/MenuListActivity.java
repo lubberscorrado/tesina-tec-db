@@ -245,36 +245,56 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			 */
 			if(!voceMenu.isCategoria()) {
 				
-				/* TODO:
-				 * Creare una nuova entry nell'elenco delle ordinazioni
-				 * in sospeso (se il cameriere clicca su un'activity, 
-				 * in SQL-Lite va aggiunta una entry)  */
 				
-				// Debug
-				Toast.makeText(getApplicationContext(), "VOCE MENU", 30);
+				/**************************************************************************
+				 * Ricerco eventuali ordinazioni in sospeso sul  database locale che siano 
+				 * state fatte per la stessa voce di menu
+				 **************************************************************************/
+				DbManager dbManager = new DbManager(getApplicationContext());
+				SQLiteDatabase db = dbManager.getWritableDatabase();
+				
+				Cursor cursorOrdinazioniSospese;
+						
+				cursorOrdinazioniSospese = db.query("comanda", 
+													new String[] {"idComanda", "idTavolo", "quantita", "note"} , 
+													// TODO Inserire anche l'id del tavolo
+													"idVoceMenu=" + voceMenu.getIdVoceMenu() , 
+													null, null, null, null, null);
+				
+				if(cursorOrdinazioniSospese.getCount() > 1) 
+					Log.e("MenuListActivity","Le ordinazioni in sospeso per la voce di menu selezionata sono più di 1, questo non dovrebbe mai accadere");
+				
+				Ordinazione ordinazione = new Ordinazione();
+				ordinazione.setNome(voceMenu.getNome());
+				ordinazione.setIdVoceMenu(voceMenu.getIdVoceMenu());
+				
+				if(cursorOrdinazioniSospese.getCount() != 0) {
+					
+					cursorOrdinazioniSospese.moveToFirst();
+					if(cursorOrdinazioniSospese.getCount() > 1) 
+						Log.e("MenuListActivity","Le ordinazioni in sospeso per la voce di menu selezionata sono più di 1, questo non dovrebbe mai accadere");
+					
+					Bundle bundle_received = getIntent().getExtras();
+					
+					ordinazione.setQuantita(cursorOrdinazioniSospese.getInt(2));
+					ordinazione.setNote(cursorOrdinazioniSospese.getString(3));
+					ordinazione.setIdOrdinazione(cursorOrdinazioniSospese.getInt(0));
+					ordinazione.setIdTavolo(bundle_received.getInt("tableId"));
+					
+				}
 				
 				/* ***********************************************************
 				 * Apro l'activity e gli passo alcune informazioni importanti 
 				 * *********************************************************** */
 	  	    	Intent myIntent = new Intent(MenuListActivity.this, GestioneOrdinazioneActivity.class);
-	  	    	  
-	  	    	/* Recupero alcuni valori che mi sono stati passati dall'Activity
-	  	    	 * che mi ha invocato (cioe' dall'Activity della scheda tavolo */
-	  	    	Bundle bundle_received = getIntent().getExtras();
-	  	    	
-	  	    	int tableId = bundle_received.getInt("tableId");
-	  	    	int menuVoiceId = voceMenu.getIdVoceMenu();
-	  	    	String menuVoiceName = voceMenu.getNome();
-	  	    	
-	  	    	/* Creo un bundle per passare dei dati alla nuova activity */
-		  	    
 	  	    	Bundle b = new Bundle();
-		  	    b.putInt("tableId", tableId);
-		  	    b.putString("menuVoiceName", menuVoiceName);
-		  	    b.putInt("menuVoiceId", menuVoiceId);
-
-		  	     myIntent.putExtras(b);
-		  	     
+			  	b.putSerializable("ordinazione", (Ordinazione) ordinazione);     
+			  	myIntent.putExtras(b);
+	  	    	
+			  	cursorOrdinazioniSospese.close();
+			  	dbManager.close();
+			  	db.close();
+			  				  	
 		  	     /* Lancio la nuova activity passandogli queste informazioni
 		  	      * come parametro */
 		  	     startActivity(myIntent);

@@ -54,26 +54,26 @@
 					            android:textAppearance="?android:attr/textAppearanceMedium"/>
 					    </TableRow>
 					
-					    <!-- Cameriere che ha ordinato la coamnda -->
-					    <TableRow>
-					       <TextView
-					            android:layout_column="1"
-					            android:text="Cameriere:"
-					             android:layout_margin="3dp" 
-					            android:padding="3dp"
-					            android:background="#111111"
-					            android:textAppearance="?android:attr/textAppearanceMedium" />
+<!-- 					    Cameriere che ha ordinato la coamnda -->
+<!-- 					    <TableRow> -->
+<!-- 					       <TextView -->
+<!-- 					            android:layout_column="1" -->
+<!-- 					            android:text="Cameriere:" -->
+<!-- 					             android:layout_margin="3dp"  -->
+<!-- 					            android:padding="3dp" -->
+<!-- 					            android:background="#111111" -->
+<!-- 					            android:textAppearance="?android:attr/textAppearanceMedium" /> -->
 					        
-					        <TextView
-					            android:id="@+id/textView_gestioneOrdinazione_nomeCameriere_value"
-					            android:text="Picchio Picchiarello"
-					            android:gravity="right"
-					            android:layout_width="190dp"
-					            android:layout_margin="3dp" 
-					            android:padding="3dp"
-					            android:background="#111111"
-					            android:textAppearance="?android:attr/textAppearanceMedium"/>
-					    </TableRow>
+<!-- 					        <TextView -->
+<!-- 					            android:id="@+id/textView_gestioneOrdinazione_nomeCameriere_value" -->
+<!-- 					            android:text="Picchio Picchiarello" -->
+<!-- 					            android:gravity="right" -->
+<!-- 					            android:layout_width="190dp" -->
+<!-- 					            android:layout_margin="3dp"  -->
+<!-- 					            android:padding="3dp" -->
+<!-- 					            android:background="#111111" -->
+<!-- 					            android:textAppearance="?android:attr/textAppearanceMedium"/> -->
+<!-- 					    </TableRow> -->
 					    
 					</TableLayout>
 					
@@ -106,13 +106,13 @@
 						<!-- Aggiungi note -->
 
 						<Button
-						    android:id="@+id/button1"
+						    android:id="@+id/buttonAumentaQuantita"
 						    android:layout_width="fill_parent"
 						    android:layout_height="wrap_content"
 						    android:text="Quantità +1" />
 
 						<Button
-						    android:id="@+id/button2"
+						    android:id="@+id/buttonDiminuisciQuantita"
 						    android:layout_width="fill_parent"
 						    android:layout_height="wrap_content"
 						    android:text="Quantità -1" />

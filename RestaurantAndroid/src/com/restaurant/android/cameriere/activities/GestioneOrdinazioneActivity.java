@@ -1,14 +1,19 @@
 package com.restaurant.android.cameriere.activities;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.restaurant.android.DbManager;
 import com.restaurant.android.R;
 import com.restaurant.android.Utility;
 
@@ -28,12 +33,10 @@ public class GestioneOrdinazioneActivity extends Activity {
 	private ListView elencoVariazioni_listView = null;
 	private ArrayAdapter elencoVariazioni_adapter = null;
 	private Button button_modificaVariazioni = null; 
+	private Button button_aumentaQuantita;
+	private Button button_diminuisciQuantita;
 	
-	/* Alcuni dati passati dall'Activity precedente */
-	private int tableId = -1;
-	private int menuVoiceId= -1;
-	private String menuVoiceName = "";
-	private String nomeCameriere = "";
+	private Ordinazione myOrdinazione;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) { 
@@ -44,37 +47,90 @@ public class GestioneOrdinazioneActivity extends Activity {
 		/* Recupero i parametri che mi sono stati passati dall'Activity
 		 * che mi ha invocato */
 		Bundle bundle_received = getIntent().getExtras();
-		
-		tableId = bundle_received.getInt("tableId");
-		menuVoiceId = bundle_received.getInt("menuVoiceId");
-		menuVoiceName = bundle_received.getString("menuVoiceName");
-		nomeCameriere = bundle_received.getString("cameriere");
-		Log.d("GestioneOrdinazioneActivity", "Dati ricevuti dall'activity precedente: tableId: " + 
-				tableId + ", menuVoiceId: " + menuVoiceId + ", menuVoiceName: " + menuVoiceName + ".");
-		
+		myOrdinazione = (Ordinazione) bundle_received.getSerializable("ordinazione");
+					
 		/* Recupero i vari elementi della GUI */
 		textView_nomeComanda = (TextView) findViewById(R.id.textView_gestioneOrdinazione_nomeComanda_value);
-		textView_nomeCameriere = (TextView) findViewById(R.id.textView_gestioneOrdinazione_nomeCameriere_value);
 		
-		textView_nomeComanda.setText(menuVoiceName);
-		if(nomeCameriere == "") {
-			textView_nomeCameriere.setText("Non definito");
-		} else {
-			textView_nomeCameriere.setText(nomeCameriere);
-		}
-		
-		
+		Log.d("GestioneOrdinazione", "Nome dell'ordinazione " + myOrdinazione.getNome());
+		textView_nomeComanda.setText(myOrdinazione.getNome());
+			
 		editText_quantita = (EditText) findViewById(R.id.editText_gestioneOrdinazione_quantita);
+		editText_quantita.setText(new Integer(myOrdinazione.getQuantita()).toString());
+		
 		editText_note = (EditText) findViewById(R.id.editText_gestioneOrdinazione_note);
+		editText_note.setText(myOrdinazione.getNote());
 		
 		button_modificaVariazioni = (Button) findViewById(R.id.button_gestioneOrdinazione_modificaVariazioni);
-		
-		// button_modificaVariazioni.setOnClickListener();
 		
 		/* Creo un'array di stringhe e lo visualizzo in una semplicissima ListView */
 		elencoVariazioni_listView = (ListView) findViewById(R.id.listView_gestioneOrdinazioni_variazioniList);
 		
-		Object[] sArray = {"This", "is", 3.5, true, 2, "for", "bla"};
+		button_aumentaQuantita = (Button) findViewById(R.id.buttonAumentaQuantita);
+		button_aumentaQuantita.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+				editText_quantita.setText("" + (Integer.parseInt(editText_quantita.getText().toString()) + 1));
+			}
+		});
+		
+		button_diminuisciQuantita = (Button) findViewById(R.id.buttonDiminuisciQuantita);
+		button_diminuisciQuantita.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				int qty = Integer.parseInt(editText_quantita.getText().toString()) -1;
+				if(qty < 0)
+					qty = 0;
+				editText_quantita.setText("" + qty);
+			}
+		});
+		
+		Button confermaOrdinazione = (Button)findViewById(R.id.button_gestioneOrdinazione_confermaOrdinazione);
+		confermaOrdinazione.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+				DbManager dbManager = new DbManager(getApplicationContext());
+				SQLiteDatabase db = dbManager.getWritableDatabase();
+				
+				if(myOrdinazione.getIdOrdinazione() == 0) {
+					
+					Log.d("GestioneOrdinazione" , "Nuova ordinazione");
+					
+					/* L'ordinazione non è presenta in database */
+					ContentValues values = new ContentValues();
+					values.clear();
+					values.put("idVoceMenu", myOrdinazione.getIdVoceMenu());
+					values.put("quantita", Integer.parseInt(editText_quantita.getText().toString()));
+					values.put("note", editText_note.getText().toString());
+								
+					db.insertOrThrow("comanda", null, values);
+					onDestroy();
+				
+				} else {
+					
+					Log.d("GestioneOrdinazione" , "Ordinazione in sospeso");
+					
+					/*********************************************************
+					 * Aggiorno le informazioni sulla comanda all'interno del 
+					 * database
+					 *********************************************************/
+					
+					ContentValues ordinazioneModificata = new ContentValues();
+					ordinazioneModificata.put("quantita", editText_quantita.getText().toString());
+					ordinazioneModificata.put("note", editText_note.getText().toString());
+					db.update("comanda", ordinazioneModificata, "idComanda=" + myOrdinazione.getIdOrdinazione(), null);
+				}
+				
+				db.close();
+				dbManager.close();
+				finish();
+			}
+		});
+		
+		
+		Object[] sArray = {};
 		ArrayAdapter adp = new ArrayAdapter(this, android.R.layout.simple_list_item_1, sArray);
 		elencoVariazioni_listView.setAdapter(adp);
 		
