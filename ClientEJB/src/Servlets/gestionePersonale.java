@@ -61,7 +61,7 @@ public class gestionePersonale extends HttpServlet {
 			JSONResponse.WriteOutput(response, true, "Caricamento effettuato correttamente.", "data", json_array); return;
 			
 		} catch (DatabaseException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			JSONResponse.WriteOutput(response, false, e.toString());		return;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -141,7 +141,7 @@ public class gestionePersonale extends HttpServlet {
 			JSONResponse.WriteOutput(response, false, "No Action."); return;
 			
 		} catch (DatabaseException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			JSONResponse.WriteOutput(response, false, e.toString());		return;
 		} catch (Exception e) {
 			e.printStackTrace();

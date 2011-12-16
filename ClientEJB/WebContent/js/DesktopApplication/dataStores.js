@@ -27,11 +27,13 @@ function initStores(){
 				beforeappend: function( thisNode, newChildNode, eOpts ){
 					
 					var tipo = newChildNode.get('tipo');
-					if( newChildNode.get('enabled') == 'on' || newChildNode.get('enabled') == true ){
-						newChildNode.set('enabled','on');
-					} else {
-						newChildNode.set('enabled','off');
-					}
+//					if( newChildNode.get('enabled') == 'on' || newChildNode.get('enabled') == 'true' || newChildNode.get('enabled') == true ){
+//						newChildNode.set('enabled','on');
+//						console.debug('set true');
+//					} else {
+//						newChildNode.set('enabled','off');
+//						console.debug('set false');
+//					}
 					if( tipo == 1){			//Piano
 		            	newChildNode.set('leaf', false);
 		            	newChildNode.set('text', 	newChildNode.get('nome'));

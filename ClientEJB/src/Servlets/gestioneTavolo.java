@@ -148,6 +148,7 @@ public class gestioneTavolo extends HttpServlet {
 		String action = request.getParameter("action");
 		if(action == null || action.length() == 0){
 			JSONResponse.WriteOutput(response, true, "No Action");
+			return;
 		}
 
 		idTenant = (Integer) request.getSession().getAttribute("idTenant");
@@ -155,17 +156,22 @@ public class gestioneTavolo extends HttpServlet {
 		JSONObject json_tmp = null;
 		String nome = null;
 		String descrizione = null;
-		String enabledS = null;
+		String enabledS = request.getParameter("enabled");
 		boolean enabled;
 		int tipo = 0;
 		try{
 			tipo = Integer.parseInt( request.getParameter("tipo") );
-			enabledS = request.getParameter("enabled");
-			if( enabledS == null || enabledS.equals("false") || enabledS.equals("off")){
+			
+			try{
+				if(enabledS.equals("on"))
+					enabled = true;
+				else
+					enabled = Boolean.parseBoolean( enabledS );
+			}catch(Exception e){
 				enabled = false;
-			}else{
-				enabled = true;
 			}
+			
+			
 			nome = request.getParameter("nome");
 			descrizione = request.getParameter("descrizione");
 		}catch(Exception e){
@@ -185,27 +191,45 @@ public class gestioneTavolo extends HttpServlet {
 		//UPDATE
 		if(action.equals("update")){
 			int id = Integer.parseInt( request.getParameter("id").substring(1) );
-			int numPosti = Integer.parseInt(request.getParameter("numPosti"));
+			int numPosti;
+			try{
+				numPosti = Integer.parseInt(request.getParameter("numPosti"));
+			}catch(Exception e){
+				numPosti = 0;
+			}
 			switch(tipo){
 				case 1:{
-					// TODO
-					break;
+					TreeNodePiano treeNodePiano = gestionePiano.updatePiano(id, nome, descrizione, Integer.parseInt(request.getParameter("numeroPiano")), enabled);
+					json_tmp = JSONFromBean.jsonFromTreeNodePiano(treeNodePiano);
+					json_tmp.put("parentId", request.getParameter("parentId"));
+					json_array.put(json_tmp);
+
+					JSONResponse.WriteOutput(response, true, "Piano modificato correttamente.","data",json_array);
+					return;
 				}
 				case 2:{
-					//TODO
-					break;
+					TreeNodeArea treeNodeArea = gestioneArea.updateArea(id, nome, descrizione, enabled);
+					json_tmp = JSONFromBean.jsonFromTreeNodeArea(treeNodeArea);
+					json_tmp.put("parentId", request.getParameter("parentId"));
+					json_array.put(json_tmp);
+
+					JSONResponse.WriteOutput(response, true, "Area modificata correttamente.","data",json_array);
+					return;
 				}
 				case 3:{
 					TreeNodeTavolo treeNodeTavolo = gestioneTavolo.updateTavolo(id, numPosti, nome, descrizione, StatoTavoloEnum.LIBERO, enabled);
 					json_tmp = JSONFromBean.jsonFromTreeNodeTavolo(treeNodeTavolo);
 					json_tmp.put("parentId", request.getParameter("parentId"));
 					json_array.put(json_tmp);
-					break;
+					
+					JSONResponse.WriteOutput(response, true, "Tavolo modificato correttamente.","data",json_array);
+					return;
 				}
-				default: return;
+				default: {
+					JSONResponse.WriteOutput(response, false, "Parametri errati.","data",json_array);
+					return;
+				}
 			}
-			JSONResponse.WriteOutput(response, true, "Modifiche effettuate correttamente!","data",json_array);
-			return;
 		
 		//DELETE
 		}else if(action.equals("delete")){

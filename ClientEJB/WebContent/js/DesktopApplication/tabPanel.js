@@ -397,8 +397,8 @@ var _mainTabPanel = {
 			                            },{
 			                            	text: 'Modifica piano',
 			                            	handler: function(){
-			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                        			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
+//			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                        			_mainTabPanel.updateNodeGestioneTavolo(rec);
 			                            	}
 			                            },{
 			                            	text: 'Rimuovi piano',
@@ -420,8 +420,8 @@ var _mainTabPanel = {
 			                            },{
 			                            	text: 'Modifica area',
 			                            	handler: function(){
-			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                        			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
+//			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                        			_mainTabPanel.updateNodeGestioneTavolo(rec);
 			                            	}
 			                            },{
 			                            	text: 'Rimuovi area',
@@ -438,8 +438,8 @@ var _mainTabPanel = {
 			                            {
 			                            	text: 'Modifica tavolo',
 			                            	handler: function(){
-			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                        			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
+//			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                        			_mainTabPanel.updateNodeGestioneTavolo(rec);
 			                            	}
 			                            },{
 			                            	text: 'Rimuovi tavolo',
@@ -522,7 +522,17 @@ var _mainTabPanel = {
         	    modal: true,
 //        	    height: 400,
 //        	    width: 400,
-        	    layout: 'fit'
+//        	    layout: 'fit',
+        	    layout: {
+			        type: 'auto',
+			        pack: 'center'
+			    },
+        	    listeners:{
+        	    	afterrender: function( thisWindow, eOpts ){
+        	    		var nuovaAltezza = Ext.getCmp('form_gestioneTavolo').getHeight()+37;
+        	    		thisWindow.setHeight( nuovaAltezza );
+        	    	}
+        	    }
         	});
 			
 			var form = Ext.create('Ext.form.Panel', {
@@ -579,12 +589,16 @@ var _mainTabPanel = {
 			                    },
 			                    success: function(form, action) {
 			                    	Ext.getCmp('window_inserimentoNodoGestioneTavolo').destroy();
-			                    	var parentId = null;
+//			                    	var parentId = null;
 			                    	var nuovo_nodo = Ext.create('nodoGestioneTavolo', {
 			                    		id: 			action.result.data[0].id,
 			                    		parentId: 		action.result.data[0].parentId,
 			                    		nome: 			action.result.data[0].nome,
-				                    	tipo: 			action.result.data[0].tipo
+				                    	tipo: 			action.result.data[0].tipo,
+				                    	descrizione: 	action.result.data[0].descrizione,
+				                    	enabled: 		action.result.data[0].enabled,
+				                    	numeroPiano:	action.result.data[0].numeroPiano,
+				                    	numPosti:		action.result.data[0].numPosti
 			                    	});
 			                    	
 			                    	
@@ -632,7 +646,7 @@ var _mainTabPanel = {
 			form.getForm().findField('parentId').hide();
 			form.getForm().findField('tipo').setValue(parentDepth+1);
 			form.getForm().findField('tipo').hide();
-			form.getForm().findField('enabled').setValue('on');
+			form.getForm().findField('enabled').setValue(true);
 			
 			askWindow.add(form);
 			
@@ -730,18 +744,27 @@ var _mainTabPanel = {
 			                    	action : 'update'
 			                    },
 			                    success: function(form, action) {
-			                       Ext.Msg.alert('Success', action.result.message);
+//			                       Ext.Msg.alert('Success', action.result.message);
+			                    	new Ext.ux.Notification({
+				        				iconCls:	'x-icon-information',
+				        				title:	  'Successo',
+				        				html:		action.result.message,
+				        				autoDestroy: true,
+				        				hideDelay:  2000,
+				        			}).show(document);
 			                       var updatedNode = Ext.getStore('datastore_gestione_tavolo').getNodeById( action.result.data[0].id );
 			                       updatedNode.set('nome',action.result.data[0].nome);
 			                       updatedNode.set('text',action.result.data[0].nome);
 			                       updatedNode.set('descrizione',action.result.data[0].descrizione);
 			                       updatedNode.set('tipo',action.result.data[0].tipo);
 			                       updatedNode.set('numPosti',action.result.data[0].numPosti);
-			                       if(action.result.data[0].enabled == true){
-			                    	   updatedNode.set('enabled','on');
-			                       }else{
-			                    	   updatedNode.set('enabled','off');
-			                       }
+			                       updatedNode.set('numeroPiano',action.result.data[0].numeroPiano);
+			                       updatedNode.set('enabled',action.result.data[0].enabled);
+//			                       if(action.result.data[0].enabled == true){
+//			                    	   updatedNode.set('enabled','on');
+//			                       }else{
+//			                    	   updatedNode.set('enabled','off');
+//			                       }
 			                       Ext.getCmp('viewport_east').collapse();
 			                    },
 			                    failure: function(form, action) {
@@ -792,7 +815,14 @@ var _mainTabPanel = {
 	                	action : 'delete'
 	                },
 	                success : function(record, action) {
-	                	Ext.Msg.alert('Success', action.result.message);
+//	                	Ext.Msg.alert('Success', action.result.message);
+	                	new Ext.ux.Notification({
+	        				iconCls:	'x-icon-information',
+	        				title:	  'Successo',
+	        				html:		action.result.message,
+	        				autoDestroy: true,
+	        				hideDelay:  2000,
+	        			}).show(document);
 	                },
 	                failure: function(form, action) {
 	                    Ext.Msg.alert('Failed', action.result.message);
@@ -831,9 +861,9 @@ var _mainTabPanel = {
 		            stripeRows: true,
 		            listeners: {
 		            	itemdblclick: function( view, rec,item,index,e,eOpts ){
-		            		var lastSelected = Ext.getCmp('albero_gestioneMenu').getSelectionModel().getLastSelected();
-		            		if(lastSelected.get('tipo')==3)
-		            			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
+//		            		var lastSelected = Ext.getCmp('albero_gestioneMenu').getSelectionModel().getLastSelected();
+		            		if(rec.get('tipo')==3)
+		            			_mainTabPanel.updateNodeGestioneTavolo(rec);
 		            	},
 		                itemcontextmenu: function(view, rec, node, index, e) {
 		                	var depth = rec.get("depth");
@@ -1095,12 +1125,12 @@ var _mainTabPanel = {
 				                    	}else if ( action.result.action == 'update' ){
 //				                    		console.debug('OK SUCCESSO UPDATE');
 				                    		var updatedNode = Ext.getStore('datastore_gestione_menu').getNodeById(action.result.data[0].id);
-					                    		updatedNode.set('id',action.result.data[0].id);
-					                    		updatedNode.set('id',action.result.data[0].parentId);
-					                    		updatedNode.set('id',action.result.data[0].nome);
-					                    		updatedNode.set('id',action.result.data[0].tipo);
-					                    		updatedNode.set('id',action.result.data[0].descrizione);
-					                    		updatedNode.set('id',action.result.data[0].prezzo);
+					                    		//updatedNode.set('id',action.result.data[0].id);
+					                    		//updatedNode.set('parentId',action.result.data[0].parentId);
+					                    		updatedNode.set('nome',action.result.data[0].nome);
+					                    		//updatedNode.set('tipo',action.result.data[0].tipo);
+					                    		updatedNode.set('descrizione',action.result.data[0].descrizione);
+					                    		updatedNode.set('prezzo',action.result.data[0].prezzo);
 					                    		if(action.result.data[0].tipo == 1){
 					                    			updatedNode.set('text',action.result.data[0].nome);
 					                    		}else{
@@ -1112,11 +1142,17 @@ var _mainTabPanel = {
 				                    	
 				                    	
 				                    	
+				                    	new Ext.ux.Notification({
+					        				iconCls:	'x-icon-information',
+					        				title:	  'Successo',
+					        				html:		action.result.message,
+					        				autoDestroy: true,
+					        				hideDelay:  2000,
+					        			}).show(document);
 				                    	
-				                    	
-				                    	Ext.Msg.alert('Info: ', action.result.message);
+//				                    	Ext.Msg.alert('Info: ', action.result.message);
 				                    	Ext.getCmp('window_inserimentoNodoGestioneMenu').destroy();
-				                    	Ext.getCmp('form_gestioneMenu').destroy();
+//				                    	Ext.getCmp('form_gestioneMenu').destroy();
 				                    	
 				                    },
 				                    failure: function(form, action) {
@@ -1178,20 +1214,7 @@ var _mainTabPanel = {
         	});
 			//askWindow.add(form);
 			
-			new Ext.ux.Notification({
-				iconCls:	'x-icon-information',
-				title:	  'Ruh-row',
-				html:		'This is just a stub.  This is only a stub.  If this would have been a real functioning doo-dad, you never would have even seen this stub.',
-				autoDestroy: true,
-				hideDelay:  2000,
-				listeners: {
-					'beforerender': function(){
-//						Sound.enable();
-//						Sound.play('notify.wav');
-//						Sound.disable();
-					}
-				}
-			}).show(document);
+			
 			
 			askWindow.show();
 		},
@@ -1226,7 +1249,14 @@ var _mainTabPanel = {
 	                	action : 'delete'
 	                },
 	                success : function(record, action) {
-	                	Ext.Msg.alert('Success', action.result.message);
+//	                	Ext.Msg.alert('Success', action.result.message);
+	                	new Ext.ux.Notification({
+	        				iconCls:	'x-icon-information',
+	        				title:	  'Successo',
+	        				html:		action.result.message,
+	        				autoDestroy: true,
+	        				hideDelay:  2000,
+	        			}).show(document);
 	                },
 	                failure: function(form, action) {
 	                    Ext.Msg.alert('Failed', action.result.message);
@@ -1622,9 +1652,14 @@ var _mainTabPanel = {
 		            				
 		            				selection.destroy({
 		            	                success : function(record, action) {
-		            	                	console.debug('result action');
-		            	                	console.debug(action);
-		            	                	Ext.Msg.alert('Success', action.resultSet.message);
+//		            	                	Ext.Msg.alert('Success', action.resultSet.message);
+		            	                	new Ext.ux.Notification({
+		            	        				iconCls:	'x-icon-information',
+		            	        				title:	  'Successo',
+		            	        				html:		action.result.message,
+		            	        				autoDestroy: true,
+		            	        				hideDelay:  2000,
+		            	        			}).show(document);
 		            	                	Ext.getStore('datastore_gestione_personale').remove(selection);
 		            	                },
 		            	                failure: function(form, action) {

@@ -120,7 +120,9 @@ Ext.define('StatoCuoco', {
 Ext.define('nodoGestioneTavolo', {
     /*extend: 'Ext.data.NodeInterface',*/
 	extend: 'Ext.data.Model',
-    fields: ['id','parentId','nome','descrizione','numeroPiano','tipo','enabled','numPosti','stato','text'],
+    fields: ['id','parentId','nome','descrizione','numeroPiano','tipo','numPosti','stato','text',
+             {name: 'enabled', 	type: 'bool'}
+    ],
     //store: Ext.getStore('datastore_gestione_tavolo'),
     proxy: {
         type: 'rest',
