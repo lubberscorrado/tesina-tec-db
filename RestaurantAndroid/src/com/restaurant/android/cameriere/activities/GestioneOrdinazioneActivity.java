@@ -104,6 +104,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 					values.put("idVoceMenu", myOrdinazione.getIdVoceMenu());
 					values.put("quantita", Integer.parseInt(editText_quantita.getText().toString()));
 					values.put("note", editText_note.getText().toString());
+					values.put("idTavolo", myOrdinazione.getIdTavolo());
 								
 					db.insertOrThrow("comanda", null, values);
 					onDestroy();

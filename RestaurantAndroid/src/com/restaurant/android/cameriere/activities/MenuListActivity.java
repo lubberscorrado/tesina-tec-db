@@ -41,6 +41,8 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 	private ListView tableListView;
 	private ListAdapter listAdapter;
 	
+	private int idTavolo;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
@@ -54,6 +56,8 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 	  listAdapter = new ListAdapter(getApplicationContext(), R.layout.cameriere_menu_list_row, vociMenu);
 	  tableListView.setAdapter(listAdapter);
 
+	  Bundle bundle_received = getIntent().getExtras();
+	  idTavolo = bundle_received.getInt("tableId");
 	  fillListView(1);
 	}
 	
@@ -257,8 +261,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 						
 				cursorOrdinazioniSospese = db.query("comanda", 
 													new String[] {"idComanda", "idTavolo", "quantita", "note"} , 
-													// TODO Inserire anche l'id del tavolo
-													"idVoceMenu=" + voceMenu.getIdVoceMenu() , 
+													"idVoceMenu=" + voceMenu.getIdVoceMenu() + " AND idTavolo=" + idTavolo, 
 													null, null, null, null, null);
 				
 				if(cursorOrdinazioniSospese.getCount() > 1) 
@@ -267,6 +270,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 				Ordinazione ordinazione = new Ordinazione();
 				ordinazione.setNome(voceMenu.getNome());
 				ordinazione.setIdVoceMenu(voceMenu.getIdVoceMenu());
+				ordinazione.setIdTavolo(idTavolo);
 				
 				if(cursorOrdinazioniSospese.getCount() != 0) {
 					
@@ -281,6 +285,8 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 					ordinazione.setIdOrdinazione(cursorOrdinazioniSospese.getInt(0));
 					ordinazione.setIdTavolo(bundle_received.getInt("tableId"));
 					
+				} else {
+					Log.d("MenuListActivity", "Non ci sono ordinazioni in sospeso relative a questa voce di menu");
 				}
 				
 				/* ***********************************************************
