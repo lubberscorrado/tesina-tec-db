@@ -366,9 +366,9 @@ var _mainTabPanel = {
 		            stripeRows: true,
 		            listeners: {
 		            	itemdblclick: function( view, rec,item,index,e,eOpts ){
-		            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-		            		if(lastSelected.get('tipo')==3)
-		            			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
+//		            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+		            		if(rec.get('tipo')==3)
+		            			_mainTabPanel.updateNodeGestioneTavolo(rec);
 		            	},
 		                itemcontextmenu: function(view, rec, node, index, e) {
 		                	var depth = rec.get("depth");
@@ -380,8 +380,8 @@ var _mainTabPanel = {
 			                        items: [{
 				                        		text: 'Aggiungi piano',
 				                        		handler: function(){
-				                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-				                        			_mainTabPanel.addNewNodeGestioneTavolo(lastSelected);
+//				                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+				                        			_mainTabPanel.addNewNodeGestioneTavolo(rec);
 				                        		}
 			                            	}
 			                        ]
@@ -391,8 +391,8 @@ var _mainTabPanel = {
 			                        items: [
 			                            {text: 'Aggiungi area',
 			                        		handler: function(){
-			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                        			_mainTabPanel.addNewNodeGestioneTavolo(lastSelected);
+//			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                        			_mainTabPanel.addNewNodeGestioneTavolo(rec);
 			                        		}
 			                            },{
 			                            	text: 'Modifica piano',
@@ -403,8 +403,8 @@ var _mainTabPanel = {
 			                            },{
 			                            	text: 'Rimuovi piano',
 			                            	handler: function(){
-			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                            		_mainTabPanel.deleteNodeGestioneTavolo(lastSelected);
+//			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                            		_mainTabPanel.deleteNodeGestioneTavolo(rec);
 			                            	}
 			                            }
 			                        ]
@@ -414,8 +414,8 @@ var _mainTabPanel = {
 			                        items: [
 			                            {text: 'Aggiungi tavolo',
 			                        		handler: function(){
-			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                        			_mainTabPanel.addNewNodeGestioneTavolo(lastSelected);
+//			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                        			_mainTabPanel.addNewNodeGestioneTavolo(rec);
 			                        		}
 			                            },{
 			                            	text: 'Modifica area',
@@ -426,8 +426,8 @@ var _mainTabPanel = {
 			                            },{
 			                            	text: 'Rimuovi area',
 			                            	handler: function(){
-			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                            		_mainTabPanel.deleteNodeGestioneTavolo(lastSelected);
+//			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                            		_mainTabPanel.deleteNodeGestioneTavolo(rec);
 			                            	}
 			                            }
 			                        ]
@@ -444,8 +444,8 @@ var _mainTabPanel = {
 			                            },{
 			                            	text: 'Rimuovi tavolo',
 			                            	handler: function(){
-			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                            		_mainTabPanel.deleteNodeGestioneTavolo(lastSelected);
+//			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
+			                            		_mainTabPanel.deleteNodeGestioneTavolo(rec);
 			                            	}
 			                            }
 			                        ]
@@ -589,7 +589,7 @@ var _mainTabPanel = {
 			                    },
 			                    success: function(form, action) {
 			                    	Ext.getCmp('window_inserimentoNodoGestioneTavolo').destroy();
-//			                    	var parentId = null;
+			                    	var parentId = null;
 			                    	var nuovo_nodo = Ext.create('nodoGestioneTavolo', {
 			                    		id: 			action.result.data[0].id,
 			                    		parentId: 		action.result.data[0].parentId,
@@ -601,27 +601,27 @@ var _mainTabPanel = {
 				                    	numPosti:		action.result.data[0].numPosti
 			                    	});
 			                    	
-			                    	
-			                    	
-			                    	
-			                    	
-			                    	switch(action.result.data[0].tipo){
-			                    		case 1: {
-						                    		nuovo_nodo.set('parentId','root');
-						                    		parentId = 'root';
-				                    				break;
-			                    		}
-			                    		case 2: {
-						                    		parentId = 'P'+action.result.data[0].parentId;
-						                    		break;
-					                    }
-			                    		case 3: {
-						                    		parentId = 'A'+action.result.data[0].parentId;
-						                    		break;
-					                    }
-			                    		default: {parentId = 'root';	break;}
-			                    	}
-//			                    	console.debug("PARENT ID NUOVO NODO: "+parentId);
+			                    	parentId = action.result.data[0].parentId;
+//			                    	
+//			                    	
+//			                    	
+//			                    	switch(action.result.data[0].tipo){
+//			                    		case 1: {
+//						                    		nuovo_nodo.set('parentId','root');
+//						                    		parentId = 'root';
+//				                    				break;
+//			                    		}
+//			                    		case 2: {
+//						                    		parentId = 'P'+action.result.data[0].parentId;
+//						                    		break;
+//					                    }
+//			                    		case 3: {
+//						                    		parentId = 'A'+action.result.data[0].parentId;
+//						                    		break;
+//					                    }
+//			                    		default: {parentId = 'root';	break;}
+//			                    	}
+////			                    	console.debug("PARENT ID NUOVO NODO: "+parentId);
 //			                    	console.debug('Nuovo nodo creato: '+nuovo_nodo.get('id')+' - '+nuovo_nodo.get('parentId')+' - '+nuovo_nodo.get('text')+' - '+nuovo_nodo.get('tipo'));
 			                    	var nodo_padre = Ext.getStore('datastore_gestione_tavolo').getNodeById(parentId);
 			                    	nodo_padre.appendChild(nuovo_nodo);
