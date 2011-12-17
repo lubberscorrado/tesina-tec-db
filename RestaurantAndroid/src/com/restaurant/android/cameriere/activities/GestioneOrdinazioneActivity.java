@@ -1,7 +1,9 @@
 package com.restaurant.android.cameriere.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -86,6 +88,41 @@ public class GestioneOrdinazioneActivity extends Activity {
 			}
 		});
 		
+		
+		/** ***********************************************
+		 * Alert Dialog per la gestione delle variazioni
+		 * ************************************************ */
+		final CharSequence[] items = {"Red", "Green", "Blue", "Red", "Green", "Blue", "Red", "Green", "Blue", "Red", "Green", "Blue"};
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(GestioneOrdinazioneActivity.this);
+		builder.setTitle("Pick a color");
+		
+		builder.setMultiChoiceItems(items, new boolean[] {false, true, false, false, true, false, false, true, false, false, true, false}, new DialogInterface.OnMultiChoiceClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton,
+                    boolean isChecked) {
+
+                /* User clicked on a check box do some stuff */
+            	Log.w("Checkbox Finestra Scelta Variazioni", Boolean.toString(isChecked));
+//            	Toast.makeText(getApplicationContext(), Boolean.toString(isChecked), Toast.LENGTH_SHORT).show();
+            	
+            }
+        });
+				
+		final AlertDialog alert = builder.create();
+
+		/* Bottone per selezionare quali variazioni associare all'ordinazione */
+		button_modificaVariazioni.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+				alert.show();
+			}
+		});
+		
+		
+		/** ***********************************************
+		 * Conferma dell'ordinazione
+		 * ************************************************ */
 		Button confermaOrdinazione = (Button)findViewById(R.id.button_gestioneOrdinazione_confermaOrdinazione);
 		confermaOrdinazione.setOnClickListener(new OnClickListener() {
 			@Override
