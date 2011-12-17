@@ -15,6 +15,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +32,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.restaurant.android.DbManager;
 import com.restaurant.android.Error;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
@@ -293,6 +296,19 @@ public class TableCardActivity extends Activity {
 		  	    	    		
 		  	    	    	} else if (dialogMenuItems[item_position].equals("Modifica")) {
 		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
+		  	    	    		
+		  	    	    		/********************************************************
+		  	    	    		 * Avvio l'activity di modifica dell'ordinazione sospesa
+		  	    	    		 ********************************************************/
+		  	    	    		
+		  	    	    		Intent myIntent = new Intent(getApplicationContext(), GestioneOrdinazioneActivity.class);
+		  	  	  	    		Bundle b = new Bundle();
+		  	  	  	    		b.putSerializable("ordinazione", (Ordinazione) ordersWaitingListView_arrayOrdinazioni.get(positionClicked));     
+		  	  	  	    		myIntent.putExtras(b);
+		  	  	  	    	
+		  	  	  	    		startActivity(myIntent);
+		  	  		  	     
+		  	  		  	     
 		  	    	    	} else if (dialogMenuItems[item_position].equals("Rimuovi")) {
 		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 		  	    	    		Toast.makeText(getApplicationContext(), dialogMenuItems[item_position], Toast.LENGTH_SHORT).show();
@@ -464,11 +480,8 @@ public class TableCardActivity extends Activity {
                 }
                 
                 return v;
-                
-        }
-        
+          }
     }
-    
     
 	/**
      * Metodo per reperire l'elenco delle ordinazioni che sono
@@ -480,47 +493,52 @@ public class TableCardActivity extends Activity {
     	
     	Log.i(TAG, "Entrato in getOrdersWaitingToBeConfirmed();");
           try{
-//        	  
-//        	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
-//        	  String url = ((RestaurantApplication)getApplication()).getHost();
-//        	  String response = restApplication.makeHttpGetRequest(url + "ClientEJB/statoTavolo", new HashMap<String, String>());
-//        	  
+        	  
         	  ordersWaitingListView_arrayOrdinazioni.clear();
         	  
-        	  /**********************************************************
-        	   * Decodifica della risposa del server contenente lo stato 
-        	   * dei tavoli.
-        	   **********************************************************/
-        	  // JSONObject jsonObject = new JSONObject(response);
+        	  DbManager dbManager = new DbManager(getApplicationContext());
+        	  SQLiteDatabase db;
+        	  db = dbManager.getWritableDatabase();
         	  
-        	  // if(jsonObject.getBoolean("success") == true) {
-        		  
-        		 //  JSONArray jsonArray = jsonObject.getJSONArray("statoTavolo");
-        		  
-        		  // for(int i=0; i< jsonArray.length() ; i++) {
-        		  for(int i=0; i< 15; i++) {
-        			  Ordinazione o = new Ordinazione();
-        			  
-        			  if(i%3==0) {
-        				  o.setNome("Penne all'amatriciana");
-        				  o.setQuantita(12);
-        				  o.setStato("Deselezionata");
-        			  } else {
-        				  o.setNome("Lasagne");
-            			  o.setQuantita(2);
-            			  o.setStato("Selezionata");
-        			  }
-        			  
-//        			  o.setTableName(jsonArray.getJSONObject(i).getString("nomeTavolo"));
-//        			  o.setTableStatus(jsonArray.getJSONObject(i).getString("statoTavolo"));
-//        			  o.setTableId(Integer.parseInt(jsonArray.getJSONObject(i).getString("idTavolo")));
-        			  
-        			  ordersWaitingListView_arrayOrdinazioni.add(o);
-          		  }
-        		  
-        		 
-//         	  }
+        	  Cursor cursorOrdinazioniSospese;
         	  
+        	  cursorOrdinazioniSospese = db.query("comanda", 
+											new String[] {"idComanda", "idVoceMenu", "quantita", "note"} , 
+											"idTavolo=" + myTable.getTableId(), 
+											null, null, null, null, null);
+        	  
+        	  cursorOrdinazioniSospese.moveToFirst();
+        	  
+        	  while(!cursorOrdinazioniSospese.isAfterLast()) {
+        		  
+        		  /* Recupero il nome della voce di menu relativa all'id
+        		   * apperna acquisito dal database */
+        		  
+        		  Cursor cursorNomeVoceMenu;
+        		  
+        		  cursorNomeVoceMenu = db.query("vocemenu", new String[] {"nome"}, "idVoceMenu=" + cursorOrdinazioniSospese.getInt(1),
+        				  						null, null, null, null, null);
+        		  
+        		  cursorNomeVoceMenu.moveToFirst();
+        		  
+        		  Ordinazione o = new Ordinazione();
+        		  
+        		  o.setIdOrdinazione(cursorOrdinazioniSospese.getInt(0));
+        		  o.setIdTavolo(myTable.getTableId());
+        		  o.setNome(cursorNomeVoceMenu.getString(0));
+        		  o.setQuantita(cursorOrdinazioniSospese.getInt(2));
+        		  o.setNote(cursorOrdinazioniSospese.getString(3));
+        		  o.setStato("Selezionata");
+        		  
+        		  cursorOrdinazioniSospese.moveToNext();
+        		  
+        		  cursorNomeVoceMenu.close();
+        		  ordersWaitingListView_arrayOrdinazioni.add(o);
+           	  }
+        	  
+        	  cursorOrdinazioniSospese.close();
+        	  db.close();
+        	  dbManager.close();
         	  /**************************************************************************
         	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
         	   * la view.
@@ -535,9 +553,9 @@ public class TableCardActivity extends Activity {
         		  }
         	  });
         	  
-        	  Log.i(	"TablesListService" + ": getOrdersWaitingToBeConfirmed()", 
-		        			  	"Number of Ordinations Loaded: " + 
-		        			  	ordersWaitingListView_arrayOrdinazioni.size());
+        	  Log.i("TablesListService" + ": getOrdersWaitingToBeConfirmed()", 
+		        	"Number of Ordinations Loaded: " + 
+		        	ordersWaitingListView_arrayOrdinazioni.size());
               
         } catch (Exception e) {
         	Log.e("OdersListService" + ": BACKGROUND_PROC", e.getMessage());
@@ -545,6 +563,7 @@ public class TableCardActivity extends Activity {
           
         Log.i(TAG, "Uscito da getOrdersWaitingToBeConfirmed()");
     }
+    
     
     /************************************************************************
 	 * Adapter per gestire il rendering personalizzato degli elementi
@@ -731,11 +750,7 @@ public class TableCardActivity extends Activity {
                 return v;
         }
     } // end of PrenotationAdapter
-    
-    
-    
-    
-    
+  
     /**
      * Aggiorna le textbox con le informazioni sul tavolo
      * @author Guerri Marco
