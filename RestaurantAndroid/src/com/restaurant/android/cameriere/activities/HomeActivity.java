@@ -68,7 +68,7 @@ public class HomeActivity extends TabActivity {
 	    tabHost.setCurrentTab(1);
 	    
 	    DbManager dbManager = new DbManager(getApplicationContext());
-	    dbManager.dropTablesComande();
+	    //dbManager.dropTablesComande();
 	    dbManager.createTablesComande();
 	    dbManager.BackUpDbToSD();
 	    dbManager.close();
@@ -209,7 +209,7 @@ public class HomeActivity extends TabActivity {
 	    					values.put("nome", variazioni.getJSONObject(i).getString("nome"));
 	    					values.put("descrizione", variazioni.getJSONObject(i).getString("descrizione"));
 	    					values.put("prezzo", variazioni.getJSONObject(i).getString("prezzo"));
-    					
+	    					values.put("checked", 0);
 	    					db.insertOrThrow("variazione", null, values);
     					}
     				}

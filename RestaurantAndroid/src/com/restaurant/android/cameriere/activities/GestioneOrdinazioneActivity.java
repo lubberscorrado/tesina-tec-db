@@ -1,9 +1,12 @@
 package com.restaurant.android.cameriere.activities;
 
+import java.math.BigDecimal;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -92,12 +95,22 @@ public class GestioneOrdinazioneActivity extends Activity {
 		/** ***********************************************
 		 * Alert Dialog per la gestione delle variazioni
 		 * ************************************************ */
-		final CharSequence[] items = {"Red", "Green", "Blue", "Red", "Green", "Blue", "Red", "Green", "Blue", "Red", "Green", "Blue"};
-		
 		AlertDialog.Builder builder = new AlertDialog.Builder(GestioneOrdinazioneActivity.this);
-		builder.setTitle("Pick a color");
 		
-		builder.setMultiChoiceItems(items, new boolean[] {false, true, false, false, true, false, false, true, false, false, true, false}, new DialogInterface.OnMultiChoiceClickListener() {
+		builder.setTitle("Variazioni disponibili");
+		
+		DbManager dbManager = new DbManager(getApplication());
+		SQLiteDatabase db = dbManager.getWritableDatabase();
+		
+		Cursor cursorVariazioni;
+		cursorVariazioni = db.query("variazione", 
+									new String[] {"idVariazione _id","nome","checked"},
+									null, null, null, null, null, null);
+	
+		/* Il cursor per visualizzare gli elementi in un dialog necessita di selezionare
+		 * tra gli attributi della tabella  un id identificativo del record con alias _id */
+		
+		builder.setMultiChoiceItems(cursorVariazioni, "checked", "nome", new DialogInterface.OnMultiChoiceClickListener() {
             public void onClick(DialogInterface dialog, int whichButton,
                     boolean isChecked) {
 
