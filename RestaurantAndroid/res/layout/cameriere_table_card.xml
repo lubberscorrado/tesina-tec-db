@@ -5,17 +5,17 @@
     android:orientation="vertical" >
 
     
-    <!-- Scrollview che contiene l'intera pagina -->
-    
-    <!-- Titolo -->
-	    <TextView
-	        android:id="@+id/tableCard_textView_Title"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_gravity="center"
-	        android:layout_margin="10dp"
-	        android:text="Scheda Tavolo"
-	        android:textAppearance="?android:attr/textAppearanceLarge" />
+   	<!-- Scrollview che contiene l'intera pagina -->
+   
+   	<!-- Titolo -->
+    <TextView
+        android:id="@+id/tableCard_textView_Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:text="Scheda Tavolo"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
     
      <ScrollView 
 	      	android:layout_height="fill_parent"
@@ -224,7 +224,9 @@
 		         	 </LinearLayout>
 			     
 			         
-			    <!-- LAYOUT CONTO -->
+			    <!-- LAYOUT ELENCO ORDINAZIONI DEL CONTO -->
+			    
+			    <!-- Titolo: Elenco ordinazioni del conto -->
 			        <TextView
 			            android:id="@+id/textView22"
 			            android:layout_width="fill_parent"
@@ -273,7 +275,7 @@
 
 			     </LinearLayout>
 			     
-			     
+			     <!-- ListView Conto -->
 			     <LinearLayout
 			         android:id="@+id/linearLayout12122"
 			         android:orientation="horizontal"
@@ -291,16 +293,78 @@
 		                 
 		          </LinearLayout>
 				    
-			         <!-- Prova (da rimuovere)  -->
+			         <!-- Titolo: Comande in sospeso -->
 		          	<TextView
 			            android:id="@+id/textView22"
 			            android:layout_width="fill_parent"
 			            android:layout_height="wrap_content"
-			            android:text="TextView di prova (cavare!)"
+			            android:text="Comande in sospeso:"
 			            android:gravity="center"
 			            android:layout_margin="10dp"
 			            android:textAppearance="?android:attr/textAppearanceLarge" />
 		          	
+		          	
+		          	 <!-- Titoli colonne comande in sospeso -->
+			        <LinearLayout
+				         android:id="@+id/linearLayout1212"
+				         android:orientation="horizontal"
+				         android:layout_width="fill_parent"
+				         android:layout_height="wrap_content" >
+
+				         <TextView
+				             android:id="@+id/TextView022"
+				             android:layout_width="fill_parent"
+				             android:layout_height="wrap_content"
+				             android:layout_weight="1"
+				             android:layout_margin="1dp"
+				             android:gravity="center"
+				             android:background="#333333"
+				             android:text="Nome Ordinazione:" />
+	
+				         <TextView
+				             android:id="@+id/TextView042"
+				             android:layout_width="50dp"
+				             android:layout_height="wrap_content"
+				             android:layout_margin="1dp"
+				             android:background="#333333"
+				             android:gravity="center"
+				             android:text="Qty:" />
+	
+				         <TextView
+				             android:id="@+id/TextView012"
+				             android:layout_width="120dp"
+				             android:layout_height="wrap_content"
+				             android:gravity="center"
+				             android:layout_margin="1dp"
+				             android:background="#333333"
+				             android:text="Stato:" />
+
+			    	 </LinearLayout>
+			    	 
+		          	<!-- ListView delle Comande in sospeso -->
+		          	 <LinearLayout
+			         android:id="@+id/linearLayout121223"
+			         android:orientation="horizontal"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content"
+			         android:layout_weight="0.1" >
+			     
+				         <!-- ListView Vera e Propria -->
+			             <ListView 
+					        android:id="@+id/listView_comandeSospeseList" 
+					        android:layout_width="fill_parent" 
+					        android:layout_height="wrap_content">
+					    </ListView>
+		                 
+		          </LinearLayout>
+		          
+		          	     
+		         <Button
+			        android:id="@+id/button_tableCard_inviaGruppoOrdinazioni"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			      
+			        android:text="Invia ordinazioni selezionate" />
 		    		</LinearLayout>
 		
 		</ScrollView>

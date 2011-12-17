@@ -1,7 +1,6 @@
 package com.restaurant.android.cameriere.activities;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,8 +10,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,7 +34,6 @@ import com.restaurant.android.Error;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
 import com.restaurant.android.Utility;
-import com.restaurant.android.cameriere.activities.HomeActivity.MenuSyncTask;
 
 /**
  * Activity che rappresenta la scheda di un singolo
@@ -58,8 +58,16 @@ public class TableCardActivity extends Activity {
 	 * l'elenco delle prenotazioni effettuate */
 	private ListView prenotationListView = null;
 	private ArrayList<Prenotazione> prenotationListView_arrayPrenotazioni = null;
-	private PrenotationAdapter prenotationListView_adapter;
+	private PrenotationAdapter prenotationListView_adapter = null;
 	
+	/* Variaibli necessarie alla ListView per mostrare
+	 * l'elenco di comande in attesa di conferma */
+	private ListView ordersWaitingListView = null;
+	private ArrayList<Ordinazione> ordersWaitingListView_arrayOrdinazioni = null;
+	private OrdersWaitingAdapter ordersWaitingListView_adapter = null;
+	
+	/* Oggetto in cui salvare le caratteristiche del tavolo contenuto
+	 * in questa scheda */
 	Table myTable;
 
 	@Override
@@ -205,22 +213,122 @@ public class TableCardActivity extends Activity {
 		  	    	  * cliccato, ricavo l'oggetto dell'adapter */
 		  	    	 Log.i(TAG, "Hai cliccato su un'ordinazione: " + contoListView_adapter.getItem(position).getNome());
 		  	    	  
-		  	    /* Apro una nuova activity con la scheda dell'ordinazione */
-		  	    	 
-//		  	   	Intent myIntent = new Intent(TableCardActivity.this, TableCardActivity.class);
-//		  	    	  
-//		  	     /* Creo un bundle per passare dei dati alla nuova activity */
-//			  	     Bundle b = new Bundle();
-//			  	     b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
-//			  	     b.putString("tableName", m_adapter.getItem(position).getTableName());
-//			  	     myIntent.putExtras(b);
-//			  	     startActivity(myIntent);
+		  	    /* Apro una nuova activity con la scheda dell'ordinazione ? */
 		  	    	 
 		  	    } 
 		  	    
-      }); // fine itemClickListener
+	      }); // fine itemClickListener
 
-	     
+
+		  /** *****************************************
+		   * Configuro ListView per le ordinazioni in attesa
+		   * *****************************************/
+		  
+		  // Recupero riferimento a conto
+		  this.ordersWaitingListView = (ListView) findViewById(R.id.listView_comandeSospeseList);
+	  
+		  this.ordersWaitingListView_arrayOrdinazioni = new ArrayList<Ordinazione>();
+		  
+		  this.ordersWaitingListView_adapter = new OrdersWaitingAdapter(getApplicationContext(), 
+					R.layout.cameriere_table_card_ordinazioni_in_sospeso_list_row, 
+					ordersWaitingListView_arrayOrdinazioni);
+		  
+		  this.ordersWaitingListView.setAdapter(this.ordersWaitingListView_adapter);
+		  
+		  /* *************************************************************
+	       * Mostro una scheda al click sulle singole ordinazioni in sospeso
+	       **************************************************************/
+		  ordersWaitingListView.setOnItemClickListener(new OnItemClickListener() {
+		  	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		  	    		
+		  	    	 Log.i(TAG, "Hai cliccato su un'ordinazione in sospeso: " + ordersWaitingListView_adapter.getItem(position).getNome());
+
+		  	    	/* Creo una stringa */
+		  	    	final String[] dialogMenuItems = {"", "", ""};
+		  	    	
+		  	    	/* Elementi del menu della finestra di dialogo */
+		  	    	/* Se la voce è già selezionata */
+		  	    	 if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Selezionata")) {
+		  	    		 dialogMenuItems[0] = "Deseleziona"; 
+		  	    		 dialogMenuItems[1] = "Modifica"; 
+		  	    		 dialogMenuItems[2] = "Rimuovi"; 
+		  	    	/* Se la voce non è ancora selezionata */
+		  	    	 } else if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Deselezionata")) {
+		  	    		 dialogMenuItems[0] = "Seleziona"; 
+		  	    		 dialogMenuItems[1] = "Modifica"; 
+		  	    		 dialogMenuItems[2] = "Rimuovi"; 
+		  	    	 }
+		  	    	 
+		  	    	 /* Creo la finestra di dialogo */
+		  	    	AlertDialog.Builder builder = new AlertDialog.Builder(TableCardActivity.this);
+		  	    	builder.setTitle("Gestione Ordinazione");
+		  	    	
+		  	    	/* Salvo in una variabile final la posizione in cui ho cliccato */
+		  	    	final int positionClicked = position;
+		  	    	
+		  	    	builder.setItems(dialogMenuItems, new DialogInterface.OnClickListener() {
+		  	    	    public void onClick(DialogInterface dialog, int item_position) {
+		  	    	    	
+		  	    	    	/* ******************************************
+		  	    	    	 * OPERAZIONI A MENU APERTO 
+		  	    	    	 * ****************************************** */
+		  	    	    	/* Distinguo le operazioni da farsi a seconda del menu che viene aperto */
+		  	    	    	if(dialogMenuItems[item_position].equals("Seleziona")) {
+		  	    	    		
+		  	    	    		/* Seleziono la casella */
+		  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Selezionata");
+	  			  	    		ordersWaitingListView_adapter.notifyDataSetChanged();
+//	  			  	    		
+//		  	    	    		if(ordersWaitingListView_adapter.getItem(positionClicked).getStato().equals("Selezionata")) {
+//		  	    	    			// cambio lo stato dell'ordinazione in attesa
+//		  	    	    			ordersWaitingListView_adapter.getItem(positionClicked).setStato("Deselezionata");
+//		  	    	    			ordersWaitingListView_adapter.notifyDataSetChanged();
+//		  	    	    			
+//		  	    	    			// aggiorno la GUI 
+//		  	    	    			// getOrdersWaitingToBeConfirmed();
+//		  	    	    		} 
+//		  			  	    	/* Se la voce non è ancora selezionata */
+//		  			  	    	else if(ordersWaitingListView_adapter.getItem(positionClicked).getStato().equals("Deselezionata")) {
+//		  			  	    		// cambio lo stato dell'ordinazione in attesa
+//		  			  	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Selezionata");
+//		  			  	    		ordersWaitingListView_adapter.notifyDataSetChanged();
+//		  			  	    		
+//		  			  	    		// aggiorno la GUI 
+//		  			  	    		// getOrdersWaitingToBeConfirmed();
+//		  			  	    	}		  	    	    		
+		  	    	    		
+		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
+		  	    	    		
+		  	    	    	} else if (dialogMenuItems[item_position].equals("Deseleziona")) {
+		  	    	    		
+		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
+		  	    	    		
+		  	    	    		/* Deseleziono la casella */
+		  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Deselezionata");
+	  	    	    			ordersWaitingListView_adapter.notifyDataSetChanged();
+		  	    	    		
+		  	    	    	} else if (dialogMenuItems[item_position].equals("Modifica")) {
+		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
+		  	    	    	} else if (dialogMenuItems[item_position].equals("Rimuovi")) {
+		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
+		  	    	    		Toast.makeText(getApplicationContext(), dialogMenuItems[item_position], Toast.LENGTH_SHORT).show();
+		  	    	    	}
+		  	    	    	
+		  	    	       
+		  	    	    }
+		  	    	}); // fine di "OnClickListener" della finestra di dialogo
+		  	    	
+		  	    	AlertDialog alert = builder.create();
+		  	    	
+		  	    	/* Mostro la finestra di dialogo */
+		  	    	alert.show();
+		  	    	
+		  	    	/* Apro una nuova activity con la scheda dell'ordinazione ? */
+		  	    } 
+		  	    
+	      }); // fine itemClickListener
+		  
+//		  getOrdersWaitingToBeConfirmed();
 		  
 	}
 	
@@ -378,9 +486,145 @@ public class TableCardActivity extends Activity {
     }
     
     
+	/**
+     * Metodo per reperire l'elenco delle ordinazioni che sono
+     * in attesa di essere confermate dal cameriere, e che sono
+     * salvate solo locamente
+     * @author Fabio Pierazzi
+     */
+    private void getOrdersWaitingToBeConfirmed(){
+    	
+    	Log.i(TAG, "Entrato in getOrdersWaitingToBeConfirmed();");
+          try{
+//        	  
+//        	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
+//        	  String url = ((RestaurantApplication)getApplication()).getHost();
+//        	  String response = restApplication.makeHttpGetRequest(url + "ClientEJB/statoTavolo", new HashMap<String, String>());
+//        	  
+        	  ordersWaitingListView_arrayOrdinazioni.clear();
+        	  
+        	  /**********************************************************
+        	   * Decodifica della risposa del server contenente lo stato 
+        	   * dei tavoli.
+        	   **********************************************************/
+        	  // JSONObject jsonObject = new JSONObject(response);
+        	  
+        	  // if(jsonObject.getBoolean("success") == true) {
+        		  
+        		 //  JSONArray jsonArray = jsonObject.getJSONArray("statoTavolo");
+        		  
+        		  // for(int i=0; i< jsonArray.length() ; i++) {
+        		  for(int i=0; i< 15; i++) {
+        			  Ordinazione o = new Ordinazione();
+        			  
+        			  if(i%3==0) {
+        				  o.setNome("Penne all'amatriciana");
+        				  o.setQuantita(12);
+        				  o.setStato("Deselezionata");
+        			  } else {
+        				  o.setNome("Lasagne");
+            			  o.setQuantita(2);
+            			  o.setStato("Selezionata");
+        			  }
+        			  
+//        			  o.setTableName(jsonArray.getJSONObject(i).getString("nomeTavolo"));
+//        			  o.setTableStatus(jsonArray.getJSONObject(i).getString("statoTavolo"));
+//        			  o.setTableId(Integer.parseInt(jsonArray.getJSONObject(i).getString("idTavolo")));
+        			  
+        			  ordersWaitingListView_arrayOrdinazioni.add(o);
+          		  }
+        		  
+        		 
+//         	  }
+        	  
+        	  /**************************************************************************
+        	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
+        	   * la view.
+        	   **************************************************************************/
+        	  runOnUiThread(new Runnable() {
+        		  public void run() {
+        			  ordersWaitingListView_adapter.notifyDataSetChanged();
+        			  
+        			  Log.w(TAG, "Cambio altezza ListView");
+            		  /* Modifico manualmente la nuova altezza della listView */
+                      Utility.setListViewHeightBasedOnChildren(ordersWaitingListView);
+        		  }
+        	  });
+        	  
+        	  Log.i(	"TablesListService" + ": getOrdersWaitingToBeConfirmed()", 
+		        			  	"Number of Ordinations Loaded: " + 
+		        			  	ordersWaitingListView_arrayOrdinazioni.size());
+              
+        } catch (Exception e) {
+        	Log.e("OdersListService" + ": BACKGROUND_PROC", e.getMessage());
+        }
+          
+        Log.i(TAG, "Uscito da getOrdersWaitingToBeConfirmed()");
+    }
+    
+    /************************************************************************
+	 * Adapter per gestire il rendering personalizzato degli elementi
+	 * della lista con le ordinazioni che devono essere confermate dal 
+	 * cameriere per essere inviate in cucina per essere elaborate
+	 ************************************************************************/
+    
+    private class OrdersWaitingAdapter extends ArrayAdapter<Ordinazione> {
+
+        private ArrayList<Ordinazione> items;
+
+        public OrdersWaitingAdapter(Context context, int textViewResourceId, ArrayList<Ordinazione> items) {
+                super(context, textViewResourceId, items);
+                this.items = items;
+        }
+        
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+        		
+                View v = convertView;
+                if (v == null) {
+                    LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    v = vi.inflate(R.layout.cameriere_table_card_ordinazioni_in_sospeso_list_row, null);
+                }
+                
+                Ordinazione o = items.get(position);
+                
+                if (o != null) {
+                        
+                		/* Aggiorno i campi in base a quel che ho letto */
+                		TextView textView_nomeOrdinazione = (TextView) v.findViewById(R.id.textView_ordinazioniInSopesoList_nomeOrdinazione);
+                		TextView textView_quantita = (TextView) v.findViewById(R.id.textView_ordinazioniInSopesoList_quantity);
+                		TextView textView_stato = (TextView) v.findViewById(R.id.textView_ordinazioniInSopesoList_stato);
+                		
+                		if(textView_nomeOrdinazione != null) {
+                			textView_nomeOrdinazione.setText(o.getNome());                            
+                        }
+                		
+                		if(textView_quantita != null){
+                			textView_quantita.setText(Integer.toString(o.getQuantita()));
+                        }
+                		
+                		if(textView_stato != null) {
+                			textView_stato.setText(o.getStato());
+                        }
+                		
+                		if(textView_stato.getText().equals("Selezionata")) {
+                			// Metto a sfondo bianco le caselle stato
+                			textView_stato.setBackgroundColor(0xffffffff);
+                		} else if (textView_stato.getText().equals("Deselezionata")) {
+                			textView_stato.setBackgroundColor(0xfff00000);
+                		}
+                		
+                }
+                
+                return v;
+                
+        }
+        
+    }
+    
 
 	/**
-     * Metodo per reperire l'elenco delle ordinazioni
+     * Metodo per reperire l'elenco delle prenotazioni
      * @author Fabio Pierazzi
      */
     private void getPrenotations(){
@@ -504,6 +748,10 @@ public class TableCardActivity extends Activity {
         }
     } // end of PrenotationAdapter
     
+    
+    
+    
+    
     /**
      * Aggiorna le textbox con le informazioni sul tavolo
      * @author Guerri Marco
@@ -554,7 +802,7 @@ public class TableCardActivity extends Activity {
 			
 		}
 	}
-        
+    
     /**
      * Async Task per l'aggiornamento delle informazioni della scheda 
      * del tavolo
@@ -613,6 +861,7 @@ public class TableCardActivity extends Activity {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							updateStatoTavolo();
+							getOrdersWaitingToBeConfirmed();
 						}
 					});
 								
