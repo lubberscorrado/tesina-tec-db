@@ -277,25 +277,8 @@ public class TableCardActivity extends Activity {
 		  	    	    		
 		  	    	    		/* Seleziono la casella */
 		  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Selezionata");
+		  	    	    		/* Aggiorno la ListView */
 	  			  	    		ordersWaitingListView_adapter.notifyDataSetChanged();
-//	  			  	    		
-//		  	    	    		if(ordersWaitingListView_adapter.getItem(positionClicked).getStato().equals("Selezionata")) {
-//		  	    	    			// cambio lo stato dell'ordinazione in attesa
-//		  	    	    			ordersWaitingListView_adapter.getItem(positionClicked).setStato("Deselezionata");
-//		  	    	    			ordersWaitingListView_adapter.notifyDataSetChanged();
-//		  	    	    			
-//		  	    	    			// aggiorno la GUI 
-//		  	    	    			// getOrdersWaitingToBeConfirmed();
-//		  	    	    		} 
-//		  			  	    	/* Se la voce non è ancora selezionata */
-//		  			  	    	else if(ordersWaitingListView_adapter.getItem(positionClicked).getStato().equals("Deselezionata")) {
-//		  			  	    		// cambio lo stato dell'ordinazione in attesa
-//		  			  	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Selezionata");
-//		  			  	    		ordersWaitingListView_adapter.notifyDataSetChanged();
-//		  			  	    		
-//		  			  	    		// aggiorno la GUI 
-//		  			  	    		// getOrdersWaitingToBeConfirmed();
-//		  			  	    	}		  	    	    		
 		  	    	    		
 		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 		  	    	    		
@@ -305,6 +288,7 @@ public class TableCardActivity extends Activity {
 		  	    	    		
 		  	    	    		/* Deseleziono la casella */
 		  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Deselezionata");
+		  	    	    		/* Aggiorno la ListView */
 	  	    	    			ordersWaitingListView_adapter.notifyDataSetChanged();
 		  	    	    		
 		  	    	    	} else if (dialogMenuItems[item_position].equals("Modifica")) {
