@@ -17,6 +17,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +27,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -241,109 +243,139 @@ public class TableCardActivity extends Activity {
 		  /* *************************************************************
 	       * Mostro una scheda al click sulle singole ordinazioni in sospeso
 	       **************************************************************/
+		  
+		  ordersWaitingListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+					
+					
+					 Log.i(TAG, "Hai cliccato (longClick) su un'ordinazione in sospeso: " + ordersWaitingListView_adapter.getItem(position).getNome());
+
+			  	    	/* Creo una stringa */
+			  	    	final String[] dialogMenuItems = {"", "", ""};
+			  	    	
+			  	    	/* Elementi del menu della finestra di dialogo */
+			  	    	/* Se la voce è già selezionata */
+			  	    	 if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Selezionata")) {
+			  	    		 dialogMenuItems[0] = "Deseleziona"; 
+			  	    		 dialogMenuItems[1] = "Modifica"; 
+			  	    		 dialogMenuItems[2] = "Rimuovi"; 
+			  	    	/* Se la voce non è ancora selezionata */
+			  	    	 } else if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Deselezionata")) {
+			  	    		 dialogMenuItems[0] = "Seleziona"; 
+			  	    		 dialogMenuItems[1] = "Modifica"; 
+			  	    		 dialogMenuItems[2] = "Rimuovi"; 
+			  	    	 }
+			  	    	 
+			  	    	 /* Creo la finestra di dialogo */
+			  	    	AlertDialog.Builder builder = new AlertDialog.Builder(TableCardActivity.this);
+			  	    	builder.setTitle("Gestione Ordinazione");
+			  	    	
+			  	    	/* Salvo in una variabile final la posizione in cui ho cliccato */
+			  	    	final int positionClicked = position;
+			  	    	
+			  	    	builder.setItems(dialogMenuItems, new DialogInterface.OnClickListener() {
+			  	    	    public void onClick(DialogInterface dialog, int item_position) {
+			  	    	    	
+			  	    	    	/* ******************************************
+			  	    	    	 * OPERAZIONI A MENU APERTO 
+			  	    	    	 * ****************************************** */
+			  	    	    	/* Distinguo le operazioni da farsi a seconda del menu che viene aperto */
+			  	    	    	if(dialogMenuItems[item_position].equals("Seleziona")) {
+			  	    	    		
+			  	    	    		/* Seleziono la casella */
+			  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Selezionata");
+			  	    	    		/* Aggiorno la ListView */
+		  			  	    		ordersWaitingListView_adapter.notifyDataSetChanged();
+			  	    	    		
+			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
+			  	    	    		
+			  	    	    	} else if (dialogMenuItems[item_position].equals("Deseleziona")) {
+			  	    	    		
+			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
+			  	    	    		
+			  	    	    		/* Deseleziono la casella */
+			  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Deselezionata");
+			  	    	    		/* Aggiorno la ListView */
+		  	    	    			ordersWaitingListView_adapter.notifyDataSetChanged();
+			  	    	    		
+			  	    	    	} else if (dialogMenuItems[item_position].equals("Modifica")) {
+			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
+			  	    	    		
+			  	    	    		/********************************************************
+			  	    	    		 * Avvio l'activity di modifica dell'ordinazione sospesa
+			  	    	    		 ********************************************************/
+			  	    	    		
+			  	    	    		Intent myIntent = new Intent(getApplicationContext(), GestioneOrdinazioneActivity.class);
+			  	  	  	    		Bundle b = new Bundle();
+			  	  	  	    		b.putSerializable("ordinazione", (Ordinazione) ordersWaitingListView_arrayOrdinazioni.get(positionClicked));     
+			  	  	  	    		myIntent.putExtras(b);
+			  	  	  	    	
+			  	  	  	    		startActivity(myIntent);
+			  	  		  	     
+			  	  		  	     
+			  	    	    	} else if (dialogMenuItems[item_position].equals("Rimuovi")) {
+			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
+			  	    	    		
+			  	    	    		/********************************************************
+			  	    	    		 * Rimuovo la comanda selezionata 
+			  	    	    		 ********************************************************/
+			  	    	    		
+			  	    	    		DbManager dbManager = new DbManager(getApplicationContext());
+			  	    	    		SQLiteDatabase db;
+			  	    	    		
+			  	    	    		db = dbManager.getWritableDatabase();
+			  	    	    		db.delete("comanda", "idComanda=" + ordersWaitingListView_arrayOrdinazioni.get(positionClicked).getIdOrdinazione(), null);
+			  	    	    		db.close();
+			  	    	    		dbManager.close();
+			  	    	    		  	    	    		
+			  	    	    		/********************************************************
+			  	    	    		 * Aggiorno gli ordini da confermare nella listview
+			  	    	    		 ********************************************************/
+			  	    	    		getOrdersWaitingToBeConfirmed();
+			  	    	    		
+			  	    	    		
+			  	    	    		
+			  	    	    		Toast.makeText(getApplicationContext(), dialogMenuItems[item_position], Toast.LENGTH_SHORT).show();
+			  	    	    	}
+			  	    	    	
+			  	    	       
+			  	    	    }
+			  	    	}); // fine di "OnClickListener" della finestra di dialogo
+			  	    	
+			  	    	AlertDialog alert = builder.create();
+			  	    	
+			  	    	/* Mostro la finestra di dialogo */
+			  	    	alert.show();
+					
+					// return true if the longclick has been consumed (?)
+					return false;
+				}
+		
+		  });
+		  
+		  /* Gestisco lo Short Click sull'elemento della lista degli ordini in sospeso.
+		   * Seleziono e deseleziono l'ordine sospeso da inviare  */
 		  ordersWaitingListView.setOnItemClickListener(new OnItemClickListener() {
 		  	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		  	    		
-		  	    	 Log.i(TAG, "Hai cliccato su un'ordinazione in sospeso: " + ordersWaitingListView_adapter.getItem(position).getNome());
+		  	    	
+		  	    	 Log.i(TAG, "Hai cliccato (shortClick) su un'ordinazione in sospeso: " + ordersWaitingListView_adapter.getItem(position).getNome());
 
-		  	    	/* Creo una stringa */
-		  	    	final String[] dialogMenuItems = {"", "", ""};
-		  	    	
-		  	    	/* Elementi del menu della finestra di dialogo */
-		  	    	/* Se la voce è già selezionata */
-		  	    	 if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Selezionata")) {
-		  	    		 dialogMenuItems[0] = "Deseleziona"; 
-		  	    		 dialogMenuItems[1] = "Modifica"; 
-		  	    		 dialogMenuItems[2] = "Rimuovi"; 
-		  	    	/* Se la voce non è ancora selezionata */
-		  	    	 } else if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Deselezionata")) {
-		  	    		 dialogMenuItems[0] = "Seleziona"; 
-		  	    		 dialogMenuItems[1] = "Modifica"; 
-		  	    		 dialogMenuItems[2] = "Rimuovi"; 
-		  	    	 }
 		  	    	 
-		  	    	 /* Creo la finestra di dialogo */
-		  	    	AlertDialog.Builder builder = new AlertDialog.Builder(TableCardActivity.this);
-		  	    	builder.setTitle("Gestione Ordinazione");
-		  	    	
-		  	    	/* Salvo in una variabile final la posizione in cui ho cliccato */
-		  	    	final int positionClicked = position;
-		  	    	
-		  	    	builder.setItems(dialogMenuItems, new DialogInterface.OnClickListener() {
-		  	    	    public void onClick(DialogInterface dialog, int item_position) {
-		  	    	    	
-		  	    	    	/* ******************************************
-		  	    	    	 * OPERAZIONI A MENU APERTO 
-		  	    	    	 * ****************************************** */
-		  	    	    	/* Distinguo le operazioni da farsi a seconda del menu che viene aperto */
-		  	    	    	if(dialogMenuItems[item_position].equals("Seleziona")) {
-		  	    	    		
-		  	    	    		/* Seleziono la casella */
-		  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Selezionata");
-		  	    	    		/* Aggiorno la ListView */
-	  			  	    		ordersWaitingListView_adapter.notifyDataSetChanged();
-		  	    	    		
-		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
-		  	    	    		
-		  	    	    	} else if (dialogMenuItems[item_position].equals("Deseleziona")) {
-		  	    	    		
-		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
-		  	    	    		
-		  	    	    		/* Deseleziono la casella */
-		  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Deselezionata");
-		  	    	    		/* Aggiorno la ListView */
-	  	    	    			ordersWaitingListView_adapter.notifyDataSetChanged();
-		  	    	    		
-		  	    	    	} else if (dialogMenuItems[item_position].equals("Modifica")) {
-		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
-		  	    	    		
-		  	    	    		/********************************************************
-		  	    	    		 * Avvio l'activity di modifica dell'ordinazione sospesa
-		  	    	    		 ********************************************************/
-		  	    	    		
-		  	    	    		Intent myIntent = new Intent(getApplicationContext(), GestioneOrdinazioneActivity.class);
-		  	  	  	    		Bundle b = new Bundle();
-		  	  	  	    		b.putSerializable("ordinazione", (Ordinazione) ordersWaitingListView_arrayOrdinazioni.get(positionClicked));     
-		  	  	  	    		myIntent.putExtras(b);
-		  	  	  	    	
-		  	  	  	    		startActivity(myIntent);
-		  	  		  	     
-		  	  		  	     
-		  	    	    	} else if (dialogMenuItems[item_position].equals("Rimuovi")) {
-		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
-		  	    	    		
-		  	    	    		/********************************************************
-		  	    	    		 * Rimuovo la comanda selezionata 
-		  	    	    		 ********************************************************/
-		  	    	    		
-		  	    	    		DbManager dbManager = new DbManager(getApplicationContext());
-		  	    	    		SQLiteDatabase db;
-		  	    	    		
-		  	    	    		db = dbManager.getWritableDatabase();
-		  	    	    		db.delete("comanda", "idComanda=" + ordersWaitingListView_arrayOrdinazioni.get(positionClicked).getIdOrdinazione(), null);
-		  	    	    		db.close();
-		  	    	    		dbManager.close();
-		  	    	    		  	    	    		
-		  	    	    		/********************************************************
-		  	    	    		 * Aggiorno gli ordini da confermare nella listview
-		  	    	    		 ********************************************************/
-		  	    	    		getOrdersWaitingToBeConfirmed();
-		  	    	    		
-		  	    	    		
-		  	    	    		
-		  	    	    		Toast.makeText(getApplicationContext(), dialogMenuItems[item_position], Toast.LENGTH_SHORT).show();
-		  	    	    	}
-		  	    	    	
-		  	    	       
-		  	    	    }
-		  	    	}); // fine di "OnClickListener" della finestra di dialogo
-		  	    	
-		  	    	AlertDialog alert = builder.create();
-		  	    	
-		  	    	/* Mostro la finestra di dialogo */
-		  	    	alert.show();
-		  	    	
-		  	    	/* Apro una nuova activity con la scheda dell'ordinazione ? */
+		  	    	/* Seleziono e deseleziono, con il semplice click */
+		  	    	if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Deselezionata")) {
+		  	    		/* Seleziono la casella */
+	    	    		ordersWaitingListView_adapter.getItem(position).setStato("Selezionata");
+	    	    		/* Aggiorno la ListView */
+		  	    		ordersWaitingListView_adapter.notifyDataSetChanged();
+		  	    	} else if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Selezionata")) {
+		  	    		/* Deseleziono la casella */
+  	    	    		ordersWaitingListView_adapter.getItem(position).setStato("Deselezionata");
+  	    	    		/* Aggiorno la ListView */
+	    	    			ordersWaitingListView_adapter.notifyDataSetChanged();
+		  	    	}
+
 		  	    } 
 		  	    
 	      }); // fine itemClickListener
@@ -627,14 +659,15 @@ public class TableCardActivity extends Activity {
                         }
                 		
                 		if(textView_stato != null) {
+                			textView_stato.setTextColor(Color.BLACK);
                 			textView_stato.setText(o.getStato());
                         }
                 		
                 		if(textView_stato.getText().equals("Selezionata")) {
                 			// Metto a sfondo bianco le caselle stato
-                			textView_stato.setBackgroundColor(0xffffffff);
+                			textView_stato.setBackgroundColor(Color.GREEN);
                 		} else if (textView_stato.getText().equals("Deselezionata")) {
-                			textView_stato.setBackgroundColor(0xfff00000);
+                			textView_stato.setBackgroundColor(Color.RED);
                 		}
                 		
                 }
