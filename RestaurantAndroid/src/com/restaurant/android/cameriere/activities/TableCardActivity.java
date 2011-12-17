@@ -311,6 +311,26 @@ public class TableCardActivity extends Activity {
 		  	  		  	     
 		  	    	    	} else if (dialogMenuItems[item_position].equals("Rimuovi")) {
 		  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
+		  	    	    		
+		  	    	    		/********************************************************
+		  	    	    		 * Rimuovo la comanda selezionata 
+		  	    	    		 ********************************************************/
+		  	    	    		
+		  	    	    		DbManager dbManager = new DbManager(getApplicationContext());
+		  	    	    		SQLiteDatabase db;
+		  	    	    		
+		  	    	    		db = dbManager.getWritableDatabase();
+		  	    	    		db.delete("comanda", "idComanda=" + ordersWaitingListView_arrayOrdinazioni.get(positionClicked).getIdOrdinazione(), null);
+		  	    	    		db.close();
+		  	    	    		dbManager.close();
+		  	    	    		  	    	    		
+		  	    	    		/********************************************************
+		  	    	    		 * Aggiorno gli ordini da confermare nella listview
+		  	    	    		 ********************************************************/
+		  	    	    		getOrdersWaitingToBeConfirmed();
+		  	    	    		
+		  	    	    		
+		  	    	    		
 		  	    	    		Toast.makeText(getApplicationContext(), dialogMenuItems[item_position], Toast.LENGTH_SHORT).show();
 		  	    	    	}
 		  	    	    	
