@@ -29,6 +29,7 @@ import com.restaurant.android.DbManager;
 import com.restaurant.android.Error;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
+import com.restaurant.android.cameriere.prenotazioni.PrenotationsListActivity;
 
 
 /** 
@@ -49,22 +50,30 @@ public class HomeActivity extends TabActivity {
 	    TabHost.TabSpec spec;  // Resusable TabSpec for each tab
 	    Intent intent;  // Reusable Intent for each tab
 
-	    // Create an Intent to launch an Activity for the tab (to be reused)
+	    /* Inserisco l'activity delle notifiche nel Tab */
 	    intent = new Intent().setClass(this, NotificationActivity.class);
 
 	    // Initialize a TabSpec for each tab and add it to the TabHost
-	    spec = tabHost.newTabSpec("artists").setIndicator("Notifiche",
+	    spec = tabHost.newTabSpec("notifiche").setIndicator("Notifiche",
 	                      res.getDrawable(R.drawable.ic_notifications))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
-	    // Do the same for the other tabs
+	    /* Inserisco l'activity con l'elenco dei tavoli nel Tab */
 	    intent = new Intent().setClass(this, TablesListActivity.class);
-	    spec = tabHost.newTabSpec("albums").setIndicator("Elenco Tavoli",
+	    spec = tabHost.newTabSpec("elencoTavoli").setIndicator("Elenco Tavoli",
 	                      res.getDrawable(R.drawable.ic_food))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
+	    
+	    /* Inserisco l'activity con l'elenco delle prenotazioni nel Tab */
+	    intent = new Intent().setClass(this, PrenotationsListActivity.class);
+	    spec = tabHost.newTabSpec("elencoPrenotazioni").setIndicator("Elenco Prenotazioni",
+	                      res.getDrawable(R.drawable.ic_launcher))
+	                  .setContent(intent);
+	    tabHost.addTab(spec);
 
+	    /* Imposto il tab di default */
 	    tabHost.setCurrentTab(1);
 	    
 	    DbManager dbManager = new DbManager(getApplicationContext());

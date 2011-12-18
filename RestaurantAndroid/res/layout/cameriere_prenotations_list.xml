@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+			
+			         
+			     <!-- Titoli delle colonne della ListView contenente l'elenco delle prenotazioni -->
+				<LinearLayout
+				    android:id="@+id/linearLayout_prenotationList_header"
+				    android:orientation="horizontal"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content" >
+				
+				    <TextView
+				        android:id="@+id/textView_prenotationList_header01"
+				        android:layout_width="90dp"
+				        android:layout_height="wrap_content"
+				        android:layout_margin="1dp"
+				        android:gravity="center"
+				        android:background="#333333"
+				        android:text="Data:" />
+				
+				    <TextView
+				        android:id="@+id/textView_prenotationList_header02"
+				        android:layout_width="70dp"
+				        android:layout_height="wrap_content"
+				        android:layout_margin="1dp"
+				        android:background="#333333"
+				        android:gravity="center"
+				        android:text="Persone:" />
+				
+				    <TextView
+				        android:id="@+id/textView_prenotationList_header03"
+				        android:layout_width="fill_parent"
+				        android:layout_height="wrap_content"
+				        android:gravity="center"
+				        android:layout_margin="1dp"
+				        android:background="#333333"
+				        android:text="Nome Cliente:" />
+				    
+				    </LinearLayout>
+				    
+					         <!-- ListView Vera e Propria -->
+				             <ListView 
+						        android:id="@+id/prenotationsListActivity_listView_prenotationsList" 
+						        android:layout_width="fill_parent" 
+						        android:layout_height="wrap_content">
+						    </ListView>
+			                 
+
+</LinearLayout>
+
+    

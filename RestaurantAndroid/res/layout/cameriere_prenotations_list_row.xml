@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+   			<TextView
+	             android:id="@+id/textView_prenotationList_data"
+	             android:layout_width="90dp"
+	             android:layout_height="fill_parent"
+	             android:layout_margin="1dp"
+	             android:padding="2dp"
+	             android:gravity="center_vertical|center_horizontal"
+	             android:background="#111111"
+	             android:textSize="14dp" />
+
+	         <TextView
+	             android:id="@+id/textView_prenotationList_numPersone"
+	             android:layout_width="70dp"
+	             android:layout_height="fill_parent"
+	             android:layout_margin="1dp"
+	             android:padding="2dp"
+	             android:gravity="center_vertical|center_horizontal"
+	             android:background="#111111"
+	             android:textSize="16dp" />
+
+	         <TextView
+	             android:id="@+id/textView_prenotationList_nomeCliente"
+	             android:layout_width="fill_parent"
+	             android:layout_height="wrap_content"
+	             android:minHeight="50dp"
+	             android:layout_margin="1dp"
+	             android:padding="2dp"
+	             android:gravity="center_vertical|center_horizontal"
+	             android:background="#111111"
+	             android:textSize="16dp" />
+
+</LinearLayout>
+

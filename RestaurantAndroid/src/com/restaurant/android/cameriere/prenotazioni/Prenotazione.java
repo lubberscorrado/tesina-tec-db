@@ -1,4 +1,4 @@
-package com.restaurant.android.cameriere.activities;
+package com.restaurant.android.cameriere.prenotazioni;
 
 /**
  * Classe che contiene i dati di una prenotazione
@@ -12,6 +12,9 @@ public class Prenotazione {
 	int numPersone;
 	/** Nome del cliente che ha effettuato la prenotazione */
 	String nomeCliente;
+	/** Id del tavolo a cui è riferita la prenotazione */
+	int tableId; 
+	
 	
 	public String getTimeAndDate() {
 		return timeAndDate;
@@ -32,6 +35,13 @@ public class Prenotazione {
 	}
 	public void setNomeCliente(String nomeCliente) {
 		this.nomeCliente = nomeCliente;
+	}
+	
+	public int getTableId() {
+		return tableId;
+	}
+	public void setTableId(int tableId) {
+		this.tableId = tableId;
 	}
 	
 }

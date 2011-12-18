@@ -39,6 +39,7 @@ import com.restaurant.android.Error;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
 import com.restaurant.android.Utility;
+import com.restaurant.android.cameriere.prenotazioni.Prenotazione;
 
 /**
  * Activity che rappresenta la scheda di un singolo
