@@ -1,20 +1,25 @@
 package com.restaurant.android.cameriere.activities;
 
-import java.math.BigDecimal;
 
+import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,21 +38,30 @@ public class GestioneOrdinazioneActivity extends Activity {
 	
 	/* Note */
 	private EditText editText_note = null;
-	
-	/* ListView Elenco Variazioni */
-	private ListView elencoVariazioni_listView = null;
-	private ArrayAdapter elencoVariazioni_adapter = null;
+
 	private Button button_modificaVariazioni = null; 
 	private Button button_aumentaQuantita;
 	private Button button_diminuisciQuantita;
 	
 	private Ordinazione myOrdinazione;
 	
+	private Cursor cursorVariazioni;
+	private DbManager dbManager;
+	private SQLiteDatabase db;
+
+	private ArrayList<String> elencoVariazioni;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) { 
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.cameriere_gestione_ordinazione);
+		
+		/*******************************************************
+		 * Inizializzazione degli oggetti per la gestione del DB
+		 *******************************************************/
+		dbManager = new DbManager(getApplication());
+		db = dbManager.getWritableDatabase();
 		
 		/* Recupero i parametri che mi sono stati passati dall'Activity
 		 * che mi ha invocato */
@@ -69,8 +83,33 @@ public class GestioneOrdinazioneActivity extends Activity {
 		button_modificaVariazioni = (Button) findViewById(R.id.button_gestioneOrdinazione_modificaVariazioni);
 		
 		/* Creo un'array di stringhe e lo visualizzo in una semplicissima ListView */
-		elencoVariazioni_listView = (ListView) findViewById(R.id.listView_gestioneOrdinazioni_variazioniList);
 		
+		elencoVariazioni = new ArrayList<String>();
+		
+		Cursor cursorVariazioniSelezionata = db.query("variazione", new String[] {"nome"}, null,null,null,null,null);
+		
+		cursorVariazioniSelezionata.moveToFirst();
+		while(!cursorVariazioniSelezionata.isAfterLast()) {
+			elencoVariazioni.add(cursorVariazioniSelezionata.getString(0));
+			cursorVariazioniSelezionata.moveToNext();
+		}
+		
+		cursorVariazioniSelezionata.close();
+		
+		LinearLayout linearLayout = (LinearLayout) findViewById(R.id.layoutListaVariazioni);
+		
+		int i=0;
+		for(String s : elencoVariazioni) {
+			 TextView variazione = new TextView(this);
+		     variazione.setText(s);
+		     variazione.setId(i++);
+		     variazione.setTextSize(18);
+		     variazione.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
+		     linearLayout.addView(variazione);
+		}
+		
+		
+			
 		button_aumentaQuantita = (Button) findViewById(R.id.buttonAumentaQuantita);
 		button_aumentaQuantita.setOnClickListener(new OnClickListener() {
 			@Override
@@ -92,17 +131,13 @@ public class GestioneOrdinazioneActivity extends Activity {
 		});
 		
 		
-		/** ***********************************************
+		
+		/*******************************************************
 		 * Alert Dialog per la gestione delle variazioni
-		 * ************************************************ */
+		 *******************************************************/
 		AlertDialog.Builder builder = new AlertDialog.Builder(GestioneOrdinazioneActivity.this);
 		
 		builder.setTitle("Variazioni disponibili");
-		
-		DbManager dbManager = new DbManager(getApplication());
-		SQLiteDatabase db = dbManager.getWritableDatabase();
-		
-		Cursor cursorVariazioni;
 		cursorVariazioni = db.query("variazione", 
 									new String[] {"idVariazione _id","nome","checked"},
 									null, null, null, null, null, null);
@@ -113,11 +148,51 @@ public class GestioneOrdinazioneActivity extends Activity {
 		builder.setMultiChoiceItems(cursorVariazioni, "checked", "nome", new DialogInterface.OnMultiChoiceClickListener() {
             public void onClick(DialogInterface dialog, int whichButton,
                     boolean isChecked) {
-
-                /* User clicked on a check box do some stuff */
-            	Log.w("Checkbox Finestra Scelta Variazioni", Boolean.toString(isChecked));
-//            	Toast.makeText(getApplicationContext(), Boolean.toString(isChecked), Toast.LENGTH_SHORT).show();
-            	
+        
+            	cursorVariazioni.moveToPosition(whichButton);
+                int idVariazione = cursorVariazioni.getInt(0);
+                
+                ContentValues values = new ContentValues();
+               	values.put("checked", isChecked);
+                
+                db.update("variazione", values , "idVariazione="+idVariazione, null);
+                cursorVariazioni.requery();
+                
+                /*********************************************************
+                 * Aggiorno l'associazione comanda-variazione all'interno
+                 * del database per la voce selezionata
+                 *********************************************************/
+             
+                cursorVariazioni.moveToPosition(whichButton);
+                
+                /* Verifico se la comanda è checked */
+                if(cursorVariazioni.getInt(2) == 0) {
+			
+                	/******************************************************************
+                	 * Rimuovo qualsiasi associazione tra la comanda e la variazione 
+                	 * correntemente considerata.
+                	 ******************************************************************/
+                	db.delete(	"variazionecomanda", 
+                				"idComanda=" + myOrdinazione.getIdOrdinazione() + 
+                				" AND idVariazione=" + idVariazione, null);
+                	
+                } else {
+                		
+                	/*******************************************************************
+                	 * La coppia idComanda, idVariazione ha un vincolo unique, quindi un 
+                	 * ulteriore inserimento genera un'eccezione. In ogni caso, se la 
+                	 * comanda è ora in stato checked, in precedenza era sicuramente non
+                	 * selezionata e quindi non presente nel db.
+                	 *******************************************************************/
+                	ContentValues nuovaVariazione = new ContentValues();
+                	nuovaVariazione.put("idComanda", myOrdinazione.getIdOrdinazione());
+                	nuovaVariazione.put("idVariazione",idVariazione);
+                		
+                	db.insertOrThrow("variazionecomanda", null, nuovaVariazione);
+                }
+                
+            	/* User clicked on a check box do some stuff */
+            	Log.w("Checkbox Finestra Scelta Variazioni", " Variazione: " +idVariazione +", checked=" + isChecked);
             }
         });
 				
@@ -127,7 +202,6 @@ public class GestioneOrdinazioneActivity extends Activity {
 		button_modificaVariazioni.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				
 				alert.show();
 			}
 		});
@@ -140,10 +214,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 		confermaOrdinazione.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				
-				DbManager dbManager = new DbManager(getApplicationContext());
-				SQLiteDatabase db = dbManager.getWritableDatabase();
-				
+					
 				if(myOrdinazione.getIdOrdinazione() == 0) {
 					
 					Log.d("GestioneOrdinazione" , "Nuova ordinazione");
@@ -174,21 +245,24 @@ public class GestioneOrdinazioneActivity extends Activity {
 					db.update("comanda", ordinazioneModificata, "idComanda=" + myOrdinazione.getIdOrdinazione(), null);
 				}
 				
-				db.close();
-				dbManager.close();
 				finish();
 			}
 		});
+	}
+	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		dbManager.close();
+		db.close();
+	}
+	
+	
+	public void onResume() {
+		super.onResume();
 		
 		
-		Object[] sArray = {};
-		ArrayAdapter adp = new ArrayAdapter(this, android.R.layout.simple_list_item_1, sArray);
-		elencoVariazioni_listView.setAdapter(adp);
 		
-		/* Chiamo un metodo definito in classe Utility che forza il ricalcolo
-		 * dell'altezza della ListView (poichè una ListView inserita in una ScrollView
-		 * dà alcuni problemi col ricalcolo dell'altezza */
-		Utility.setListViewHeightBasedOnChildren(elencoVariazioni_listView);
 	}
 	
 }

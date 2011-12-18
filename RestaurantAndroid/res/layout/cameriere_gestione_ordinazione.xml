@@ -147,22 +147,17 @@
 						    android:textAppearance="?android:attr/textAppearanceMedium" />
 						
 						<!-- Contenitore della ListView per le variazioni selezionate -->
-				         <LinearLayout
-					         android:id="@+id/linearLayout_gestioneOrdinazione_contains_variazioniListView"
-					         android:orientation="horizontal"
-					         android:layout_width="fill_parent"
-					         android:layout_height="wrap_content"
-					         android:layout_weight="0.1" >
-					     
-						         <!-- Variazioni -->
-					             <ListView 
-							        android:id="@+id/listView_gestioneOrdinazioni_variazioniList" 
-							        android:layout_width="fill_parent" 
-							        android:layout_height="wrap_content" >
-							    </ListView>
-			                 
-			         	 </LinearLayout>
-						       
+				       
+					     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+					    				android:layout_width="fill_parent"
+					   					android:layout_height="wrap_content"
+					   					android:id="@+id/layoutListaVariazioni"
+					   					
+					    				android:orientation="vertical" >
+						         
+					
+					     </LinearLayout>
+			         	       
 					          <Button
 								    android:id="@+id/button_gestioneOrdinazione_modificaVariazioni"
 								    android:layout_width="fill_parent"

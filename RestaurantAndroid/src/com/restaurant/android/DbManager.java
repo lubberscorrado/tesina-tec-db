@@ -44,12 +44,6 @@ public class DbManager extends SQLiteOpenHelper {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("create table categoria (idCategoria int, idCategoriaPadre int, nome string, descrizione string)");
 		database.execSQL("create table vocemenu (idVoceMenu int, idCategoria int, nome string, descrizione string, prezzo string)");
-		
-		/*************************************************************************************
-		 * Creo la tabella per mantenere le variazioni in locale. L'ultima colonna viene usata
-		 * durante la gestione delle ordinazione per sapere se una variazione è già stata
-		 * assegnata ad una comanda (la colonna è modificare on the fly).
-		 *************************************************************************************/
 		database.execSQL("create table variazione (idVariazione int, idCategoria int,  nome string, descrizione string, prezzo string, checked int)");
 		database.close();
 	}
@@ -57,7 +51,7 @@ public class DbManager extends SQLiteOpenHelper {
 	public void createTablesComande() {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("create table if not exists comanda (idComanda integer primary key autoincrement, idVoceMenu int, idTavolo int, quantita int, note string)");
-		database.execSQL("create table if not exists variazionecomanda (idVariazioneComanda integer primary key autoincrement, idComanda int, idVariazione)");
+		database.execSQL("create table if not exists variazionecomanda (idVariazioneComanda integer primary key autoincrement, idComanda int, idVariazione, unique(idComanda, idVariazione))");
 		database.close();
 	}
 	
