@@ -1,18 +1,19 @@
 package com.orb.gestioneOggetti;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
-import sun.org.mozilla.javascript.internal.ast.ThrowStatement;
 
 import com.exceptions.DatabaseException;
-import com.orb.Area;
-import com.orb.Piano;
 import com.orb.Prenotazione;
 import com.orb.Tavolo;
+import com.restaurant.WrapperPrenotazione;
 
 @Stateless
 public class GestionePrenotazione {
@@ -22,7 +23,7 @@ public class GestionePrenotazione {
 		
 	public GestionePrenotazione() {}
 	
-	public Prenotazione aggiungiPrenotazione(	int idTenant, 
+	public WrapperPrenotazione aggiungiPrenotazione(	int idTenant, 
 												Date data, 
 												String ora,
 												String nomecliente,
@@ -50,9 +51,31 @@ public class GestionePrenotazione {
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante l'inserimento di una prenotazione");
 		}
-		return prenotazione;
+		return new WrapperPrenotazione(prenotazione);
 		
 	}
+	
+	/**
+	 * Restituisce la lista delle prenotazioni 
+	 * @param idTenant
+	 * @return
+	 * @author Fabio Pierazzi
+	 */
+	public List<WrapperPrenotazione> getListaPrenotazioni(int idTenant) throws DatabaseException {
+
+		Query query = em.createQuery("SELECT p FROM Prenotazione p " +
+									 "WHERE p.idTenant = :idTenant");
+		
+		query.setParameter("idTenant", idTenant);
+
+		List<WrapperPrenotazione> listPrenotazioni= new ArrayList<WrapperPrenotazione>();
+		
+		for(Prenotazione prenotazione :  ((List<Prenotazione>) query.getResultList())) 
+			listPrenotazioni.add(new WrapperPrenotazione(prenotazione));
+		
+		return listPrenotazioni;
+	}
+	
 	
 		
 }
