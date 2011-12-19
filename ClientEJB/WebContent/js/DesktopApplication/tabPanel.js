@@ -1860,16 +1860,16 @@ var _mainTabPanel = {
 					                    }
 					                });
 				                }else if(this.up('form').action == 'update'){
-				                	var updatedNode = Ext.getStore('datastore_gestione_personale').getById(	form.findField('id').getValue()	);
-		                    		updatedNode.set('username', 	form.findField('username').getValue());
-		                    		updatedNode.set('nome',			form.findField('nome').getValue());
-		                    		updatedNode.set('cognome', 		form.findField('cognome').getValue());
-		                    		updatedNode.set('isCameriere',	form.findField('isCameriere').getValue());
-		                    		updatedNode.set('isCassiere',	form.findField('isCassiere').getValue());
-		                    		updatedNode.set('isCucina',		form.findField('isCucina').getValue());
-		                    		updatedNode.set('isAdmin',		form.findField('isAdmin').getValue());
-		                    		Ext.getCmp('viewport_east').collapse();
-		                    		Ext.getStore('datastore_gestione_personale').sync();
+//				                	var updatedNode = Ext.getStore('datastore_gestione_personale').getById(	form.findField('id').getValue()	);
+//		                    		updatedNode.set('username', 	form.findField('username').getValue());
+//		                    		updatedNode.set('nome',			form.findField('nome').getValue());
+//		                    		updatedNode.set('cognome', 		form.findField('cognome').getValue());
+//		                    		updatedNode.set('isCameriere',	form.findField('isCameriere').getValue());
+//		                    		updatedNode.set('isCassiere',	form.findField('isCassiere').getValue());
+//		                    		updatedNode.set('isCucina',		form.findField('isCucina').getValue());
+//		                    		updatedNode.set('isAdmin',		form.findField('isAdmin').getValue());
+//		                    		Ext.getCmp('viewport_east').collapse();
+//		                    		Ext.getStore('datastore_gestione_personale').sync();
 				                }
 				            	
 				            	

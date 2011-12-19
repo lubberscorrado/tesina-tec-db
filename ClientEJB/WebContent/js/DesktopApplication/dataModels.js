@@ -11,6 +11,17 @@ Ext.define('Ext.data.writer.SinglePost', {
     }
 });
 
+Ext.define('Ext.data.writer.SinglePostNoAction', {
+    extend: 'Ext.data.writer.Writer',
+    alternateClassName: 'Ext.data.SinglePostNoActionWriter',
+    alias: 'writer.singlepostnoaction',
+
+    writeRecords: function(request, data) {
+        request.params = data[0];
+        return request;
+    }
+});
+
   
 
 //Ext.define('Ext.data.writer.SinglePostNoAction', {
@@ -206,7 +217,7 @@ Ext.define('variazioneVoceMenu', {
             destroy: 	'variazioneVoceMenu?action=delete',
         },
         writer: {
-            type: 'singlepost'
+            type: 'singlepostnoaction'
         },
 		reader: {
 	        type: 'json',
