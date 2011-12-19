@@ -160,6 +160,16 @@ public class gestionePersonale extends HttpServlet {
 				JSONResponse.WriteOutput(response, true, "Rimozione effettuata correttamente."); return;
 			
 			}else if(action.equals("update")){
+				if(password.length() > 0 || password2.length() > 0){
+					if(password.length()<8){
+						JSONResponse.WriteOutput(response, false, "La password deve esser di almeno 8 caratteri."); return;
+					}
+					if( !password.equals(password2)){
+						JSONResponse.WriteOutput(response, false, "Le password inserite non coincidono. Riprovare."); return;
+					}
+				}
+				
+				
 				WrapperUtentePersonale wrapperUtentePersonale = gestioneUtentePersonale.updateUtentePersonale(id, nome, cognome, username, password, isCameriere, isCassiere, isCucina, isAdmin);
 				json_tmp = JSONFromBean.jsonFromOBJ(	wrapperUtentePersonale	);
 				json_array.put(json_tmp);

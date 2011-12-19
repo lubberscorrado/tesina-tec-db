@@ -24,7 +24,7 @@ public class JSONResponse {
 			if(session == null || session.isNew() || session.getAttribute("Logged").equals(false)){
 				JSONObject json_out = new JSONObject();
 				json_out.put("success", false);
-				json_out.put("message", "L'utente non � autenticato nel sistema.");
+				json_out.put("message", "L'utente non è autenticato nel sistema.");
 				response.getWriter().println(json_out);
 				return false;
 			}
