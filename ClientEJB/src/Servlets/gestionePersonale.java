@@ -140,13 +140,13 @@ public class gestionePersonale extends HttpServlet {
 			if(action.equals("create")){
 				
 				if(password == null || password.length()==0){
-					JSONResponse.WriteOutput(response, false, "Password mancante.", "data", json_array); return;
+					JSONResponse.WriteOutput(response, false, "Password mancante."); return;
 				}
 				if(password.length()<8){
-					JSONResponse.WriteOutput(response, false, "La password deve esser di almeno 8 caratteri.", "data", json_array); return;
+					JSONResponse.WriteOutput(response, false, "La password deve esser di almeno 8 caratteri."); return;
 				}
 				if( !password.equals(password2)){
-					JSONResponse.WriteOutput(response, false, "Le password inserite non coincidono. Riprovare.", "data", json_array); return;
+					JSONResponse.WriteOutput(response, false, "Le password inserite non coincidono. Riprovare."); return;
 				}
 				
 				WrapperUtentePersonale wrapperUtentePersonale = gestioneUtentePersonale.aggiungiUtentePersonale(idTenant, nome, cognome, username, password, isCameriere, isCassiere, isCucina, isAdmin);

@@ -1860,16 +1860,19 @@ var _mainTabPanel = {
 					                    }
 					                });
 				                }else if(this.up('form').action == 'update'){
-//				                	var updatedNode = Ext.getStore('datastore_gestione_personale').getById(	form.findField('id').getValue()	);
-//		                    		updatedNode.set('username', 	form.findField('username').getValue());
-//		                    		updatedNode.set('nome',			form.findField('nome').getValue());
-//		                    		updatedNode.set('cognome', 		form.findField('cognome').getValue());
-//		                    		updatedNode.set('isCameriere',	form.findField('isCameriere').getValue());
-//		                    		updatedNode.set('isCassiere',	form.findField('isCassiere').getValue());
-//		                    		updatedNode.set('isCucina',		form.findField('isCucina').getValue());
-//		                    		updatedNode.set('isAdmin',		form.findField('isAdmin').getValue());
-//		                    		Ext.getCmp('viewport_east').collapse();
-//		                    		Ext.getStore('datastore_gestione_personale').sync();
+				                	var updatedForm = Ext.getCmp('form_gestionePersonale');
+				                	var updatedNode = updatedForm.selectedNode;
+		                    		if(updatedNode){
+				                	updatedNode.set('username', 	updatedForm.getForm().findField('username').getValue());
+		                    		updatedNode.set('nome',			updatedForm.getForm().findField('nome').getValue());
+		                    		updatedNode.set('cognome', 		updatedForm.getForm().findField('cognome').getValue());
+		                    		updatedNode.set('isCameriere',	updatedForm.getForm().findField('isCameriere').getValue());
+		                    		updatedNode.set('isCassiere',	updatedForm.getForm().findField('isCassiere').getValue());
+		                    		updatedNode.set('isCucina',		updatedForm.getForm().findField('isCucina').getValue());
+		                    		updatedNode.set('isAdmin',		updatedForm.getForm().findField('isAdmin').getValue());
+		                    		Ext.getCmp('viewport_east').collapse();
+		                    		Ext.getStore('datastore_gestione_personale').sync();
+				                	}
 				                }
 				            	
 				            	
