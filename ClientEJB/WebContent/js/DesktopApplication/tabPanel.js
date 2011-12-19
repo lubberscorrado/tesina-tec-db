@@ -1616,23 +1616,25 @@ var _mainTabPanel = {
 			        statesave: function( thisStateful, state, eOpts ){
 			        	console.debug('STATESAVE');
 			        },
+			        
+			        itemcontextmenu: function(view, rec, node, index, e) {
+	                	var contextMenu = null;
+	                	console.debug('CONTEXT MENU');
+	                	contextMenu = Ext.create('Ext.menu.Menu', {
+	                		items: [{
+			                			text: 'Modifica utente',
+			                        	handler: function(){
+			                        		_mainTabPanel.updateComponentePersonale(rec);
+			                        	}
+		                            }
+		                        ]
+		                });
+	                	
+	                    contextMenu.showAt(e.getXY());
+//	                    return false;
+	                }
 		        },
-		        itemcontextmenu: function(view, rec, node, index, e) {
-                	var contextMenu = null;
-                	console.debug('CONTEXT MENU');
-                	contextMenu = Ext.create('Ext.menu.Menu', {
-                		items: [{
-		                			text: 'Modifica utente',
-		                        	handler: function(){
-		                        		_mainTabPanel.addNewNodeGestioneTavolo(rec);
-		                        	}
-	                            }
-	                        ]
-	                });
-                	
-                    contextMenu.showAt(e.getXY());
-                    return false;
-                },
+		        
 			    dockedItems: [{
 		            xtype: 'toolbar',
 		            dock: 'bottom',
@@ -1781,9 +1783,10 @@ var _mainTabPanel = {
 	    	            	if(this.up('form').action == 'create'){
 	    	            		this.up('form').getForm().reset();
 	    	            	}else{
-		    	            	this.up('form').getForm().findField('nome').setValue('');
+//		    	            	this.up('form').getForm().findField('nome').setValue('');
 //		    	            	this.up('form').getForm().findField('descrizione').setValue('');
 //		    	            	this.up('form').getForm().findField('prezzo').setValue('');
+	    	            		this.up('form').getForm().loadRecord( this.up('form').selectedNode );
 	    	            	}
 	    	            	
 	    	            }
@@ -1794,56 +1797,82 @@ var _mainTabPanel = {
 				            var form = this.up('form').getForm();
 				            if (form.isValid()) {
 				                // Submit the Ajax request and handle the response
-				                form.submit({
-				                	params : {
-				                    	action : this.up('form').action
-				                    },
-				                    success: function(form, action) {
-				                    	console.debug('GUARDAAAAA');
-				                    	console.debug(action);
-				                    	if( action.params.action == 'create' ){
-				                    		console.debug('OK SUCCESSO CREATE');
-				                    		
-				                    		var nuovo_nodo = Ext.create('personale', {
-					                    		id: 			action.result.data[0].id,
-					                    		username: 		action.result.data[0].username,
-					                    		nome: 			action.result.data[0].nome,
-					                    		cognome: 		action.result.data[0].cognome,
-					                    		isCameriere:	action.result.data[0].isCameriere,
-					                    		isCassiere:		action.result.data[0].isCassiere,
-					                    		isCucina:		action.result.data[0].isCucina,
-					                    		isAdmin:		action.result.data[0].isAdmin
-					                    	});
-				                    		Ext.getStore('datastore_gestione_personale').add(nuovo_nodo);
-				                    		Ext.getCmp('window_inserimentoPersonale').destroy();
-				                    	}else if ( action.params.action == 'update' ){
-//				                    		console.debug('OK SUCCESSO UPDATE');
-				                    		var updatedNode = Ext.getStore('datastore_gestione_menu').getNodeById(action.result.data[0].id);
-					                    		//updatedNode.set('id',action.result.data[0].id);
-					                    		//updatedNode.set('parentId',action.result.data[0].parentId);
-					                    		updatedNode.set('nome',action.result.data[0].nome);
-					                    		//updatedNode.set('tipo',action.result.data[0].tipo);
-					                    		updatedNode.set('descrizione',action.result.data[0].descrizione);
-					                    		updatedNode.set('prezzo',action.result.data[0].prezzo);
-					                    		if(action.result.data[0].tipo == 1){
-					                    			updatedNode.set('text',action.result.data[0].nome);
-					                    		}else{
-					                    			updatedNode.set('text',action.result.data[0].nome+' - ['+action.result.data[0].prezzo+'€]');
-					                    		}
-					                    	Ext.getCmp('viewport_east').collapse();
-				                    	}
-				                    	
-				                    	
-				                    	
-//				                    	Ext.Msg.alert('Info: ', action.result.message);
-//				                    	Ext.getCmp(window_inserimentoPersonale).destroy();
-//				                    	Ext.getCmp('form_gestioneMenu').destroy();
-				                    	
-				                    },
-				                    failure: function(form, action) {
-				                        Ext.Msg.alert('Errore: ', action.result.message);
-				                    }
-				                });
+				                if(this.up('form').action == 'create'){
+				                	form.submit({
+					                	params : {
+					                    	action : this.up('form').action
+					                    },
+					                    success: function(form, action) {
+					                    	console.debug('GUARDAAAAA');
+					                    	console.debug(action);
+					                    	if( action.params.action == 'create' ){
+					                    		console.debug('OK SUCCESSO CREATE');
+					                    		
+					                    		var nuovo_nodo = Ext.create('personale', {
+						                    		id: 			action.result.data[0].id,
+						                    		username: 		action.result.data[0].username,
+						                    		nome: 			action.result.data[0].nome,
+						                    		cognome: 		action.result.data[0].cognome,
+						                    		isCameriere:	action.result.data[0].isCameriere,
+						                    		isCassiere:		action.result.data[0].isCassiere,
+						                    		isCucina:		action.result.data[0].isCucina,
+						                    		isAdmin:		action.result.data[0].isAdmin
+						                    	});
+					                    		Ext.getStore('datastore_gestione_personale').add(nuovo_nodo);
+					                    		Ext.getCmp('window_inserimentoPersonale').destroy();
+					                    	}else if ( action.params.action == 'update' ){
+//					                    		console.debug('OK SUCCESSO UPDATE');
+					                    		var updatedNode = Ext.getStore('datastore_gestione_personale').getById(action.result.data[0].id);
+					                    		updatedNode.set('username', 	action.result.data[0].username);
+					                    		updatedNode.set('nome',			action.result.data[0].nome);
+					                    		updatedNode.set('cognome', 		action.result.data[0].cognome);
+					                    		updatedNode.set('isCameriere',	action.result.data[0].isCameriere);
+					                    		updatedNode.set('isCassiere',	action.result.data[0].isCassiere);
+					                    		updatedNode.set('isCucina',		action.result.data[0].isCucina);
+					                    		updatedNode.set('isAdmin',		action.result.data[0].isAdmin);
+					                    		
+					                    		
+					                    		
+					                    		
+//					                    		//updatedNode.set('id',action.result.data[0].id);
+//						                    		//updatedNode.set('parentId',action.result.data[0].parentId);
+//						                    		updatedNode.set('nome',action.result.data[0].nome);
+//						                    		//updatedNode.set('tipo',action.result.data[0].tipo);
+//						                    		updatedNode.set('descrizione',action.result.data[0].descrizione);
+//						                    		updatedNode.set('prezzo',action.result.data[0].prezzo);
+//						                    		if(action.result.data[0].tipo == 1){
+//						                    			updatedNode.set('text',action.result.data[0].nome);
+//						                    		}else{
+//						                    			updatedNode.set('text',action.result.data[0].nome+' - ['+action.result.data[0].prezzo+'€]');
+//						                    		}
+						                    	Ext.getCmp('viewport_east').collapse();
+					                    	}
+					                    	
+					                    	
+					                    	
+//					                    	Ext.Msg.alert('Info: ', action.result.message);
+//					                    	Ext.getCmp(window_inserimentoPersonale).destroy();
+//					                    	Ext.getCmp('form_gestioneMenu').destroy();
+					                    	
+					                    },
+					                    failure: function(form, action) {
+					                        Ext.Msg.alert('Errore: ', action.result.message);
+					                    }
+					                });
+				                }else if(this.up('form').action == 'update'){
+				                	var updatedNode = Ext.getStore('datastore_gestione_personale').getById(	form.findField('id').getValue()	);
+		                    		updatedNode.set('username', 	form.findField('username').getValue());
+		                    		updatedNode.set('nome',			form.findField('nome').getValue());
+		                    		updatedNode.set('cognome', 		form.findField('cognome').getValue());
+		                    		updatedNode.set('isCameriere',	form.findField('isCameriere').getValue());
+		                    		updatedNode.set('isCassiere',	form.findField('isCassiere').getValue());
+		                    		updatedNode.set('isCucina',		form.findField('isCucina').getValue());
+		                    		updatedNode.set('isAdmin',		form.findField('isAdmin').getValue());
+		                    		Ext.getCmp('viewport_east').collapse();
+		                    		Ext.getStore('datastore_gestione_personale').sync();
+				                }
+				            	
+				            	
 				            }
 				        }
 				    }]

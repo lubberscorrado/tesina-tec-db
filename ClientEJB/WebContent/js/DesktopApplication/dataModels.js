@@ -224,7 +224,7 @@ Ext.define('variazioneVoceMenu', {
 
 Ext.define('personale', {
 	extend: 'Ext.data.Model',
-    fields: ['id','username','passwd','nome','cognome',
+    fields: ['id','username','passwd','passwd2','nome','cognome',
              {name: 'isCameriere', 	type: 'bool'},
              {name: 'isCassiere', 	type: 'bool'},
              {name: 'isCucina', 	type: 'bool'},
