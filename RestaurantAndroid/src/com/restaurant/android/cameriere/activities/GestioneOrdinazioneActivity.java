@@ -49,7 +49,10 @@ public class GestioneOrdinazioneActivity extends Activity {
 	private DbManager dbManager;
 	private SQLiteDatabase db;
 
-	private ArrayList<String> elencoVariazioni;
+	private ArrayList<Integer> elencoVariazioniAssociateAOrdinazione;
+	private ArrayList<Integer> elencoVariazioniRimosse;
+	
+	private LinearLayout linearLayout;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) { 
@@ -82,34 +85,20 @@ public class GestioneOrdinazioneActivity extends Activity {
 		
 		button_modificaVariazioni = (Button) findViewById(R.id.button_gestioneOrdinazione_modificaVariazioni);
 		
-		/* Creo un'array di stringhe e lo visualizzo in una semplicissima ListView */
-		
-		elencoVariazioni = new ArrayList<String>();
-		
-		Cursor cursorVariazioniSelezionata = db.query("variazione", new String[] {"nome"}, null,null,null,null,null);
-		
-		cursorVariazioniSelezionata.moveToFirst();
-		while(!cursorVariazioniSelezionata.isAfterLast()) {
-			elencoVariazioni.add(cursorVariazioniSelezionata.getString(0));
-			cursorVariazioniSelezionata.moveToNext();
-		}
-		
-		cursorVariazioniSelezionata.close();
-		
-		LinearLayout linearLayout = (LinearLayout) findViewById(R.id.layoutListaVariazioni);
-		
-		int i=0;
-		for(String s : elencoVariazioni) {
-			 TextView variazione = new TextView(this);
-		     variazione.setText(s);
-		     variazione.setId(i++);
-		     variazione.setTextSize(18);
-		     variazione.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
-		     linearLayout.addView(variazione);
-		}
+		linearLayout = (LinearLayout) findViewById(R.id.layoutListaVariazioni);
+		elencoVariazioniAssociateAOrdinazione = new ArrayList<Integer>();
+		elencoVariazioniRimosse = new ArrayList<Integer>();
 		
 		
-			
+		/*******************************************************************************
+		 * Aggiorno flag sul database e liste delle variazioni associate all'ordinazione
+		 *******************************************************************************/
+		
+		resetFlagVariazioni();
+		updateArrayListVariazioni();
+		updateFlagVariazioni();
+		updateLayoutVariazioni();
+		     			
 		button_aumentaQuantita = (Button) findViewById(R.id.buttonAumentaQuantita);
 		button_aumentaQuantita.setOnClickListener(new OnClickListener() {
 			@Override
@@ -131,16 +120,55 @@ public class GestioneOrdinazioneActivity extends Activity {
 		});
 		
 		
-		
 		/*******************************************************
 		 * Alert Dialog per la gestione delle variazioni
 		 *******************************************************/
 		AlertDialog.Builder builder = new AlertDialog.Builder(GestioneOrdinazioneActivity.this);
 		
+		/* Insieme degli id delle variazioni associabili alla categoria 
+		 * a cui appartiene la voce di menu considerata. Le variazioni
+		 * sono quelle associate alla categoria stessa e alle categorie padre */
+		
+		String insiemeCategorie = "";
+		Cursor cursorIdCategoria = db.query("vocemenu", 
+											new String[] {"idCategoria"}, 
+											"idVoceMenu=" +myOrdinazione.getIdVoceMenu(),
+											null, null, null, null);
+		int idCategoria;
+		cursorIdCategoria.moveToFirst();
+		
+		if(cursorIdCategoria.getCount() > 0 ) {
+			idCategoria = cursorIdCategoria.getInt(0);
+		} else {
+			idCategoria = 0;
+		}
+		
+		insiemeCategorie = "(" + idCategoria;
+		cursorIdCategoria.close();
+		
+		while(idCategoria!= 0)  {
+			cursorIdCategoria = db.query("categoria", new String[] {"idCategoriaPadre"}, "idCategoria="+idCategoria,null,null,null,null);
+			
+			if(cursorIdCategoria.getCount() > 0 ) {
+				cursorIdCategoria.moveToFirst();
+				idCategoria = cursorIdCategoria.getInt(0);
+				insiemeCategorie = insiemeCategorie + "," + idCategoria;
+				cursorIdCategoria.close();
+			} else {
+				cursorIdCategoria.close();
+				break;
+			}
+		
+		}
+		
+		insiemeCategorie = insiemeCategorie + ")";
+		
+		Log.d("GestioneOrdinazione", "Insieme delle categorie legali " + insiemeCategorie);
+		
 		builder.setTitle("Variazioni disponibili");
 		cursorVariazioni = db.query("variazione", 
 									new String[] {"idVariazione _id","nome","checked"},
-									null, null, null, null, null, null);
+									"idCategoria in " + insiemeCategorie,  null, null, null, null, null);
 	
 		/* Il cursor per visualizzare gli elementi in un dialog necessita di selezionare
 		 * tra gli attributi della tabella  un id identificativo del record con alias _id */
@@ -152,43 +180,31 @@ public class GestioneOrdinazioneActivity extends Activity {
             	cursorVariazioni.moveToPosition(whichButton);
                 int idVariazione = cursorVariazioni.getInt(0);
                 
+                /************************************************************
+                 * Per aggiornare lo stato della checkbox è necessario
+                 * aggiornare il valore della flag nel database e riformulare
+                 * la query.
+                 ************************************************************/
+                
                 ContentValues values = new ContentValues();
                	values.put("checked", isChecked);
-                
                 db.update("variazione", values , "idVariazione="+idVariazione, null);
                 cursorVariazioni.requery();
                 
                 /*********************************************************
-                 * Aggiorno l'associazione comanda-variazione all'interno
-                 * del database per la voce selezionata
+                 * Aggiorno la lista delle variazioni temporanee a seconda
+                 * del click dell'utente.
                  *********************************************************/
              
                 cursorVariazioni.moveToPosition(whichButton);
                 
-                /* Verifico se la comanda è checked */
-                if(cursorVariazioni.getInt(2) == 0) {
-			
-                	/******************************************************************
-                	 * Rimuovo qualsiasi associazione tra la comanda e la variazione 
-                	 * correntemente considerata.
-                	 ******************************************************************/
-                	db.delete(	"variazionecomanda", 
-                				"idComanda=" + myOrdinazione.getIdOrdinazione() + 
-                				" AND idVariazione=" + idVariazione, null);
-                	
+                /* Verifico se la variazione è stata selezionata o deselezionata */
+                if(isChecked == false) {
+                  	elencoVariazioniAssociateAOrdinazione.remove(new Integer(idVariazione));
+                  	elencoVariazioniRimosse.add(new Integer(idVariazione));
+                  	
                 } else {
-                		
-                	/*******************************************************************
-                	 * La coppia idComanda, idVariazione ha un vincolo unique, quindi un 
-                	 * ulteriore inserimento genera un'eccezione. In ogni caso, se la 
-                	 * comanda è ora in stato checked, in precedenza era sicuramente non
-                	 * selezionata e quindi non presente nel db.
-                	 *******************************************************************/
-                	ContentValues nuovaVariazione = new ContentValues();
-                	nuovaVariazione.put("idComanda", myOrdinazione.getIdOrdinazione());
-                	nuovaVariazione.put("idVariazione",idVariazione);
-                		
-                	db.insertOrThrow("variazionecomanda", null, nuovaVariazione);
+                	elencoVariazioniAssociateAOrdinazione.add(new Integer(idVariazione));
                 }
                 
             	/* User clicked on a check box do some stuff */
@@ -196,6 +212,17 @@ public class GestioneOrdinazioneActivity extends Activity {
             }
         });
 				
+		/* Aggiorno la lista delle variazioni associata all'ordinazione al momento
+		 * della chiusura della dialog box */
+		
+		builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				updateLayoutVariazioni();
+				
+			}
+		});
+		
 		final AlertDialog alert = builder.create();
 
 		/* Bottone per selezionare quali variazioni associare all'ordinazione */
@@ -207,7 +234,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 		});
 		
 		
-		/** ***********************************************
+		/*************************************************
 		 * Conferma dell'ordinazione
 		 * ************************************************ */
 		Button confermaOrdinazione = (Button)findViewById(R.id.button_gestioneOrdinazione_confermaOrdinazione);
@@ -226,13 +253,19 @@ public class GestioneOrdinazioneActivity extends Activity {
 					values.put("quantita", Integer.parseInt(editText_quantita.getText().toString()));
 					values.put("note", editText_note.getText().toString());
 					values.put("idTavolo", myOrdinazione.getIdTavolo());
-								
 					db.insertOrThrow("comanda", null, values);
-					onDestroy();
+					
+					/* Recupero l'id dell'ultima ordinazione inserita nel database */
+					String query = "SELECT idComanda from comanda order by idComanda DESC limit 1";
+					Cursor c = db.rawQuery(query,  null);
+					if (c != null && c.moveToFirst()) 
+					    myOrdinazione.setIdOrdinazione(c.getInt(0)); 
+					c.close();
+					
 				
 				} else {
 					
-					Log.d("GestioneOrdinazione" , "Ordinazione in sospeso");
+					Log.d("GestioneOrdinazione" , "Ordinazione in sospeso che viene modificata");
 					
 					/*********************************************************
 					 * Aggiorno le informazioni sulla comanda all'interno del 
@@ -245,14 +278,100 @@ public class GestioneOrdinazioneActivity extends Activity {
 					db.update("comanda", ordinazioneModificata, "idComanda=" + myOrdinazione.getIdOrdinazione(), null);
 				}
 				
+				
+				/*************************************************************************
+				 * Aggiorno le variazioni associate all'ordinazione aggiungendo e inserendo
+				 * nel database variazionecomanda (se replico una coppia
+				 * idVariazione idOrdinazione non viene inserita nel db per il vincolo
+				 * di unique).
+				 *************************************************************************/
+				
+				for(Integer idNuovaVariazione : elencoVariazioniAssociateAOrdinazione) {
+                	ContentValues nuovaVariazione = new ContentValues();
+                	nuovaVariazione.put("idComanda", myOrdinazione.getIdOrdinazione());
+                	nuovaVariazione.put("idVariazione",idNuovaVariazione);
+                	try {
+                		db.insertOrThrow("variazionecomanda", null, nuovaVariazione);
+                	} catch (Exception e) {
+                		/* Eccezione probabilmente derivante dal fatto che la variazione
+                		 * è già associata all'ordinazione */
+                		
+                		Log.d("ConfermaOrdinazione", e.toString());
+                	}
+				}
+				
+				for(Integer idVecchiaVariazione : elencoVariazioniRimosse) {
+					db.delete("variazionecomanda", "idVariazione="+ idVecchiaVariazione + " AND idComanda=" + myOrdinazione.getIdOrdinazione(), null);
+					
+				}
+				
+				
+				
 				finish();
 			}
 		});
 	}
+		
+	public void resetFlagVariazioni() {
+		ContentValues values = new ContentValues();
+		values.put("checked", 0);
+		db.update("variazione", values, "1=1", null);
+	}
+
+	public void updateFlagVariazioni() {
+		ContentValues checked = new ContentValues();
+		checked.put("checked", 1);
+		for(Integer idVariazioneAssociataAOrdinazione : elencoVariazioniAssociateAOrdinazione) 
+			db.update("variazione", checked, "idVariazione=" + idVariazioneAssociataAOrdinazione, null);
+		
+	}
 	
+	public void updateArrayListVariazioni() {
+		
+		Cursor cursorElencoVariazioni = db.query("variazionecomanda", new String[] {"idVariazione"}, "idComanda=" + myOrdinazione.getIdOrdinazione(), null, null, null, null);
+		
+		elencoVariazioniAssociateAOrdinazione.clear();
+		
+		cursorElencoVariazioni.moveToFirst();
+		while(!cursorElencoVariazioni.isAfterLast()) {
+			elencoVariazioniAssociateAOrdinazione.add(new Integer(cursorElencoVariazioni.getInt(0)));
+			cursorElencoVariazioni.moveToNext();
+		}
+		
+		cursorElencoVariazioni.close();
+		
+	}
+	
+	public void updateLayoutVariazioni() {
+		
+		linearLayout.removeAllViews();
+			
+		for(Integer idVariazioneAssociata : elencoVariazioniAssociateAOrdinazione) {
+			
+			Cursor nomeVariazione = db.query("variazione", new String[] {"nome"}, "idVariazione=" + idVariazioneAssociata, null, null, null, null, null);
+			nomeVariazione.moveToFirst();
+			
+			if(nomeVariazione.getCount() != 1) {
+				TextView variazione = new TextView(this);
+				variazione.setText("Var. non più presente");
+			    variazione.setTextSize(18);
+			    variazione.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
+			    linearLayout.addView(variazione);
+			} else {
+				TextView variazione = new TextView(this);
+			    variazione.setText(nomeVariazione.getString(0));
+			    variazione.setTextSize(18);
+			    variazione.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
+			    linearLayout.addView(variazione);
+			}
+			nomeVariazione.close();
+		}
+	}
+		
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
+		cursorVariazioni.close();
 		dbManager.close();
 		db.close();
 	}

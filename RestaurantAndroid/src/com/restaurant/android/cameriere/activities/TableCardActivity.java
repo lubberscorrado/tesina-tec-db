@@ -577,6 +577,7 @@ public class TableCardActivity extends Activity {
         		  Ordinazione o = new Ordinazione();
         		  
         		  o.setIdOrdinazione(cursorOrdinazioniSospese.getInt(0));
+        		  o.setIdVoceMenu(cursorOrdinazioniSospese.getInt(1));
         		  o.setIdTavolo(myTable.getTableId());
         		  o.setNome(cursorNomeVoceMenu.getString(0));
         		  o.setQuantita(cursorOrdinazioniSospese.getInt(2));

@@ -58,6 +58,11 @@ public class DbManager extends SQLiteOpenHelper {
 	public void dropTablesComande() {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("drop table if exists comanda");
+		database.close();
+	}
+	
+	public void dropTablesVariazioniComande() {
+		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("drop table if exists variazionecomanda");
 		database.close();
 	}

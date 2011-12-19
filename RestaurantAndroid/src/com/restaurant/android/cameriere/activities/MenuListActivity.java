@@ -247,57 +247,66 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			 */
 			if(!voceMenu.isCategoria()) {
 				
+				/****************************************************************************
+				 * Suppongo che cliccando su una voce di menu dalla lista menu si apra sempre
+				 * una nuova ordinazione anche se sono presenti ordinazioni in sospeso per
+				 * quella stessa voce di menù. In alternativa dovrei ricercare eventuali 
+				 * ordinazioni in sospeso sul database locale che siano state fatte per la
+				 * stessa voce 
+				 *****************************************************************************/
 				
-				/**************************************************************************
-				 * Ricerco eventuali ordinazioni in sospeso sul  database locale che siano 
-				 * state fatte per la stessa voce di menu
-				 **************************************************************************/
-				DbManager dbManager = new DbManager(getApplicationContext());
-				SQLiteDatabase db = dbManager.getWritableDatabase();
-				
-				Cursor cursorOrdinazioniSospese;
-						
-				cursorOrdinazioniSospese = db.query("comanda", 
-													new String[] {"idComanda", "idTavolo", "quantita", "note"} , 
-													"idVoceMenu=" + voceMenu.getIdVoceMenu() + " AND idTavolo=" + idTavolo, 
-													null, null, null, null, null);
-				
-				if(cursorOrdinazioniSospese.getCount() > 1) 
-					Log.e("MenuListActivity","Le ordinazioni in sospeso per la voce di menu selezionata sono più di 1, questo non dovrebbe mai accadere");
-				
-				Ordinazione ordinazione = new Ordinazione();
-				ordinazione.setNome(voceMenu.getNome());
-				ordinazione.setIdVoceMenu(voceMenu.getIdVoceMenu());
-				ordinazione.setIdTavolo(idTavolo);
-				
-				if(cursorOrdinazioniSospese.getCount() != 0) {
-					
-					cursorOrdinazioniSospese.moveToFirst();
-					if(cursorOrdinazioniSospese.getCount() > 1) 
-						Log.e("MenuListActivity","Le ordinazioni in sospeso per la voce di menu selezionata sono più di 1, questo non dovrebbe mai accadere");
-					
-					Bundle bundle_received = getIntent().getExtras();
-					
-					ordinazione.setQuantita(cursorOrdinazioniSospese.getInt(2));
-					ordinazione.setNote(cursorOrdinazioniSospese.getString(3));
-					ordinazione.setIdOrdinazione(cursorOrdinazioniSospese.getInt(0));
-					ordinazione.setIdTavolo(bundle_received.getInt("tableId"));
-					
-				} else {
-					Log.d("MenuListActivity", "Non ci sono ordinazioni in sospeso relative a questa voce di menu");
-				}
+//				DbManager dbManager = new DbManager(getApplicationContext());
+//				SQLiteDatabase db = dbManager.getWritableDatabase();
+//				
+//				Cursor cursorOrdinazioniSospese;
+//						
+//				cursorOrdinazioniSospese = db.query("comanda", 
+//													new String[] {"idComanda", "idTavolo", "quantita", "note"} , 
+//													"idVoceMenu=" + voceMenu.getIdVoceMenu() + " AND idTavolo=" + idTavolo, 
+//													null, null, null, null, null);
+//				
+//				if(cursorOrdinazioniSospese.getCount() > 1) 
+//					Log.e("MenuListActivity","Le ordinazioni in sospeso per la voce di menu selezionata sono più di 1, questo non dovrebbe mai accadere");
+//				
+//				Ordinazione ordinazione = new Ordinazione();
+//				ordinazione.setNome(voceMenu.getNome());
+//				ordinazione.setIdVoceMenu(voceMenu.getIdVoceMenu());
+//				ordinazione.setIdTavolo(idTavolo);
+//				
+//				if(cursorOrdinazioniSospese.getCount() != 0) {
+//					
+//					cursorOrdinazioniSospese.moveToFirst();
+//					if(cursorOrdinazioniSospese.getCount() > 1) 
+//						Log.e("MenuListActivity","Le ordinazioni in sospeso per la voce di menu selezionata sono più di 1, questo non dovrebbe mai accadere");
+//					
+//					Bundle bundle_received = getIntent().getExtras();
+//					
+//					ordinazione.setQuantita(cursorOrdinazioniSospese.getInt(2));
+//					ordinazione.setNote(cursorOrdinazioniSospese.getString(3));
+//					ordinazione.setIdOrdinazione(cursorOrdinazioniSospese.getInt(0));
+//					ordinazione.setIdTavolo(bundle_received.getInt("tableId"));
+//					
+//				} else {
+//					Log.d("MenuListActivity", "Non ci sono ordinazioni in sospeso relative a questa voce di menu");
+//				}
 				
 				/* ***********************************************************
 				 * Apro l'activity e gli passo alcune informazioni importanti 
 				 * *********************************************************** */
 	  	    	Intent myIntent = new Intent(MenuListActivity.this, GestioneOrdinazioneActivity.class);
 	  	    	Bundle b = new Bundle();
+	  	    	
+	  	    	Ordinazione ordinazione = new Ordinazione();
+				ordinazione.setNome(voceMenu.getNome());
+				ordinazione.setIdVoceMenu(voceMenu.getIdVoceMenu());
+				ordinazione.setIdTavolo(idTavolo);
+				
 			  	b.putSerializable("ordinazione", (Ordinazione) ordinazione);     
 			  	myIntent.putExtras(b);
 	  	    	
-			  	cursorOrdinazioniSospese.close();
-			  	dbManager.close();
-			  	db.close();
+//			  	cursorOrdinazioniSospese.close();
+//			  	dbManager.close();
+//			  	db.close();
 			  				  	
 		  	     /* Lancio la nuova activity passandogli queste informazioni
 		  	      * come parametro */
