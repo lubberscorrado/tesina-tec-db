@@ -117,7 +117,7 @@ function initStores(){
 //									console.debug('Create OR Update');
 //								}
 					console.debug('BEFORE SYNC');
-					alert('BEFORE SYNC');
+//					alert('BEFORE SYNC');
 				},
 				beforeprefetch: function( thisStore, operation, eOpts ){
 					console.debug('BEFORE PREFETCH');
@@ -142,8 +142,9 @@ function initStores(){
 //		//			Ext.data.Model.COMMIT
 					console.debug('UPDATE');
 					var r = thisStore.getProxy().getReader().jsonData;
-			    	if(!r.success)
-			    		alert(r.message);
+			    	if(!r.success){
+//			    		alert(r.message);
+			    	}
 				},
 				remove: function( store, record, index, eOpts ){
 //					console.debug('removerello');
@@ -185,8 +186,9 @@ function initStores(){
 			    	console.debug('PROVIAMOLOO');
 			    	console.debug(thisStore);
 			    	var r = thisStore.getProxy().getReader().jsonData;
-			    	if(!r.success)
-			    		alert(r.message);
+			    	if(!r.success){
+//			    		alert(r.message);
+			    	}
 			    }
 		    }
 		});

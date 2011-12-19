@@ -5,16 +5,12 @@ Ext.define('Ext.data.writer.SinglePost', {
     alias: 'writer.singlepost',
 
     writeRecords: function(request, data) {
-    	//data[0].action = request.params.action;
+    	data[0].action = request.params.action;
         request.params = data[0];
         return request;
     }
 });
 
-/* DEFINIZIONE DI UN TOAST */
-Ext.ux.ToastWindowMgr = {
-	    positions: [] 
-};
   
 
 //Ext.define('Ext.data.writer.SinglePostNoAction', {
@@ -254,9 +250,9 @@ Ext.define('personale', {
 	        idProperty: 'id',
 	        root: 'data',
 	        messageProperty : 'message',
-	        failure: function(form, action) {
-                Ext.Msg.alert('Errore: ', action.result.message);
-            }
+//	        failure: function(form, action) {
+//                Ext.Msg.alert('Errore: ', action.result.message);
+//            }
 	    },
 	    actionMethods : {
             create : 'POST',
@@ -264,17 +260,64 @@ Ext.define('personale', {
             update : 'POST',
             destroy: 'POST'
         },
-        afterRequest:function(request,success){
-//        	console.debug('inizio AFTEREQUEST');
-//        	console.debug(request);
-//        	console.debug(success);
-//        	console.debug('fine AFTEREQUEST');
-            
-        },
+//        afterRequest:function(request,success){
+////        	console.debug('inizio AFTEREQUEST');
+////        	console.debug(request);
+////        	console.debug(success);
+////        	console.debug('fine AFTEREQUEST');
+//            
+//        },
         listeners: {
-        	write: function (proxy, action) {
-        	    console.log('proxy-write');
-        	}
+//        	write: function (proxy, action) {
+//        	    console.log('proxy-write');
+//        	},
+//        	afterRequest:function(request,success){
+//                if(request.method = 'PUT'){
+//                     // your code
+//                }
+//                console.debug('PROXY AFTER REQUEST');
+//                console.debug(success);
+//            },
+        	exception: function (proxy, response, operation) {
+        		console.debug('EXCEPTION');
+                var json = Ext.decode(response.responseText);
+                console.debug(json);
+                if(json.success){//Success
+                	console.debug('SUCCESS');
+                }else{//Failure
+                	console.debug('FAILURE');
+//                	new Ext.ux.Notification({
+//                		iconCls:	'x-icon-information',
+//	        			title:	  'Errore',
+//	        			html:		json.message,
+//	        			autoDestroy: true,
+//	        			hideDelay:  5000,
+//        			}).show(document);
+                	Ext.MessageBox.show({
+		                title: 'EXCEPTION',
+		                msg: operation.getError(),
+		                icon: Ext.MessageBox.ERROR,
+		                autoDestroy: true,
+		      			hideDelay:  2000,
+		                buttons: Ext.Msg.OK
+                  });
+                }
+//                if (json) {
+//                    detl.getForm().markInvalid(json.errors);
+//                    Ext.MessageBox.show({
+//                        title: 'Save Failed',
+//                        msg: json.message,
+//                        icon: Ext.MessageBox.ERROR,
+//                        buttons: Ext.Msg.OK
+//                    });
+//                } else
+//                Ext.MessageBox.show({
+//                    title: 'EXCEPTION',
+//                    msg: operation.getError(),
+//                    icon: Ext.MessageBox.ERROR,
+//                    buttons: Ext.Msg.OK
+//                });
+            }
         }
     }
 });

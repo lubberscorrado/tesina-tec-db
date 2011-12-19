@@ -56,7 +56,7 @@ public class login extends HttpServlet {
 			session.setAttribute("idTenant", 0);
 			session.setAttribute("Privs", JSONResponse.PRIV_SuperAdministrator);
 			
-			System.out.println("Login from: "+request.getRemoteAddr());
+			System.out.print("Login from: "+request.getRemoteAddr());
 			
 			JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");	return;
 			

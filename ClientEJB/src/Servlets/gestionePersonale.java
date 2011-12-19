@@ -97,11 +97,18 @@ public class gestionePersonale extends HttpServlet {
 		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
 			return;
 		}
+		//Controllo l'azione richiesta
+		String action = request.getParameter("action");
+		if(action == null || action.length() == 0){
+			JSONResponse.WriteOutput(response, false, "No Action."); return;
+		}
+		
+		idTenant = (Integer) request.getSession().getAttribute("idTenant");
+		
 		JSONArray json_array = new JSONArray();
 		JSONObject json_tmp = null;
-		idTenant = (Integer) request.getSession().getAttribute("idTenant");
-		String action = request.getParameter("action");
-		System.out.println("AZIONEEEEEEEEEEE: "+action);
+		
+		
 		int id;
 		try {
 			try{
@@ -113,12 +120,24 @@ public class gestionePersonale extends HttpServlet {
 			String cognome = request.getParameter("cognome");
 			String username = request.getParameter("username");
 			String password = request.getParameter("passwd");
+			String password2 = request.getParameter("passwd2");
 			boolean isCameriere = Boolean.parseBoolean(request.getParameter("isCameriere"));
 			boolean isCassiere = Boolean.parseBoolean(request.getParameter("isCassiere"));
 			boolean isCucina = Boolean.parseBoolean(request.getParameter("isCucina"));
 			boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
 			
 			if(action.equals("create")){
+				
+				if(password == null || password.length()==0){
+					JSONResponse.WriteOutput(response, false, "Password mancante.", "data", json_array); return;
+				}
+				if(password.length()<8){
+					JSONResponse.WriteOutput(response, false, "La password deve esser di almeno 8 caratteri.", "data", json_array); return;
+				}
+				if( !password.equals(password2)){
+					JSONResponse.WriteOutput(response, false, "Le password inserite non coincidono. Riprovare.", "data", json_array); return;
+				}
+				
 				WrapperUtentePersonale wrapperUtentePersonale = gestioneUtentePersonale.aggiungiUtentePersonale(idTenant, nome, cognome, username, password, isCameriere, isCassiere, isCucina, isAdmin);
 				json_tmp = JSONFromBean.jsonFromOBJ(	wrapperUtentePersonale	);
 				json_array.put(json_tmp);
@@ -138,7 +157,7 @@ public class gestionePersonale extends HttpServlet {
 			}
 			
 			
-			JSONResponse.WriteOutput(response, false, "No Action."); return;
+			
 			
 		} catch (DatabaseException e) {
 //			e.printStackTrace();

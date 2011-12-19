@@ -811,9 +811,9 @@ var _mainTabPanel = {
 			Ext.MessageBox.confirm('Conferma', 'Sei sicuro di voler rimuovere '+selectedNode.get('nome')+'?', function(btn){
 				if(btn == 'no') return;
 				selectedNode.destroy({
-	                params : {
-	                	action : 'delete'
-	                },
+					params : {
+                    	action : 'delete'
+                    },
 	                success : function(record, action) {
 //	                	Ext.Msg.alert('Success', action.result.message);
 	                	new Ext.ux.Notification({
@@ -1245,9 +1245,9 @@ var _mainTabPanel = {
 			Ext.MessageBox.confirm('Conferma', 'Sei sicuro di voler rimuovere '+selectedNode.get('nome')+'?', function(btn){
 				if(btn == 'no') return;
 				selectedNode.destroy({
-	                params : {
-	                	action : 'delete'
-	                },
+					params : {
+                    	action : 'delete'
+                    },
 	                success : function(record, action) {
 //	                	Ext.Msg.alert('Success', action.result.message);
 	                	new Ext.ux.Notification({
@@ -1590,9 +1590,8 @@ var _mainTabPanel = {
 		        store: Ext.getStore('datastore_gestione_personale'),
 		        columns: [
 
-		            { text:	'Id',  			flex: 1,	dataIndex: 'id', hidden: true },
-		            { text:	'Username',  	flex: 1,	dataIndex: 'username',		field: {xtype: 'textfield'}	},
-		            { text:	'Password',  	flex: 1,	dataIndex: 'passwd',		field: {xtype: 'textfield'}	},
+		            { text:	'Id',  			flex: 1,	dataIndex: 'id', hidden: true	},
+		            { text:	'Username',  	flex: 1,	dataIndex: 'username',		/*field: {xtype: 'textfield'}*/},
 		            { text:	'Nome',  		flex: 1,	dataIndex: 'nome',			field: {xtype: 'textfield'}	},
 		            { text:	'Cognome', 		flex: 1,	dataIndex: 'cognome',		field: {xtype: 'textfield'}	},
 		            { text:	'Cameriere', 	width: 80,	dataIndex: 'isCameriere',	field: {xtype: 'checkbox'}	},
@@ -1614,7 +1613,26 @@ var _mainTabPanel = {
 //					selectionchange: function(view, records) {
 //						grid.down('#delete_gestione_personale').setDisabled(!records.length);
 //					}
+			        statesave: function( thisStateful, state, eOpts ){
+			        	console.debug('STATESAVE');
+			        },
 		        },
+		        itemcontextmenu: function(view, rec, node, index, e) {
+                	var contextMenu = null;
+                	
+                	contextMenu = Ext.create('Ext.menu.Menu', {
+                		items: [{
+		                			text: 'Modifica utente',
+		                        	handler: function(){
+		                        		_mainTabPanel.addNewNodeGestioneTavolo(rec);
+		                        	}
+	                            }
+	                        ]
+	                });
+                	
+                    contextMenu.showAt(e.getXY());
+                    return false;
+                },
 			    dockedItems: [{
 		            xtype: 'toolbar',
 		            dock: 'bottom',
@@ -1628,11 +1646,14 @@ var _mainTabPanel = {
 		                text: 'Add',
 		                iconCls: 'icon-add',
 		                handler: function(){
-		                	var emptyRecord = Ext.create('personale',{
-		                    	action: 'create'
-		                    });
-		            		Ext.getStore('datastore_gestione_personale').insert(0,emptyRecord);
-		                    rowEditing.startEdit(0, 0);
+		                	_mainTabPanel.addNewComponentePersonale();
+
+//		                	var emptyRecord = Ext.create('personale',{
+//		                    	action: 'create'
+//		                    });
+//		            		Ext.getStore('datastore_gestione_personale').insert(0,emptyRecord);
+//		                    rowEditing.startEdit(0, 0);
+//		                	_maintab addNewComponentePersonale();
 		                }
 		            }, '-', {
 //		                itemId: 'delete',
@@ -1651,15 +1672,18 @@ var _mainTabPanel = {
 			                    	}
 		            				
 		            				selection.destroy({
+		            					params: {
+		            						action: 'delete'
+		            					},
 		            	                success : function(record, action) {
 //		            	                	Ext.Msg.alert('Success', action.resultSet.message);
-		            	                	new Ext.ux.Notification({
-		            	        				iconCls:	'x-icon-information',
-		            	        				title:	  'Successo',
-		            	        				html:		action.result.message,
-		            	        				autoDestroy: true,
-		            	        				hideDelay:  2000,
-		            	        			}).show(document);
+//		            	                	new Ext.ux.Notification({
+//		            	        				iconCls:	'x-icon-information',
+//		            	        				title:	  'Successo',
+//		            	        				html:		action.result.message,
+//		            	        				autoDestroy: true,
+//		            	        				hideDelay:  2000,
+//		            	        			}).show(document);
 		            	                	Ext.getStore('datastore_gestione_personale').remove(selection);
 		            	                },
 		            	                failure: function(form, action) {
@@ -1698,8 +1722,159 @@ var _mainTabPanel = {
 			});
 		
 			Ext.getCmp('main_tabPanel').add( Ext.getCmp('main_tabPanel_gestionePersonale') );
-		}
+		},
 
+		createFormGestionePersonale : function(){
+			var tmp = Ext.getCmp('form_gestionePersonale');
+			if(tmp) tmp.destroy();
+			
+			return Ext.create('Ext.form.Panel', {
+					id: 'form_gestionePersonale',
+					border: false,
+	    	        defaultType: 'textfield',
+	    	        url: 'gestionePersonale',
+	    	        items: [{
+				        fieldLabel: 'ID',
+				        name: 'id',
+				        hidden: true
+				    },{
+				        fieldLabel: 'Username',
+				        name: 'username',
+				        allowBlank: false
+				    },{
+				        fieldLabel: 'Nome',
+				        name: 'nome',
+					    allowBlank: false
+				    },{
+				        fieldLabel: 'Cognome',
+				        name: 'cognome',
+				        allowBlank: false
+				    },{
+				    	inputType: 'password',
+				        fieldLabel: 'Password',
+				        name: 'passwd'
+				    },{
+				    	inputType: 'password',
+				        fieldLabel: 'Password2',
+				        name: 'passwd2'
+				    },{
+				    	xtype: 'checkboxfield',
+				        fieldLabel: 'Cameriere',
+				        name: 'isCameriere'
+				    },{
+				    	xtype: 'checkboxfield',
+				        fieldLabel: 'Cassiere',
+				        name: 'isCassiere'
+				    },{
+				    	xtype: 'checkboxfield',
+				        fieldLabel: 'Cucina',
+				        name: 'isCucina'
+				    },{
+				    	xtype: 'checkboxfield',
+				        fieldLabel: 'Admin',
+				        name: 'isAdmin'
+				    }],
+				    
+				    buttons: [{
+	    	            text: 'Reset',
+	    	            handler: function() {
+	    	            	if(this.up('form').action == 'create'){
+	    	            		this.up('form').getForm().reset();
+	    	            	}else{
+		    	            	this.up('form').getForm().findField('nome').setValue('');
+//		    	            	this.up('form').getForm().findField('descrizione').setValue('');
+//		    	            	this.up('form').getForm().findField('prezzo').setValue('');
+	    	            	}
+	    	            	
+	    	            }
+	    	        },{
+				        text: 'Submit',
+				        handler: function() {
+				            // The getForm() method returns the Ext.form.Basic instance:
+				            var form = this.up('form').getForm();
+				            if (form.isValid()) {
+				                // Submit the Ajax request and handle the response
+				                form.submit({
+				                	params : {
+				                    	action : this.up('form').action
+				                    },
+				                    success: function(form, action) {
+				                    	console.debug('GUARDAAAAA');
+				                    	console.debug(action);
+				                    	if( action.params.action == 'create' ){
+				                    		console.debug('OK SUCCESSO CREATE');
+				                    		
+				                    		var nuovo_nodo = Ext.create('personale', {
+					                    		id: 			action.result.data[0].id,
+					                    		username: 		action.result.data[0].username,
+					                    		nome: 			action.result.data[0].nome,
+					                    		cognome: 		action.result.data[0].cognome,
+					                    		isCameriere:	action.result.data[0].isCameriere,
+					                    		isCassiere:		action.result.data[0].isCassiere,
+					                    		isCucina:		action.result.data[0].isCucina,
+					                    		isAdmin:		action.result.data[0].isAdmin
+					                    	});
+				                    		Ext.getStore('datastore_gestione_personale').add(nuovo_nodo);
+				                    		Ext.getCmp('window_inserimentoPersonale').destroy();
+				                    	}else if ( action.params.action == 'update' ){
+//				                    		console.debug('OK SUCCESSO UPDATE');
+				                    		var updatedNode = Ext.getStore('datastore_gestione_menu').getNodeById(action.result.data[0].id);
+					                    		//updatedNode.set('id',action.result.data[0].id);
+					                    		//updatedNode.set('parentId',action.result.data[0].parentId);
+					                    		updatedNode.set('nome',action.result.data[0].nome);
+					                    		//updatedNode.set('tipo',action.result.data[0].tipo);
+					                    		updatedNode.set('descrizione',action.result.data[0].descrizione);
+					                    		updatedNode.set('prezzo',action.result.data[0].prezzo);
+					                    		if(action.result.data[0].tipo == 1){
+					                    			updatedNode.set('text',action.result.data[0].nome);
+					                    		}else{
+					                    			updatedNode.set('text',action.result.data[0].nome+' - ['+action.result.data[0].prezzo+'€]');
+					                    		}
+					                    	Ext.getCmp('viewport_east').collapse();
+				                    	}
+				                    	
+				                    	
+				                    	
+//				                    	Ext.Msg.alert('Info: ', action.result.message);
+//				                    	Ext.getCmp(window_inserimentoPersonale).destroy();
+//				                    	Ext.getCmp('form_gestioneMenu').destroy();
+				                    	
+				                    },
+				                    failure: function(form, action) {
+				                        Ext.Msg.alert('Errore: ', action.result.message);
+				                    }
+				                });
+				            }
+				        }
+				    }]
+				});
+		},
+		addNewComponentePersonale : function(){
+			var form = this.createFormGestionePersonale();
+			form.action = 'create';
+			var askWindow = Ext.create('Ext.window.Window', {
+				id: 'window_inserimentoPersonale',
+        	    title: 'Inserimento componente del personale',
+        	    expandOnShow : true,
+        	    modal: true,
+        	    //height: 400,
+        	    //width: 400,
+//        	    layout: 'fit',
+//        	    layout: 'auto',
+        	    layout: {
+			        type: 'auto',
+			        pack: 'center'
+			    },
+        	    items:[form],
+        	    listeners:{
+        	    	afterrender: function( thisWindow, eOpts ){
+        	    		console.debug('Altezzaaaa');
+        	    		thisWindow.setHeight( Ext.getCmp('form_gestionePersonale').getHeight()+37 );
+        	    	}
+        	    }
+        	});
+			askWindow.show();
+		}
 };
 
 function titoloRaggruppamentoVariazioni(values) {
