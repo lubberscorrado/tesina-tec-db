@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import Utilita.JSONFromBean;
+import Utilita.JSONResponse;
 
 import com.exceptions.DatabaseException;
 import com.orb.gestioneOggetti.GestionePiano;
@@ -39,6 +40,11 @@ public class statoTavolo extends HttpServlet {
 
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	//Controllo dei privilegi di accesso
+    	if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cassiere) ){
+    		return;
+    	}
+    			
     	idTenant = (Integer) request.getSession().getAttribute("idTenant");
     	List<StatoTavolo> lista_statoTavolo = null;
     	JSONObject json_out = new JSONObject();
