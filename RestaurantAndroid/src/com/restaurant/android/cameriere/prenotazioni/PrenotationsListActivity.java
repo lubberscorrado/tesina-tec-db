@@ -1,39 +1,30 @@
 package com.restaurant.android.cameriere.prenotazioni;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.restaurant.android.DbManager;
 import com.restaurant.android.Error;
 import com.restaurant.android.R;
-import com.restaurant.android.Utility;
-import com.restaurant.android.cameriere.activities.GestioneOrdinazioneActivity;
-import com.restaurant.android.cameriere.activities.MenuListActivity;
-import com.restaurant.android.cameriere.activities.Ordinazione;
-import com.restaurant.android.cameriere.activities.Table;
-import com.restaurant.android.cameriere.activities.TableCardActivity;
+import com.restaurant.android.RestaurantApplication;
 
 /**
  * Activity per mostrare l'elenco delle prenotazioni. 
@@ -79,9 +70,11 @@ public class PrenotationsListActivity extends Activity {
 		  	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		  	    	 Log.i(TAG, "Hai cliccato su una prenotazione: " + prenotationListView_adapter.getItem(position).getNomeCliente());
 
-		  	    	 /* Apro una nuova finestra con l'opzione di occupare il tavolo 
-		  	    	  * secondo la prenotazione */
+		  	    	 /* Apro la scheda del tavolo corrispondente alla prenotazione */
 		  	    	 
+		  	    	 /* Creo un oggetto Table ed eseguo una query al database esterno MySQL 
+		  	    	  * per ottenere tutti i dati necessari a popolarne la scheda del tavolo */
+		  	    	
 //		  	   	Intent myIntent = new Intent(TableCardActivity.this, TableCardActivity.class);
 //		  	    	  
 //		  	     /* Creo un bundle per passare dei dati alla nuova activity */
@@ -133,45 +126,38 @@ public class PrenotationsListActivity extends Activity {
     	Log.i(TAG, "Entrato in getPrenotations();");
           try{
 
-//        	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
-//        	  String url = ((RestaurantApplication)getApplication()).getHost();
-//        	  String response = restApplication.makeHttpGetRequest(url + "ClientEJB/statoTavolo", new HashMap<String, String>());
-//        	  
+        	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
+        	  String url = ((RestaurantApplication)getApplication()).getHost();
+        	  String response = restApplication.makeHttpGetRequest(url + "ClientEJB/gestionePrenotazioni", new HashMap<String, String>());
+        	  
+        	  
+        	  Log.d("getPrenotations", "response: " + response);
+        	  
         	  prenotationListView_arrayPrenotazioni.clear();
         	  
         	  /**********************************************************
         	   * Decodifica della risposa del server contenente lo stato 
         	   * dei tavoli.
         	   **********************************************************/
-        	  // JSONObject jsonObject = new JSONObject(response);
+        	   JSONObject jsonObject = new JSONObject(response);
         	  
-        	  // if(jsonObject.getBoolean("success") == true) {
+        	   if(jsonObject.getBoolean("success") == true) {
         		  
-        		 //  JSONArray jsonArray = jsonObject.getJSONArray("statoTavolo");
+        		   JSONArray jsonArray = jsonObject.getJSONArray("listaPrenotazioni");
         		  
-        		  // for(int i=0; i< jsonArray.length() ; i++) {
-        		  for(int i=0; i< 15; i++) {
+        		   for(int i=0; i< jsonArray.length() ; i++) {
         			  Prenotazione p = new Prenotazione();
         			  
-        			  if(i%3==0) {
-        				  p.setNomeCliente("Turoldo");
-        				  p.setNumPersone(10);
-        				  p.setTimeAndDate("23/12/2011 22:30");
-        			  } else {
-        				  p.setNomeCliente("Bazinga");
-        				  p.setNumPersone(5);
-        				  p.setTimeAndDate("25/12/2011 21:30");
-        			  }
-        			  
-//        			  o.setTableName(jsonArray.getJSONObject(i).getString("nomeTavolo"));
-//        			  o.setTableStatus(jsonArray.getJSONObject(i).getString("statoTavolo"));
-//        			  o.setTableId(Integer.parseInt(jsonArray.getJSONObject(i).getString("idTavolo")));
+        			  p.setNomeCliente(jsonArray.getJSONObject(i).getString("nomeCliente")); 
+        			  p.setNumPersone(jsonArray.getJSONObject(i).getInt("numPersone"));
+        			  p.setTableId(jsonArray.getJSONObject(i).getInt("idTavolo"));
+        			  p.setTimeAndDate(jsonArray.getJSONObject(i).getString("ora"));
         			  
         			  prenotationListView_arrayPrenotazioni.add(p);
           		  }
         		  
         		 
-//         	  }
+         	  }
         	  
         	  /**************************************************************************
         	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
