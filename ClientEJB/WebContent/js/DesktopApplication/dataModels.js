@@ -240,7 +240,7 @@ Ext.define('personale', {
             create: 	'gestionePersonale?action=create',
             read: 		'gestionePersonale?action=read',
             update: 	'gestionePersonale?action=update',
-            destroy: 	'gestionePersonale',
+            destroy: 	'gestionePersonale?action=delete',
         },
         writer: {
             type: 'singlepost'

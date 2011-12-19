@@ -1619,7 +1619,7 @@ var _mainTabPanel = {
 		        },
 		        itemcontextmenu: function(view, rec, node, index, e) {
                 	var contextMenu = null;
-                	
+                	console.debug('CONTEXT MENU');
                 	contextMenu = Ext.create('Ext.menu.Menu', {
                 		items: [{
 		                			text: 'Modifica utente',
@@ -1874,6 +1874,29 @@ var _mainTabPanel = {
         	    }
         	});
 			askWindow.show();
+		},
+		updateComponentePersonale : function(selectedNode){
+			var form = this.createFormGestionePersonale();
+			form.action = 'update';
+			form.selectedNode = selectedNode;
+//			form.getForm().findField('id').hide();
+//			form.getForm().findField('parentId').hide();
+//			form.getForm().findField('depth').hide();
+//			form.getForm().findField('tipo').hide();
+//			if(selectedNode.get('tipo') == 2){
+//				form.setTitle('Modifica voce di menù');
+//			}else{
+//				form.setTitle('Modifica categoria');
+//				form.getForm().findField('prezzo').hide();
+//			}
+			
+			form.setTitle('Modifica utente');
+			
+			form.getForm().loadRecord(selectedNode);
+			
+			Ext.getCmp('viewport_east').removeAll();
+			Ext.getCmp('viewport_east').expand();
+			Ext.getCmp('viewport_east').add(form);
 		}
 };
 
