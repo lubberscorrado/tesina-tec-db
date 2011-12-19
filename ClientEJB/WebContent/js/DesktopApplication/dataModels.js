@@ -203,7 +203,7 @@ Ext.define('variazioneVoceMenu', {
             create: 	'variazioneVoceMenu?action=create',
             read: 		'variazioneVoceMenu?action=read',
             update: 	'variazioneVoceMenu?action=update',
-            destroy: 	'variazioneVoceMenu',
+            destroy: 	'variazioneVoceMenu?action=delete',
         },
         writer: {
             type: 'singlepost'
@@ -240,7 +240,7 @@ Ext.define('personale', {
             create: 	'gestionePersonale?action=create',
             read: 		'gestionePersonale?action=read',
             update: 	'gestionePersonale?action=update',
-            destroy: 	'gestionePersonale?action=delete',
+            destroy: 	'gestionePersonale',
         },
         writer: {
             type: 'singlepost'
