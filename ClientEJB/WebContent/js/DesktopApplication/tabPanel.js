@@ -67,7 +67,28 @@ var _mainTabPanel = {
 			        		text: '<h1>Tavolo:</h1> '+record.get('Tavolo')
 			        	});
 			        	_viewPort_panel_east.expand(true);
-			        }
+			        },
+			        itemcontextmenu: function(view, rec, node, index, e) {
+			        	if(rec.get('statoTavolo') == 'OCCUPATO'){
+			        		
+			        	}
+			        	
+	                	var contextMenu = null;
+	                	console.debug('CONTEXT MENU');
+	                	contextMenu = Ext.create('Ext.menu.Menu', {
+	                		items: [{
+			                			text: 'Modifica utente',
+			                        	handler: function(){
+			                        		_mainTabPanel.updateComponentePersonale(rec);
+			                        	}
+		                            }
+		                        ]
+		                });
+	                	
+	                    contextMenu.showAt(e.getXY());
+//	                    return false;
+	                }
+			        
 		        },
 			    dockedItems: [{
 		            xtype: 'toolbar',
