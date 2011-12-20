@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,8 @@ import android.widget.Toast;
 import com.restaurant.android.Error;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
+import com.restaurant.android.cameriere.activities.Table;
+import com.restaurant.android.cameriere.activities.TableCardActivity;
 
 /**
  * Activity per mostrare l'elenco delle prenotazioni. 
@@ -71,18 +74,18 @@ public class PrenotationsListActivity extends Activity {
 		  	    	 Log.i(TAG, "Hai cliccato su una prenotazione: " + prenotationListView_adapter.getItem(position).getNomeCliente());
 
 		  	    	 /* Apro la scheda del tavolo corrispondente alla prenotazione */
-		  	    	 
-		  	    	 /* Creo un oggetto Table ed eseguo una query al database esterno MySQL 
-		  	    	  * per ottenere tutti i dati necessari a popolarne la scheda del tavolo */
-		  	    	
-//		  	   	Intent myIntent = new Intent(TableCardActivity.this, TableCardActivity.class);
-//		  	    	  
-//		  	     /* Creo un bundle per passare dei dati alla nuova activity */
-//			  	     Bundle b = new Bundle();
-//			  	     b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
-//			  	     b.putString("tableName", m_adapter.getItem(position).getTableName());
-//			  	     myIntent.putExtras(b);
-//			  	     startActivity(myIntent);
+			  	    	
+			  	   	Intent myIntent = new Intent(PrenotationsListActivity.this, TableCardActivity.class);
+			  	    	  
+			  	   	Table myTable = new Table();
+			  	   	myTable.setTableId(prenotationListView_adapter.getItem(position).getTableId());
+			  	   	
+			  	     /* Creo un bundle per passare dei dati alla nuova activity */
+			  	     Bundle b = new Bundle();
+			  	     b.putSerializable("tableObject", myTable);
+			  	     b.putString("tableName", "prova");
+			  	     myIntent.putExtras(b);
+			  	     startActivity(myIntent);
 		  	    	 
 		  	    } 
 		  	    
@@ -93,27 +96,27 @@ public class PrenotationsListActivity extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d("TableCardActivity","OnResume");
-		new TableListAsyncTask().execute(null);
+		Log.d("PrenotationsListActivity","OnResume");
+		new PrenotationsListAsyncTask().execute(null);
 	}
 	
 	@Override
 	public void onStart() {
 		super.onStart();
-		Log.d("TableCardActivity","OnStart");
+		Log.d("PrenotationsListActivity","OnStart");
 	}
 	
 	@Override
 	public void onStop() {
 		super.onStop();
-		Log.d("TableCardActivity","OnStop");
+		Log.d("PrenotationsListActivity","OnStop");
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Log.d("TableCardActivity","OnDestroy");
-		Log.d("TableCardActivity","Stoppo il thread di aggiornamento dei tavoli");
+		Log.d("PrenotationsListActivity","OnDestroy");
+		Log.d("PrenotationsListActivity","Stoppo il thread di aggiornamento dei tavoli");
 	}
 
 	
@@ -155,7 +158,6 @@ public class PrenotationsListActivity extends Activity {
         			  
         			  prenotationListView_arrayPrenotazioni.add(p);
           		  }
-        		  
         		 
          	  }
         	  
@@ -243,7 +245,7 @@ public class PrenotationsListActivity extends Activity {
      * prenotazioni. 
      * @author Fabio Pierazzi
      */
-    class TableListAsyncTask extends AsyncTask<Object, Object, Error> {
+    class PrenotationsListAsyncTask extends AsyncTask<Object, Object, Error> {
 
     	private ProgressDialog progressDialog;
     	   	
@@ -266,7 +268,7 @@ public class PrenotationsListActivity extends Activity {
 //				return new Error("Richiesta effettuata correttamente", false );
 //			}
 			
-//			Log.d("TableListAsyncTask" , response);
+//			Log.d("PrenotationsListAsyncTask" , response);
 			
 			/*****************************************************************
 			 * Aggiornamento dell'interfaccia grafica dello stato del tavolo
