@@ -62,7 +62,7 @@ public class GestioneCategoria {
 			return new TreeNodeCategoria(categoria);
 			
 		} catch (Exception e) {
-			throw new DatabaseException("Errore durante l'inserimento del piano +" +
+			throw new DatabaseException("Errore durante l'inserimento della categoria +" +
 										"("+ e.toString() +")" );
 		}
 		

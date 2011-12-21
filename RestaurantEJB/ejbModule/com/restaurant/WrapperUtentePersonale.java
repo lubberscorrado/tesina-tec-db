@@ -8,19 +8,23 @@ public class WrapperUtentePersonale {
 	private String cognome;
 	private String nome;
 	private String username;
-	//private String password;
+	private String password;
+	private boolean isSuperAdmin = false;
 	private boolean isAdmin;
 	private boolean isCameriere;
 	private boolean isCucina;
 	private boolean isCassiere;
 	
+	public WrapperUtentePersonale() {
+		
+	}
 	
 	public WrapperUtentePersonale(UtentePersonale utentePersonale) {
 		this.setIdUtentePersonale(utentePersonale.getIdUtente());
 		this.setNome(utentePersonale.getNome());
 		this.setCognome(utentePersonale.getCognome());
 		this.setUsername(utentePersonale.getUsername());
-		//this.setPassword(utentePersonale.getPassword());
+		this.setPassword(utentePersonale.getPassword());
 		this.setAdmin(utentePersonale.isAdmin());
 		this.setCameriere(utentePersonale.isCameriere());
 		this.setCucina(utentePersonale.isCucina());
@@ -105,6 +109,22 @@ public class WrapperUtentePersonale {
 
 	public void setIdUtentePersonale(int idUtentePersonale) {
 		this.idUtentePersonale = idUtentePersonale;
+	}
+
+	public boolean isSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setSuperAdmin(boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }
