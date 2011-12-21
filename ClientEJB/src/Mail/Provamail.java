@@ -1,8 +1,8 @@
 package Mail;
 
 import javax.mail.MessagingException;
-import java.security.*;
-import com.sun.net.ssl.internal.ssl.*;
+//import java.security.*;
+//import com.sun.net.ssl.internal.ssl.*;
 
 
 public class Provamail {
@@ -16,7 +16,7 @@ public class Provamail {
 									"Username: biascicchigna\n" +
 									"Password: asderello con l'ombrello\n\n" +
 									"Mandaci i tuoi feedback per un servizio sempre migliore!";
-		String[] sendTo = { "kastknocker@gmail.com","biofrost88@gmail.com","stefano.soli3@gmail.com"};
+		String[] sendTo = { "kastknocker@gmail.com"/*,"biofrost88@gmail.com","stefano.soli3@gmail.com"*/};
 		
 
 		try {

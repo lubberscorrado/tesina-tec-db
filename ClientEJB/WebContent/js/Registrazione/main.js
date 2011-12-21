@@ -29,61 +29,74 @@ var registration_main = function registration_main(){
 	    items: [{
 	        fieldLabel: 'Ragione Sociale',
 	        name: 'ragioneSociale',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: 'Ristorante Pesce moscio'
 	    },{
 	        fieldLabel: 'P.IVA/C.Fisc.',
 	        name: 'piva',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: '1234324234'
 	    },{
 	        fieldLabel: 'Indirizzo',
 	        name: 'indirizzo',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: 'Via caduti all\'unimore'
 	    },{
-	        fieldLabel: 'N°Civico',
+	        fieldLabel: 'NÂ°Civico',
 	        name: 'numCivico',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: '654'
 	    },{
 	        fieldLabel: 'CAP',
 	        name: 'cap',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: '41100'
 	    },{
-	        fieldLabel: 'Città',
+	        fieldLabel: 'CittÃ ',
 	        name: 'citta',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: 'Modena'
 	    },{
 	        fieldLabel: 'Provincia',
 	        name: 'provincia',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: 'Modena'
 	    },{
 	        fieldLabel: 'Nazione',
 	        name: 'nazione',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: 'Italia'
 	    },{
 	        fieldLabel: 'Telefono',
 	        name: 'telefono',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: '059326598'
 	    },{
 	        fieldLabel: 'Fax',
 	        name: 'fax',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: '059326598'
 	    },{
 	        fieldLabel: 'eMail',
 	        name: 'email',
 	        vtype: 'email',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: 'kastknocker@gmail.com'
 	    },{
 	        fieldLabel: 'Sito Web',
 	        name: 'sitoWeb',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: 'www.forzagnocca.it'
 	    },{
 	        fieldLabel: 'Nome utente',
 	        name: 'username',
-	        allowBlank: false
+	        allowBlank: false,
+	        value: 'kastknocker'
 	    },{
             xtype: 'displayfield',
             //name: 'displayfield1',
             //fieldLabel: 'Registrati',
-            value: 'Se sei già registrato e vuoi effettuare l\'accesso clicca <a href="index_login.jsp">qui</a>!'
+            value: 'Se sei giÃ  registrato e vuoi effettuare l\'accesso clicca <a href="index_login.jsp">qui</a>!'
         }],
 
 	    // Reset and Submit buttons
