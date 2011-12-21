@@ -75,7 +75,10 @@
 		<div id='center'><H1>...wait...</H1></div>
 		<script type="text/javascript">
 			//Dopo aver caricato la libreria fa partire l'applicazione
-			Ext.EventManager.onDocumentReady(main);
+			//Ext.EventManager.onDocumentReady(main);
+			Ext.onReady(function(){
+			     main();
+			});
 		</script>
 		
 	</body>

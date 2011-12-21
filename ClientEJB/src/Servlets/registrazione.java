@@ -15,7 +15,9 @@ import java.security.*;
 import com.Ostermiller.util.RandPass;
 import com.business.GestioneOrdinazioni;
 import com.exceptions.DatabaseException;
+import com.orb.gestioneOggetti.GestioneCategoria;
 import com.orb.gestioneOggetti.GestioneTenant;
+import com.restaurant.TreeNodeCategoria;
 import com.restaurant.WrapperTenant;
 import com.sun.net.ssl.internal.ssl.*;
 import Mail.SendMail;
@@ -28,6 +30,7 @@ import Utilita.JSONResponse;
 public class registrazione extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	@EJB	private GestioneTenant gestioneTenant;
+	@EJB	private GestioneCategoria	gestioneCategoria;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -100,22 +103,19 @@ public class registrazione extends HttpServlet {
 		try{
 			WrapperTenant wrapperTenant = gestioneTenant.aggiungiTenant(ragioneSociale, piva, indirizzo, numCivico, CAP, citta, provincia, nazione, telefono, fax, email, url, superadmin,passwd);
 			
-			String[] sendTo = { email };
-			String emailFromAddress = "YouRestaurant";
-			String emailSubjectTxt = 	"Registrazione al servizio youRestaurant";
-			String emailMsgTxt = 		"Grazie per avere scelto il nostro servizio!\n\n" +
-										"Qui di seguito saranno fornite le tue credenziali di accesso all'area di amministrazione.\n\n" +
-										"Codice ristorante: "+wrapperTenant.getIdTenant()+"\n" +
-										"Username:\t\t"+wrapperTenant.getSuperadmin()+"\n" +
-										"Password:\t\t"+wrapperTenant.getPasswd()+"\n\n" +
-										"Mandaci i tuoi feedback per un servizio sempre migliore!";
+//			String[] sendTo = { email };
+//			String emailFromAddress = "YouRestaurant";
+//			String emailSubjectTxt = 	"Registrazione al servizio youRestaurant";
+//			String emailMsgTxt = 		"Grazie per avere scelto il nostro servizio!\n\n" +
+//										"Qui di seguito saranno fornite le tue credenziali di accesso all'area di amministrazione.\n\n" +
+//										"Codice ristorante: "+wrapperTenant.getIdTenant()+"\n" +
+//										"Username:\t\t"+wrapperTenant.getSuperadmin()+"\n" +
+//										"Password:\t\t"+wrapperTenant.getPasswd()+"\n\n" +
+//										"Mandaci i tuoi feedback per un servizio sempre migliore!";
 		
 		
-			
-			
-			
-			
-			
+
+
 			
 		} catch (DatabaseException e) {
 			e.printStackTrace();
@@ -131,7 +131,7 @@ public class registrazione extends HttpServlet {
 		
 		
 
-		
+
 		
 
 //		try {

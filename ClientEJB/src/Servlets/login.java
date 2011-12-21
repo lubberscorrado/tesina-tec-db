@@ -1,6 +1,9 @@
 package Servlets;
 
 import java.io.IOException;
+import java.util.List;
+
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +13,12 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 
+import com.exceptions.DatabaseException;
+import com.orb.gestioneOggetti.GestionePrenotazione;
+import com.orb.gestioneOggetti.GestioneTenant;
+import com.orb.gestioneOggetti.GestioneUtentePersonale;
+import com.restaurant.WrapperTenant;
+import com.restaurant.WrapperUtentePersonale;
 import com.sun.mail.iap.Response;
 
 import Utilita.JSONResponse;
@@ -22,6 +31,11 @@ public class login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private HttpSession session = null;
 	private String action = null;
+	
+	@EJB
+	private GestioneTenant gestioneTenant;
+	@EJB
+	private GestioneUtentePersonale gestioneUtentePersonale;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -44,13 +58,63 @@ public class login extends HttpServlet {
 		session = request.getSession();
 		action = request.getParameter("action");
 		
-		
+
 		if(action == null || action.length() == 0){	//LOGIN
+
+			String ristorante = request.getParameter("ristorante");
+			String username = request.getParameter("username");
+			String password = request.getParameter("password");
+			int idTenant = Integer.valueOf(ristorante);
 			
-			JSONObject json_out = new JSONObject();
-			json_out.put("success", true);
-			json_out.put("message", "Login effettuato correttamente.");
+			try {
+				//Estraggo la lista degli utenti
+				List<WrapperUtentePersonale> listaUtentiPersonale = gestioneUtentePersonale.getUtentePersonaleTenant(idTenant);
+				listaUtentiPersonale.add( gestioneTenant.getWrapperUtentePersonaleByTenantId(idTenant) );	//Aggiungo il superutente alla lista
+				WrapperUtentePersonale tmp;
+				//Cerco l'utente che ha sta cercando di loggare
+				for(int i=0;i<listaUtentiPersonale.size(); i++){
+					tmp = listaUtentiPersonale.get(i);
+					if(tmp.getUsername().equals(username) && tmp.getPassword().equals(password)){	//Utente trovato
+						int privilegi = 0;
+						if(tmp.isSuperAdmin()){
+							privilegi = privilegi|JSONResponse.PRIV_SuperAdministrator;
+						}else if(tmp.isAdmin()){
+							privilegi = privilegi|JSONResponse.PRIV_Administrator;
+						}else{
+							if(tmp.isCameriere()){
+								privilegi = privilegi|JSONResponse.PRIV_Cameriere;
+							}
+							if(tmp.isCassiere()){
+								privilegi = privilegi|JSONResponse.PRIV_Cassiere;
+							}
+							if(tmp.isCucina()){
+								privilegi = privilegi|JSONResponse.PRIV_Cuoco;
+							}
+						}
+						// Setto i valori della sessione
+						session.setAttribute("Logged", true);
+						session.setAttribute("idTenant", idTenant);
+						session.setAttribute("Privs", privilegi);
+						
+						WrapperTenant wrapperTenant = gestioneTenant.getTenantById(idTenant);
+						
+						session.setAttribute("Ristorante", wrapperTenant.getRagioneSociale());
+						session.setAttribute("Username", tmp.getUsername());
+						JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");
+						return;
+					}
+				}
+				
+				
+			} catch (DatabaseException e1) {
+//				e1.printStackTrace();
+				JSONResponse.WriteOutput(response, false, "Errore durante il login.");
+				return;
+			}
 			
+			
+			
+			/*//VERSIONE SENZA LOGIN
 			// Setto i valori della sessione
 			session.setAttribute("Logged", true);
 			session.setAttribute("idTenant", 0);
@@ -59,7 +123,7 @@ public class login extends HttpServlet {
 			System.out.print("Login from: "+request.getRemoteAddr());
 			
 			JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");	return;
-			
+			*/
 		} else if(action.equals("logout")){//LOGOUT
 			session.setAttribute("Logged", false);
 			request.getSession().invalidate();
@@ -77,8 +141,9 @@ public class login extends HttpServlet {
 					json_obj.put("isCuoco", 		((user_privs&JSONResponse.PRIV_Cuoco)==JSONResponse.PRIV_Cuoco));
 					json_obj.put("isCassiere", 		((user_privs&JSONResponse.PRIV_Cassiere)==JSONResponse.PRIV_Cassiere));
 					json_obj.put("isAdministrator", ((user_privs&JSONResponse.PRIV_Administrator)==JSONResponse.PRIV_Administrator));
-					json_obj.put("restaurant", "La tana delle scimmie");
-					json_obj.put("user", "Gennaro lò pizzaiolo");
+				
+					json_obj.put("restaurant", 	session.getAttribute("Ristorante"));
+					json_obj.put("user", 		session.getAttribute("Username"));
 				}
 			}catch(Exception e){
 				json_obj.put("logged", false);

@@ -18,6 +18,7 @@ import com.orb.gestioneOggetti.GestioneCategoria;
 import com.orb.gestioneOggetti.GestioneUtentePersonale;
 import com.restaurant.WrapperUtentePersonale;
 
+import Utilita.FieldChecker;
 import Utilita.JSONFromBean;
 import Utilita.JSONResponse;
 
@@ -127,15 +128,15 @@ public class gestionePersonale extends HttpServlet {
 			String isCucinaS = 		request.getParameter("isCucina");
 			String isAdminS = 		request.getParameter("isAdmin");
 			
-			if(isCameriereS.equals("on"))	isCameriereS = "true";
-			if(isCassiereS.equals("on"))	isCassiereS = "true";
-			if(isCucinaS.equals("on"))		isCucinaS = "true";
-			if(isAdminS.equals("on"))		isAdminS = "true";
+//			if(isCameriereS.equals("on"))	isCameriereS = "true";
+//			if(isCassiereS.equals("on"))	isCassiereS = "true";
+//			if(isCucinaS.equals("on"))		isCucinaS = "true";
+//			if(isAdminS.equals("on"))		isAdminS = "true";
 			
-			boolean isCameriere = 	Boolean.parseBoolean(	isCameriereS);
-			boolean isCassiere = 	Boolean.parseBoolean(	isCassiereS);
-			boolean isCucina = 		Boolean.parseBoolean(	isCucinaS);
-			boolean isAdmin = 		Boolean.parseBoolean(	isAdminS);
+			boolean isCameriere = 	FieldChecker.checkValue(isCameriereS);	//Boolean.parseBoolean(	isCameriereS);
+			boolean isCassiere = 	FieldChecker.checkValue(isCassiereS);	//Boolean.parseBoolean(	isCassiereS);
+			boolean isCucina = 		FieldChecker.checkValue(isCucinaS);	//Boolean.parseBoolean(	isCucinaS);
+			boolean isAdmin = 		FieldChecker.checkValue(isAdminS);	//Boolean.parseBoolean(	isAdminS);
 			
 			if(action.equals("create")){
 				

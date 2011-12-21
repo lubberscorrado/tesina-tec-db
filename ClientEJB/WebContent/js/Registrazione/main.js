@@ -30,68 +30,70 @@ var registration_main = function registration_main(){
 	        fieldLabel: 'Ragione Sociale',
 	        name: 'ragioneSociale',
 	        allowBlank: false,
-	        value: 'Ristorante Pesce moscio'
+//	        value: 'Ristorante Pesce moscio'
 	    },{
 	        fieldLabel: 'P.IVA/C.Fisc.',
 	        name: 'piva',
 	        allowBlank: false,
-	        value: '1234324234'
+//	        value: '1234324234'
 	    },{
 	        fieldLabel: 'Indirizzo',
 	        name: 'indirizzo',
 	        allowBlank: false,
-	        value: 'Via caduti all\'unimore'
+//	        value: 'Via caduti all\'unimore'
 	    },{
+	    	xtype: 'numberfield',
 	        fieldLabel: 'N°Civico',
 	        name: 'numCivico',
 	        allowBlank: false,
-	        value: '654'
+//	        value: '654'
 	    },{
+	    	xtype: 'numberfield',
 	        fieldLabel: 'CAP',
 	        name: 'cap',
 	        allowBlank: false,
-	        value: '41100'
+//	        value: '41100'
 	    },{
 	        fieldLabel: 'Città',
 	        name: 'citta',
 	        allowBlank: false,
-	        value: 'Modena'
+//	        value: 'Modena'
 	    },{
 	        fieldLabel: 'Provincia',
 	        name: 'provincia',
 	        allowBlank: false,
-	        value: 'Modena'
+//	        value: 'Modena'
 	    },{
 	        fieldLabel: 'Nazione',
 	        name: 'nazione',
 	        allowBlank: false,
-	        value: 'Italia'
+//	        value: 'Italia'
 	    },{
 	        fieldLabel: 'Telefono',
 	        name: 'telefono',
 	        allowBlank: false,
-	        value: '059326598'
+//	        value: '059326598'
 	    },{
 	        fieldLabel: 'Fax',
 	        name: 'fax',
 	        allowBlank: false,
-	        value: '059326598'
+//	        value: '059326598'
 	    },{
 	        fieldLabel: 'eMail',
 	        name: 'email',
 	        vtype: 'email',
 	        allowBlank: false,
-	        value: 'kastknocker@gmail.com'
+//	        value: 'kastknocker@gmail.com'
 	    },{
 	        fieldLabel: 'Sito Web',
 	        name: 'sitoWeb',
 	        allowBlank: false,
-	        value: 'www.forzagnocca.it'
+//	        value: 'www.forzagnocca.it'
 	    },{
 	        fieldLabel: 'Nome utente',
 	        name: 'username',
 	        allowBlank: false,
-	        value: 'kastknocker'
+//	        value: 'kastknocker'
 	    },{
             xtype: 'displayfield',
             //name: 'displayfield1',
@@ -106,19 +108,22 @@ var registration_main = function registration_main(){
 	            this.up('form').getForm().reset();
 	        }
 	    }, {
+	    	id: 'submit_button',
 	        text: 'Submit',
 	        formBind: true, //only enabled once the form is valid
 	        disabled: true,
 	        handler: function() {
 	            var form = this.up('form').getForm();
 	            if (form.isValid()) {
+	            	Ext.getCmp('submit_button').setDisabled(true);
 	                form.submit({
 	                    success: function(form, action) {
 	                    	Ext.Msg.alert('Info:', action.result.message);
-	                    	setTimeout("javascript:location.replace('index_login.jsp')",5000);
+	                    	setTimeout("javascript:location.replace('index_login.jsp')",3000);
 	                    },
 	                    failure: function(form, action) {
 	                    	Ext.Msg.alert('Failed', action.result.message);
+	                    	Ext.getCmp('submit_button').setDisabled(false);
 	                    }
 	                });
 	            }
