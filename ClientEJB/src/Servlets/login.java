@@ -68,9 +68,16 @@ public class login extends HttpServlet {
 			
 			try {
 				//Estraggo la lista degli utenti
-				List<WrapperUtentePersonale> listaUtentiPersonale = gestioneUtentePersonale.getUtentePersonaleTenant(idTenant);
-				listaUtentiPersonale.add( gestioneTenant.getWrapperUtentePersonaleByTenantId(idTenant) );	//Aggiungo il superutente alla lista
 				WrapperUtentePersonale tmp;
+				try{
+					tmp = gestioneTenant.getWrapperUtentePersonaleByTenantId(idTenant);
+				}catch(DatabaseException e){
+					JSONResponse.WriteOutput(response, false, "Il codice del ristorante non è valido.");
+					return;
+				}
+				List<WrapperUtentePersonale> listaUtentiPersonale = gestioneUtentePersonale.getUtentePersonaleTenant(idTenant);
+				listaUtentiPersonale.add( tmp );	//Aggiungo il superutente alla lista
+				
 				//Cerco l'utente che ha sta cercando di loggare
 				for(int i=0;i<listaUtentiPersonale.size(); i++){
 					tmp = listaUtentiPersonale.get(i);
@@ -104,7 +111,8 @@ public class login extends HttpServlet {
 						return;
 					}
 				}
-				
+				JSONResponse.WriteOutput(response, false, "Username o password non corretti.");
+				return;
 				
 			} catch (DatabaseException e1) {
 //				e1.printStackTrace();
@@ -147,14 +155,6 @@ public class login extends HttpServlet {
 				}
 			}catch(Exception e){
 				json_obj.put("logged", false);
-//				int user_privs = (Integer) session.getAttribute("Privs");
-//				json_obj.put("logged", true);
-//				json_obj.put("isCameriere", 	((user_privs&JSONResponse.PRIV_Cameriere)==JSONResponse.PRIV_Cameriere));
-//				json_obj.put("isCuoco", 		((user_privs&JSONResponse.PRIV_Cuoco)==JSONResponse.PRIV_Cuoco));
-//				json_obj.put("isCassiere", 		((user_privs&JSONResponse.PRIV_Cassiere)==JSONResponse.PRIV_Cassiere));
-//				json_obj.put("isAdministrator", ((user_privs&JSONResponse.PRIV_Administrator)==JSONResponse.PRIV_Administrator));
-//				json_obj.put("restaurant", "La tana delle scimmie");
-//				json_obj.put("user", "Gennaro lò pizzaiolo");
 			}
 			json_obj.put("success", true);
 			response.getWriter().println(json_obj);
