@@ -48,7 +48,7 @@ public class login extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+		doPost(request, response);
 	}
 
 	/**
@@ -60,69 +60,69 @@ public class login extends HttpServlet {
 		
 
 		if(action == null || action.length() == 0){	//LOGIN
-
-			String ristorante = request.getParameter("ristorante");
-			String username = request.getParameter("username");
-			String password = request.getParameter("password");
-			int idTenant = Integer.valueOf(ristorante);
+//
+//			String ristorante = request.getParameter("ristorante");
+//			String username = request.getParameter("username");
+//			String password = request.getParameter("password");
+//			int idTenant = Integer.valueOf(ristorante);
+//			
+//			try {
+//				//Estraggo la lista degli utenti
+//				WrapperUtentePersonale tmp;
+//				try{
+//					tmp = gestioneTenant.getWrapperUtentePersonaleByTenantId(idTenant);
+//				}catch(DatabaseException e){
+//					JSONResponse.WriteOutput(response, false, "Il codice del ristorante non è valido.");
+//					return;
+//				}
+//				List<WrapperUtentePersonale> listaUtentiPersonale = gestioneUtentePersonale.getUtentePersonaleTenant(idTenant);
+//				listaUtentiPersonale.add( tmp );	//Aggiungo il superutente alla lista
+//				
+//				//Cerco l'utente che ha sta cercando di loggare
+//				for(int i=0;i<listaUtentiPersonale.size(); i++){
+//					tmp = listaUtentiPersonale.get(i);
+//					if(tmp.getUsername().equals(username) && tmp.getPassword().equals(password)){	//Utente trovato
+//						int privilegi = 0;
+//						if(tmp.isSuperAdmin()){
+//							privilegi = privilegi|JSONResponse.PRIV_SuperAdministrator;
+//						}else if(tmp.isAdmin()){
+//							privilegi = privilegi|JSONResponse.PRIV_Administrator;
+//						}else{
+//							if(tmp.isCameriere()){
+//								privilegi = privilegi|JSONResponse.PRIV_Cameriere;
+//							}
+//							if(tmp.isCassiere()){
+//								privilegi = privilegi|JSONResponse.PRIV_Cassiere;
+//							}
+//							if(tmp.isCucina()){
+//								privilegi = privilegi|JSONResponse.PRIV_Cuoco;
+//							}
+//						}
+//						// Setto i valori della sessione
+//						session.setAttribute("Logged", true);
+//						session.setAttribute("idTenant", idTenant);
+//						session.setAttribute("Privs", privilegi);
+//						
+//						WrapperTenant wrapperTenant = gestioneTenant.getTenantById(idTenant);
+//						
+//						session.setAttribute("Ristorante", wrapperTenant.getRagioneSociale());
+//						session.setAttribute("Username", tmp.getUsername());
+//						JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");
+//						return;
+//					}
+//				}
+//				JSONResponse.WriteOutput(response, false, "Username o password non corretti.");
+//				return;
+//				
+//			} catch (DatabaseException e1) {
+////				e1.printStackTrace();
+//				JSONResponse.WriteOutput(response, false, "Errore durante il login.");
+//				return;
+//			}
 			
-			try {
-				//Estraggo la lista degli utenti
-				WrapperUtentePersonale tmp;
-				try{
-					tmp = gestioneTenant.getWrapperUtentePersonaleByTenantId(idTenant);
-				}catch(DatabaseException e){
-					JSONResponse.WriteOutput(response, false, "Il codice del ristorante non è valido.");
-					return;
-				}
-				List<WrapperUtentePersonale> listaUtentiPersonale = gestioneUtentePersonale.getUtentePersonaleTenant(idTenant);
-				listaUtentiPersonale.add( tmp );	//Aggiungo il superutente alla lista
-				
-				//Cerco l'utente che ha sta cercando di loggare
-				for(int i=0;i<listaUtentiPersonale.size(); i++){
-					tmp = listaUtentiPersonale.get(i);
-					if(tmp.getUsername().equals(username) && tmp.getPassword().equals(password)){	//Utente trovato
-						int privilegi = 0;
-						if(tmp.isSuperAdmin()){
-							privilegi = privilegi|JSONResponse.PRIV_SuperAdministrator;
-						}else if(tmp.isAdmin()){
-							privilegi = privilegi|JSONResponse.PRIV_Administrator;
-						}else{
-							if(tmp.isCameriere()){
-								privilegi = privilegi|JSONResponse.PRIV_Cameriere;
-							}
-							if(tmp.isCassiere()){
-								privilegi = privilegi|JSONResponse.PRIV_Cassiere;
-							}
-							if(tmp.isCucina()){
-								privilegi = privilegi|JSONResponse.PRIV_Cuoco;
-							}
-						}
-						// Setto i valori della sessione
-						session.setAttribute("Logged", true);
-						session.setAttribute("idTenant", idTenant);
-						session.setAttribute("Privs", privilegi);
-						
-						WrapperTenant wrapperTenant = gestioneTenant.getTenantById(idTenant);
-						
-						session.setAttribute("Ristorante", wrapperTenant.getRagioneSociale());
-						session.setAttribute("Username", tmp.getUsername());
-						JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");
-						return;
-					}
-				}
-				JSONResponse.WriteOutput(response, false, "Username o password non corretti.");
-				return;
-				
-			} catch (DatabaseException e1) {
-//				e1.printStackTrace();
-				JSONResponse.WriteOutput(response, false, "Errore durante il login.");
-				return;
-			}
 			
 			
-			
-			/*//VERSIONE SENZA LOGIN
+			//VERSIONE SENZA LOGIN
 			// Setto i valori della sessione
 			session.setAttribute("Logged", true);
 			session.setAttribute("idTenant", 0);
@@ -131,7 +131,7 @@ public class login extends HttpServlet {
 			System.out.print("Login from: "+request.getRemoteAddr());
 			
 			JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");	return;
-			*/
+			
 		} else if(action.equals("logout")){//LOGOUT
 			session.setAttribute("Logged", false);
 			request.getSession().invalidate();
