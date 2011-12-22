@@ -396,9 +396,9 @@ public class TableCardActivity extends Activity {
 						jsonArrayOrdinazioni.put(jsonObjectOrinazione);
 					}
 					
-					jsonObject.put("ordinazioni", jsonArrayOrdinazioni);
+					jsonObject.put("comande", jsonArrayOrdinazioni);
 					
-					String response = restApp.makeHttpJsonPostRequest(restApp.getHost() +"ClientEJB/gestioneOrdinazioni?action=COMANDE", jsonObject);
+					String response = restApp.makeHttpJsonPostRequest(restApp.getHost() +"ClientEJB/gestioneComande?action=COMANDE", jsonObject);
 				} catch (Exception e) {
 					Log.e("TableCardActivity", "Errore durante la conferma delle ordinazioni sospese: " + e.toString());
 				}
