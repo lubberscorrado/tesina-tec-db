@@ -1,6 +1,7 @@
 package com.restaurant.android;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.CookieStore;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,9 +15,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import com.restaurant.android.cameriere.activities.Table;
 
@@ -56,6 +59,7 @@ public class RestaurantApplication extends Application {
        	/* Setto i parametri per la richiesta POST codificandoli come URL encoded */
        	httpPost.setEntity(new UrlEncodedFormEntity(listPostParameters));
         	
+       
        	/* Effettuo la richiesta HTTP */
         HttpResponse response = httpClient.execute(httpPost);
                 
@@ -78,6 +82,27 @@ public class RestaurantApplication extends Application {
         return responseBody;
 	}
 	
+	/**
+	 * Effettua una richiesta post al server inviando come corpo della richiesta un oggetto JSON
+	 * @param jsonObject
+	 * @return
+	 * @throws IOException 
+	 * @throws ClientProtocolException 
+	 */
+	public synchronized String makeHttpJsonPostRequest(String url, JSONObject jsonObject) throws ClientProtocolException, IOException {
+		
+		HttpPost httpPost = new HttpPost(url);
+	      
+		StringEntity jsonBody = new StringEntity(jsonObject.toString());
+		httpPost.setEntity(jsonBody);
+        
+       	/* Effettuo la richiesta HTTP */
+        HttpResponse response = httpClient.execute(httpPost);
+                
+       	String responseBody = EntityUtils.toString(response.getEntity());
+        	
+        return responseBody;
+	}
 	
 	/**
 	 * Effettua una richista GET ad un URL passando sulla query string dei parametri di input
@@ -132,7 +157,7 @@ public class RestaurantApplication extends Application {
 	}
 	
 	public String getHost() {
-		return "http://192.168.1.102:8080/";
+		return "http://192.168.1.103:8080/";
 	}
 	
 	@Override

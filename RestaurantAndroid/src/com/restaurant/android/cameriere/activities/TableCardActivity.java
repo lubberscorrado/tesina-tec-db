@@ -78,86 +78,70 @@ public class TableCardActivity extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		  super.onCreate(savedInstanceState);
-		  setContentView(R.layout.cameriere_table_card);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.cameriere_table_card);
 		  
-		  /* ******************************************
-		   * Recupero il valore col nome del tavolo dall'oggetto
-		   * passato durante l'invocazione di questa activity 
-		   * dall'elenco tavoli
-		   * ***************************************** */
-		  Bundle b = getIntent().getExtras();
-		  String tableName = b.getString("tableName");
-		  myTable= (Table) b.getSerializable("tableObject");
+		/******************************************************************
+		 * Recupero il valore col nome del tavolo dall'oggetto passato 
+		 * durante l'invocazione di questa activity dall'elenco tavoli
+		 ******************************************************************/
+		Bundle b = getIntent().getExtras();
+		String tableName = b.getString("tableName");
+		myTable= (Table) b.getSerializable("tableObject");
 		  
-		  /* Tavolo de-serializzato */
-		  Log.d("Scheda Tavolo", "De-serializzato il tavolo: " + myTable.getTableName());
+		/* Tavolo de-serializzato */
+		Log.d("Scheda Tavolo", "De-serializzato il tavolo: " + myTable.getTableName());
+		 
+		/* Cambio il titolo della scheda del tavolo */
+		TextView textView_tableName = (TextView) findViewById(R.id.tableCard_textView_Title);
+		textView_tableName.setText("Scheda " + tableName);
 		  
-		  /* Cambio il titolo della scheda del tavolo */
-		  TextView textView_tableName = (TextView) findViewById(R.id.tableCard_textView_Title);
-		  textView_tableName.setText("Scheda " + tableName);
-		  
-		  /*************************************************************
-		   * Bottone per l'occupazione del tavolo e l'apertura del conto
-		   *************************************************************/
-		  Button occupaTavolo = (Button) findViewById(R.id.button_tableCard_occupaTavolo);
-		  occupaTavolo.setOnClickListener(new OnClickListener() {
-			  @Override
-			  public void onClick(View c) {
-				  new OccupaTavoloAsyncTask().execute(null);
-			  }
-		  });
+		/*****************************************************************
+		 * Bottone per l'occupazione del tavolo e l'apertura del conto
+		 *****************************************************************/
+		Button occupaTavolo = (Button) findViewById(R.id.button_tableCard_occupaTavolo);
+		occupaTavolo.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View c) {
+				new OccupaTavoloAsyncTask().execute(null);
+			}
+		});
 		 	  
-		  /*************************************************************
-		   * Bottone per la liberazione del tavolo e il passaggio del 
-		   * conto allo stato DA PAGARE
-		   *************************************************************/
-		  Button liberaTavolo = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
-		  liberaTavolo.setOnClickListener(new OnClickListener() {
-			  @Override
-			  public void onClick(View c) {
-				  new LiberaTavoloAsyncTask().execute(null);
-			  }
-		  });
-		  	  
+		/*****************************************************************
+		 * Bottone per la liberazione del tavolo e il passaggio del 
+		 * conto allo stato DA PAGARE
+		 *****************************************************************/
+		Button liberaTavolo = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
+		liberaTavolo.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View c) {
+				new LiberaTavoloAsyncTask().execute(null);
+			}
+		});
+		
+		// Aggiungo Listener al bottone di "Prendi Ordinazione"
+		Button button_prendiOrdinazione = (Button) findViewById(R.id.button_tableCard_prendiOrdinazione);
 		  
-		  // Aggiungo Listener al bottone di "Prendi Ordinazione"
-		  Button button_prendiOrdinazione = (Button) findViewById(R.id.button_tableCard_prendiOrdinazione);
-			
-		/**	Bottone per prendere le ordinazioni per il tavolo */
-
-		  button_prendiOrdinazione.setOnClickListener(new OnClickListener() {
+		/*****************************************************************
+		 * 	Bottone per prendere le ordinazioni per il tavolo 
+		 ******************************************************************/
+		 button_prendiOrdinazione.setOnClickListener(new OnClickListener() {
 			  	@Override
 			  	public void onClick(View v) {
-			  		//-----------------------
-			        // Open New Activity
-			  		//-----------------------
-			  		
 			  		Intent myIntent = new Intent(TableCardActivity.this, MenuListActivity.class);
-			  		 
-			  		/* Reperisco alcuni dati dall'oggetto che ha attivato l'activity precedente  */
-
-			  		// TODO:
-			  		// Reperire l'id del tavolo 
-			  		// myTable.getId();
-			  		
-			  		/* Incapsulo i dati da inviare in un bundle */
 			  		Bundle b = new Bundle();
-			  		
 			  		b.putInt("tableId", myTable.getTableId());
 			  		b.putString("tableName", myTable.getTableName());
 			  		b.putString("cameriere", myTable.getCameriere());
 			  		
 			  		myIntent.putExtras(b);
-			  		
-					/* Apro la MenuListActivity */
 			  		TableCardActivity.this.startActivity(myIntent);
 			  	}
 		  });
 
-	      /** *****************************************
+	      /*****************************************************************
 		   * Configuro ListView per le Prenotazioni
-		   * *****************************************/
+		   *****************************************************************/
 	      
 		  this.prenotationListView = (ListView) findViewById(R.id.listView_prenotationList);
 		  
@@ -169,9 +153,11 @@ public class TableCardActivity extends Activity {
 		  
 		  this.prenotationListView.setAdapter(this.prenotationListView_adapter);
 		  
-		  /* *************************************************************
-	       * Listener per il click su un elemento della lista dei tavoli 
-	       **************************************************************/
+		  
+		  /*****************************************************************
+	       * Listener per il click su un elemento della lista delle 
+	       * prenotazioni
+	       *****************************************************************/
 	      prenotationListView.setOnItemClickListener(new OnItemClickListener() {
 		  	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		  	    	 Log.i(TAG, "Hai cliccato su una prenotazione: " + prenotationListView_adapter.getItem(position).getNomeCliente());
@@ -187,14 +173,12 @@ public class TableCardActivity extends Activity {
 //			  	     b.putString("tableName", m_adapter.getItem(position).getTableName());
 //			  	     myIntent.putExtras(b);
 //			  	     startActivity(myIntent);
-		  	    	 
 		  	    } 
-		  	    
-      }); // fine itemClickListener
+		  });
 		  
-		  /** *****************************************
-		   * Configuro ListView per il Conto
-		   * *****************************************/
+		  /*****************************************************************
+		   * ListView per le ordinazioni confermate (inviate in cucina)
+		   *****************************************************************/
 		  
 		  // Recupero riferimento a conto
 		  this.contoListView = (ListView) findViewById(R.id.listView_contoList);
@@ -207,30 +191,23 @@ public class TableCardActivity extends Activity {
 		  
 		  this.contoListView.setAdapter(this.contoListView_adapter);
 		  
-		  
-		  /* *************************************************************
-	       * Listener per il click su un elemento della lista dei tavoli 
-	       **************************************************************/
+		  /*****************************************************************
+	       * Listener per il click su un elemento della lista delle 
+	       * ordinazioni inviate in cucina
+	       *****************************************************************/
 	      contoListView.setOnItemClickListener(new OnItemClickListener() {
 		  	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		  	    
 		  	    		
 		 	    	 /* Sapendo la posizione dell'elemento che è stato 
 		  	    	  * cliccato, ricavo l'oggetto dell'adapter */
 		  	    	 Log.i(TAG, "Hai cliccato su un'ordinazione: " + contoListView_adapter.getItem(position).getNome());
-		  	    	  
-		  	    /* Apro una nuova activity con la scheda dell'ordinazione ? */
-		  	    	 
-		  	    } 
-		  	    
-	      }); // fine itemClickListener
+		  	     } 
+	      }); 
 
-
-		  /** *****************************************
-		   * Configuro ListView per le ordinazioni in attesa
-		   * *****************************************/
+		  /*****************************************************************
+		   * ListView per le ordinazioni in attesa
+		   *****************************************************************/
 		  
-		  // Recupero riferimento a conto
 		  this.ordersWaitingListView = (ListView) findViewById(R.id.listView_comandeSospeseList);
 	  
 		  this.ordersWaitingListView_arrayOrdinazioni = new ArrayList<Ordinazione>();
@@ -241,19 +218,15 @@ public class TableCardActivity extends Activity {
 		  
 		  this.ordersWaitingListView.setAdapter(this.ordersWaitingListView_adapter);
 		  
-		  /* *************************************************************
-	       * Mostro una scheda al click sulle singole ordinazioni in sospeso
-	       **************************************************************/
+		  /*****************************************************************
+	       * Listener per il click su un ordinazione in sospeso
+	       *****************************************************************/
 		  
 		  ordersWaitingListView.setOnItemLongClickListener(new OnItemLongClickListener() {
-
 				@Override
 				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-					
-					
 					 Log.i(TAG, "Hai cliccato (longClick) su un'ordinazione in sospeso: " + ordersWaitingListView_adapter.getItem(position).getNome());
-
-			  	    	/* Creo una stringa */
+			  	    	
 			  	    	final String[] dialogMenuItems = {"", "", ""};
 			  	    	
 			  	    	/* Elementi del menu della finestra di dialogo */
@@ -315,14 +288,12 @@ public class TableCardActivity extends Activity {
 			  	  	  	    	
 			  	  	  	    		startActivity(myIntent);
 			  	  		  	     
-			  	  		  	     
 			  	    	    	} else if (dialogMenuItems[item_position].equals("Rimuovi")) {
 			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 			  	    	    		
 			  	    	    		/********************************************************
 			  	    	    		 * Rimuovo la comanda selezionata 
 			  	    	    		 ********************************************************/
-			  	    	    		
 			  	    	    		DbManager dbManager = new DbManager(getApplicationContext());
 			  	    	    		SQLiteDatabase db;
 			  	    	    		
@@ -335,13 +306,8 @@ public class TableCardActivity extends Activity {
 			  	    	    		 * Aggiorno gli ordini da confermare nella listview
 			  	    	    		 ********************************************************/
 			  	    	    		getOrdersWaitingToBeConfirmed();
-			  	    	    		
-			  	    	    		
-			  	    	    		
 			  	    	    		Toast.makeText(getApplicationContext(), dialogMenuItems[item_position], Toast.LENGTH_SHORT).show();
 			  	    	    	}
-			  	    	    	
-			  	    	       
 			  	    	    }
 			  	    	}); // fine di "OnClickListener" della finestra di dialogo
 			  	    	
@@ -349,21 +315,21 @@ public class TableCardActivity extends Activity {
 			  	    	
 			  	    	/* Mostro la finestra di dialogo */
 			  	    	alert.show();
-					
 					// return true if the longclick has been consumed (?)
 					return false;
 				}
 		
 		  });
 		  
-		  /* Gestisco lo Short Click sull'elemento della lista degli ordini in sospeso.
-		   * Seleziono e deseleziono l'ordine sospeso da inviare  */
+		  /***************************************************************** 
+		   * Gestisco lo Short Click sull'elemento della lista degli ordini 
+		   * in sospeso. Seleziono e deseleziono l'ordine sospeso da inviare  
+		   ******************************************************************/
+		  
 		  ordersWaitingListView.setOnItemClickListener(new OnItemClickListener() {
 		  	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		  	    	
 		  	    	 Log.i(TAG, "Hai cliccato (shortClick) su un'ordinazione in sospeso: " + ordersWaitingListView_adapter.getItem(position).getNome());
-
-		  	    	 
 		  	    	/* Seleziono e deseleziono, con il semplice click */
 		  	    	if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Deselezionata")) {
 		  	    		/* Seleziono la casella */
@@ -376,13 +342,68 @@ public class TableCardActivity extends Activity {
   	    	    		/* Aggiorno la ListView */
 	    	    			ordersWaitingListView_adapter.notifyDataSetChanged();
 		  	    	}
-
 		  	    } 
-		  	    
-	      }); // fine itemClickListener
+	      }); 
 		  
-//		  getOrdersWaitingToBeConfirmed();
-		  
+		  /*****************************************************************
+		   * Bottone per la conferma delle ordinazioni in sospeso
+		   * @author Guerri Marco
+		   *****************************************************************/
+		  Button buttonInviaOrdinazioni = (Button)findViewById(R.id.button_tableCard_inviaGruppoOrdinazioni);
+		  buttonInviaOrdinazioni.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				RestaurantApplication restApp = (RestaurantApplication) getApplication();
+				try {
+					
+					/****************************************************************
+					 * Costruisco l'oggetto JSON che rappresenta tutte le ordinazioni
+					 * con tutte le voci di menu e le variazioni associate.
+					 ****************************************************************/
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put("idTavolo", myTable.getTableId());
+					
+					JSONArray jsonArrayOrdinazioni = new JSONArray();
+					
+					for(Ordinazione o: ordersWaitingListView_arrayOrdinazioni) {
+						JSONObject jsonObjectOrinazione = new JSONObject();
+						
+						jsonObjectOrinazione.put("idVoceMenu", o.getIdVoceMenu());
+						jsonObjectOrinazione.put("quantita", o.getQuantita());
+						jsonObjectOrinazione.put("note", o.getNote());
+						
+						/*************************************************
+						 * Associazione delle variazioni all'ordinazione 
+						 *************************************************/
+						
+						JSONArray jsonArrayVariazioni = new JSONArray();
+						
+						DbManager dbManager = new DbManager(getApplicationContext());
+						SQLiteDatabase db = dbManager.getWritableDatabase();
+						
+						Cursor cursorVariazioni = db.query("variazionecomanda", new String[] {"idVariazione"}, "idComanda="+o.getIdOrdinazione(), null, null, null, null);
+						cursorVariazioni.moveToFirst();
+						
+						while(!cursorVariazioni.isAfterLast()) {
+							JSONObject jsonObjectVariazione = new JSONObject();
+							jsonObjectVariazione.put("idVariazione", cursorVariazioni.getInt(0));
+							jsonArrayVariazioni.put(jsonObjectVariazione);
+							cursorVariazioni.moveToNext();
+						}
+						
+						jsonObjectOrinazione.put("variazioni", jsonArrayVariazioni);
+						cursorVariazioni.close();
+						jsonArrayOrdinazioni.put(jsonObjectOrinazione);
+					}
+					
+					jsonObject.put("ordinazioni", jsonArrayOrdinazioni);
+					
+					String response = restApp.makeHttpJsonPostRequest(restApp.getHost() +"ClientEJB/gestioneOrdinazioni?action=COMANDE", jsonObject);
+				} catch (Exception e) {
+					Log.e("TableCardActivity", "Errore durante la conferma delle ordinazioni sospese: " + e.toString());
+				}
+			}
+		});
 	}
 	
 	@Override
@@ -942,7 +963,6 @@ public class TableCardActivity extends Activity {
     /**
     * Async Task per l'occupazione del tavolo e l'apertura del conto
     * @author Guerri Marco
-    *
     */
    class OccupaTavoloAsyncTask extends AsyncTask<Object, Object, Error> {
 
@@ -1002,10 +1022,8 @@ public class TableCardActivity extends Activity {
     * Async Task per liberare il tavolo e settare lo stato del conto su
     * DAPAGARE
     * @author Guerri Marco
-    *
     */
    class LiberaTavoloAsyncTask extends AsyncTask<Object, Object, Error> {
-
 	   	@Override
    		protected void onPreExecute() {
 	   	}
