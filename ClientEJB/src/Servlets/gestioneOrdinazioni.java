@@ -1,5 +1,6 @@
 package Servlets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.business.GestioneOrdinazioni;
@@ -35,8 +37,6 @@ public class gestioneOrdinazioni extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	
-		
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -44,7 +44,10 @@ public class gestioneOrdinazioni extends HttpServlet {
 			return;
 
 		int idTenant = (Integer) request.getSession().getAttribute("idTenant");
-		int idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
+		
+		int idTavolo = 0;
+		if(request.getParameter("idTavolo")!= null)
+			idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
 		
 		// TODO Id provvisorio del cameriere
 		int idCameriere = 1;
@@ -85,6 +88,49 @@ public class gestioneOrdinazioni extends HttpServlet {
 			}
 			JSONResponse.WriteOutput(response, true, "");
 			
+		} else if(action.equals("COMANDE")){
+			
+			
+			int length = request.getContentLength();
+			
+			BufferedReader reader = request.getReader();
+			char[] httpBody = new char[length];
+			
+			try {
+				reader.read(httpBody, 0, length);
+				JSONObject jsonObjectOrdinazioni = new JSONObject(new String(httpBody));
+				int idTavoloPrenotazione = jsonObjectOrdinazioni.getInt("idTavolo");
+				
+				JSONArray jsonArrayOrdinazioni = jsonObjectOrdinazioni.getJSONArray("ordinazioni");
+				
+				System.out.println("Prenotazione per tavol " + idTavoloPrenotazione);
+				
+				for(int i=0; i<jsonArrayOrdinazioni.length(); i++) {
+					JSONObject jsonObjectOrdinazione = jsonArrayOrdinazioni.getJSONObject(i);
+					
+					System.out.println("Ordinazione per id " + jsonObjectOrdinazione.get("idVoceMenu"));
+					
+					JSONArray jsonArrayVariazioni = jsonObjectOrdinazione.getJSONArray("variazioni");
+					
+					for(int j=0; j<jsonArrayVariazioni.length(); j++) {
+						
+						JSONObject jsonObjectVariazione = jsonArrayVariazioni.getJSONObject(j);
+						System.out.println("Variazione per l'ordinazione: " + jsonObjectVariazione.getInt("idVariazione"));
+						
+					}
+					
+				}
+				
+				
+			} catch (Exception e) {
+				System.out.println("Errore durante la lettura della richiesta post per la comanda: " + e.toString());
+				return;
+			}
+			
+			
+			
+			
+
 		}
 	}
 
