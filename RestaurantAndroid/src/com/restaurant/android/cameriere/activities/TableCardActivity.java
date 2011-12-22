@@ -86,16 +86,11 @@ public class TableCardActivity extends Activity {
 		 * durante l'invocazione di questa activity dall'elenco tavoli
 		 ******************************************************************/
 		Bundle b = getIntent().getExtras();
-		String tableName = b.getString("tableName");
 		myTable= (Table) b.getSerializable("tableObject");
 		  
 		/* Tavolo de-serializzato */
 		Log.d("Scheda Tavolo", "De-serializzato il tavolo: " + myTable.getTableName());
 		 
-		/* Cambio il titolo della scheda del tavolo */
-		TextView textView_tableName = (TextView) findViewById(R.id.tableCard_textView_Title);
-		textView_tableName.setText("Scheda " + tableName);
-		  
 		/*****************************************************************
 		 * Bottone per l'occupazione del tavolo e l'apertura del conto
 		 *****************************************************************/
@@ -834,6 +829,13 @@ public class TableCardActivity extends Activity {
     
     public void updateStatoTavolo() {
     	
+    	/**************************************************
+    	 * Cambio il titolo della scheda del tavolo
+    	 **************************************************/
+		TextView textView_tableName = (TextView) findViewById(R.id.tableCard_textView_Title);
+		textView_tableName.setText("Scheda " + myTable.getTableName());
+		
+		
     	/**************************************************
     	 * Aggiornamento delle textbox
     	 **************************************************/
