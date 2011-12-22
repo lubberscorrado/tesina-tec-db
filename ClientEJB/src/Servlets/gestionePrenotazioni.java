@@ -1,6 +1,7 @@
 package Servlets;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,18 +44,16 @@ public class gestionePrenotazioni extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		/* Controllo che l'utente abbia i privilegi di cameriere */
-//		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere))
-//			return;
-		
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere))
+			return;
 		
 		int idTenant = 1; // (Integer) request.getSession().getAttribute("idTenant");
 		// int idTavolo = Integer.parseInt(request.getParameter("idPrenotazione"));
 		
-		// String action = request.getParameter("action");
-		
-//		if(action.equals("GET_LISTA_PRENOTAZIONI")) {
+		String action = request.getParameter("action");
+		 
+		if(action.equals("GET_LISTA_PRENOTAZIONI")) {
 			
-		
 			JSONArray json_array = new JSONArray(); 
 			JSONObject json_tmp; 
 			
@@ -62,9 +61,11 @@ public class gestionePrenotazioni extends HttpServlet {
 			 * Viene restituita la lista delle prenotazioni
 			 ******************************************************/
 			try {
+				
 				List<WrapperPrenotazione> lista_prenotazioni =  gestionePrenotazioni.getListaPrenotazioni(idTenant);
 				
 				for(int i=0; i<lista_prenotazioni.size(); ++i) {
+					
 					
 					/* Inserisco man mano le informazioni della lista delle prenotazioni in un array */
 					json_tmp = new JSONObject();
@@ -73,19 +74,28 @@ public class gestionePrenotazioni extends HttpServlet {
 					json_tmp.put("idTavolo", lista_prenotazioni.get(i).getTavoloAppartenenza().getIdTavolo());
 					json_tmp.put("nomeCliente", lista_prenotazioni.get(i).getNomecliente());
 					json_tmp.put("numPersone", lista_prenotazioni.get(i).getNumpersone());
-//					 DateFormat formatter ; 
-//					 Date date  = lista_prenotazioni.get(i).getData();  
-//					  formatter = new SimpleDateFormat("dd-MMM-yy");
-//					  String s = formatter.format(date);
-//					  
-////					Date prenotationDate = lista_prenotazioni.get(i).getData();
-////			        SimpleDateFormat dateformatDDMMYYYY = new SimpleDateFormat("ddMMyyyy");
-////			        StringBuilder prenotationDate_formatted = new StringBuilder( dateformatDDMMYYYY.format( prenotationDate ) );
-////			        
-//					json_tmp.put("data", s);
 					
-					
-					json_tmp.put("ora", lista_prenotazioni.get(i).getOra());
+						/* ****************************************************************************** 
+						 * Reperisco la data e l'ora (che su database sono separate)
+						 * e le unisco in una stringa con questo tipo di formato: "22/12/2011 21:30"
+						 * ****************************************************************************** */
+		
+						// reperisco la data, e la trasformo in una stringa
+						DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+				        Date prenotationDate = lista_prenotazioni.get(i).getData();  
+				        String string_prenotationDate = dateFormat.format(prenotationDate);
+	
+				        // reperisco l'ora, e la trasformo in una stringa
+				        DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+				        Time prenotationTime = lista_prenotazioni.get(i).getOra();
+				        String string_prenotationTime = timeFormat.format(prenotationTime);
+				        
+				        // metto nel json la stringa risultante
+				        String string_dateTime = string_prenotationDate + " " + string_prenotationTime;
+				        json_tmp.put("data_e_ora", string_dateTime);
+				        
+				        /* ****************************************************************************** */
+
 					json_array.put(json_tmp);
 					
 				} // fine ciclo for
@@ -95,15 +105,17 @@ public class gestionePrenotazioni extends HttpServlet {
 				JSONResponse.WriteOutput(response, false, e.toString());
 				return;
 			} // fine catch
-//			
+			
 			// TODO Acquisire il nome dell'utente 
 			
+			System.out.println("FINE SCRITTURA JSON?");
 			
 			JSONObject json_output = new JSONObject();
 			json_output.put("success", true);
 			json_output.put("listaPrenotazioni", json_array);
 			response.getWriter().print(json_output);
-//		}
+		
+		} // fine di: if(action.equals("GET_LISTA_PRENOTAZIONI")) 
 	
 	} // fine doPost
 

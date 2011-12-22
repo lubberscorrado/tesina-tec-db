@@ -1,8 +1,7 @@
 package com.orb;
 
-import java.io.Serializable;
+import java.sql.Time;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,10 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -26,7 +22,7 @@ public class Prenotazione {
 	private int idPrenotazione;
 		
 	@Column(name="ora")
-	private String ora;
+	private Time ora;
 
 	@Column(name="data")
 	private Date data;
@@ -55,11 +51,11 @@ public class Prenotazione {
 		this.idPrenotazione = idPrenotazione;
 	}
 
-	public String getOra() {
+	public Time getOra() {
 		return ora;
 	}
 
-	public void setOra(String ora) {
+	public void setOra(Time ora) {
 		this.ora = ora;
 	}
 

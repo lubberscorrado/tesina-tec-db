@@ -131,8 +131,9 @@ public class PrenotationsListActivity extends Activity {
 
         	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
         	  String url = ((RestaurantApplication)getApplication()).getHost();
-        	  String response = restApplication.makeHttpGetRequest(url + "ClientEJB/gestionePrenotazioni", new HashMap<String, String>());
-        	  
+        	  HashMap<String,String> requestParameters = new HashMap<String,String>();
+  			  requestParameters.put("action","GET_LISTA_PRENOTAZIONI");
+        	  String response = restApplication.makeHttpGetRequest(url + "ClientEJB/gestionePrenotazioni", requestParameters);
         	  
         	  Log.d("getPrenotations", "response: " + response);
         	  
@@ -146,15 +147,19 @@ public class PrenotationsListActivity extends Activity {
         	  
         	   if(jsonObject.getBoolean("success") == true) {
         		  
+        		   Log.d(TAG, "Risultato richiesta GET_LISTA_PRENOTAZIONI: success");
         		   JSONArray jsonArray = jsonObject.getJSONArray("listaPrenotazioni");
         		  
         		   for(int i=0; i< jsonArray.length() ; i++) {
+        			   
+        			   Log.d(TAG, "Aggiungo la prenotazione all'adapter...");
+        			   
         			  Prenotazione p = new Prenotazione();
         			  
         			  p.setNomeCliente(jsonArray.getJSONObject(i).getString("nomeCliente")); 
         			  p.setNumPersone(jsonArray.getJSONObject(i).getInt("numPersone"));
         			  p.setTableId(jsonArray.getJSONObject(i).getInt("idTavolo"));
-        			  p.setTimeAndDate(jsonArray.getJSONObject(i).getString("ora"));
+        			  p.setTimeAndDate(jsonArray.getJSONObject(i).getString("data_e_ora"));
         			  
         			  prenotationListView_arrayPrenotazioni.add(p);
           		  }

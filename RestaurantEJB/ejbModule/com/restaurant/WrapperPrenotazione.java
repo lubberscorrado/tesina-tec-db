@@ -1,5 +1,6 @@
 package com.restaurant;
 
+import java.sql.Time;
 import java.util.Date;
 
 import com.orb.Prenotazione;
@@ -8,7 +9,7 @@ import com.orb.Tavolo;
 public class WrapperPrenotazione {
 	
 	private int idPrenotazione;
-	private String ora;
+	private Time ora;
 	private Date data;
 	private String stato;
 	private int idTenant;
@@ -19,6 +20,7 @@ public class WrapperPrenotazione {
 	public WrapperPrenotazione(Prenotazione prenotazione) {
 		this.setIdPrenotazione(prenotazione.getIdPrenotazione());
 		this.setOra(prenotazione.getOra());
+		this.setData(prenotazione.getData());
 		this.setStato(prenotazione.getStato());
 		this.setIdTenant(prenotazione.getIdTenant());
 		this.setNumpersone(prenotazione.getNumpersone());
@@ -34,10 +36,10 @@ public class WrapperPrenotazione {
 		this.idPrenotazione = idPrenotazione;
 	}
 	
-	public String getOra() {
+	public Time getOra() {
 		return ora;
 	}
-	public void setOra(String ora) {
+	public void setOra(Time ora) {
 		this.ora = ora;
 	}
 	

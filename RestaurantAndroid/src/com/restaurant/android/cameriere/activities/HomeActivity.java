@@ -68,7 +68,7 @@ public class HomeActivity extends TabActivity {
 	    
 	    /* Inserisco l'activity con l'elenco delle prenotazioni nel Tab */
 	    intent = new Intent().setClass(this, PrenotationsListActivity.class);
-	    spec = tabHost.newTabSpec("elencoPrenotazioni").setIndicator("Elenco Prenotazioni",
+	    spec = tabHost.newTabSpec("elencoPrenotazioni").setIndicator("Prenotazioni",
 	                      res.getDrawable(R.drawable.ic_launcher))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);

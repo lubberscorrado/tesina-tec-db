@@ -1,5 +1,6 @@
 package com.orb.gestioneOggetti;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,7 +9,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
 
 import com.exceptions.DatabaseException;
 import com.orb.Prenotazione;
@@ -25,7 +25,7 @@ public class GestionePrenotazione {
 	
 	public WrapperPrenotazione aggiungiPrenotazione(	int idTenant, 
 												Date data, 
-												String ora,
+												Time ora,
 												String nomecliente,
 												int numpersone,
 												String stato,
@@ -64,7 +64,8 @@ public class GestionePrenotazione {
 	public List<WrapperPrenotazione> getListaPrenotazioni(int idTenant) throws DatabaseException {
 
 		Query query = em.createQuery("SELECT p FROM Prenotazione p " +
-									 "WHERE p.idTenant = :idTenant");
+									 "WHERE p.idTenant = :idTenant " + 
+									 "ORDER BY data DESC, ora DESC");
 		
 		query.setParameter("idTenant", idTenant);
 
