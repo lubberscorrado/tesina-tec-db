@@ -34,6 +34,9 @@ public class Comanda {
 	@Column(name="quantita")
 	private int quantita;
 	
+	@Column(name="hashgroup")
+	private String hashGruppo;
+	
 	@Column(name="stato")
 	@Enumerated(EnumType.STRING)
 	private StatoComandaEnum stato;
@@ -150,7 +153,11 @@ public class Comanda {
 	public void setContoAppartenenza(Conto contoAppartenenza) {
 		this.contoAppartenenza = contoAppartenenza;
 	}
-	
-	
+	public String getHashGruppo() {
+		return hashGruppo;
+	}
+	public void setHashGruppo(String hashGruppo) {
+		this.hashGruppo = hashGruppo;
+	}
 	
 }

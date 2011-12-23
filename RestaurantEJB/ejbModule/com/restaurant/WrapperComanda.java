@@ -9,6 +9,7 @@ public class WrapperComanda {
 	private int idTenant;
 	private int idComanda;
 	private String note;
+	private String hashGruppo;
 	private BigDecimal prezzo;
 	private int quantita;
 	private StatoComandaEnum stato;
@@ -17,6 +18,7 @@ public class WrapperComanda {
 		this.idTenant = comanda.getIdTenant();
 		this.idComanda = comanda.getIdComanda();
 		this.note = comanda.getNote();
+		this.hashGruppo = comanda.getHashGruppo();
 		this.prezzo = comanda.getPrezzo();
 		this.quantita = comanda.getQuantita();
 		this.stato = comanda.getStato();

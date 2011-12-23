@@ -151,5 +151,23 @@ public class GestioneVoceMenu{
 			
 		}
 	}
+	
+	/**
+	 * Ottiene una voce di menu a partire dal suo id
+	 * @param idVoceMenu Id della voce di menu richiesta
+	 * @return Oggetto TreeNodeVoceMenu che rappresenta la voce richiesta
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore verificatosi
+	 */
+	
+	public TreeNodeVoceMenu getVoceMenu(int idVoceMenu) throws DatabaseException {
+		try {
+			VoceMenu voceMenu = em.find(VoceMenu.class, idVoceMenu);
+			if(voceMenu==null)
+				throw new DatabaseException("Impossibile trovare la voce di menu richiesta (" + idVoceMenu +")");
+			return new TreeNodeVoceMenu(voceMenu);
+		} catch (Exception e) {
+			throw new DatabaseException("Errore durante la ricerca della voce di menu (" + e.toString()+")");
+		}
+	}
 			
 }
