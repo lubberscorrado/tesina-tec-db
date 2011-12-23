@@ -363,7 +363,6 @@
 			        android:id="@+id/button_tableCard_inviaGruppoOrdinazioni"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
-			      
 			        android:text="Invia ordinazioni selezionate" />
 		    		</LinearLayout>
 		

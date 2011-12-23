@@ -172,8 +172,9 @@ public class TableCardActivity extends Activity {
 		  });
 		  
 		  /*****************************************************************
-		   * ListView per le ordinazioni confermate (inviate in cucina)
-		   *****************************************************************/
+		   * ListView per le ordinazioni confermate che entrano a far parte
+		   * del conto
+		   ******************************************************************/
 		  
 		  // Recupero riferimento a conto
 		  this.contoListView = (ListView) findViewById(R.id.listView_contoList);
@@ -214,7 +215,8 @@ public class TableCardActivity extends Activity {
 		  this.ordersWaitingListView.setAdapter(this.ordersWaitingListView_adapter);
 		  
 		  /*****************************************************************
-	       * Listener per il click su un ordinazione in sospeso
+	       * Listener per il click su un'ordinazione in sospeso (passaggio
+	       * di stato da selezionata a deselezionata)
 	       *****************************************************************/
 		  
 		  ordersWaitingListView.setOnItemLongClickListener(new OnItemLongClickListener() {
@@ -313,7 +315,6 @@ public class TableCardActivity extends Activity {
 					// return true if the longclick has been consumed (?)
 					return false;
 				}
-		
 		  });
 		  
 		  /***************************************************************** 
@@ -349,8 +350,20 @@ public class TableCardActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				RestaurantApplication restApp = (RestaurantApplication) getApplication();
+				
+				DbManager dbManager = null;
+				SQLiteDatabase db = null;
+				
+				ProgressDialog progressDialog = null;
+				
+				if(ordersWaitingListView_arrayOrdinazioni.size() == 0)
+					return;
+				
 				try {
+					dbManager = new DbManager(getApplicationContext());
+					db = dbManager.getWritableDatabase();
 					
+					progressDialog = ProgressDialog.show(TableCardActivity.this, "Attendere", "Invio comande in cucina");
 					/****************************************************************
 					 * Costruisco l'oggetto JSON che rappresenta tutte le ordinazioni
 					 * con tutte le voci di menu e le variazioni associate.
@@ -361,6 +374,10 @@ public class TableCardActivity extends Activity {
 					JSONArray jsonArrayOrdinazioni = new JSONArray();
 					
 					for(Ordinazione o: ordersWaitingListView_arrayOrdinazioni) {
+						
+						if(o.getStato().equals("Deselezionata"))
+							continue;
+						
 						JSONObject jsonObjectOrinazione = new JSONObject();
 						
 						jsonObjectOrinazione.put("idVoceMenu", o.getIdVoceMenu());
@@ -373,9 +390,6 @@ public class TableCardActivity extends Activity {
 						
 						JSONArray jsonArrayVariazioni = new JSONArray();
 						
-						DbManager dbManager = new DbManager(getApplicationContext());
-						SQLiteDatabase db = dbManager.getWritableDatabase();
-						
 						Cursor cursorVariazioni = db.query("variazionecomanda", new String[] {"idVariazione"}, "idComanda="+o.getIdOrdinazione(), null, null, null, null);
 						cursorVariazioni.moveToFirst();
 						
@@ -386,16 +400,52 @@ public class TableCardActivity extends Activity {
 							cursorVariazioni.moveToNext();
 						}
 						
-						jsonObjectOrinazione.put("variazioni", jsonArrayVariazioni);
 						cursorVariazioni.close();
+						
+						jsonObjectOrinazione.put("variazioni", jsonArrayVariazioni);
 						jsonArrayOrdinazioni.put(jsonObjectOrinazione);
 					}
 					
 					jsonObject.put("comande", jsonArrayOrdinazioni);
 					
 					String response = restApp.makeHttpJsonPostRequest(restApp.getHost() +"ClientEJB/gestioneComande?action=COMANDE", jsonObject);
+				
+					/************************************************
+					 * Decodifica della risposta ricevuta dal server
+					 ************************************************/
+					
+					JSONObject responseJsonObject = new JSONObject(response);
+					
+					if(responseJsonObject.getBoolean("success") == false) {
+						Toast.makeText(getApplicationContext(), responseJsonObject.getString("message") , 30).show();
+					} else {
+						/* Elimino le ordinazioni non confermate che sono state inviate in cucina */
+						for(Ordinazione o: ordersWaitingListView_arrayOrdinazioni) {
+							if(o.getStato().equals("Selezionata")) {
+								db.delete("comanda", "idComanda="+o.getIdOrdinazione(), null);
+								db.delete("variazionecomanda", "idComanda="+o.getIdOrdinazione(), null);
+							}
+						}
+						
+						/* Aggiorno la lista delle ordinazioni sospese */
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								getOrdersWaitingToBeConfirmed();
+							}
+						});
+						
+						/* Aggiorno la listview del conto mostrando tutte le nuova ordinazioni */
+						new GetContoAsyncTask().execute(null);
+						
+					}
+					
 				} catch (Exception e) {
 					Log.e("TableCardActivity", "Errore durante la conferma delle ordinazioni sospese: " + e.toString());
+				} finally {
+					progressDialog.dismiss();
+					db.close();
+					dbManager.close();
 				}
 			}
 		});
@@ -406,6 +456,7 @@ public class TableCardActivity extends Activity {
 		super.onResume();
 		Log.d("TableCardActivity","OnResume");
 		new TableListAsyncTask().execute(null);
+		new GetContoAsyncTask().execute(null);
 	}
 	
 	@Override
@@ -426,85 +477,10 @@ public class TableCardActivity extends Activity {
 		Log.d("TableCardActivity","OnDestroy");
 		Log.d("TableCardActivity","Stoppo il thread di aggiornamento dei tavoli");
 	}
-	
-	/**
-     * Metodo per reperire l'elenco delle ordinazioni
-     * @author Fabio Pierazzi
-     */
-    private void getOrders(){
-    	
-    	Log.i(TAG, "Entrato in getOrders();");
-          try{
-//        	  
-//        	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
-//        	  String url = ((RestaurantApplication)getApplication()).getHost();
-//        	  String response = restApplication.makeHttpGetRequest(url + "ClientEJB/statoTavolo", new HashMap<String, String>());
-//        	  
-        	  contoListView_arrayOrdinazioni.clear();
-        	  
-        	  /**********************************************************
-        	   * Decodifica della risposa del server contenente lo stato 
-        	   * dei tavoli.
-        	   **********************************************************/
-        	  // JSONObject jsonObject = new JSONObject(response);
-        	  
-        	  // if(jsonObject.getBoolean("success") == true) {
-        		  
-        		 //  JSONArray jsonArray = jsonObject.getJSONArray("statoTavolo");
-        		  
-        		  // for(int i=0; i< jsonArray.length() ; i++) {
-        		  for(int i=0; i< 15; i++) {
-        			  Ordinazione o = new Ordinazione();
-        			  
-        			  if(i%3==0) {
-        				  o.setNome("Penne all'amatriciana");
-        				  o.setQuantita(12);
-        				  o.setStato("In sospeso");
-        			  } else {
-        				  o.setNome("Lasagne");
-            			  o.setQuantita(2);
-            			  o.setStato("Inviata in cucina");
-        			  }
-        			  
-        			  
-//        			  o.setTableName(jsonArray.getJSONObject(i).getString("nomeTavolo"));
-//        			  o.setTableStatus(jsonArray.getJSONObject(i).getString("statoTavolo"));
-//        			  o.setTableId(Integer.parseInt(jsonArray.getJSONObject(i).getString("idTavolo")));
-        			  
-        			  contoListView_arrayOrdinazioni.add(o);
-          		  }
-        		  
-        		 
-//         	  }
-        	  
-        	  /**************************************************************************
-        	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
-        	   * la view.
-        	   **************************************************************************/
-        	  runOnUiThread(new Runnable() {
-        		  public void run() {
-        			  contoListView_adapter.notifyDataSetChanged();
-        			  
-        			  Log.w(TAG, "Cambio altezza ListView");
-            		  /* Modifico manualmente la nuova altezza della listView */
-                      Utility.setListViewHeightBasedOnChildren(contoListView);
-        		  }
-        	  });
-        	  
-        	  Log.i(	"TablesListService" + ": getOrders()", 
-		        			  	"Number of Ordinations Loaded: " + 
-		            		  	contoListView_arrayOrdinazioni.size());
-              
-        } catch (Exception e) {
-        	Log.e("OdersListService" + ": BACKGROUND_PROC", e.getMessage());
-        }
-          
-        Log.i(TAG, "Uscito da getOrders()");
-    }
     
     /************************************************************************
-	 * Adapter per gestire il rendering personalizzato degli elementi
-	 * della lista con le ordinazioni del conto
+	 * Adapter per gestire la lista delle ordinazioni che sono state
+	 * inviate in cucina e che fanno parte del conto
 	 ************************************************************************/
     
     private class ContoAdapter extends ArrayAdapter<Ordinazione> {
@@ -533,31 +509,26 @@ public class TableCardActivity extends Activity {
                 		TextView textView_nomeOrdinazione = (TextView) v.findViewById(R.id.textView_contoList_nomeOrdinazione);
                 		TextView textView_quantita = (TextView) v.findViewById(R.id.textView_contoList_quantity);
                 		TextView textView_stato = (TextView) v.findViewById(R.id.textView_contoList_stato);
-                		
                 		if(textView_nomeOrdinazione != null) {
                 			textView_nomeOrdinazione.setText(o.getNome());                            
                         }
-                		
                 		if(textView_quantita != null){
                 			textView_quantita.setText(Integer.toString(o.getQuantita()));
                         }
-                		
                 		if(textView_stato != null) {
                 			textView_stato.setText(o.getStato());
                         }
-                		
                 }
-                
                 return v;
           }
     }
     
-	/**
+    /************************************************************************
      * Metodo per reperire l'elenco delle ordinazioni che sono
      * in attesa di essere confermate dal cameriere, e che sono
      * salvate solo locamente
      * @author Fabio Pierazzi
-     */
+     ************************************************************************/
     private void getOrdersWaitingToBeConfirmed(){
     	
     	Log.i(TAG, "Entrato in getOrdersWaitingToBeConfirmed();");
@@ -636,9 +607,8 @@ public class TableCardActivity extends Activity {
     
     
     /************************************************************************
-	 * Adapter per gestire il rendering personalizzato degli elementi
-	 * della lista con le ordinazioni che devono essere confermate dal 
-	 * cameriere per essere inviate in cucina per essere elaborate
+	 * Adapter per gestire la lista delle ordinaizoni che devono essere
+	 * confermate dal cameriere prima di essere inviate in cucina.
 	 ************************************************************************/
     
     private class OrdersWaitingAdapter extends ArrayAdapter<Ordinazione> {
@@ -687,94 +657,15 @@ public class TableCardActivity extends Activity {
                 		} else if (textView_stato.getText().equals("Deselezionata")) {
                 			textView_stato.setBackgroundColor(Color.RED);
                 		}
-                		
                 }
-                
                 return v;
-                
         }
-        
     }
-    
 
-	/**
-     * Metodo per reperire l'elenco delle prenotazioni
-     * @author Fabio Pierazzi
-     */
-    private void getPrenotations(){
-    	
-    	Log.i(TAG, "Entrato in getPrenotations();");
-          try{
-
-//        	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
-//        	  String url = ((RestaurantApplication)getApplication()).getHost();
-//        	  String response = restApplication.makeHttpGetRequest(url + "ClientEJB/statoTavolo", new HashMap<String, String>());
-//        	  
-        	  prenotationListView_arrayPrenotazioni.clear();
-        	  
-        	  /**********************************************************
-        	   * Decodifica della risposa del server contenente lo stato 
-        	   * dei tavoli.
-        	   **********************************************************/
-        	  // JSONObject jsonObject = new JSONObject(response);
-        	  
-        	  // if(jsonObject.getBoolean("success") == true) {
-        		  
-        		 //  JSONArray jsonArray = jsonObject.getJSONArray("statoTavolo");
-        		  
-        		  // for(int i=0; i< jsonArray.length() ; i++) {
-        		  for(int i=0; i< 15; i++) {
-        			  Prenotazione p = new Prenotazione();
-        			  
-        			  if(i%3==0) {
-        				  p.setNomeCliente("Turoldo");
-        				  p.setNumPersone(10);
-        				  p.setTimeAndDate("23/12/2011 22:30");
-        			  } else {
-        				  p.setNomeCliente("Bazinga");
-        				  p.setNumPersone(5);
-        				  p.setTimeAndDate("25/12/2011 21:30");
-        			  }
-        			  
-//        			  o.setTableName(jsonArray.getJSONObject(i).getString("nomeTavolo"));
-//        			  o.setTableStatus(jsonArray.getJSONObject(i).getString("statoTavolo"));
-//        			  o.setTableId(Integer.parseInt(jsonArray.getJSONObject(i).getString("idTavolo")));
-        			  
-        			  prenotationListView_arrayPrenotazioni.add(p);
-          		  }
-        		  
-        		 
-//         	  }
-        	  
-        	  /**************************************************************************
-        	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
-        	   * la view.
-        	   **************************************************************************/
-        	  runOnUiThread(new Runnable() {
-        		  public void run() {
-        			  prenotationListView_adapter.notifyDataSetChanged();
-        			  
-        			  Log.w(TAG, "Cambio altezza prenotationListView ");
-            		  /* Modifico manualmente la nuova altezza della listView */
-                      Utility.setListViewHeightBasedOnChildren(prenotationListView);
-        		  }
-        	  });
-        	  
-        	  Log.i(	"TablesListService" + ": getPrenotations()", 
-		        			  	"Number of Ordinations Loaded: " + 
-		            		  	contoListView_arrayOrdinazioni.size());
-              
-        } catch (Exception e) {
-        	Log.e("OdersListService" + ": BACKGROUND_PROC", e.getMessage());
-        }
-          
-        Log.i(TAG, "Uscito da getPrenotations()");
-    }
-    
-    /**
+    /************************************************************************
      * Adapter le prenotazioni. 
      * @author Fabio Pierazzi
-     */
+     ************************************************************************/
     private class PrenotationAdapter extends ArrayAdapter<Prenotazione> {
 
         private ArrayList<Prenotazione> items;
@@ -820,16 +711,14 @@ public class TableCardActivity extends Activity {
 
                 return v;
         }
-    } // end of PrenotationAdapter
+    }
   
-    /**
+    /************************************************************************
      * Aggiorna le textbox con le informazioni sul tavolo
      * @author Guerri Marco
-     */
-    
+     *************************************************************************/
     public void updateStatoTavolo() {
-    	
-    	/**************************************************
+       	/**************************************************
     	 * Cambio il titolo della scheda del tavolo
     	 **************************************************/
 		TextView textView_tableName = (TextView) findViewById(R.id.tableCard_textView_Title);
@@ -839,6 +728,7 @@ public class TableCardActivity extends Activity {
     	/**************************************************
     	 * Aggiornamento delle textbox
     	 **************************************************/
+
     	TextView nomeCameriere= (TextView)findViewById(R.id.textNomeCameriere);
 		nomeCameriere.setText(myTable.getCameriere());
 		
@@ -851,9 +741,7 @@ public class TableCardActivity extends Activity {
 		TextView numeroPiano = (TextView)findViewById(R.id.textNumeroPiano);
 		numeroPiano.setText(myTable.getPiano());
 
-		/****************************************************
-		 * Visibilità dei pulsanti
-		 ****************************************************/
+		/* Visibilità dei pulsanti */
 		
 		if(myTable.getTableStatus().equals("LIBERO")) {
 			
@@ -880,11 +768,11 @@ public class TableCardActivity extends Activity {
 		}
 	}
     
-    /**
+    /************************************************************************
      * Async Task per l'aggiornamento delle informazioni della scheda 
      * del tavolo
      * @author Guerri Marco
-     */
+     *************************************************************************/
     class TableListAsyncTask extends AsyncTask<Object, Object, Error> {
 
     	private ProgressDialog progressDialog;
@@ -962,10 +850,10 @@ public class TableCardActivity extends Activity {
      	 }
     }
    
-    /**
+    /************************************************************************
     * Async Task per l'occupazione del tavolo e l'apertura del conto
     * @author Guerri Marco
-    */
+    *************************************************************************/
    class OccupaTavoloAsyncTask extends AsyncTask<Object, Object, Error> {
 
 	   	@Override
@@ -981,7 +869,7 @@ public class TableCardActivity extends Activity {
 	   		requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
 		  
 	   		try {
-	   			String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneOrdinazioni", 
+	   			String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
 																requestParameters);
 	   			Log.d("OccupaTavoloAsyncTask", response);
 	   			JSONObject jsonObject = new JSONObject(response);
@@ -1020,11 +908,11 @@ public class TableCardActivity extends Activity {
    }
    
    
-   /**
+   /************************************************************************
     * Async Task per liberare il tavolo e settare lo stato del conto su
     * DAPAGARE
     * @author Guerri Marco
-    */
+    ************************************************************************/
    class LiberaTavoloAsyncTask extends AsyncTask<Object, Object, Error> {
 	   	@Override
    		protected void onPreExecute() {
@@ -1039,7 +927,7 @@ public class TableCardActivity extends Activity {
 			requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
 			  
 			try {
-				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneOrdinazioni", 
+				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
 																requestParameters);
 				Log.d("TableCardActivity", response);
 				
@@ -1072,6 +960,72 @@ public class TableCardActivity extends Activity {
 	    	  if(error.errorOccurred()) 
 	    		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
 	    }
+   }  
+   
+   /************************************************************************
+    * Async Task per recuperare le informazioni sul conto aperto associato
+    * al tavolo
+    * @author Guerri Marco
+    ************************************************************************/
+   class GetContoAsyncTask extends AsyncTask<Object, Object, Error> {
+	   	@Override
+   		protected void onPreExecute() {
+	   	}
+   	
+	   	@Override
+		protected Error doInBackground(Object... params) {
+			
+	   		Log.d("GetContoAsyncTask", "Richiesta del conto");
+	   		RestaurantApplication restApp = (RestaurantApplication)getApplication();
+			HashMap<String,String> requestParameters = new HashMap<String,String>();
+			requestParameters.put("action","GET_CONTO");
+			requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
+			  
+			try {
+				String response = restApp.makeHttpPostRequest(restApp.getHost() + "ClientEJB/gestioneConto", requestParameters);
+				Log.d("GetContoAsyncTask", response);
+				
+				/**********************************************************
+				 * Decodifica della risposta inviata dal server
+				 **********************************************************/
+				JSONObject jsonObject = new JSONObject(response);
+				
+				contoListView_arrayOrdinazioni.clear();
+				
+				if(jsonObject.getBoolean("success") == true) {
+					
+					JSONArray jsonArrayOrdinazioni = jsonObject.getJSONArray("vocimenu");
+					
+					for(int i=0; i<jsonArrayOrdinazioni.length(); i++) {
+						JSONObject jsonObjectOrdinazione = jsonArrayOrdinazioni.getJSONObject(i);
+						
+						Ordinazione ordinazione = new Ordinazione();
+						ordinazione.setIdOrdinazione(jsonObjectOrdinazione.getInt("idComanda"));
+						ordinazione.setNome(jsonObjectOrdinazione.getString("nome"));
+						ordinazione.setStato(jsonObjectOrdinazione.getString("stato"));
+						ordinazione.setQuantita(jsonObjectOrdinazione.getInt("quantita"));
+						contoListView_arrayOrdinazioni.add(ordinazione);
+					}
+				}
+				return new Error("",false);
+				
+			} catch (Exception e) {
+				return new Error(e.toString(),true);
+			}
+		}
+	  	@Override
+	   	protected void onPostExecute(Error error) {
+	  		if(error.errorOccurred()) {
+	  			Toast.makeText(getApplicationContext(), error.getError(), 30).show();
+	  		} else {
+	  			runOnUiThread(new Runnable() {
+					public void run() {
+						contoListView_adapter.notifyDataSetChanged();
+						Utility.setListViewHeightBasedOnChildren(contoListView);
+					}
+				});
+	  		}
+	   	}
    }  
  
 }
