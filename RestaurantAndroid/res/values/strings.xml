@@ -9,4 +9,7 @@
     <string name="create_test_activity_help_button">Help</string>
     <string name="customize_test_type_prompt">Set Exam Type</string>
     <string name="customize_test_time_prompt">Set Question Type</string>
+    
+   	<!-- Unique Identification Numbers for the Notifications -->
+    <string name="services_notificationService_started">1</string>
 </resources>
