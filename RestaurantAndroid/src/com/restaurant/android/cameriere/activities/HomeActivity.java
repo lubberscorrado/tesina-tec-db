@@ -29,6 +29,7 @@ import com.restaurant.android.DbManager;
 import com.restaurant.android.Error;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
+import com.restaurant.android.cameriere.notifiche.NotificationActivity;
 import com.restaurant.android.cameriere.prenotazioni.PrenotationsListActivity;
 
 
