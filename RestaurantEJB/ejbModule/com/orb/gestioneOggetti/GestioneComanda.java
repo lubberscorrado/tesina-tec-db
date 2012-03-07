@@ -11,6 +11,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import com.exceptions.DatabaseException;
+import com.orb.Area;
 import com.orb.Comanda;
 import com.orb.Conto;
 import com.orb.StatoComandaEnum;
@@ -19,6 +20,8 @@ import com.orb.Tavolo;
 import com.orb.UtentePersonale;
 import com.orb.Variazione;
 import com.orb.VoceMenu;
+import com.restaurant.TreeNodeArea;
+import com.restaurant.TreeNodeTavolo;
 import com.restaurant.TreeNodeVoceMenu;
 import com.restaurant.WrapperComanda;
 import com.restaurant.WrapperConto;
@@ -73,6 +76,7 @@ public class GestioneComanda {
 			 ******************************************************************/
 			
 			List<Variazione> listVariazioniAssociate = new ArrayList<Variazione>();
+			
 			for(Integer idVariazione : listIdVariazioniAssociate) {
 				Variazione variazione = em.find(Variazione.class, idVariazione);
 				if(variazione == null)
@@ -118,6 +122,57 @@ public class GestioneComanda {
 	}
 	
 	/**
+	 * Modifica le informazioni su una comanda. Non tutte le informazioni
+	 * possono essere modificate
+	 * @param idComanda Id della comanda da modificare
+	 * @param note Note della comanda modificata
+	 * @param quantita Quantità relativa alla comanda modificata
+	 * @param listIdVariazioniAssociate Lista delle variazioni associate alla comanda
+	 * @return
+	 */
+	public WrapperComanda updateComanda(int idComanda,
+										String note,
+										int quantita,
+										List<Integer> listIdVariazioniAssociate) throws DatabaseException {
+			
+		try {
+			
+			Comanda comanda = em.find(Comanda.class, idComanda);
+			if(comanda == null)
+				throw new DatabaseException("Errore durante la ricerca della comanda da aggiornare");
+				
+			comanda.setNote(note);
+			comanda.setQuantita(quantita);
+			
+			/* Rimuovo le variazioni non più necessarie */
+			
+			for(int i=0; i<comanda.getVariazioniAssociate().size(); i++ ) {
+				if(!listIdVariazioniAssociate.contains(comanda.getVariazioniAssociate().get(i)));
+					comanda.getVariazioniAssociate().remove(i);
+			}
+			
+			/* Aggiungo le nuove variazioni se non sono già presenti */
+				
+			for(int i=0; i< listIdVariazioniAssociate.size(); i++) {
+				if(comanda.getVariazioniAssociate().contains(listIdVariazioniAssociate.get(i))) {
+					continue;
+				} else {
+					Variazione variazione = em.find(Variazione.class, listIdVariazioniAssociate.get(i));
+					comanda.getVariazioniAssociate().add(variazione);
+				}
+					
+			}
+			
+			return new WrapperComanda(comanda);
+			
+		}catch(Exception e) {
+			throw new DatabaseException("Errore durante la modifica della comanda (" +e.toString() +")");
+		}
+	 }
+	 
+	 
+	
+	/**
 	 * Ritorna le comande che fanno parte del conto aperto associato al tavolo
 	 * @param idTavolo Id del tavolo per il quale si vogliono ottenere le voci di menu
 	 * @return Lista delle comande associate al conto aperto del tavolo
@@ -157,6 +212,28 @@ public class GestioneComanda {
 			throw new DatabaseException("Errora durante la ricerca delle comande  ("+ e.toString() +")");
 			
 		}
+	}
+	
+	
+	/**
+	 * Ritorna la comanda a partire dall'id
+	 * @param idComanda Id della comanda da ricercare
+	 * @return Oggetto WrapperComanda che rappresenta la comanda trovata 
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 */
+	public WrapperComanda getComandaById(int idComanda) throws DatabaseException {
+		try {
+			Comanda comanda = em.find(Comanda.class, idComanda);
+			if(comanda == null) 
+				throw new DatabaseException("Impossibile trovare la comanda");
+			
+			return new WrapperComanda(comanda);
+			
+		} catch(Exception e) {
+			throw new DatabaseException("Errore durante la ricerca della comanda (" + e.toString() +")");
+		}
+		
 	}
 	
 	/**

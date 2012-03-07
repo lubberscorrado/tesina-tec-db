@@ -34,7 +34,6 @@ public class GestioneOrdinazioni {
 		if(tavolo.getStato() != StatoTavoloEnum.LIBERO)
 			throw new DatabaseException("Impossibile occupare un tavolo non libero");
 					
-		
 		/*****************************************************
 		 * Verifico se esiste già un conto in stato aperto per
 		 * il tavolo richiesto

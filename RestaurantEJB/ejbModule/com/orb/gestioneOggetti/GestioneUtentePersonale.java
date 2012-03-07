@@ -186,6 +186,25 @@ public class GestioneUtentePersonale{
 		}
 	}
 	
+	/**
+	 * Ritorna i dati sull'utente a parire dall'id
+	 * @param idUtentePersonale Id dell'utente
+	 * @return Oggetto WrapperUtentePersonale che rappresenta l'utente trovato
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 */
+	public WrapperUtentePersonale getUtentePersonaleById(int idUtentePersonale) throws DatabaseException {
+		
+		try {
+			UtentePersonale utentePersonale = em.find(UtentePersonale.class, idUtentePersonale);
+			if(utentePersonale == null)
+				throw new DatabaseException("Impossibile trovare l'utente");
+			return new WrapperUtentePersonale(utentePersonale);
+		} catch (Exception e) {
+			throw new DatabaseException("Errore durante la ricerca dell'utente (" + e.toString() + ")");
+		}
+	}
+	
 	
 //	/** 
 //	 * Ritorna la lista delle aree associate ad un determinato piano
