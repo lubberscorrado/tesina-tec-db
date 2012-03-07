@@ -1,6 +1,7 @@
 package com.restaurant.android.cameriere.activities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Ordinazione implements Serializable {
 	
@@ -9,8 +10,11 @@ public class Ordinazione implements Serializable {
 	private int quantita;
 	private int idTavolo;
 	private int idOrdinazione;
+	private int idRemotoOrdinazione;
 	private int idVoceMenu;
 	private String stato;
+	private ArrayList<Integer> idVariazioni;
+	
 	
 	public Ordinazione() {
 		this.nome="";
@@ -18,8 +22,19 @@ public class Ordinazione implements Serializable {
 		this.quantita = 0;
 		this.idVoceMenu = 0;
 		this.idOrdinazione = 0;
+		this.idRemotoOrdinazione = 0;
 		this.stato ="";
+		idVariazioni = new ArrayList<Integer>();
 	}
+	
+	public int getIdRemotoOrdinazione() {
+		return idRemotoOrdinazione;
+	}
+
+	public void setIdRemotoOrdinazione(int idRemotoOrdinazione) {
+		this.idRemotoOrdinazione = idRemotoOrdinazione;
+	}
+
 	public String getNome() {
 		return nome;
 	}
@@ -61,6 +76,10 @@ public class Ordinazione implements Serializable {
 	}
 	public void setIdOrdinazione(int idOrdinazione) {
 		this.idOrdinazione = idOrdinazione;
+	}
+	
+	public ArrayList<Integer> getListVariazioni() {
+		return idVariazioni;
 	}
 	
 	
