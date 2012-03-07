@@ -282,14 +282,14 @@ public class NotificationActivity extends Activity {
                 		TextView textView_notificationType = (TextView) v.findViewById(R.id.textView_notificationType);
                         TextView textView_notificationText = (TextView) v.findViewById(R.id.textView_notificationText);
                         
-                        Log.d(TAG, "Entered NotificationAdapter. notifica.getNotificationType(): " + notifica.getNotificationType()); 
+//                        Log.d(TAG, "Entered NotificationAdapter. notifica.getNotificationType(): " + notifica.getNotificationType()); 
                         
                         // Modifico il contenuto delle TextView in ciascuna delle righe della tabella
                         if((textView_notificationType != null) && (textView_notificationText != null)) {
                         	
                         	// A seconda del tipo di notifica (3 tipi), mostro un messaggio diverso
                         	if(notifica.getNotificationType().equals("NuovoTavolo")) {
-                        		Log.d(TAG, "Entered NotificationAdapter: type = NuovoTavolo"); 
+//                        		Log.d(TAG, "Entered NotificationAdapter: type = NuovoTavolo"); 
                         		textView_notificationType.setText("Nuovo Tavolo Assegnato");
                         		textView_notificationText.setText("Ti e' stato assegnato il tavolo '" + notifica.getNomeTavolo() + "'.");
                         		
