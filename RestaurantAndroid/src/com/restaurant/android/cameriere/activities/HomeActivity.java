@@ -30,6 +30,7 @@ import com.restaurant.android.Error;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
 import com.restaurant.android.cameriere.notifiche.NotificationActivity;
+import com.restaurant.android.cameriere.notifiche.NotificationUpdaterService;
 import com.restaurant.android.cameriere.prenotazioni.PrenotationsListActivity;
 
 
@@ -41,11 +42,17 @@ import com.restaurant.android.cameriere.prenotazioni.PrenotationsListActivity;
  */
 public class HomeActivity extends TabActivity {
 	
+	private static final String TAG = "HomeActivity"; 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
 	  setContentView(R.layout.cameriere_home);
 	  
+	  	/** Faccio partire il service per la l'update delle notifiche */
+	  	Log.d(TAG, "I'm starting the NotificationUpdaterService from HomeActivity!");
+	  	startService(new Intent(this, NotificationUpdaterService.class));
+	  
+	  	/** Alloco le risorse per mostrare i vari tab della Home page */
 	    Resources res = getResources(); // Resource object to get Drawables
 	    TabHost tabHost = getTabHost();  // The activity TabHost
 	    TabHost.TabSpec spec;  // Resusable TabSpec for each tab
