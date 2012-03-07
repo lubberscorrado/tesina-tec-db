@@ -25,7 +25,7 @@ import com.restaurant.WrapperConto;
 import Utilita.JSONResponse;
 
 
-@WebServlet("/gestioneConto")
+@WebServlet("/gestioneConti")
 public class gestioneConti extends HttpServlet {
 	
 	@EJB

@@ -21,14 +21,18 @@ import org.json.JSONObject;
 
 import com.business.GestioneOrdinazioni;
 import com.exceptions.DatabaseException;
+import com.orb.Comanda;
 import com.orb.StatoComandaEnum;
 import com.orb.StatoContoEnum;
 import com.orb.gestioneOggetti.GestioneCategoria;
 import com.orb.gestioneOggetti.GestioneComanda;
 import com.orb.gestioneOggetti.GestioneConto;
+import com.orb.gestioneOggetti.GestioneUtentePersonale;
 import com.orb.gestioneOggetti.GestioneVoceMenu;
 import com.restaurant.TreeNodeVoceMenu;
+import com.restaurant.WrapperComanda;
 import com.restaurant.WrapperConto;
+import com.restaurant.WrapperUtentePersonale;
 
 import Utilita.JSONResponse;
 
@@ -46,6 +50,9 @@ public class gestioneComande extends HttpServlet {
 	private GestioneConto gestioneConto;
     @EJB
     private GestioneVoceMenu gestioneVoceMenu;
+    @EJB
+    private GestioneUtentePersonale gestioneUtentePersonale;
+ 
     
 	public gestioneComande() {
         super();
@@ -64,39 +71,40 @@ public class gestioneComande extends HttpServlet {
 		if(request.getParameter("idTavolo")!= null)
 			idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
 		
-		// TODO Id provvisorio del cameriere
-		int idCameriere = 1;
+		WrapperUtentePersonale utentePersonale;
+		try {
+			utentePersonale = gestioneUtentePersonale.getUtentePersonaleById(	(Integer)request.
+																				getSession().
+																				getAttribute("idUtente"));
+		} catch (DatabaseException e) {
+			JSONResponse.WriteOutput(response, false, e.toString());
+			return;
+		}
 		
-		String action = request.getParameter("action");
-		
-		System.out.println("GESTIONE_COMANDE");
-	
-		if(action.equals("OCCUPA_TAVOLO")) {
+		if(request.getParameter("action").equals("OCCUPA_TAVOLO")) {
 			
-			/******************************************************
+			/*****************************************************************************
 			 * Viene occupato il tavolo e aperto il conto associato
-			 ******************************************************/
+			 *****************************************************************************/
 			try {
-				gestioneOrdinazioni.occupaTavolo(idTavolo,  idTenant, idCameriere);
+				gestioneOrdinazioni.occupaTavolo(idTavolo,  idTenant, utentePersonale.getIdUtentePersonale());
 			} catch (DatabaseException e) {
 				JSONResponse.WriteOutput(response, false, e.toString());
 				return;
 			}
 			
-			// TODO Acquisire il nome dell'utente 
-			
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("cameriere", "Marco Guerri");
+			jsonObject.put("cameriere", utentePersonale.getNome());
 			jsonObject.put("success", true);
 			
 			response.getWriter().print(jsonObject);
 		
-		} else if(action.equals("LIBERA_TAVOLO")) {
+		} else if(request.getParameter("action").equals("LIBERA_TAVOLO")) {
 			
-			/******************************************************
+			/*****************************************************************************
 			 * Viene liberato il tavolo e settato il conto come 
 			 * DAPAGARE
-			 ******************************************************/
+			 *****************************************************************************/
 			try {
 				gestioneOrdinazioni.liberaTavolo(idTavolo);
 			} catch (DatabaseException e) {
@@ -105,14 +113,15 @@ public class gestioneComande extends HttpServlet {
 			}
 			JSONResponse.WriteOutput(response, true, "");
 			
-		} else if(action.equals("COMANDE")){
+		} else if(request.getParameter("action").equals("INSERISCI_COMANDE")){
 			
 			
 			System.out.println("GESTIONE DELLE COMANDE");
-			/******************************************************
+			
+			/*****************************************************************************
 			 * Riceve un gruppo di ordinazioni destinate ad un 
 			 * determinato tavolo
-			 ******************************************************/
+			 *****************************************************************************/
 			
 			int length = request.getContentLength();
 			
@@ -122,70 +131,125 @@ public class gestioneComande extends HttpServlet {
 			try {
 				reader.read(httpBody, 0, length);
 				
-				/* Ascuisisco l'oggetto globale con tutte le ordinazioni. Dall'oggetto 
-				 * globale si può ricavare subito l'id del tavolo */
-				
 				JSONObject jsonObjectOrdinazioni = new JSONObject(new String(httpBody));
+				JSONArray jsonArrayOrdinazioni = jsonObjectOrdinazioni.getJSONArray("comande");
+				
 				int idTavoloPrenotazione = jsonObjectOrdinazioni.getInt("idTavolo");
+				
+				/* Acquisisco il conto aperto associato al tavolo per il quale è stata inviata 
+				 * l'ordinazione. Se sono presenti più conti aperti viene sollevata un'eccezione */					
+				List<WrapperConto> listContiAperti = gestioneConto.getContiAperti(idTavoloPrenotazione);
+				
+				if(listContiAperti.size() != 1) 
+					throw new DatabaseException("Errore durante la ricerca dei conti aperti associati " +
+												"al tavolo (>1 conto aperto) " + idTavoloPrenotazione); 
 				
 				/* Hash che identifica univocamente il gruppo di comande */
 				String hashGruppo = generateString(new Random(), gestioneComande.characters, 64);
 				
-				/* Acquisico l'array degli oggetti ordinazionie */
-				JSONArray jsonArrayOrdinazioni = jsonObjectOrdinazioni.getJSONArray("comande");
 				
-				/********************************************************************************
+				/* Array JSON che contiene gli id associati alle comande sul
+				 * database. Vengono ritornati al client in modo che sucessive 
+				 * operazioni di modifica possano essere fatte con riferimento 
+				 * a quegli id */
+				
+				JSONArray jsonArrayIdComande = new JSONArray();
+				
+				/*****************************************************************************
 				 *  Inserisco ogni comanda associata al gruppo di ordinazioni all'interno del
 				 *  database.
-				 ********************************************************************************/
+				 *****************************************************************************/
 				
 				for(int i=0; i<jsonArrayOrdinazioni.length(); i++) {
 					
-					/* Acquisisco l'i-esimo oggetto ordinazione ed estraggo da esso i campi di interesse */
 					JSONObject jsonObjectOrdinazione = jsonArrayOrdinazioni.getJSONObject(i);
 					
-					/* Estraggo gli id di tutte le variazioni associate all'ordinazione e li raggruppo
-					 * in una lista */
+					/* Acquisisco l'oggetto voceMenu relativo alla comanda che sto considerando */
+					TreeNodeVoceMenu voceMenu = gestioneVoceMenu.getVoceMenu(jsonObjectOrdinazione.getInt("idVoceMenu"));
+					System.out.println("Ordinazione per " + voceMenu.getNome());		
+					
+					/* Estraggo gli id di tutte le variazioni associate all'ordinazione */
 					JSONArray jsonArrayVariazioni = jsonObjectOrdinazione.getJSONArray("variazioni");
 					List<Integer> listIdVariazioni = new ArrayList<Integer>();
 					
-					for(int j=0; j<jsonArrayVariazioni.length(); j++) {
-						JSONObject jsonObjectVariazione = jsonArrayVariazioni.getJSONObject(j);
-						listIdVariazioni.add(jsonObjectVariazione.getInt("idVariazione"));
-						
-						System.out.println("Associo alla voce di menu la variazione " + listIdVariazioni.get(j));
-					}
+					for(int j=0; j<jsonArrayVariazioni.length(); j++) 
+						listIdVariazioni.add(jsonArrayVariazioni.getJSONObject(j).getInt("idVariazione"));
 					
-					/* Acquisisco il conto aperto associato al tavolo per il quale è stata inviata 
-					 * l'ordinazione. Se sono presenti più conti aperti viene sollevata un'eccezione */					
-					List<WrapperConto> listContiAperti = gestioneConto.getContiAperti(idTavoloPrenotazione);
-					if(listContiAperti.size() != 1) 
-						throw new DatabaseException("Errore durante la ricerca dei conti aperti associati " +
-													"al tavolo (>1 conto aperto) " + idTavoloPrenotazione); 
+									
+					WrapperComanda wrapperComanda = gestioneComanda.aggiungiComanda((Integer)request.getSession().getAttribute("idTenant"), 
+																					jsonObjectOrdinazione.getInt("idVoceMenu"),
+																					listContiAperti.get(0).getIdConto(),
+																					1,
+																					jsonObjectOrdinazione.getString("note"),
+																					hashGruppo,
+																					voceMenu.getPrezzo(),
+																					jsonObjectOrdinazione.getInt("quantita"),
+																					StatoComandaEnum.INVIATA,
+																					listIdVariazioni);
 					
-					/* Acquisisco l'oggetto voceMenu relativo alla comanda considerata attualmente */
-					TreeNodeVoceMenu voceMenu = gestioneVoceMenu.getVoceMenu(jsonObjectOrdinazione.getInt("idVoceMenu"));
-					System.out.println("Ordinazione per " + voceMenu.getNome());			
+					JSONObject jsonObjectId = new JSONObject();
+					jsonObjectId.put("id", wrapperComanda.getIdComanda());
 					
-					gestioneComanda.aggiungiComanda((Integer)request.getSession().getAttribute("idTenant"), 
-													jsonObjectOrdinazione.getInt("idVoceMenu"),
-													listContiAperti.get(0).getIdConto(),
-													1,
-													jsonObjectOrdinazione.getString("note"),
-													hashGruppo,
-													voceMenu.getPrezzo(),
-													jsonObjectOrdinazione.getInt("quantita"),
-													StatoComandaEnum.INVIATA,
-													listIdVariazioni);
+					jsonArrayIdComande.put(jsonObjectId);
 				}
 				
-				JSONResponse.WriteOutput(response,  true, "Comande inserite correttamente");
+				JSONResponse.WriteOutput(response, true, "","idComande", jsonArrayIdComande);
 				
 			} catch (Exception e) {
-				
+				e.printStackTrace();
 				JSONResponse.WriteOutput(response, false, e.toString());
+				System.out.println("Errore durante l'inserimento delle comande nel database: " + e.toString());
+				return;
+			}
+			
+		} else if(request.getParameter("action").equals("MODIFICA_COMANDA")) {
+			
+			
+			/*****************************************************************************
+			 * Modifica le informazioni associate ad una comanda
+			 *****************************************************************************/
+			
+			int length = request.getContentLength();
+			
+			BufferedReader reader = request.getReader();
+			char[] httpBody = new char[length];
+			
+			try {
+				reader.read(httpBody, 0, length);
 				
-				System.out.println("Errore durante la lettura della richiesta post per la comanda: " + e.toString());
+				JSONObject jsonObjectComanda = new JSONObject(new String(httpBody));
+				System.out.println(httpBody);
+				
+				
+				int idComanda = jsonObjectComanda.getInt("idRemotoComanda");
+				WrapperComanda wrapperComanda = gestioneComanda.getComandaById(idComanda);
+				
+				/* Se la comanda è in uno stato diverso da INVIATA significa che è in preparazione o è già
+				 * stata consegnata. Non può essere quindi modificata */
+				
+				if(!wrapperComanda.getStato().equals(StatoComandaEnum.INVIATA)) {
+					JSONResponse.WriteOutput(response, false, "Impossibile modificare la comanda (" + wrapperComanda.getStato() +")");
+					return;
+				}
+			
+				/* Costruisco la lista delle variazioni associate alla comanda */
+				List<Integer> listVariazioni = new ArrayList<Integer>();
+				JSONArray jsonArrayVariazioni = jsonObjectComanda.getJSONArray("variazioni");
+				
+				for(int i=0; i<jsonArrayVariazioni.length(); i++) 
+					listVariazioni.add(new Integer(jsonArrayVariazioni.getJSONObject(i).getInt("idVariazione")));
+				
+				gestioneComanda.updateComanda(	jsonObjectComanda.getInt("idRemotoComanda"),
+												jsonObjectComanda.getString("note"),
+												jsonObjectComanda.getInt("quantita"),
+												listVariazioni);
+				JSONResponse.WriteOutput(response, true, "Comanda modificata");
+			
+			
+			} catch (Exception e) {
+				e.printStackTrace();
+				JSONResponse.WriteOutput(response, false, e.toString());
+				System.out.println("Errore durante la modifica delle comanda " + e.toString());
 				return;
 			}
 		}
