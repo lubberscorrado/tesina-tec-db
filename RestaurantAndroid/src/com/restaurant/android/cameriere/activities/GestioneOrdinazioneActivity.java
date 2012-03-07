@@ -1,14 +1,24 @@
 package com.restaurant.android.cameriere.activities;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,10 +32,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.restaurant.android.DbManager;
+import com.restaurant.android.Error;
 import com.restaurant.android.R;
+import com.restaurant.android.RestaurantApplication;
 import com.restaurant.android.Utility;
+import com.restaurant.android.cameriere.activities.TableCardActivity.TableListAsyncTask;
 
 public class GestioneOrdinazioneActivity extends Activity {
 	
@@ -93,10 +107,15 @@ public class GestioneOrdinazioneActivity extends Activity {
 		/*******************************************************************************
 		 * Aggiorno flag sul database e liste delle variazioni associate all'ordinazione
 		 *******************************************************************************/
-		
+		/* Resetta tutte le flag checked per il dialog Multi Choice */
 		resetFlagVariazioni();
+		
+		/* Recupera gli id delle variazioni associate alla comanda corrente */
 		updateArrayListVariazioni();
+		
+		/* Ripristina correttamente tutte le flag delle variazioni */
 		updateFlagVariazioni();
+		
 		updateLayoutVariazioni();
 		     			
 		button_aumentaQuantita = (Button) findViewById(R.id.buttonAumentaQuantita);
@@ -118,7 +137,6 @@ public class GestioneOrdinazioneActivity extends Activity {
 				editText_quantita.setText("" + qty);
 			}
 		});
-		
 		
 		/*******************************************************
 		 * Alert Dialog per la gestione delle variazioni
@@ -145,10 +163,8 @@ public class GestioneOrdinazioneActivity extends Activity {
 		
 		insiemeCategorie = "(" + idCategoria;
 		cursorIdCategoria.close();
-		
 		while(idCategoria!= 0)  {
 			cursorIdCategoria = db.query("categoria", new String[] {"idCategoriaPadre"}, "idCategoria="+idCategoria,null,null,null,null);
-			
 			if(cursorIdCategoria.getCount() > 0 ) {
 				cursorIdCategoria.moveToFirst();
 				idCategoria = cursorIdCategoria.getInt(0);
@@ -160,10 +176,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 			}
 		
 		}
-		
 		insiemeCategorie = insiemeCategorie + ")";
-		
-		Log.d("GestioneOrdinazione", "Insieme delle categorie legali " + insiemeCategorie);
 		
 		builder.setTitle("Variazioni disponibili");
 		cursorVariazioni = db.query("variazione", 
@@ -197,8 +210,7 @@ public class GestioneOrdinazioneActivity extends Activity {
                  *********************************************************/
              
                 cursorVariazioni.moveToPosition(whichButton);
-                
-                /* Verifico se la variazione è stata selezionata o deselezionata */
+                              
                 if(isChecked == false) {
                   	elencoVariazioniAssociateAOrdinazione.remove(new Integer(idVariazione));
                   	elencoVariazioniRimosse.add(new Integer(idVariazione));
@@ -206,12 +218,9 @@ public class GestioneOrdinazioneActivity extends Activity {
                 } else {
                 	elencoVariazioniAssociateAOrdinazione.add(new Integer(idVariazione));
                 }
-                
-            	/* User clicked on a check box do some stuff */
-            	Log.w("Checkbox Finestra Scelta Variazioni", " Variazione: " +idVariazione +", checked=" + isChecked);
-            }
+           }
         });
-				
+			
 		/* Aggiorno la lista delle variazioni associata all'ordinazione al momento
 		 * della chiusura della dialog box */
 		
@@ -219,13 +228,10 @@ public class GestioneOrdinazioneActivity extends Activity {
 			@Override
 			public void onCancel(DialogInterface dialog) {
 				updateLayoutVariazioni();
-				
 			}
 		});
 		
 		final AlertDialog alert = builder.create();
-
-		/* Bottone per selezionare quali variazioni associare all'ordinazione */
 		button_modificaVariazioni.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -233,10 +239,10 @@ public class GestioneOrdinazioneActivity extends Activity {
 			}
 		});
 		
+		/********************************************************************
+		 * Listener per la gestione della conferma dell'ordinazione
+		 *********************************************************************/
 		
-		/*************************************************
-		 * Conferma dell'ordinazione
-		 * ************************************************ */
 		Button confermaOrdinazione = (Button)findViewById(R.id.button_gestioneOrdinazione_confermaOrdinazione);
 		confermaOrdinazione.setOnClickListener(new OnClickListener() {
 			@Override
@@ -244,15 +250,17 @@ public class GestioneOrdinazioneActivity extends Activity {
 					
 				if(myOrdinazione.getIdOrdinazione() == 0) {
 					
-					Log.d("GestioneOrdinazione" , "Nuova ordinazione");
+					/*************************************************************************
+					 * L'ordinazione non è presente nel database (quindi nuova ordinazione)
+					 *************************************************************************/
 					
-					/* L'ordinazione non è presenta in database */
 					ContentValues values = new ContentValues();
 					values.clear();
 					values.put("idVoceMenu", myOrdinazione.getIdVoceMenu());
 					values.put("quantita", Integer.parseInt(editText_quantita.getText().toString()));
 					values.put("note", editText_note.getText().toString());
 					values.put("idTavolo", myOrdinazione.getIdTavolo());
+					values.put("stato", "SOSPESA");
 					db.insertOrThrow("comanda", null, values);
 					
 					/* Recupero l'id dell'ultima ordinazione inserita nel database */
@@ -262,56 +270,163 @@ public class GestioneOrdinazioneActivity extends Activity {
 					    myOrdinazione.setIdOrdinazione(c.getInt(0)); 
 					c.close();
 					
+					updateVariazioni();
+					finish();
 				
+				} else if(myOrdinazione.getStato().equals("INVIATA")){
+				
+					/************************************************************************
+					 * Aggiorno le informazioni sulla comanda in remoto e, se il procedimento
+					 * va a buon fine, anche sul database locale. La modifica in locale deve
+					 * avvenire solo se in remoto la comanda è già stata modificata.
+					 ************************************************************************/
+					
+					new ModificaComandaAsyncTask().execute( (Object[]) null);
+					
+					/* L'activity non termina fintanto che non è stata ritornata una risposta
+					 * dal server */
+					
 				} else {
 					
-					Log.d("GestioneOrdinazione" , "Ordinazione in sospeso che viene modificata");
-					
-					/*********************************************************
-					 * Aggiorno le informazioni sulla comanda all'interno del 
-					 * database
-					 *********************************************************/
-					
-					ContentValues ordinazioneModificata = new ContentValues();
-					ordinazioneModificata.put("quantita", editText_quantita.getText().toString());
-					ordinazioneModificata.put("note", editText_note.getText().toString());
-					db.update("comanda", ordinazioneModificata, "idComanda=" + myOrdinazione.getIdOrdinazione(), null);
+					/*************************************************************************
+					 * Aggiorno le informazioni sulla comanda sospesa all'interno del 
+					 * database locale
+					 *************************************************************************/
+					updateOrdinazione();
+					updateVariazioni();
+					finish();
 				}
 				
-				
-				/*************************************************************************
-				 * Aggiorno le variazioni associate all'ordinazione aggiungendo e inserendo
-				 * nel database variazionecomanda (se replico una coppia
-				 * idVariazione idOrdinazione non viene inserita nel db per il vincolo
-				 * di unique).
-				 *************************************************************************/
-				
-				for(Integer idNuovaVariazione : elencoVariazioniAssociateAOrdinazione) {
-                	ContentValues nuovaVariazione = new ContentValues();
-                	nuovaVariazione.put("idComanda", myOrdinazione.getIdOrdinazione());
-                	nuovaVariazione.put("idVariazione",idNuovaVariazione);
-                	try {
-                		db.insertOrThrow("variazionecomanda", null, nuovaVariazione);
-                	} catch (Exception e) {
-                		/* Eccezione probabilmente derivante dal fatto che la variazione
-                		 * è già associata all'ordinazione */
-                		
-                		Log.d("ConfermaOrdinazione", e.toString());
-                	}
-				}
-				
-				for(Integer idVecchiaVariazione : elencoVariazioniRimosse) {
-					db.delete("variazionecomanda", "idVariazione="+ idVecchiaVariazione + " AND idComanda=" + myOrdinazione.getIdOrdinazione(), null);
-					
-				}
-				
-				
-				
-				finish();
 			}
 		});
 	}
+	
+	/**
+	 * Async Task per la modfica di un ordinazione che è già stata 
+	 * inviata al server
+	 * @author Guerri Marco
+	 */
+	class ModificaComandaAsyncTask extends AsyncTask<Object, Object, Error> {
+
+    	private ProgressDialog progressDialog;
+    	   	
+    	@Override
+    	protected void onPreExecute() {
+    		progressDialog = ProgressDialog.show(GestioneOrdinazioneActivity.this, "Attendere", "Modifica in corso");
+    	}
+    	
+    	@Override
+		protected Error doInBackground(Object... params) {
+			
+    		/************************************************************************
+    		 * Creo il JSONObject da inviare al server per la modifica delle comanda,
+    		 * recuperando tutte le variazioni associate all'ordinazione 
+    		 * dall'ArrayList aggiornata
+    		 ************************************************************************/
+    		try {
+    			
+	    		JSONObject jsonObjectOrdinazione = new JSONObject();
+				jsonObjectOrdinazione.put("idRemotoComanda", myOrdinazione.getIdRemotoOrdinazione());
+				jsonObjectOrdinazione.put("quantita", Integer.parseInt(editText_quantita.getText().toString()));
+				jsonObjectOrdinazione.put("note", editText_note.getText().toString());
+					
+				
+				JSONArray jsonArrayVariazioni = new JSONArray();
+				
+				for(int i=0; i< elencoVariazioniAssociateAOrdinazione.size(); i++) {
+					JSONObject jsonObjectVariazione = new JSONObject();
+					jsonObjectVariazione.put("idVariazione", elencoVariazioniAssociateAOrdinazione.get(i));
+					jsonArrayVariazioni.put(jsonObjectVariazione);
+				}
+				jsonObjectOrdinazione.put("variazioni", jsonArrayVariazioni);
+				
+				
+				RestaurantApplication restApp = (RestaurantApplication)getApplication();
+				String response = restApp.makeHttpJsonPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande?action=MODIFICA_COMANDA", 
+																	jsonObjectOrdinazione);
+				
+				JSONObject jsonObjectResponse = new JSONObject(response);
+					
+				if(jsonObjectResponse.getBoolean("success") == true)  {
+				
+					/* L'ordinazione deve essere ora modificata in locale */
+					updateOrdinazione();
+					updateVariazioni();
+					
+					return new Error("Ordinazione modificata", false );
+				
+				
+				} else {
+					return new Error(jsonObjectResponse.getString("message"), true );
+				}	
+				
+			} catch (ClientProtocolException e) {
+			
+				return new Error(e.toString(), true );
+			} catch (IOException e) {
+				return new Error(e.toString(), true );
+			} catch (JSONException e) {
+				return new Error(e.toString(), true );
+			}
+		}
+    	
+    	@Override
+    	protected void onPostExecute(Error error) {
+     	   progressDialog.dismiss();
+     	  
+     		Toast.makeText(getApplicationContext(), error.getError(), 50).show();
+     	     
+     	  finish();
+    	}
+    		
+    }
+	
+	/**
+	 * Aggiorna le variazioni associate ad un'ordinazione all'interno del database 
+	 * locale
+	 * @author Guerri Marco
+	 */
+	public void updateVariazioni() {
 		
+		/* Aggiorno le variazioni associate all'ordinazione aggiungendo e inserendo
+		  nel database variazionecomanda (se replico una coppia
+		  idVariazione idOrdinazione non viene inserita nel db per il vincolo
+		  di unique). */
+		 
+		for(Integer idNuovaVariazione : elencoVariazioniAssociateAOrdinazione) {
+        	ContentValues nuovaVariazione = new ContentValues();
+        	nuovaVariazione.put("idComanda", myOrdinazione.getIdOrdinazione());
+        	nuovaVariazione.put("idVariazione",idNuovaVariazione);
+        	try {
+        		db.insertOrThrow("variazionecomanda", null, nuovaVariazione);
+        	} catch (Exception e) {
+        		
+        		/* Eccezione probabilmente derivante dal fatto che la variazione
+        		 * è già associata all'ordinazione */
+        		Log.d("ConfermaOrdinazione", e.toString());
+        	}
+		}
+		
+		for(Integer idVecchiaVariazione : elencoVariazioniRimosse) 
+			db.delete("variazionecomanda", "idVariazione="+ idVecchiaVariazione + " AND idComanda=" + myOrdinazione.getIdOrdinazione(), null);
+	}
+		
+	/**
+	 * Aggiorna le informazioni sull'ordinazione all'interno del database locale
+	 * @author Guerri Marco
+	 */
+	
+	public void updateOrdinazione() {
+		ContentValues ordinazioneModificata = new ContentValues();
+		ordinazioneModificata.put("quantita", editText_quantita.getText().toString());
+		ordinazioneModificata.put("note", editText_note.getText().toString());
+		db.update("comanda", ordinazioneModificata, "idComanda=" + myOrdinazione.getIdOrdinazione(), null);
+	}
+	
+	/**
+	 * Imposta a 0 il valore checked per tutte le variazioni presenti nel database.
+	 * Le flag vengono ripristinate a seconda della comanda che si sta considerando.
+	 */
 	public void resetFlagVariazioni() {
 		ContentValues values = new ContentValues();
 		values.put("checked", 0);
@@ -323,13 +438,15 @@ public class GestioneOrdinazioneActivity extends Activity {
 		checked.put("checked", 1);
 		for(Integer idVariazioneAssociataAOrdinazione : elencoVariazioniAssociateAOrdinazione) 
 			db.update("variazione", checked, "idVariazione=" + idVariazioneAssociataAOrdinazione, null);
-		
 	}
 	
+	/**
+	 * Recupera gli id delle variazioni che sono associate all'ordinazione corrente
+	 * dal database.
+	 */
 	public void updateArrayListVariazioni() {
 		
 		Cursor cursorElencoVariazioni = db.query("variazionecomanda", new String[] {"idVariazione"}, "idComanda=" + myOrdinazione.getIdOrdinazione(), null, null, null, null);
-		
 		elencoVariazioniAssociateAOrdinazione.clear();
 		
 		cursorElencoVariazioni.moveToFirst();
@@ -337,17 +454,21 @@ public class GestioneOrdinazioneActivity extends Activity {
 			elencoVariazioniAssociateAOrdinazione.add(new Integer(cursorElencoVariazioni.getInt(0)));
 			cursorElencoVariazioni.moveToNext();
 		}
-		
 		cursorElencoVariazioni.close();
-		
 	}
 	
+	/**
+	 * Refresha la ListView delle variazioni associate alla comanda andando a recuperare
+	 * dal database il nome delle variazioni. Potrebbe essere ottimizzato per evitare
+	 * un ulteriore accesso al DB, usando informazioni estratte in precedenza.
+	 */
 	public void updateLayoutVariazioni() {
 		
 		linearLayout.removeAllViews();
 			
 		for(Integer idVariazioneAssociata : elencoVariazioniAssociateAOrdinazione) {
 			
+			Log.d("VARIAZIONE!!!", "VARIAZIONE!!!");
 			Cursor nomeVariazione = db.query("variazione", new String[] {"nome"}, "idVariazione=" + idVariazioneAssociata, null, null, null, null, null);
 			nomeVariazione.moveToFirst();
 			
@@ -376,12 +497,8 @@ public class GestioneOrdinazioneActivity extends Activity {
 		db.close();
 	}
 	
-	
 	public void onResume() {
 		super.onResume();
-		
-		
-		
 	}
 	
 }
