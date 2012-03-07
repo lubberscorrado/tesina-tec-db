@@ -50,7 +50,7 @@ public class DbManager extends SQLiteOpenHelper {
 	
 	public void createTablesComande() {
 		SQLiteDatabase database = this.getWritableDatabase();
-		database.execSQL("create table if not exists comanda (idComanda integer primary key autoincrement, idVoceMenu int, idTavolo int, quantita int, note string)");
+		database.execSQL("create table if not exists comanda (idComanda integer primary key autoincrement, idRemotoComanda int, idVoceMenu int, idTavolo int, quantita int, note string, stato string)");
 		database.execSQL("create table if not exists variazionecomanda (idVariazioneComanda integer primary key autoincrement, idComanda int, idVariazione, unique(idComanda, idVariazione))");
 		database.close();
 	}
@@ -58,16 +58,10 @@ public class DbManager extends SQLiteOpenHelper {
 	public void dropTablesComande() {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("drop table if exists comanda");
-		database.close();
-	}
-	
-	public void dropTablesVariazioniComande() {
-		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("drop table if exists variazionecomanda");
 		database.close();
 	}
 	
-
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		
