@@ -86,7 +86,7 @@ public class HomeActivity extends TabActivity {
 	    
 	    DbManager dbManager = new DbManager(getApplicationContext());
 	    //dbManager.dropTablesComande();
-	    dbManager.dropTablesComande()
+	    dbManager.dropTablesComande();
 	    dbManager.createTablesComande();
 	    dbManager.BackUpDbToSD();
 	    dbManager.close();
