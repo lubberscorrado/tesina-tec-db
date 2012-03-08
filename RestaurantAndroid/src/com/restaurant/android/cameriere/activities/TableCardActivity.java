@@ -198,9 +198,13 @@ public class TableCardActivity extends Activity {
 		  contoListView.setOnItemLongClickListener(new OnItemLongClickListener() {
 			  @Override
 			  public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				  final String[] dialogMenuItems = {"Modifica", "Elimina"};
-			  	 	 
-			  	 /* Creo la finestra di dialogo */
+				 final String[] dialogMenuItems = {"Modifica", "Elimina"};
+			  	 
+				 /* La posizione cliccata nella list view deve essere final per poter essere acceduta 
+			  	  * dal listener della dialog  */
+				 final int contoPosition = position;
+			  	 
+				 /* Creo la finestra di dialogo */
 			  	 AlertDialog.Builder builder = new AlertDialog.Builder(TableCardActivity.this);
 			  	 builder.setTitle("Gestione Ordinazione");
 			  	 
@@ -217,6 +221,19 @@ public class TableCardActivity extends Activity {
 	  	  	  	    		myIntent.putExtras(b);
 	  	  	  	    	
 	  	  	  	    		startActivity(myIntent);
+			  			 } else if(dialogMenuItems[item_position].equals("Elimina")) {
+			  				 
+			  				 Object[] eliminaComandaParams =  { 	contoListView_arrayOrdinazioni
+																	.get(contoPosition)
+																	.getIdRemotoOrdinazione(),
+																	
+																	contoListView_arrayOrdinazioni
+																	.get(contoPosition)
+																	.getIdOrdinazione()};
+							 
+			  				 /* Avvio l'async task di eliminazione della comanda */
+			  				 new EliminaComandaAsyncTask().execute(eliminaComandaParams);
+			  				 
 			  			 }
 			  		 }
 			  	});
@@ -1083,6 +1100,81 @@ public class TableCardActivity extends Activity {
 	    		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
 	    }
    }  
+   
+   
+   /************************************************************************
+    * Async Task per l'eliminazione di una comanda che è già stata inviata 
+    * in cucina
+    * @author Guerri Marco
+    ************************************************************************/
+   class EliminaComandaAsyncTask extends AsyncTask<Object, Object, Error> {
+	   	@Override
+  		protected void onPreExecute() {
+	   	}
+  	
+	   	@Override
+		protected Error doInBackground(Object... params) {
+			/*	
+			 * Parametri passati all'Async Task
+			 * params[0]: idRemotoComanda
+			 * params[1]: idComanda
+			 */
+	   		
+	   		RestaurantApplication restApp = (RestaurantApplication)getApplication();
+			HashMap<String,String> requestParameters = new HashMap<String,String>();
+			requestParameters.put("action","ELIMINA_COMANDA");
+			requestParameters.put("idRemotoComanda", ((Integer)params[0]).toString());
+			  
+			try {
+				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
+																requestParameters);
+				
+				
+				JSONObject jsonObject = new JSONObject(response);
+				
+				if(jsonObject.getString("success").equals("true"))  {
+					
+					/* Elimino la comanda dal database locale e l'associazione con le variazioni  */
+					DbManager dbManager = new DbManager(getApplicationContext());
+					SQLiteDatabase db = dbManager.getWritableDatabase();
+					
+					db.delete("comanda", "idComanda=" + ((Integer)params[1]).toString(),null);
+					db.delete("variazionecomanda", "idComanda=" +  ((Integer)params[1]).toString(), null);
+					db.close();
+					
+					
+					dbManager.close();
+					
+					/* Aggiorno la list view del conto ricaricando gli ordini dal database */
+					runOnUiThread(new Runnable() {
+		   				@Override
+		   				public void run() {
+		   					getOrdersConfirmed();
+		   				}
+		   			});
+					
+					
+					return new Error("Comanda eliminata",false);
+				
+				} else {
+					return new Error("Errore durante la cancellazione",true);
+				}
+				
+			} catch (ClientProtocolException e) {
+			  return new Error("Errore durante la comunicazione con il server",true);
+			} catch (IOException e) {
+			  return new Error("Errore durante la comunicazione con il server",true);
+			} catch (JSONException e) {
+			  return new Error("Errore durante la lettura della risposta dal server",true);
+			}
+		}
+	
+	   	@Override
+	   	protected void onPostExecute(Error error) {
+	    	  if(error.errorOccurred()) 
+	    		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+	    }
+  }  
    
    
    /************************************************************************
