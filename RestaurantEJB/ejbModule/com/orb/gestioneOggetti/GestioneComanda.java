@@ -143,24 +143,15 @@ public class GestioneComanda {
 				
 			comanda.setNote(note);
 			comanda.setQuantita(quantita);
+		
 			
-			/* Rimuovo le variazioni non più necessarie */
+			/* Rimuovo tutte le variazioni associate alla comanda */
+			comanda.getVariazioniAssociate().clear();
 			
-			for(int i=0; i<comanda.getVariazioniAssociate().size(); i++ ) {
-				if(!listIdVariazioniAssociate.contains(comanda.getVariazioniAssociate().get(i)));
-					comanda.getVariazioniAssociate().remove(i);
-			}
-			
-			/* Aggiungo le nuove variazioni se non sono già presenti */
-				
+			/* Aggiungo le nuove variazioni */
 			for(int i=0; i< listIdVariazioniAssociate.size(); i++) {
-				if(comanda.getVariazioniAssociate().contains(listIdVariazioniAssociate.get(i))) {
-					continue;
-				} else {
 					Variazione variazione = em.find(Variazione.class, listIdVariazioniAssociate.get(i));
 					comanda.getVariazioniAssociate().add(variazione);
-				}
-					
 			}
 			
 			return new WrapperComanda(comanda);
@@ -169,7 +160,24 @@ public class GestioneComanda {
 			throw new DatabaseException("Errore durante la modifica della comanda (" +e.toString() +")");
 		}
 	 }
-	 
+		
+	/**
+	 * Elimina una comanda a partire dall'id
+	 * @param idComanda Id della comanda da eliminare
+	 * @throws DatabaseException
+	 */
+	
+	public void deleteComanda(int idComanda) throws DatabaseException {
+		try {
+			Comanda comanda = em.find(Comanda.class, idComanda);
+			if(comanda == null) 
+				throw new DatabaseException("Errore durante la ricerca della comanda da rimuovere");
+			em.remove(comanda);
+		}catch(Exception e) {
+			throw new DatabaseException("Errore durante l'eliminazione dell'area ("+ e.toString() + ")");
+		}
+	}
+
 	 
 	
 	/**
