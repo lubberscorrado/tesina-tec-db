@@ -115,9 +115,6 @@ public class gestioneComande extends HttpServlet {
 			
 		} else if(request.getParameter("action").equals("INSERISCI_COMANDE")){
 			
-			
-			System.out.println("GESTIONE DELLE COMANDE");
-			
 			/*****************************************************************************
 			 * Riceve un gruppo di ordinazioni destinate ad un 
 			 * determinato tavolo
@@ -216,10 +213,7 @@ public class gestioneComande extends HttpServlet {
 			
 			try {
 				reader.read(httpBody, 0, length);
-				
 				JSONObject jsonObjectComanda = new JSONObject(new String(httpBody));
-				System.out.println(httpBody);
-				
 				
 				int idComanda = jsonObjectComanda.getInt("idRemotoComanda");
 				WrapperComanda wrapperComanda = gestioneComanda.getComandaById(idComanda);
@@ -249,9 +243,30 @@ public class gestioneComande extends HttpServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 				JSONResponse.WriteOutput(response, false, e.toString());
-				System.out.println("Errore durante la modifica delle comanda " + e.toString());
 				return;
 			}
+			
+		} else if (request.getParameter("action").equals("ELIMINA_COMANDA")) {
+			
+			try {
+				
+				
+				int idRemotoComanda = new Integer(request.getParameter("idRemotoComanda"));
+				WrapperComanda wrapperComanda = gestioneComanda.getComandaById(idRemotoComanda);
+				
+				/* Impedisco l'eliminazione della comanda se è già in preparazione */
+				if(!wrapperComanda.getStato().equals(StatoComandaEnum.INVIATA)) {
+					JSONResponse.WriteOutput(response, false, "Impossibile eliminare la comanda (" + wrapperComanda.getStato() +")");
+					return;
+				}
+				gestioneComanda.deleteComanda(idRemotoComanda);
+				JSONResponse.WriteOutput(response, true, "Comanda eliminata");
+				
+			} catch (DatabaseException e) {
+				JSONResponse.WriteOutput(response, false, e.toString());
+				return;
+			}
+			
 		}
 	}
 	
