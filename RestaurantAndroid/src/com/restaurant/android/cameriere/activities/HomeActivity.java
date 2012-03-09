@@ -10,6 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.content.ContentValues;
@@ -48,9 +50,24 @@ public class HomeActivity extends TabActivity {
 	  super.onCreate(savedInstanceState);
 	  setContentView(R.layout.cameriere_home);
 	  
-	  	/** Faccio partire il service per la l'update delle notifiche */
-	  	Log.d(TAG, "I'm starting the NotificationUpdaterService from HomeActivity!");
-	  	startService(new Intent(this, NotificationUpdaterService.class));
+	  	/** 
+	  	 * Faccio Partire NotificationUpdaterService, servizio che gira in 
+	  	 * background e controlla se ci sono nuove notifiche per il cameriere
+	  	 * @author Fabio Pierazzi
+	  	 * */
+	  	// Attivo NotificationUpdaterService solamente se non è già attivo
+	  	if(isMyServiceRunning("com.restaurant.android.cameriere.notifiche.NotificationUpdaterService")) {
+	  		// do nothing
+	  		Log.d(TAG, "NotificationUpdaterService is already running!");
+	  	} else {
+	  		/** Faccio partire il service per la l'update delle notifiche */
+		  	Log.d(TAG, "I'm starting the NotificationUpdaterService from HomeActivity!");
+		  
+		  	Intent serviceIntent = new Intent(this, NotificationUpdaterService.class);
+//		  	serviceIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		  	startService(serviceIntent);
+	  	}
+	  	
 	  
 	  	/** Alloco le risorse per mostrare i vari tab della Home page */
 	    Resources res = getResources(); // Resource object to get Drawables
@@ -317,8 +334,27 @@ public class HomeActivity extends TabActivity {
     	   		
     	   progressDialog.dismiss();
        }
+       
   
    }
+    
+    /**
+     * Metodo per verificare se NotificationUpdaterService (il servizio che controlla se ci sono nuove 
+     * notifiche per il cameriere) è attivo. 
+     * Serve per evitare che il servizio venga modificato due volte
+     * 
+     * @return true, se il servizio è attivo
+     */
+    private boolean isMyServiceRunning(String serviceName) {
+ 	    ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+ 	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+ 	        if (serviceName.equals(service.service.getClassName())) {
+ 	            return true;
+ 	        }
+ 	    }
+ 	    return false;
+ 	}
+
     
     
 
