@@ -12,7 +12,10 @@
         android:name=".RestaurantApplication">
         
         <service android:name="com.restaurant.android.cameriere.activities.TablesListService"/>
-        <service android:enabled="true" android:name="com.restaurant.android.cameriere.notifiche.NotificationUpdaterService" />
+        <service 
+            android:launchMode="singleTop" 
+            android:enabled="true" 
+            android:name="com.restaurant.android.cameriere.notifiche.NotificationUpdaterService" />
          
         <activity
             android:label="@string/app_name"
@@ -26,6 +29,7 @@
          <activity
             android:label="@string/app_name"
             android:name=".cameriere.activities.HomeActivity" 
+            android:launchMode="singleTop"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
          

@@ -55,19 +55,7 @@ public class HomeActivity extends TabActivity {
 	  	 * background e controlla se ci sono nuove notifiche per il cameriere
 	  	 * @author Fabio Pierazzi
 	  	 * */
-	  	// Attivo NotificationUpdaterService solamente se non è già attivo
-	  	if(isMyServiceRunning("com.restaurant.android.cameriere.notifiche.NotificationUpdaterService")) {
-	  		// do nothing
-	  		Log.d(TAG, "NotificationUpdaterService is already running!");
-	  	} else {
-	  		/** Faccio partire il service per la l'update delle notifiche */
-		  	Log.d(TAG, "I'm starting the NotificationUpdaterService from HomeActivity!");
-		  
-		  	Intent serviceIntent = new Intent(this, NotificationUpdaterService.class);
-//		  	serviceIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		  	startService(serviceIntent);
-	  	}
-	  	
+	  	startNotificationUpdaterService();	  	
 	  
 	  	/** Alloco le risorse per mostrare i vari tab della Home page */
 	    Resources res = getResources(); // Resource object to get Drawables
@@ -94,7 +82,7 @@ public class HomeActivity extends TabActivity {
 	    /* Inserisco l'activity con l'elenco delle prenotazioni nel Tab */
 	    intent = new Intent().setClass(this, PrenotationsListActivity.class);
 	    spec = tabHost.newTabSpec("elencoPrenotazioni").setIndicator("Prenotazioni",
-	                      res.getDrawable(R.drawable.ic_launcher))
+	                      res.getDrawable(R.drawable.ic_prenotazioni))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
@@ -119,9 +107,20 @@ public class HomeActivity extends TabActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
-		case R.id.syncMenu :
-			//startService(new Intent(this, UpdateDatabaseService.class));
-			 new MenuSyncTask().execute(null);
+			case R.id.syncMenu :
+				//startService(new Intent(this, UpdateDatabaseService.class));
+				 new MenuSyncTask().execute(null);
+				 break;
+				 
+			case R.id.startNotificationUpdaterService:
+				startNotificationUpdaterService();	  	
+				break;
+			case R.id.stopNotificationUpdaterService: 
+				stopNotificationUpdaterService();
+				break;
+				 
+				
+			 
 		}
 		return false;
 	}
@@ -341,7 +340,7 @@ public class HomeActivity extends TabActivity {
     /**
      * Metodo per verificare se NotificationUpdaterService (il servizio che controlla se ci sono nuove 
      * notifiche per il cameriere) è attivo. 
-     * Serve per evitare che il servizio venga modificato due volte
+     * Serve per evitare che il servizio venga attivato due volte
      * 
      * @return true, se il servizio è attivo
      */
@@ -354,7 +353,38 @@ public class HomeActivity extends TabActivity {
  	    }
  	    return false;
  	}
+    
+    /**
+     * Metodo per far partire il NotificationUpdaterService.
+     * Controlla anche che il metodo non sia già attivo
+     * @author Fabio Pierazzi
+     */
+    private void startNotificationUpdaterService() {
+    	// Attivo NotificationUpdaterService solamente se non è già attivo
+	  	if(isMyServiceRunning("com.restaurant.android.cameriere.notifiche.NotificationUpdaterService")) {
+	  		// do nothing
+	  		Log.d(TAG, "NotificationUpdaterService is already running!");
+	  	} else {
+	  		/** Faccio partire il service per la l'update delle notifiche */
+		  	Log.d(TAG, "I'm starting the NotificationUpdaterService from HomeActivity!");
+		  
+		  	Intent serviceIntent = new Intent(this, NotificationUpdaterService.class);
+//		  	serviceIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		  	startService(serviceIntent);
+		  	Toast.makeText(getApplicationContext(), "Notifiche Attivate", 20).show();
+	  	}
+    }
 
+    /** Metodo per far interrompere NotificationUpdaterService, se è già attivo.
+     * @author Fabio Pierazzi
+     */
+    private void stopNotificationUpdaterService() {
+    	if(isMyServiceRunning("com.restaurant.android.cameriere.notifiche.NotificationUpdaterService")) {
+    		Intent serviceIntent = new Intent(this, NotificationUpdaterService.class);
+    		stopService(serviceIntent);
+    		Toast.makeText(getApplicationContext(), "Notifiche Disattivate", 20).show();
+    	}
+    }
     
     
 
