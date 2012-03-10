@@ -94,24 +94,12 @@ public class Categoria {
 		return categorieFiglie;
 	}
 
-	public void setCategorieFiglie(List<Categoria> categorieFiglie) {
-		this.categorieFiglie = categorieFiglie;
-	}
-
 	public List<Variazione> getVariazioni() {
 		return variazioni;
 	}
 
-	public void setVariazioni(List<Variazione> variazioni) {
-		this.variazioni = variazioni;
-	}
-
 	public List<VoceMenu> getVociMenu() {
 		return vociMenu;
-	}
-
-	public void setVociMenu(List<VoceMenu> vociMenu) {
-		this.vociMenu = vociMenu;
 	}
 
 	public int getIdTenant() {

@@ -1,6 +1,7 @@
 package com.orb;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -67,6 +68,7 @@ public class Comanda {
 				inverseJoinColumns = @JoinColumn(name="idVariazione", referencedColumnName="idVariazione"))
 	private List<Variazione> variazioniAssociate;
 
+	
 	public int getIdComanda() {
 		return idComanda;
 	}
@@ -140,11 +142,9 @@ public class Comanda {
 	}
 
 	public List<Variazione> getVariazioniAssociate() {
+		if(variazioniAssociate == null)
+			variazioniAssociate = new ArrayList<Variazione>();
 		return variazioniAssociate;
-	}
-
-	public void setVariazioniAssociate(List<Variazione> variazioniAssociate) {
-		this.variazioniAssociate = variazioniAssociate;
 	}
 
 	public Conto getContoAppartenenza() {

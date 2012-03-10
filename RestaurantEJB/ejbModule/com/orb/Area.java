@@ -45,11 +45,7 @@ public class Area {
 	public List<Tavolo> getTavoli() {
 		return tavoli;
 	}
-
-	public void setTavoli(List<Tavolo> tavoli) {
-		this.tavoli = tavoli;
-	}
-
+	
 	public int getIdArea() {
 		return idArea;
 	}

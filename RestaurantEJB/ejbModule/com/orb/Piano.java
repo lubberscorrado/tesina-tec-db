@@ -101,8 +101,5 @@ public class Piano {
 		return listAree;
 	}
 
-	public void setAree(List<Area> listAree) {
-		this.listAree = listAree;
-	}
 	
 }

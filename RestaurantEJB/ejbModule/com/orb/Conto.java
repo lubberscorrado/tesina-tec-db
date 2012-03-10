@@ -103,8 +103,6 @@ public class Conto {
 	public List<Comanda> getComande() {
 		return comande;
 	}
-	public void setComande(List<Comanda> comande) {
-		this.comande = comande;
-	}
+
 }
 
