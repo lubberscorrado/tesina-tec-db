@@ -1,6 +1,8 @@
 package com.restaurant;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.orb.Comanda;
 import com.orb.StatoComandaEnum;
@@ -12,9 +14,31 @@ public class WrapperComanda {
 	private String hashGruppo;
 	private BigDecimal prezzo;
 	private int quantita;
+	private int idVoceMenu;
 	private StatoComandaEnum stato;
+	private List<Integer> listIdVariazioni;
 	
+	public WrapperComanda() {
+		listIdVariazioni = new ArrayList<Integer>();
+		this.idVoceMenu = 0;
+		this.idTenant = 0;
+		this.idComanda = 0;
+		this.note = "";
+		this.hashGruppo = "";
+		this.prezzo = new BigDecimal(0);
+		this.quantita = 0;
+		this.stato = StatoComandaEnum.SOSPESA;
+		
+		/* Lista delle variazioni associate. Necessaria durante le fasi di
+		 * modifica delle comande già inviate */
+		listIdVariazioni = new ArrayList<Integer>();
+	}
+
 	public WrapperComanda(Comanda comanda) {
+		
+		/* Anche se l'oggetto comanda è detached il fetching della voce di
+		 * menu associata è eager quindi deve essere disponibile */
+		this.idVoceMenu = comanda.getVoceMenuAssociata().getIdVoceMenu();
 		this.idTenant = comanda.getIdTenant();
 		this.idComanda = comanda.getIdComanda();
 		this.note = comanda.getNote();
@@ -22,6 +46,8 @@ public class WrapperComanda {
 		this.prezzo = comanda.getPrezzo();
 		this.quantita = comanda.getQuantita();
 		this.stato = comanda.getStato();
+		
+		listIdVariazioni = new ArrayList<Integer>();
 	}
 	
 	
@@ -61,6 +87,37 @@ public class WrapperComanda {
 	public void setStato(StatoComandaEnum stato) {
 		this.stato = stato;
 	}
+	
+	public void addVariazione(int id) {
+		listIdVariazioni.add(new Integer(id));
+	}
+	
+	public void removeVariazione(int id) {
+		listIdVariazioni.remove(new Integer(id));
+	}
+	
+	public List<Integer> getListIdVariazioni() {
+		if(listIdVariazioni == null)
+			listIdVariazioni = new ArrayList<Integer>();
+		return listIdVariazioni;
+	}
+
+	public String getHashGruppo() {
+		return hashGruppo;
+	}
+
+	public void setHashGruppo(String hashGruppo) {
+		this.hashGruppo = hashGruppo;
+	}
+
+	public int getIdVoceMenu() {
+		return idVoceMenu;
+	}
+
+	public void setIdVoceMenu(int idVoceMenu) {
+		this.idVoceMenu = idVoceMenu;
+	}
+	
 	
 	
 }
