@@ -82,7 +82,7 @@ public class TableCardActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.cameriere_table_card);
 		  
-		/******************************************************************
+		/* *****************************************************************
 		 * Recupero il valore col nome del tavolo dall'oggetto passato 
 		 * durante l'invocazione di questa activity dall'elenco tavoli
 		 ******************************************************************/
@@ -92,7 +92,7 @@ public class TableCardActivity extends Activity {
 		/* Tavolo de-serializzato */
 		Log.d("Scheda Tavolo", "De-serializzato il tavolo: " + myTable.getTableName());
 		 
-		/*****************************************************************
+		/* ****************************************************************
 		 * Bottone per l'occupazione del tavolo e l'apertura del conto
 		 *****************************************************************/
 		Button occupaTavolo = (Button) findViewById(R.id.button_tableCard_occupaTavolo);
@@ -103,7 +103,7 @@ public class TableCardActivity extends Activity {
 			}
 		});
 		 	  
-		/*****************************************************************
+		/* ****************************************************************
 		 * Bottone per la liberazione del tavolo e il passaggio del 
 		 * conto allo stato DA PAGARE
 		 *****************************************************************/
@@ -118,7 +118,7 @@ public class TableCardActivity extends Activity {
 		
 		Button button_prendiOrdinazione = (Button) findViewById(R.id.button_tableCard_prendiOrdinazione);
 		  
-		/*****************************************************************
+		/* ****************************************************************
 		 * 	Bottone per prendere le ordinazioni per il tavolo 
 		 ******************************************************************/
 		 button_prendiOrdinazione.setOnClickListener(new OnClickListener() {
@@ -135,7 +135,7 @@ public class TableCardActivity extends Activity {
 			  	}
 		  });
 
-	      /*****************************************************************
+	      /* ****************************************************************
 		   * Configuro ListView per le Prenotazioni
 		   *****************************************************************/
 	      
@@ -150,7 +150,7 @@ public class TableCardActivity extends Activity {
 		  this.prenotationListView.setAdapter(this.prenotationListView_adapter);
 		  
 		  
-		  /*****************************************************************
+		  /* ****************************************************************
 	       * Listener per il click su un elemento della lista delle 
 	       * prenotazioni
 	       *****************************************************************/
@@ -172,7 +172,7 @@ public class TableCardActivity extends Activity {
 		  	    } 
 		  });
 		  
-		  /*****************************************************************
+		  /* ****************************************************************
 		   * ListView per le ordinazioni confermate che entrano a far parte
 		   * del conto
 		   ******************************************************************/
@@ -189,7 +189,7 @@ public class TableCardActivity extends Activity {
 		  this.contoListView.setAdapter(this.contoListView_adapter);
 		  
 		      
-	      /*****************************************************************
+	      /* ****************************************************************
 	       * Listener per il click lungo su un elemento della lista delle 
 	       * ordinazioni inviate in cucina. Consente di aprire il menu
 	       * per modificare o eliminare un'ordinazione.
@@ -244,7 +244,7 @@ public class TableCardActivity extends Activity {
 			 }
 		  });
 
-		  /*****************************************************************
+		  /* ****************************************************************
 		   * ListView per le ordinazioni in attesa
 		   *****************************************************************/
 		  
@@ -258,7 +258,7 @@ public class TableCardActivity extends Activity {
 		  
 		  this.ordersWaitingListView.setAdapter(this.ordersWaitingListView_adapter);
 		  
-		  /*****************************************************************
+		  /* ****************************************************************
 	       * Listener per il click su un'ordinazione in sospeso (passaggio
 	       * di stato da selezionata a deselezionata)
 	       *****************************************************************/
@@ -358,7 +358,7 @@ public class TableCardActivity extends Activity {
 				}
 		  });
 		  
-		  /***************************************************************** 
+		  /* **************************************************************** 
 		   * Gestisco lo Short Click sull'elemento della lista degli ordini 
 		   * in sospeso. Seleziono e deseleziono l'ordine sospeso da inviare  
 		   ******************************************************************/
@@ -378,9 +378,8 @@ public class TableCardActivity extends Activity {
 		  	    } 
 	      }); 
 		  
-		  /*****************************************************************
+		  /* ****************************************************************
 		   * Bottone per la conferma delle ordinazioni in sospeso
-		   * @author Guerri Marco
 		   *****************************************************************/
 		  Button buttonInviaOrdinazioni = (Button)findViewById(R.id.button_tableCard_inviaGruppoOrdinazioni);
 		  buttonInviaOrdinazioni.setOnClickListener(new OnClickListener() {
@@ -388,127 +387,14 @@ public class TableCardActivity extends Activity {
 			public void onClick(View v) {
 				RestaurantApplication restApp = (RestaurantApplication) getApplication();
 				
-				DbManager dbManager = null;
-				SQLiteDatabase db = null;
-				ProgressDialog progressDialog = null;
+				
 				
 				if(ordersWaitingListView_arrayOrdinazioni.size() == 0)
 					return;
+				else 
+					new InviaOrdinazioniAsyncTask().execute((Object[])null);
 				
-				try {
-					dbManager = new DbManager(getApplicationContext());
-					db = dbManager.getWritableDatabase();
-					
-					progressDialog = ProgressDialog.show(TableCardActivity.this, "Attendere", "Invio comande in cucina");
-					/****************************************************************
-					 * Costruisco l'oggetto JSON che rappresenta tutte le ordinazioni
-					 * con tutte le voci di menu e le variazioni associate.
-					 ****************************************************************/
 				
-					JSONObject jsonObject = new JSONObject();
-					jsonObject.put("idTavolo", myTable.getTableId());
-					
-					JSONArray jsonArrayOrdinazioni = new JSONArray();
-					
-					for(Ordinazione o: ordersWaitingListView_arrayOrdinazioni) {
-						
-						if(o.getStato().equals("Deselezionata"))
-							continue;
-						
-						/************************************************************
-						 * Cambio lo stato all'ordinazione sul database
-						 * locale.
-						 ************************************************************/
-						ContentValues ordinazioneInviata = new ContentValues();
-						ordinazioneInviata.put("stato","INVIATA");
-						db.update("comanda", ordinazioneInviata, "idComanda=" + o.getIdOrdinazione(), null);
-						
-						/************************************************************
-						 * Creazione dell'oggetto JSON che rappresenta la comanda
-						 * con tutte le variazioni associate
-						 ************************************************************/
-						
-						JSONObject jsonObjectOrdinazione = new JSONObject();
-						
-						jsonObjectOrdinazione.put("idLocale", o.getIdOrdinazione());
-						jsonObjectOrdinazione.put("idVoceMenu", o.getIdVoceMenu());
-						jsonObjectOrdinazione.put("quantita", o.getQuantita());
-						jsonObjectOrdinazione.put("note", o.getNote());
-						
-						JSONArray jsonArrayVariazioni = new JSONArray();
-					
-						Cursor cursorVariazioni = db.query(	"variazionecomanda", 
-															new String[] {"idVariazione"}, 
-															"idComanda="+o.getIdOrdinazione(), 
-															null, null, null, null);
-						
-						cursorVariazioni.moveToFirst();
-						
-						while(!cursorVariazioni.isAfterLast()) {
-							JSONObject jsonObjectVariazione = new JSONObject();
-							jsonObjectVariazione.put("idVariazione", cursorVariazioni.getInt(0));
-							jsonArrayVariazioni.put(jsonObjectVariazione);
-							cursorVariazioni.moveToNext();
-						}
-						
-						cursorVariazioni.close();
-						
-						jsonObjectOrdinazione.put("variazioni", jsonArrayVariazioni);
-						jsonArrayOrdinazioni.put(jsonObjectOrdinazione);
-					}
-					
-					jsonObject.put("comande", jsonArrayOrdinazioni);
-					
-					/* Il valore di action viene inviato tramite query string perchè il corpo della richiesta
-					 * è completamente dedicato al JSONObject che codifica le comande */
-					 
-					String response = restApp.makeHttpJsonPostRequest(	restApp.getHost() +
-																		"ClientEJB/gestioneComande?action=INSERISCI_COMANDE", 
-																		jsonObject);
-				
-					
-					JSONObject responseJsonObject = new JSONObject(response);
-										
-					if(responseJsonObject.getBoolean("success") == false) {
-						Toast.makeText(getApplicationContext(), responseJsonObject.getString("message") , 30).show();
-					} else {
-						
-						/***********************************************************************
-						 * Le comande sono state inviate al server e in risposta vengono
-						 * ritornati gli id remoti per future modifiche. Il database locale
-						 * viene aggiornato con gli id remoti
-						 ***********************************************************************/
-						
-						JSONArray jsonArrayIdComande = responseJsonObject.getJSONArray("idComande");
-						
-						for(int i=0; i<jsonArrayIdComande.length(); i++) {
-							
-							ContentValues comandaIdGlobale = new ContentValues();
-							comandaIdGlobale.put("idRemotoComanda", jsonArrayIdComande.getJSONObject(i).getInt("id"));
-							db.update(	"comanda", 
-										comandaIdGlobale, 
-										"idComanda=" + jsonArrayOrdinazioni.getJSONObject(i).getInt("idLocale"), 
-										null);
-						}
-						
-						/* Aggiorno la lista delle ordinazioni sospese e delle ordinazioni confermate */
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								getOrdersWaitingToBeConfirmed();
-								getOrdersConfirmed();
-							}
-						});
-										
-					}
-					
-				} catch (Exception e) {
-					Log.e("TableCardActivity", "Errore durante la conferma delle ordinazioni sospese: " + e.toString());
-				} finally {
-					progressDialog.dismiss();
-					db.close();
-					dbManager.close();
-				}
 			}
 		});
 	}
@@ -540,7 +426,7 @@ public class TableCardActivity extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		Log.d("TableCardActivity","OnStop");
+		Log.d("TableCardActivity","OnStop!!!!!!!!!!!!!!!");
 	}
 	
 	@Override
@@ -553,6 +439,7 @@ public class TableCardActivity extends Activity {
     /************************************************************************
 	 * Adapter per gestire la lista delle ordinazioni che sono state
 	 * inviate in cucina e che fanno parte del conto
+	 * @author Guerri Marco
 	 ************************************************************************/
     
     private class ContoAdapter extends ArrayAdapter<Ordinazione> {
@@ -676,7 +563,7 @@ public class TableCardActivity extends Activity {
     /************************************************************************
      * Metodo per reperire l'elenco delle ordinazioni che sono state inviate
      * in cucina (direttamente da database).
-     * @author Marco Guerri
+     * @author Guerri Marco
      ************************************************************************/
     private void getOrdersConfirmed(){
     	
@@ -908,6 +795,151 @@ public class TableCardActivity extends Activity {
 	}
     
     /************************************************************************
+     * Async Task per l'invio delle comanda in cucina 
+     * @author Guerri Marco
+     ***********************************************************************/
+    
+    class InviaOrdinazioniAsyncTask extends AsyncTask<Object, Object, Error> {
+
+    	private ProgressDialog progressDialog;
+    	   	
+    	@Override
+    	protected void onPreExecute() {
+    		progressDialog = ProgressDialog.show(TableCardActivity.this, "Attendere", "Invio comande in cucina");
+    	}
+    	
+    	@Override
+		protected Error doInBackground(Object... params) {
+			
+    		DbManager dbManager = new DbManager(getApplicationContext());
+			SQLiteDatabase db = dbManager.getWritableDatabase();
+			RestaurantApplication restApp = ((RestaurantApplication)getApplication());
+    	
+			
+			try {
+				
+				/****************************************************************
+				 * Costruisco l'oggetto JSON che rappresenta tutte le ordinazioni
+				 * con tutte le voci di menu e le variazioni associate.
+				 ****************************************************************/
+			
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("idTavolo", myTable.getTableId());
+				
+				JSONArray jsonArrayOrdinazioni = new JSONArray();
+				
+				for(Ordinazione o: ordersWaitingListView_arrayOrdinazioni) {
+					
+					if(o.getStato().equals("Deselezionata"))
+						continue;
+					
+					/************************************************************
+					 * Cambio lo stato all'ordinazione sul database
+					 * locale.
+					 ************************************************************/
+					ContentValues ordinazioneInviata = new ContentValues();
+					ordinazioneInviata.put("stato","INVIATA");
+					db.update("comanda", ordinazioneInviata, "idComanda=" + o.getIdOrdinazione(), null);
+					
+					/************************************************************
+					 * Creazione dell'oggetto JSON che rappresenta la comanda
+					 * con tutte le variazioni associate
+					 ************************************************************/
+					
+					JSONObject jsonObjectOrdinazione = new JSONObject();
+					
+					jsonObjectOrdinazione.put("idLocale", o.getIdOrdinazione());
+					jsonObjectOrdinazione.put("idVoceMenu", o.getIdVoceMenu());
+					jsonObjectOrdinazione.put("quantita", o.getQuantita());
+					jsonObjectOrdinazione.put("note", o.getNote());
+					
+					JSONArray jsonArrayVariazioni = new JSONArray();
+				
+					Cursor cursorVariazioni = db.query(	"variazionecomanda", 
+														new String[] {"idVariazione"}, 
+														"idComanda="+o.getIdOrdinazione(), 
+														null, null, null, null);
+					
+					cursorVariazioni.moveToFirst();
+					
+					while(!cursorVariazioni.isAfterLast()) {
+						JSONObject jsonObjectVariazione = new JSONObject();
+						jsonObjectVariazione.put("idVariazione", cursorVariazioni.getInt(0));
+						jsonArrayVariazioni.put(jsonObjectVariazione);
+						cursorVariazioni.moveToNext();
+					}
+					
+					cursorVariazioni.close();
+					
+					jsonObjectOrdinazione.put("variazioni", jsonArrayVariazioni);
+					jsonArrayOrdinazioni.put(jsonObjectOrdinazione);
+				}
+				
+				jsonObject.put("comande", jsonArrayOrdinazioni);
+				
+				/* Il valore di action viene inviato tramite query string perchè il corpo della richiesta
+				 * è completamente dedicato al JSONObject che codifica le comande */
+				 
+				String response = restApp.makeHttpJsonPostRequest(	restApp.getHost() +
+																	"ClientEJB/gestioneComande?action=INSERISCI_COMANDE", 
+																	jsonObject);
+			
+				
+				JSONObject responseJsonObject = new JSONObject(response);
+									
+				if(responseJsonObject.getBoolean("success") == false) {
+					return new Error(responseJsonObject.getString("message"), true);
+				} else {
+					
+					/***********************************************************************
+					 * Le comande sono state inviate al server e in risposta vengono
+					 * ritornati gli id remoti per future modifiche. Il database locale
+					 * viene aggiornato con gli id remoti
+					 ***********************************************************************/
+					
+					JSONArray jsonArrayIdComande = responseJsonObject.getJSONArray("idComande");
+					
+					for(int i=0; i<jsonArrayIdComande.length(); i++) {
+						
+						ContentValues comandaIdGlobale = new ContentValues();
+						comandaIdGlobale.put("idRemotoComanda", jsonArrayIdComande.getJSONObject(i).getInt("id"));
+						db.update(	"comanda", 
+									comandaIdGlobale, 
+									"idComanda=" + jsonArrayOrdinazioni.getJSONObject(i).getInt("idLocale"), 
+									null);
+					}
+					
+					/* Aggiorno la lista delle ordinazioni sospese e delle ordinazioni confermate */
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							getOrdersWaitingToBeConfirmed();
+							getOrdersConfirmed();
+						}
+					});
+					return new Error("Comande inviate", false);
+				}
+				
+			} catch (Exception e) {
+				return new Error("Errore durante la conferma delle comande", true);
+			} finally {
+				progressDialog.dismiss();
+				db.close();
+				dbManager.close();
+			}
+			
+		}
+    	
+    	@Override
+    	protected void onPostExecute(Error error) {
+     	   progressDialog.dismiss();
+     	   if(error.errorOccurred()) 
+     		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+     	 }
+    }
+    
+    
+    /************************************************************************
      * Async Task per l'aggiornamento delle informazioni della scheda 
      * del tavolo
      * @author Guerri Marco
@@ -1097,7 +1129,7 @@ public class TableCardActivity extends Activity {
 	   	@Override
 	   	protected void onPostExecute(Error error) {
 	    	  if(error.errorOccurred()) 
-	    		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+	    		   Toast.makeText(getApplicationContext(), error.getError(), 40).show();
 	    }
    }  
    
@@ -1172,7 +1204,7 @@ public class TableCardActivity extends Activity {
 	   	@Override
 	   	protected void onPostExecute(Error error) {
 	    	  if(error.errorOccurred()) 
-	    		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+	    		   Toast.makeText(getApplicationContext(), error.getError(), 40).show();
 	    }
   }  
    
