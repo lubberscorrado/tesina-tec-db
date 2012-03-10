@@ -93,10 +93,6 @@ public class VoceMenu {
 		return comande;
 	}
 
-	public void setComande(List<Comanda> comande) {
-		this.comande = comande;
-	}
-
 	public Categoria getCategoriaAppartenenza() {
 		return categoriaAppartenenza;
 	}

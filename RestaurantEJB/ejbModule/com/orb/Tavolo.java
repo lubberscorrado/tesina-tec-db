@@ -154,10 +154,6 @@ public class Tavolo {
 		return listaPrenotazioni;
 	}
 
-	public void setPrenotazioni(List<Prenotazione> listPrenotazioni) {
-		this.listaPrenotazioni = listPrenotazioni;
-	}
-
 	public StatoTavoloEnum getStato() {
 		return stato;
 	}
@@ -166,8 +162,4 @@ public class Tavolo {
 		return conti;
 	}
 
-	public void setConti(List<Conto> conti) {
-		this.conti = conti;
-	}
-	
 }

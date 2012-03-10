@@ -148,18 +148,10 @@ public class UtentePersonale {
 		return comandePreparate;
 	}
 
-	public void setComandePreparate(List<Comanda> comandePreparate) {
-		this.comandePreparate = comandePreparate;
-	}
-
 	public List<Comanda> getComandePreseInCarico() {
 		return comandePreseInCarico;
 	}
 
-	public void setComandePreseInCarico(List<Comanda> comandePreseInCarico) {
-		this.comandePreseInCarico = comandePreseInCarico;
-	}
-	
 }
 
 
