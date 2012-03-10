@@ -55,7 +55,7 @@ public class gestioneConti extends HttpServlet {
 		
 		if(request.getParameter("action").equals("GET_CONTO")) {
 			
-			/******************************************************
+			/* *****************************************************
 			 * Richiesta del conto (quindi di tutte le ordinazioni)
 			 * per il tavolo idTavolo
 			 ******************************************************/
