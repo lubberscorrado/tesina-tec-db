@@ -60,7 +60,8 @@ public class GestioneComanda {
 											BigDecimal prezzo,
 											int quantita,
 											StatoComandaEnum stato,
-											List<Integer> listIdVariazioniAssociate) throws DatabaseException {
+											List<Integer> listIdVariazioniAssociate) 
+											throws DatabaseException {
 		
 		try {
 			Comanda comanda = new Comanda() ;
@@ -71,21 +72,19 @@ public class GestioneComanda {
 			comanda.setStato(stato);
 			comanda.setHashGruppo(hashGruppo);
 			
-			/******************************************************************
+			/* *****************************************************************
 			 * Associo ad ogni comanda le variazioni richieste
 			 ******************************************************************/
-			
-			List<Variazione> listVariazioniAssociate = new ArrayList<Variazione>();
-			
+		
 			for(Integer idVariazione : listIdVariazioniAssociate) {
 				Variazione variazione = em.find(Variazione.class, idVariazione);
 				if(variazione == null)
-					throw new DatabaseException("Errore durante la ricerca della variazione " + idVariazione);
-				listVariazioniAssociate.add(variazione);
+					throw new DatabaseException("Errore durante la ricerca della variazione " +
+												idVariazione);
+				comanda.getVariazioniAssociate().add(variazione);
 			}
-			comanda.setVariazioniAssociate(listVariazioniAssociate);
 			
-			/******************************************************************
+			/* *****************************************************************
 			 * Associo la comanda al conto di cui fa parte 
 			 ******************************************************************/
 
@@ -94,7 +93,7 @@ public class GestioneComanda {
 				throw new DatabaseException("Errore durante la ricerca del conto a cui appartiene la comanda");
 			comanda.setContoAppartenenza(conto);
 				
-			/******************************************************************
+			/* *****************************************************************
 			 * Associo alla comanda la voce di menu relativa
 			 ******************************************************************/
 			
@@ -103,7 +102,7 @@ public class GestioneComanda {
 				throw new DatabaseException("Errore durante la ricerca della voce di menu associata alla comanda");
 			comanda.setVoceMenuAssociata(voceMenu);
 			
-			/******************************************************************
+			/* *****************************************************************
 			 * Associo la comanda al cameriere che l'ha presa in carico
 			 ******************************************************************/
 			
@@ -114,11 +113,13 @@ public class GestioneComanda {
 			
 			em.persist(comanda);
 			return new WrapperComanda(comanda);
-			
+		
+		} catch (DatabaseException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new DatabaseException("Errore durante l'inserimento della comanda +" +
-										"("+ e.toString() +")" );
-		}
+			throw new DatabaseException("Errore durante l'inserimento della comanda " +
+										"("+ e.toString()+")" );
+		} 
 	}
 	
 	/**
@@ -143,7 +144,6 @@ public class GestioneComanda {
 				
 			comanda.setNote(note);
 			comanda.setQuantita(quantita);
-		
 			
 			/* Rimuovo tutte le variazioni associate alla comanda */
 			comanda.getVariazioniAssociate().clear();
@@ -156,7 +156,10 @@ public class GestioneComanda {
 			
 			return new WrapperComanda(comanda);
 			
-		}catch(Exception e) {
+		} catch (DatabaseException e) {
+			/* Rilancia l'eccezione */
+			throw e;
+		} catch (Exception e) {
 			throw new DatabaseException("Errore durante la modifica della comanda (" +e.toString() +")");
 		}
 	 }
@@ -173,6 +176,10 @@ public class GestioneComanda {
 			if(comanda == null) 
 				throw new DatabaseException("Errore durante la ricerca della comanda da rimuovere");
 			em.remove(comanda);
+			
+		} catch (DatabaseException e) {
+			/* Rilancia l'eccezione */
+			throw e;
 		}catch(Exception e) {
 			throw new DatabaseException("Errore durante l'eliminazione dell'area ("+ e.toString() + ")");
 		}
@@ -215,7 +222,10 @@ public class GestioneComanda {
 				listaWrapperComande.add(new WrapperComanda(comanda));
 					
 			return listaWrapperComande;
-		
+					
+		} catch (DatabaseException e) {
+			/* Rilancia l'eccezione */
+			throw e;
 		} catch (Exception e) {
 			throw new DatabaseException("Errora durante la ricerca delle comande  ("+ e.toString() +")");
 			
@@ -238,10 +248,12 @@ public class GestioneComanda {
 			
 			return new WrapperComanda(comanda);
 			
+		} catch (DatabaseException e) {
+			/* Rilancia l'eccezione */
+			throw e;
 		} catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca della comanda (" + e.toString() +")");
 		}
-		
 	}
 	
 	/**
@@ -258,6 +270,10 @@ public class GestioneComanda {
 			if(comanda == null)
 				throw new DatabaseException("Errore duranta la ricerca della comanda");
 			return new TreeNodeVoceMenu(comanda.getVoceMenuAssociata());
+		
+		} catch (DatabaseException e) {
+			/* Rilancia l'eccezione */
+			throw e;
 		} catch (Exception e) {
 			throw new DatabaseException("Errora durante la ricerca della voce di menu (" + e.toString() + ")");
 		}

@@ -60,7 +60,9 @@ public class GestioneCategoria {
 			em.persist(categoria);
 			
 			return new TreeNodeCategoria(categoria);
-			
+	
+		} catch (DatabaseException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante l'inserimento della categoria +" +
 										"("+ e.toString() +")" );
@@ -94,10 +96,10 @@ public class GestioneCategoria {
 			
 			return new TreeNodeCategoria(categoria);
 			
+		} catch (DatabaseException e) {
+			throw e;
 		}catch(Exception e) {
-			
 			throw new DatabaseException("Errore durante la modifica della categoria (" +e.toString() +")");
-			
 		}
 	 }
 	 
@@ -112,6 +114,9 @@ public class GestioneCategoria {
 			 if(categoria == null)
 				 throw new DatabaseException("Errore durante la ricerca della categoria da eliminare");
 			 em.remove(categoria);
+		
+		 } catch (DatabaseException e) {
+				throw e;
 		 } catch (Exception e) {
 			 throw new DatabaseException("Errore durante l'eliminazione della categoria ("+ e.toString() +")");
 		 }
@@ -135,14 +140,13 @@ public class GestioneCategoria {
 		
 		try {
 			
-			if(idPadre == 0) {
-				throw new DatabaseException("Non è possibile ritornare la categoria radice dal database, "+
-											"impossibile fare il JOIN");
+			if(idPadre <= 0) {
+				/* Ritorna una lista vuota, nessun elemento può avere id <= 0 */
+				return new ArrayList<TreeNodeCategoria>();
 			}
 			
 			/* Acquisisco le categorie figlie dei nodi radici comuni limitando la selezione
 			 * al cliente di interesse  */
-			
 			Query query= em.createNamedQuery("getCategorieFiglieDi");
 			query.setParameter("idCategoriaPadre", idPadre);
 			query.setParameter("idTenant", idTenant);
@@ -180,7 +184,7 @@ public class GestioneCategoria {
 			
 			TreeNodeCategoria treeNodeCategoria = new TreeNodeCategoria(categoria);
 			
-			/******************************************************
+			/* *****************************************************
 			 * Ricerco l'id della categoria padre. Se la categoria
 			 * padre è null significa che è una categoria radice.
 			 ******************************************************/
@@ -193,7 +197,9 @@ public class GestioneCategoria {
 				treeNodeCategoria.setIdCategoriaPadre(categoriaPadre.getIdCategoria());
 			
 			return treeNodeCategoria;
-			
+	
+		} catch (DatabaseException e) {
+			throw e;
 		}catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca della categoria (" + e.toString() + ")");
 		}

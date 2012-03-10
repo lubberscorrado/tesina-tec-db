@@ -77,7 +77,8 @@ public class GestioneUtentePersonale{
 			em.persist(utentePersonale);
 			
 			return new WrapperUtentePersonale(utentePersonale);
-		
+		} catch (DatabaseException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante l'inserimento dell'utente (" + e.toString() +")");
 		}
@@ -136,7 +137,8 @@ public class GestioneUtentePersonale{
 			
 			
 			return new WrapperUtentePersonale(utentePersonale);
-			
+		} catch (DatabaseException e) {
+			throw e;
 		}catch(Exception e) {
 			throw new DatabaseException("Errore durante la modifica dell'utente (" +e.toString() +")");
 		}
@@ -154,6 +156,8 @@ public class GestioneUtentePersonale{
 			 if(utentePersonale == null)
 				 throw new DatabaseException("Errore durante la ricerca dell'utente da rimuovere");
 			 em.remove(utentePersonale);
+		 } catch (DatabaseException e) {
+				throw e;
 		 } catch (Exception e) {
 			 throw new DatabaseException("Errore durante l'eliminazione dell'utente ("+ e.toString() +")");
 		 }
@@ -180,7 +184,7 @@ public class GestioneUtentePersonale{
 				listaWrapperUtentePersonale.add(new WrapperUtentePersonale(utentePersonale));
 					
 			return listaWrapperUtentePersonale;
-					
+		
 		}catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca degli utenti (" + e.toString() +")");
 		}
@@ -200,6 +204,8 @@ public class GestioneUtentePersonale{
 			if(utentePersonale == null)
 				throw new DatabaseException("Impossibile trovare l'utente");
 			return new WrapperUtentePersonale(utentePersonale);
+		} catch (DatabaseException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante la ricerca dell'utente (" + e.toString() + ")");
 		}
