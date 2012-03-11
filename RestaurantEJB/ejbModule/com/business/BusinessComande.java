@@ -45,47 +45,39 @@ public class BusinessComande {
 											int idTavolo, 
 											int idCameriere) throws DatabaseException {
 		
-		try {
-			List<Integer> listaIdRemotiComande = new ArrayList<Integer>();
-			List<WrapperConto> listaContiAperti = gestioneConto.getContiAperti(idTavolo);
+		
+		List<Integer> listaIdRemotiComande = new ArrayList<Integer>();
+		List<WrapperConto> listaContiAperti = gestioneConto.getContiAperti(idTavolo);
 			
-			if(listaContiAperti.size() != 1) 
-				throw new DatabaseException("Errore durante la ricerca dei conti aperti (" +
+		if(listaContiAperti.size() != 1) 
+			throw new DatabaseException("Errore durante la ricerca dei conti aperti (" +
 											listaContiAperti.size() + " conti aperti)" + 
 											idTavolo);
 			
-			/* Hash che identifica univocamente il gruppo di comande */
-			String hashGruppo = generateString(new Random(), BusinessComande.characters, 64);
+		/* Hash che identifica univocamente il gruppo di comande */
+		String hashGruppo = generateString(new Random(), BusinessComande.characters, 64);
 			
-			for(WrapperComanda wrapperComanda : listaComande) {
+		for(WrapperComanda wrapperComanda : listaComande) {
 				
-				TreeNodeVoceMenu voceMenu = 
-						gestioneVoceMenu.getVoceMenu(wrapperComanda.getIdVoceMenu());
+			TreeNodeVoceMenu voceMenu = 
+					gestioneVoceMenu.getVoceMenu(wrapperComanda.getIdVoceMenu());
 				
-				WrapperComanda newWrapperComanda = 
-						gestioneComanda.aggiungiComanda(	wrapperComanda.getIdTenant(), 
-															wrapperComanda.getIdVoceMenu(),
-															listaContiAperti.get(0).getIdConto(),
-															idCameriere,
-															wrapperComanda.getNote(),
-															hashGruppo,
-															voceMenu.getPrezzo(),
-															wrapperComanda.getQuantita(),
-															wrapperComanda.getStato(),
-															wrapperComanda.getListIdVariazioni());
-				
-				listaIdRemotiComande.add(new Integer(newWrapperComanda.getIdComanda()));
-			}
-			return listaIdRemotiComande;
+			WrapperComanda newWrapperComanda = 
+					gestioneComanda.aggiungiComanda(	wrapperComanda.getIdTenant(), 
+														wrapperComanda.getIdVoceMenu(),
+														listaContiAperti.get(0).getIdConto(),
+														idCameriere,
+														wrapperComanda.getNote(),
+														hashGruppo,
+														voceMenu.getPrezzo(),
+														wrapperComanda.getQuantita(),
+														wrapperComanda.getStato(),
+														wrapperComanda.getListIdVariazioni());
 			
-		} catch (DatabaseException e) {
-			/* Rilancia l'eccezione */
-			throw e;
-		} catch (Exception e) {
-			throw new DatabaseException("Errore durante l'inserimento delle comande (" + 
-										e.toString() +")");
+			listaIdRemotiComande.add(new Integer(newWrapperComanda.getIdComanda()));
 		}
-		
+		return listaIdRemotiComande;
+			
 	}
 	
 	/**
@@ -98,53 +90,35 @@ public class BusinessComande {
 
 		/* Verifica se la comanda è già in preparazione o in uno stato diverso
 		 * da INVIATA. In caso affermativo rifiuta la cancellazione */
-		try {
-			if(!gestioneComanda	.getComandaById(wrapperComanda.getIdComanda())
-								.getStato().equals(StatoComandaEnum.INVIATA)) 
+		
+		if(!gestioneComanda	.getComandaById(wrapperComanda.getIdComanda())
+							.getStato().equals(StatoComandaEnum.INVIATA)) 
 				
-				throw new DatabaseException(	"Impossibile modificare la comanda (stato: " + 
-												wrapperComanda.getStato() + ")");
+			throw new DatabaseException("Impossibile modificare la comanda (stato: " + 
+										wrapperComanda.getStato() + ")");
 			
-			gestioneComanda.updateComanda(	wrapperComanda.getIdComanda(),
-											wrapperComanda.getNote(),
-											wrapperComanda.getQuantita(),
-											wrapperComanda.getListIdVariazioni());
-			
-		} catch (DatabaseException e) {
-			/* Rilancia l'eccezione */
-			throw e;
-		} catch (Exception e) {
-			throw new DatabaseException("Errore durante la modifica della comanda (" + 
-										e.toString() +")");
-		}
+		gestioneComanda.updateComanda(	wrapperComanda.getIdComanda(),
+										wrapperComanda.getNote(),
+										wrapperComanda.getQuantita(),
+										wrapperComanda.getListIdVariazioni());
 	}
 	
 	/**
 	 * Elimina una comanda
 	 * @param idComanda Id della comanda da eliminare
+	 * @throws DatabaseException 
 	 */
-	public void eliminaComanda(int idComanda) throws DatabaseException {
+	public void eliminaComanda(int idComanda) throws DatabaseException  {
 		
-		try {
+		WrapperComanda wrapperComanda = gestioneComanda.getComandaById(idComanda);
 		
-			WrapperComanda wrapperComanda = gestioneComanda.getComandaById(idComanda);
-		
-			/* Impedisco l'eliminazione della comanda se è già in preparazione */
-			if(!wrapperComanda.getStato().equals(StatoComandaEnum.INVIATA)) {
-				throw new DatabaseException(	"Impossibile eliminare la comanda (stato: " + 
-						wrapperComanda.getStato() + ")");
-			}
-			
-			gestioneComanda.deleteComanda(idComanda);
-		
-		
-		} catch (DatabaseException e) {
-			/* Rilancia l'eccezione */
-			throw e;
-		} catch (Exception e) {
-			throw new DatabaseException("Errore durante l'eliminazione della comanda (" + 
-										e.toString() +")");
+		/* Impedisco l'eliminazione della comanda se è già in preparazione */
+		if(!wrapperComanda.getStato().equals(StatoComandaEnum.INVIATA)) {
+			throw new DatabaseException("Impossibile eliminare la comanda (stato: " + 
+										wrapperComanda.getStato() + ")");
 		}
+			
+		gestioneComanda.deleteComanda(idComanda);
 	}
 	
 	/**

@@ -147,8 +147,6 @@ public class GestioneArea{
 	 * @throws DatabaseException Eccezione di errore durante l'accesso al database
 	 */
 	
-	// TODO Forzare il fetch con una query FETCH per ottenere le aree di un piano in un' unica query?
-	
 	public List<TreeNodeArea> getAreeByPiano(int idPiano) throws DatabaseException {
 	
 		try {

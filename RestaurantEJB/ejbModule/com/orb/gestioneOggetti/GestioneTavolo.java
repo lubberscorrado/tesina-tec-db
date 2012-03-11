@@ -248,8 +248,7 @@ public class GestioneTavolo{
 	 * @throws DatabaseException Generica eccezione durante le operazioni sul database
 	 */
 	
-	// TODO Verificare se forzare l'acquisizione dei tavolo con un FETCH JOIN
-	
+		
 	public List<TreeNodeTavolo> getTavoloByArea(int idArea) throws DatabaseException {
 		
 		Area area;
@@ -267,8 +266,6 @@ public class GestioneTavolo{
 		
 		try {
 			
-			/* L'inizializzazione LAZY avviene durante l'accesso agli oggetti, non in seguito
-			 * al metodo getTavoli() */
 			listaTavoli = area.getTavoli();	
 			listaTreeNodeTavolo = new ArrayList<TreeNodeTavolo>();
 		
