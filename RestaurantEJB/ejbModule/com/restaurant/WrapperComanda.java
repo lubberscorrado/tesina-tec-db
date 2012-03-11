@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.orb.Comanda;
 import com.orb.StatoComandaEnum;
+import com.orb.Variazione;
 
 public class WrapperComanda {
 	private int idTenant;
@@ -29,15 +30,11 @@ public class WrapperComanda {
 		this.quantita = 0;
 		this.stato = StatoComandaEnum.SOSPESA;
 		
-		/* Lista delle variazioni associate. Necessaria durante le fasi di
-		 * modifica delle comande già inviate */
 		listIdVariazioni = new ArrayList<Integer>();
 	}
 
 	public WrapperComanda(Comanda comanda) {
-		
-		/* Anche se l'oggetto comanda è detached il fetching della voce di
-		 * menu associata è eager quindi deve essere disponibile */
+	
 		this.idVoceMenu = comanda.getVoceMenuAssociata().getIdVoceMenu();
 		this.idTenant = comanda.getIdTenant();
 		this.idComanda = comanda.getIdComanda();
@@ -48,6 +45,10 @@ public class WrapperComanda {
 		this.stato = comanda.getStato();
 		
 		listIdVariazioni = new ArrayList<Integer>();
+		
+		for(Variazione variazione : comanda.getVariazioniAssociate()) 
+			listIdVariazioni.add(variazione.getIdVariazione());
+		
 	}
 	
 	
