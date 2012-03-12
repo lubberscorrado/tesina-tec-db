@@ -3,6 +3,9 @@ package com.restaurant.android.cameriere.activities;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import javax.swing.text.TabExpander;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
@@ -54,6 +57,9 @@ public class TableCardActivity extends Activity {
 	
 	/* Variabile usata per il logging */
 	private static final String TAG = "TableCardActivity";
+	
+	/* Flag che indica se il conto deve essere sincronizzato con il server */
+	public static boolean updateConto = true;
 	
 	/* Variabili necessarie alla ListView per la 
 	 * visualizzazione dell'elenco delle ordinazioni */
@@ -217,7 +223,8 @@ public class TableCardActivity extends Activity {
 			  				 
 			  				Intent myIntent = new Intent(getApplicationContext(), GestioneOrdinazioneActivity.class);
 	  	  	  	    		Bundle b = new Bundle();
-	  	  	  	    		b.putSerializable("ordinazione", (Ordinazione) contoListView_arrayOrdinazioni.get(item_position));     
+
+	  	  	  	    		b.putSerializable("ordinazione", (Ordinazione) contoListView_arrayOrdinazioni.get(contoPosition));     
 	  	  	  	    		myIntent.putExtras(b);
 	  	  	  	    	
 	  	  	  	    		startActivity(myIntent);
@@ -385,10 +392,6 @@ public class TableCardActivity extends Activity {
 		  buttonInviaOrdinazioni.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				RestaurantApplication restApp = (RestaurantApplication) getApplication();
-				
-				
-				
 				if(ordersWaitingListView_arrayOrdinazioni.size() == 0)
 					return;
 				else 
@@ -397,6 +400,15 @@ public class TableCardActivity extends Activity {
 				
 			}
 		});
+		  
+		 /* **************************************************************** 
+		  * Sincronizzo il conto con il server se la flag è true
+		  ******************************************************************/
+		  if(TableCardActivity.updateConto)
+			  new GetContoAsyncTask().execute((Object[]) null);
+		  
+		  TableCardActivity.updateConto = false;
+		  
 	}
 	
 	@Override
@@ -406,6 +418,14 @@ public class TableCardActivity extends Activity {
 		
 		new TableListAsyncTask().execute((Object[])null);
 		
+		/* **************************************************************** 
+		  * Sincronizzo il conto con il server se la flag è true
+		  ******************************************************************/
+		  if(TableCardActivity.updateConto)
+			  new GetContoAsyncTask().execute((Object[]) null);
+		  
+		  TableCardActivity.updateConto = false;
+		  
 		/* Aggiorno la lista delle ordinazioni sospese e delle ordinazioni confermate */
 		runOnUiThread(new Runnable() {
 			@Override
@@ -426,14 +446,14 @@ public class TableCardActivity extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		Log.d("TableCardActivity","OnStop!!!!!!!!!!!!!!!");
+		Log.d("TableCardActivity","OnStop");
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		TableCardActivity.updateConto = true;
 		Log.d("TableCardActivity","OnDestroy");
-		Log.d("TableCardActivity","Stoppo il thread di aggiornamento dei tavoli");
 	}
     
     /************************************************************************
@@ -579,8 +599,8 @@ public class TableCardActivity extends Activity {
         	  Cursor cursorOrdinazioniInviate;
         	  
         	  cursorOrdinazioniInviate = db.query("comanda", 
-											new String[] {"idComanda", "idVoceMenu", "quantita", "note", "idRemotoComanda"} , 
-											"idTavolo=" + myTable.getTableId() + " and stato=\"INVIATA\"", 
+											new String[] {"idComanda", "idVoceMenu", "quantita", "note", "idRemotoComanda", "stato"} , 
+											"idTavolo=" + myTable.getTableId() + " and stato IS NOT 'SOSPESA'", 
 											null, null, null, null, null);
         	  
         	  cursorOrdinazioniInviate.moveToFirst();
@@ -605,7 +625,7 @@ public class TableCardActivity extends Activity {
         		  o.setQuantita(cursorOrdinazioniInviate.getInt(2));
         		  o.setNote(cursorOrdinazioniInviate.getString(3));
         		  o.setIdRemotoOrdinazione(cursorOrdinazioniInviate.getInt(4));
-        		  o.setStato("INVIATA");
+        		  o.setStato(cursorOrdinazioniInviate.getString(5));
         		  
         		  cursorOrdinazioniInviate.moveToNext();
         		  
@@ -891,7 +911,7 @@ public class TableCardActivity extends Activity {
 					return new Error(responseJsonObject.getString("message"), true);
 				} else {
 					
-					/***********************************************************************
+					/* **********************************************************************
 					 * Le comande sono state inviate al server e in risposta vengono
 					 * ritornati gli id remoti per future modifiche. Il database locale
 					 * viene aggiornato con gli id remoti
@@ -1106,6 +1126,12 @@ public class TableCardActivity extends Activity {
 				if(jsonObject.getString("success").equals("true")) {
 					myTable.setTableStatus("LIBERO");
 					myTable.setCameriere("Non definito");
+					
+					/* Svuoto la list view delle ordinazioni inviate. Tutte le 
+					 * ordinazioni entrano a far parte di un conto non attivo */
+					contoListView_arrayOrdinazioni.clear();
+					
+					
 				} else {
 					return new Error(jsonObject.getString("message"),true);
 				}
@@ -1119,6 +1145,8 @@ public class TableCardActivity extends Activity {
 				runOnUiThread(new Runnable() {
 	   				@Override
 	   				public void run() {
+	   					contoListView_adapter.notifyDataSetChanged();
+	   					Utility.setListViewHeightBasedOnChildren(contoListView);
 	   					updateStatoTavolo();
 	   				}
 	   			});
@@ -1189,15 +1217,19 @@ public class TableCardActivity extends Activity {
 					return new Error("Comanda eliminata",false);
 				
 				} else {
-					return new Error("Errore durante la cancellazione",true);
+					
+					/* Forzo la sincronizzazione del conto vista l'alta probabilità che
+					 * l'errore sia dato dalla mancanza di sincronia sugli stati */
+					TableCardActivity.updateConto = true;
+					return new Error(jsonObject.getString("message"),true);
 				}
 				
 			} catch (ClientProtocolException e) {
-			  return new Error("Errore durante la comunicazione con il server",true);
+			  return new Error("Errore durante la comunicazione con il server (" + e.toString() + ")",true);
 			} catch (IOException e) {
-			  return new Error("Errore durante la comunicazione con il server",true);
+			  return new Error("Errore durante la comunicazione con il server (" + e.toString() + ")",true);
 			} catch (JSONException e) {
-			  return new Error("Errore durante la lettura della risposta dal server",true);
+			  return new Error("Errore durante la lettura della risposta dal server (" + e.toString() +")",true);
 			}
 		}
 	
@@ -1210,71 +1242,173 @@ public class TableCardActivity extends Activity {
    
    
    /************************************************************************
-    * Async Task per recuperare le informazioni sul conto aperto associato
-    * al tavolo. Recupera i dati di tutte le ordinazioni che sono state
-    * inviate in cucina. Non è essenziale nel momento in cui mantengo
-    * le ordinazioni sul database locale. Posso evitare quindi di
-    * richiedere le informazioni al server.
+    * Async Task che recupera le informazioni sul conto aperto associato
+    * al tavolo e le salve sul database locale. 
     * @author Guerri Marco
     ************************************************************************/
-//   class GetContoAsyncTask extends AsyncTask<Object, Object, Error> {
-//	   	@Override
-//   		protected void onPreExecute() {
-//	   	}
-//   	
-//	   	@Override
-//		protected Error doInBackground(Object... params) {
-//			
-//	   		Log.d("GetContoAsyncTask", "Richiesta del conto");
-//	   		RestaurantApplication restApp = (RestaurantApplication)getApplication();
-//			HashMap<String,String> requestParameters = new HashMap<String,String>();
-//			requestParameters.put("action","GET_CONTO");
-//			requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
-//			  
-//			try {
-//				String response = restApp.makeHttpPostRequest(restApp.getHost() + "ClientEJB/gestioneConti", requestParameters);
-//				Log.d("GetContoAsyncTask", response);
-//				
-//				/**********************************************************
-//				 * Decodifica della risposta inviata dal server
-//				 **********************************************************/
-//				JSONObject jsonObject = new JSONObject(response);
-//				
-//				contoListView_arrayOrdinazioni.clear();
-//				
-//				if(jsonObject.getBoolean("success") == true) {
-//					
-//					JSONArray jsonArrayOrdinazioni = jsonObject.getJSONArray("vocimenu");
-//					
-//					for(int i=0; i<jsonArrayOrdinazioni.length(); i++) {
-//						JSONObject jsonObjectOrdinazione = jsonArrayOrdinazioni.getJSONObject(i);
-//						
-//						Ordinazione ordinazione = new Ordinazione();
-//						ordinazione.setIdOrdinazione(jsonObjectOrdinazione.getInt("idComanda"));
-//						ordinazione.setNome(jsonObjectOrdinazione.getString("nome"));
-//						ordinazione.setStato(jsonObjectOrdinazione.getString("stato"));
-//						ordinazione.setQuantita(jsonObjectOrdinazione.getInt("quantita"));
-//						contoListView_arrayOrdinazioni.add(ordinazione);
-//					}
-//				}
-//				return new Error("",false);
-//				
-//			} catch (Exception e) {
-//				return new Error(e.toString(),true);
-//			}
-//		}
-//	  	@Override
-//	   	protected void onPostExecute(Error error) {
-//	  		if(error.errorOccurred()) {
-//	  			Toast.makeText(getApplicationContext(), error.getError(), 30).show();
-//	  		} else {
-//	  			runOnUiThread(new Runnable() {
-//					public void run() {
-//						contoListView_adapter.notifyDataSetChanged();
-//						Utility.setListViewHeightBasedOnChildren(contoListView);
-//					}
-//				});
-//	  		}
-//	   	}
-//   }  
+   class GetContoAsyncTask extends AsyncTask<Object, Object, Error> {
+	   
+	   	DbManager dbManager;
+	   	SQLiteDatabase db;
+	   
+	   	@Override
+   		protected void onPreExecute() {
+	   	}
+   	
+	   	@Override
+		protected Error doInBackground(Object... params) {
+			
+	   		dbManager = new DbManager(getApplicationContext());
+	   		db = dbManager.getWritableDatabase();
+	   		
+	   		RestaurantApplication restApp = (RestaurantApplication)getApplication();
+			HashMap<String,String> requestParameters = new HashMap<String,String>();
+			requestParameters.put("action","GET_CONTO");
+			requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
+			  
+			Log.d("TableCardActivity", "****** AGGIORNO IL CONTO ********");
+			try {
+				
+				/* ********************************************************
+				 * Cancello qualsiasi entry del database comande creata in
+				 * precedenza che NON SIA nello stato SOSPESO (comprese
+				 * le variazioni associate. Se è in stato SOSPESO è 
+				 * legittima la sua presenza.
+				 **********************************************************/
+				
+				/* ********************************************************
+				 * Recupero gli id delle comande da cancellare, che non 
+				 * sono quindi nello stato sospeso 
+				 **********************************************************/
+				
+				List<Integer> listaComandeNonSospese = new ArrayList<Integer>();
+				
+				Cursor cursorOrdinazioniNonSospese;
+				cursorOrdinazioniNonSospese = db.query(	"comanda", new String[] {"idComanda"}, 
+														"stato IS NOT 'SOSPESA'",
+														null,
+														null,
+														null,
+														null,
+														null);
+				
+				cursorOrdinazioniNonSospese.moveToFirst();
+				
+				while(!cursorOrdinazioniNonSospese.isAfterLast()) {
+					listaComandeNonSospese.add(new Integer(cursorOrdinazioniNonSospese.getInt(0)));
+					cursorOrdinazioniNonSospese.moveToNext();
+				}
+				
+				cursorOrdinazioniNonSospese.close();
+				
+				
+				/* ******************************************************
+				 * Cancello comande e variazioni associate in base agli
+				 * id recuperati in precedenza 
+				 ********************************************************/
+				String idComande = "(";
+			
+				for(Integer id : listaComandeNonSospese)
+					idComande = idComande + id + ",";
+				
+				idComande = idComande.substring(0, 	idComande.lastIndexOf(",") > 0 ? 
+													idComande.lastIndexOf(",") : 1 );
+				idComande = idComande + ")";
+				Log.d("TableCardActivity", idComande);
+				
+				Log.d("TableCardActivity" , "ID comande: " + idComande);
+				db.delete("comanda", "idComanda IN " + idComande, null);
+				db.delete("variazionecomanda","idComanda IN " + idComande, null);
+				
+				
+				/* ******************************************************
+				 * Richiesta al server per ottenere il conto associato
+				 * al tavolo
+				 ********************************************************/
+				
+				String response = 
+					restApp.makeHttpPostRequest(restApp.getHost() + "ClientEJB/gestioneConti", 
+												requestParameters);
+				
+				/* *********************************************************
+				 * Decodifica della risposta inviata dal server e inserisce
+				 * nel database le comande con le variazioni richieste
+				 **********************************************************/
+				JSONObject jsonObject = new JSONObject(response);
+				
+				if(jsonObject.getBoolean("success") == true) {
+					
+					
+					JSONArray jsonArrayComande = jsonObject.getJSONArray("comande");
+					
+					for(int i=0; i<jsonArrayComande.length(); i++) {
+						
+						JSONObject jsonObjectComanda = jsonArrayComande.getJSONObject(i);
+						
+						ContentValues comanda = new ContentValues();
+						comanda.put("idRemotoComanda", jsonObjectComanda.getInt("idRemoto"));
+						comanda.put("idVoceMenu", jsonObjectComanda.getInt("idVoceMenu"));
+						comanda.put("idTavolo", myTable.getTableId());
+						comanda.put("quantita", jsonObjectComanda.getInt("quantita"));
+						comanda.put("note", jsonObjectComanda.getString("note"));
+						comanda.put("stato", jsonObjectComanda.getString("stato"));
+						db.insertOrThrow("comanda", null, comanda);
+						
+						
+						/* **************************************************************
+						 * Inserisce nella tabella variazionecomanda tutte le variazioni
+						 * richieste associandole all'ultimo id comanda inserito
+						 ****************************************************************/
+						
+						int lastId = 0;
+						String query = "SELECT idComanda from comanda order by idComanda DESC limit 1";
+						Cursor c = db.rawQuery(query,  null);
+						if (c != null && c.moveToFirst()) {
+							lastId = c.getInt(0);
+							c.close();
+						} else {
+							c.close();
+							return new Error("Errore durante la ricerca dell'id della comanda", true);
+						}
+						
+						JSONArray jsonArrayVariazioni = jsonObjectComanda.getJSONArray("variazioni");
+						
+						for(int j=0; j<jsonArrayVariazioni.length(); j++) {
+							JSONObject jsonObjectVariazione = jsonArrayVariazioni.getJSONObject(j);
+							
+							ContentValues variazione = new ContentValues();
+							variazione.put("idComanda", lastId);
+							variazione.put("idVariazione", jsonObjectVariazione.getInt("id"));
+							
+							db.insertOrThrow("variazionecomanda", null, variazione);
+						}
+					}
+					dbManager.close();
+					db.close();
+					return new Error("",false);
+					
+				} else {
+					dbManager.close();
+					db.close();
+					return new Error(jsonObject.getString("message"), true);
+				}
+				
+			} catch (Exception e) {
+				return new Error(e.toString(),true);
+			}
+		}
+	  	@Override
+	   	protected void onPostExecute(Error error) {
+	  		if(error.errorOccurred()) {
+	  			Toast.makeText(getApplicationContext(), error.getError(), 50).show();
+	  		} else {
+	  			
+	  			/* Aggiorno la listview del conto */
+	  			getOrdersConfirmed();
+				contoListView_adapter.notifyDataSetChanged();
+				Utility.setListViewHeightBasedOnChildren(contoListView);
+				
+	  		}
+	   	}
+   }  
 }

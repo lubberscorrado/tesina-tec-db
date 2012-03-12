@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.text.TabExpander;
+
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,7 +76,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.cameriere_gestione_ordinazione);
 		
-		/*******************************************************
+		/* ******************************************************
 		 * Inizializzazione degli oggetti per la gestione del DB
 		 *******************************************************/
 		dbManager = new DbManager(getApplication());
@@ -104,7 +106,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 		elencoVariazioniRimosse = new ArrayList<Integer>();
 		
 		
-		/*******************************************************************************
+		/* ******************************************************************************
 		 * Aggiorno flag sul database e liste delle variazioni associate all'ordinazione
 		 *******************************************************************************/
 		/* Resetta tutte le flag checked per il dialog Multi Choice */
@@ -138,7 +140,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 			}
 		});
 		
-		/*******************************************************
+		/* ******************************************************
 		 * Alert Dialog per la gestione delle variazioni
 		 *******************************************************/
 		AlertDialog.Builder builder = new AlertDialog.Builder(GestioneOrdinazioneActivity.this);
@@ -193,7 +195,7 @@ public class GestioneOrdinazioneActivity extends Activity {
             	cursorVariazioni.moveToPosition(whichButton);
                 int idVariazione = cursorVariazioni.getInt(0);
                 
-                /************************************************************
+                /* ***********************************************************
                  * Per aggiornare lo stato della checkbox è necessario
                  * aggiornare il valore della flag nel database e riformulare
                  * la query.
@@ -204,7 +206,7 @@ public class GestioneOrdinazioneActivity extends Activity {
                 db.update("variazione", values , "idVariazione="+idVariazione, null);
                 cursorVariazioni.requery();
                 
-                /*********************************************************
+                /* ********************************************************
                  * Aggiorno la lista delle variazioni temporanee a seconda
                  * del click dell'utente.
                  *********************************************************/
@@ -239,7 +241,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 			}
 		});
 		
-		/********************************************************************
+		/* *******************************************************************
 		 * Listener per la gestione della conferma dell'ordinazione
 		 *********************************************************************/
 		
@@ -250,7 +252,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 					
 				if(myOrdinazione.getIdOrdinazione() == 0) {
 					
-					/*************************************************************************
+					/* ************************************************************************
 					 * L'ordinazione non è presente nel database (quindi nuova ordinazione)
 					 *************************************************************************/
 					
@@ -273,30 +275,35 @@ public class GestioneOrdinazioneActivity extends Activity {
 					updateVariazioni();
 					finish();
 				
-				} else if(myOrdinazione.getStato().equals("INVIATA")){
-				
-					/************************************************************************
-					 * Aggiorno le informazioni sulla comanda in remoto e, se il procedimento
-					 * va a buon fine, anche sul database locale. La modifica in locale deve
-					 * avvenire solo se in remoto la comanda è già stata modificata.
-					 ************************************************************************/
+				} else if(myOrdinazione.getStato().equals("SOSPESA")) {
 					
-					new ModificaComandaAsyncTask().execute( (Object[]) null);
-					
-					/* L'activity non termina fintanto che non è stata ritornata una risposta
-					 * dal server */
-					
-				} else {
-					
-					/*************************************************************************
-					 * Aggiorno le informazioni sulla comanda sospesa all'interno del 
+					/* ************************************************************************
+					 * Aggiorno le informazioni della comanda sospesa all'interno del 
 					 * database locale
 					 *************************************************************************/
 					updateOrdinazione();
 					updateVariazioni();
 					finish();
-				}
+				} else {
 				
+					/* ***********************************************************************
+					 * La comanda è già stata inviata al server ed è in un qualsiasi stato
+					 * valido dopo l'invio. Posso verificare subito se la comanda è in uno stato
+					 * diverso da INVIATA. In caso affermativo è già stata presa in carico e non
+					 * può essere modificata. Nel caso sia inviata devo verificare la possibilità
+					 * di modifica tramite il server. Se il procedimento di modifica
+					 * va a buon fine, riporto i cambiamenti anche sul database locale. 
+					 * La modifica in locale deve avvenire solo se in remoto la comanda è 
+					 * modificata con successo.
+					 ************************************************************************/
+					
+					if(!myOrdinazione.getStato().equals("INVIATA")) {
+						Toast.makeText(getApplicationContext(), "Impossibile modificare la comanda (stato:" + 
+																myOrdinazione.getStato()+")", 50).show();
+					} else {
+						new ModificaComandaAsyncTask().execute( (Object[]) null);
+					}
+				}
 			}
 		});
 	}
@@ -349,7 +356,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 					
 				if(jsonObjectResponse.getBoolean("success") == true)  {
 				
-					/* L'ordinazione deve essere ora modificata in locale */
+					/* L'ordinazione deve essere ora modificato in locale */
 					updateOrdinazione();
 					updateVariazioni();
 					
@@ -357,6 +364,10 @@ public class GestioneOrdinazioneActivity extends Activity {
 				
 				
 				} else {
+					
+					/* Forzo la sincronizzazione del conto vista l'alta probabilità che
+					 * l'errore sia dato dalla mancanza di sincronia sugli stati */
+					TableCardActivity.updateConto = true;
 					return new Error(jsonObjectResponse.getString("message"), true );
 				}	
 				

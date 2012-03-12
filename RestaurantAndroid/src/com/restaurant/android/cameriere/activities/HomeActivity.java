@@ -17,6 +17,7 @@ import android.app.TabActivity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -213,7 +214,7 @@ public class HomeActivity extends TabActivity {
     		
     		for(Integer idCategoria : categoriePadre) {
     			
-    			/*************************************************************************
+    			/* ************************************************************************
     			 * Acquisizione di tutte le variazioni associate alla categoria corrente
     			 *************************************************************************/
     			getParametersMap = new HashMap<String,String>();
@@ -249,7 +250,7 @@ public class HomeActivity extends TabActivity {
     				}
     			}
     			  			
-    			/**************************************************************************
+    			/* *************************************************************************
     			 * Acquisizione di tutte le categorie figlie della categoria corrente 
     			 **************************************************************************/
     			
@@ -262,7 +263,7 @@ public class HomeActivity extends TabActivity {
     			
     			Log.d("UpdataDatabaseService (categorie)", response);
     			
-    			/**************************************************************************
+    			/* *************************************************************************
     			 * Tutte le categoria ritornate dal server vengono inserite all'interno
     			 * del database e vengono acquisiti gli id per la richiesta delle categorie
     			 * figlie
@@ -283,7 +284,7 @@ public class HomeActivity extends TabActivity {
     						Log.d("UpdateDatabaseService", "Ottenuta categoria: " + categories.getJSONObject(i).getString("nome"));
     						categorieFiglie.add(Integer.parseInt(id.substring(1, id.length())));
     						
-    						/**********************************************************************
+    						/* *********************************************************************
     						 * Inserimento dei parametri della categoria all'interno del database 
     						 **********************************************************************/
     						
@@ -299,8 +300,7 @@ public class HomeActivity extends TabActivity {
     												
     					} else if (id.startsWith("V")) {
     						
-    						Log.d("UpdateDatabaseService", "Ottenuta voce menu: " + categories.getJSONObject(i).getString("nome"));
-    						/************************************************************************
+    						/* ***********************************************************************
     						 * Inserimento dei parametri della voce di menu all'interno del database 
     						 ************************************************************************/
     						
