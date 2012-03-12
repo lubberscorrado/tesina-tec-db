@@ -91,11 +91,13 @@ public class BusinessComande {
 		/* Verifica se la comanda è già in preparazione o in uno stato diverso
 		 * da INVIATA. In caso affermativo rifiuta la cancellazione */
 		
-		if(!gestioneComanda	.getComandaById(wrapperComanda.getIdComanda())
-							.getStato().equals(StatoComandaEnum.INVIATA)) 
+		StatoComandaEnum stato = gestioneComanda.getComandaById(wrapperComanda.getIdComanda())
+												.getStato();
+		
+		if(!stato.equals(StatoComandaEnum.INVIATA)) 
 				
 			throw new DatabaseException("Impossibile modificare la comanda (stato: " + 
-										wrapperComanda.getStato() + ")");
+										stato.toString() + ")");
 			
 		gestioneComanda.updateComanda(	wrapperComanda.getIdComanda(),
 										wrapperComanda.getNote(),

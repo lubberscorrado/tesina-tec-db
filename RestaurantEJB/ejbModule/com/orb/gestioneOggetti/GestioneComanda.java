@@ -200,32 +200,29 @@ public class GestioneComanda {
 			
 			/* Ottengo la lista dei conti in stato aperto per il tavolo richiesto */
 			Query query = em.createQuery(	"SELECT c FROM Tavolo t JOIN t.conti c WHERE " +
-					"c.stato = 'APERTO' AND t.idTavolo = :idTavolo");
+											"c.stato = 'APERTO' AND t.idTavolo = :idTavolo");
 			query.setParameter("idTavolo", idTavolo);
 			List<Conto> listaContiAperti =  query.getResultList();
 			
-			/* Se c'è più di un conto aperto associato al tavolo si è verificato qualche
-			 * errore */
-			if(listaContiAperti.size() > 1 ) 
-				throw new DatabaseException("Errora durante la ricerca del conto aperto, " +
-											"ci sono più conti aperti associati al tavolo");
+			/* *********************************************************************
+			 * Non verifica il numero di conti aperti associati al tavolo. In ogni
+			 * momento dovrebbe esserci comunque al più 1 conto aperto.
+			 * Il controllo è compito della logica di business.
+			 ***********************************************************************/
 			
-			if(listaContiAperti.size() == 0)
+			if(listaContiAperti.size() == 0) {
 				return new ArrayList<WrapperComanda>();
+			} else {
 			
-			/* Vengono recuperate dal database le comande associate al conto aperto */
-			List<Comanda> listaComande = listaContiAperti.get(0).getComande();
-			
-			List<WrapperComanda> listaWrapperComande = new ArrayList<WrapperComanda>();
-			
-			for(Comanda comanda: listaComande) 
-				listaWrapperComande.add(new WrapperComanda(comanda));
-					
-			return listaWrapperComande;
-					
-		} catch (DatabaseException e) {
-			/* Rilancia l'eccezione */
-			throw e;
+				List<Comanda> listaComande = listaContiAperti.get(0).getComande();
+				List<WrapperComanda> listaWrapperComande = new ArrayList<WrapperComanda>();
+				
+				for(Comanda comanda: listaComande) 
+					listaWrapperComande.add(new WrapperComanda(comanda));
+						
+				return listaWrapperComande;
+			}
+	
 		} catch (Exception e) {
 			throw new DatabaseException("Errora durante la ricerca delle comande  ("+ e.toString() +")");
 			
