@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,6 +40,10 @@ public class Categoria {
 	
 	@Column(name="descrizione")
 	private String descrizione;
+	
+	@Column(name="tipo")
+	@Enumerated(EnumType.STRING)
+	private TipoCategoriaEnum tipo;
 		
 	/* Essendo l'associazione con la categoria padre molti a uno, il fetch è 
 	 * di default eager, ma diventa ricorsivo essendo l'associazione collegata
@@ -55,6 +61,7 @@ public class Categoria {
 	
 	@OneToMany(mappedBy="categoriaAppartenenza")
 	private List<VoceMenu> vociMenu;
+	
 	
 	
 	
@@ -108,6 +115,14 @@ public class Categoria {
 
 	public void setIdTenant(int idTenant) {
 		this.idTenant = idTenant;
+	}
+
+	public TipoCategoriaEnum getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(TipoCategoriaEnum tipo) {
+		this.tipo = tipo;
 	}
 	
 	

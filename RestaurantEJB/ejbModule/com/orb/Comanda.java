@@ -2,9 +2,9 @@ package com.orb;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -45,6 +45,9 @@ public class Comanda {
 	
 	@Column(name="idTenant")
 	private int idTenant;
+	
+	@Column(name="lastModified")
+	private Date lastModified;
 	
 	@ManyToOne
 	@JoinColumn(name="idCucina", referencedColumnName="idUtente")
@@ -159,6 +162,14 @@ public class Comanda {
 	}
 	public void setHashGruppo(String hashGruppo) {
 		this.hashGruppo = hashGruppo;
+	}
+
+	public Date getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(Date lastModified) {
+		this.lastModified = lastModified;
 	}
 	
 }

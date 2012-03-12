@@ -16,6 +16,7 @@ import com.orb.gestioneOggetti.GestioneConto;
 import com.orb.gestioneOggetti.GestioneVoceMenu;
 import com.restaurant.TreeNodeVoceMenu;
 import com.restaurant.WrapperComanda;
+import com.restaurant.WrapperComandaCucina;
 import com.restaurant.WrapperConto;
 
 @Stateless
@@ -138,6 +139,24 @@ public class BusinessComande {
 	        text[i] = characters.charAt(rng.nextInt(characters.length()));
 	    }
 	    return new String(text);
+	}
+	
+	/**
+	 * Funzione per ottenere un elenco delle comande in base al tipo
+	 * @param type = CIBO, BEVANDA
+	 */
+	public List<WrapperComandaCucina> getElencoComandeByType(String type) {
+		
+		List<WrapperComandaCucina> lista = new ArrayList<WrapperComandaCucina>();
+		
+		try {
+			lista = gestioneComanda.getElencoComandeByType(type);
+		} catch (DatabaseException e) {
+			System.out.println("BusinessComande: eccezione invocando l'entity bean" );
+			e.printStackTrace();
+		}
+		
+		return lista;
 	}
 	
 }

@@ -2,12 +2,8 @@ package Servlets;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
-import java.sql.Timestamp;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -19,23 +15,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import Utilita.JSONResponse;
+
 import com.business.BusinessComande;
 import com.business.BusinessTavolo;
-import com.exceptions.DatabaseException;
-import com.orb.Comanda;
 import com.orb.StatoComandaEnum;
-import com.orb.StatoContoEnum;
-import com.orb.gestioneOggetti.GestioneCategoria;
-import com.orb.gestioneOggetti.GestioneComanda;
-import com.orb.gestioneOggetti.GestioneConto;
 import com.orb.gestioneOggetti.GestioneUtentePersonale;
-import com.orb.gestioneOggetti.GestioneVoceMenu;
-import com.restaurant.TreeNodeVoceMenu;
 import com.restaurant.WrapperComanda;
-import com.restaurant.WrapperConto;
+import com.restaurant.WrapperComandaCucina;
 import com.restaurant.WrapperUtentePersonale;
-
-import Utilita.JSONResponse;
 
 
 @WebServlet("/gestioneComande")
@@ -56,9 +44,12 @@ public class gestioneComande extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		System.out.println("Servlet gestioneComande: sono stata invocata!");
 		
 		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere))
 			return;
@@ -257,6 +248,46 @@ public class gestioneComande extends HttpServlet {
 				return;
 			}
 			
+		} else if(request.getParameter("action").equals("ELENCO_COMANDE")) {
+			
+			System.out.println("Ho ricevuto una richiesta!");
+			
+			/* ****************************************************************************
+			 * Acquisisce il tipo di comande da cercare (CIBO o BEVANDA) e 
+			 * lo passa alla logica di business
+			 * *****************************************************************************/
+			
+			try {
+				String tipo = request.getParameter("tipoComande");
+				List<WrapperComandaCucina> listaComandeCucina =  businessComande.getElencoComandeByType(tipo);
+				
+				JSONObject jsonObject = new JSONObject();
+				
+				JSONArray jsonArrayComande = new JSONArray();
+				
+				for(int i=0; i<listaComandeCucina.size(); ++i) {
+					JSONObject tempObject = new JSONObject();
+					
+					tempObject.put("idComanda", listaComandeCucina.get(i).getIdComanda());
+					tempObject.put("nomeVoceMenu", listaComandeCucina.get(i).getNomeVoceMenu());
+					tempObject.put("quantita", listaComandeCucina.get(i).getQuantita());
+					tempObject.put("statoComanda", listaComandeCucina.get(i).getStato());
+					tempObject.put("nomeTavolo", listaComandeCucina.get(i).getNomeTavolo());
+					
+					jsonArrayComande.put(tempObject);
+				}
+				
+				jsonObject.put("elencoComande", jsonArrayComande);
+				jsonObject.put("success", true);
+				
+				response.getWriter().print(jsonObject);
+				
+//				JSONResponse.WriteOutput(response, true, "Elenco comande reperito");
+				
+			} catch (Exception e) {
+				JSONResponse.WriteOutput(response, false, e.toString());
+				return;
+			}
 		}
 	}
 	

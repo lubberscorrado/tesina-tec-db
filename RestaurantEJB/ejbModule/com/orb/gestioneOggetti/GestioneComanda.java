@@ -1,7 +1,6 @@
 package com.orb.gestioneOggetti;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,20 +10,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import com.exceptions.DatabaseException;
-import com.orb.Area;
+import com.orb.Categoria;
 import com.orb.Comanda;
 import com.orb.Conto;
 import com.orb.StatoComandaEnum;
-import com.orb.StatoContoEnum;
 import com.orb.Tavolo;
+import com.orb.TipoCategoriaEnum;
 import com.orb.UtentePersonale;
 import com.orb.Variazione;
 import com.orb.VoceMenu;
-import com.restaurant.TreeNodeArea;
-import com.restaurant.TreeNodeTavolo;
 import com.restaurant.TreeNodeVoceMenu;
 import com.restaurant.WrapperComanda;
-import com.restaurant.WrapperConto;
+import com.restaurant.WrapperComandaCucina;
+import com.restaurant.WrapperVariazione;
 
 @SuppressWarnings("unchecked") 
 @Stateless
@@ -275,4 +273,150 @@ public class GestioneComanda {
 			throw new DatabaseException("Errora durante la ricerca della voce di menu (" + e.toString() + ")");
 		}
 	}
+	
+	/**
+	 * Ritorna l'elenco delle comande di un certo tipo (CIBO o BEVANDE) 
+	 * che sono in stato "INVIATA" o "INPREPARAZIONE". 
+	 * Viene utilizzata per mostrare l'elenco delle comande nell'interfaccia
+	 * cucina di Android. 
+	 * @param type: può essumere i valori "CIBO", "BEVANDA"
+	 * @return Lista di comande
+	 */
+	public List<WrapperComandaCucina> getElencoComandeByType(String type) throws DatabaseException {
+		
+		List<WrapperComandaCucina> listComandeCucina = new ArrayList<WrapperComandaCucina>();
+		
+		try {
+			
+				System.out.println("Bean GestioneComanda: sono entrato!");
+			
+				List<Comanda> listComande;
+				
+				// Costruisco la stringa con la query
+				String stringaQuery = "SELECT c " +
+						"FROM Comanda c " +
+						"LEFT JOIN c.voceMenuAssociata v " +
+						"LEFT JOIN v.categoriaAppartenenza cat " +
+						"WHERE c.stato IN ('INVIATA','INPREPARAZIONE') " +
+						"and cat.tipo=:tipo " +
+						"order by c.lastModified DESC, c.hashGruppo";
+				
+				Query query = em.createQuery(stringaQuery);
+				
+				// TODO: imposta il parametro. Attualmente dà un problema il TipoCategoriaEnum
+				if(type.equals("CIBO")) {
+					System.out.println("Scelto elenco cibi (enum)");
+					query.setParameter("tipo", TipoCategoriaEnum.CIBO);
+				} else /* if(type.equals("BEVANDA"))*/ {
+					System.out.println("Scelta elenco bevande (enum)");
+					query.setParameter("tipo", TipoCategoriaEnum.BEVANDA);
+				}
+				
+				/* Imposto il parametro per selezionare se ritornare la lista 
+				 * dei cibi o delle bevande */
+				
+				listComande = query.getResultList();
+				
+				System.out.println("Bean GestioneComanda: ho eseguito la query!");
+				
+				/************************************************
+				 * Recupero tutte le informazioni relative alle comande
+				 ************************************************/
+				
+				
+				List<Variazione> listVariazioni;
+				List<WrapperVariazione> listWrapperVariazione = new ArrayList<WrapperVariazione>(); 
+				
+				/** Per tutte le comande presenti nella lista */
+				for(Comanda comanda : listComande) {
+					
+					
+					/** Creo la comanda cucina che andrò ad inserire nella lista */
+					WrapperComandaCucina wrapperComandaCucina = new WrapperComandaCucina();
+					
+					/** Recupero le variazioni */
+					try {
+						// ottengo Variazioni (orb)
+						listVariazioni = comanda.getVariazioniAssociate();
+					} catch( Exception e) {
+						throw new DatabaseException("Errore durante la ricerca dei delle variazioni associate ad una comanda " +
+								"(" + e.toString() + ")");
+					}
+					
+					/* Copio le Variazioni (orb) nell'oggetto Wrapper */
+					for(Variazione variazione : listVariazioni) {
+						listWrapperVariazione.add(new WrapperVariazione(variazione));
+					}
+					
+					
+					// TODO: CHECK!!!
+					
+					/* Copio la lista variazioni */
+					wrapperComandaCucina.setListVariazioni(listWrapperVariazione);
+					
+					/** Fine recupero variazioni */
+					
+					/** IdTenant? */
+					wrapperComandaCucina.setIdTenant(comanda.getIdTenant());
+
+					/** Info Comanda */
+					// id
+					wrapperComandaCucina.setIdComanda(comanda.getIdComanda());
+					// stato 
+					wrapperComandaCucina.setStato(comanda.getStato());
+					// quantita
+					wrapperComandaCucina.setQuantita(comanda.getQuantita());
+					// prezzo
+					wrapperComandaCucina.setPrezzo(comanda.getPrezzo());
+					// note
+					wrapperComandaCucina.setNote(comanda.getNote());
+					// lastModified
+					wrapperComandaCucina.setLastModified(comanda.getLastModified());
+					// hashgroup
+					wrapperComandaCucina.setHashGruppo(comanda.getHashGruppo());
+					
+					/** Info Conto */
+					Conto conto = comanda.getContoAppartenenza();
+					wrapperComandaCucina.setIdConto(conto.getIdConto());
+					
+					/** Info Voce Menu */
+					VoceMenu voceMenu = comanda.getVoceMenuAssociata();
+					
+					wrapperComandaCucina.setIdVoceMenu(voceMenu.getIdVoceMenu());
+					wrapperComandaCucina.setNomeVoceMenu(voceMenu.getNome());
+					
+					/** Info Categoria */
+					Categoria categoria = voceMenu.getCategoriaAppartenenza();
+					
+					wrapperComandaCucina.setIdCategoria(categoria.getIdCategoria());
+					wrapperComandaCucina.setNomeCategoria(categoria.getNome());
+					
+					// TODO: Check!!!
+//					wrapperComandaCucina.setTipoCategoria(categoria.getTipo().toString());
+					
+					/** Info Tavolo */
+					Tavolo tavolo = conto.getTavoloAppartenenza();
+					wrapperComandaCucina.setIdTavolo(tavolo.getIdTavolo());
+					wrapperComandaCucina.setNomeTavolo(tavolo.getNome());
+					
+						
+					/** Aggiungo il wrapper con la comanda cucina alla lista globale */
+					listComandeCucina.add(wrapperComandaCucina);
+				}
+				
+				
+				
+			/** Cancella da qui in poi */
+				
+		} catch (DatabaseException e) {
+			/* Rilancia l'eccezione */
+			throw e;
+		} catch (Exception e) {
+			throw new DatabaseException("Errora durante la ricerca delle comande  ("+ e.toString() +")");
+			
+		}
+		return listComandeCucina;
+		
+	}
+	
 }

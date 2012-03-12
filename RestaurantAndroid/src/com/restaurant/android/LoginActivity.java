@@ -1,19 +1,11 @@
 package com.restaurant.android;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.CookieManager;
-import java.net.CookieStore;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.cookie.Cookie;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.restaurant.android.cameriere.activities.HomeActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -31,7 +23,12 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.restaurant.android.cameriere.activities.HomeActivity;
+import com.restaurant.android.cucina.activities.Kitchen_HomeActivity;
+
 public class LoginActivity extends Activity implements OnClickListener {
+	
+	private final static String TAG = "LoginActivity";
 	
 	/* Alcune variabili private per la gestione del login.  */
 	private EditText etUsername;
@@ -150,9 +147,16 @@ public class LoginActivity extends Activity implements OnClickListener {
         		
         	} else {
         		/* Apro la nuova attività a seconda della funzionalità richiesta dall'utente */
+				if(radioButtonCameriere.isChecked()) {
+					Log.i(TAG, "Login eseguito con successo per la richiesta dell'interfaccia Cameriere");
+					Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+			  		LoginActivity.this.startActivity(myIntent);
+				} else if(radioButtonCucina.isChecked()) {
+					Log.i(TAG, "Login eseguito con successo per la richiesta dell'interfaccia Cucina");
+					Intent myIntent = new Intent(LoginActivity.this, Kitchen_HomeActivity.class);
+			  		LoginActivity.this.startActivity(myIntent);
+				}
 				
-				Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
-		  		LoginActivity.this.startActivity(myIntent);
 		  		//Toast.makeText(getApplicationContext(), "Login effettuato con successo!", 20).show();
 		  		
         	}
@@ -175,7 +179,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         
         // Commit the edits!
         editor.commit();
-  
+        
         postParameters = new HashMap<String,String>();
         postParameters.put("user", username);
         postParameters.put("password", password);

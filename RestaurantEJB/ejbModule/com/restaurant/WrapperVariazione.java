@@ -18,6 +18,13 @@ public class WrapperVariazione {
 		this.prezzoVariazione = variazione.getPrezzo();
 	}
 	
+	public WrapperVariazione(int id, String nome, String descrizione, BigDecimal prezzo) {
+		this.idVariazione = id;
+		this.nome = nome;
+		this.descrizione = descrizione;
+		this.prezzoVariazione = prezzo;
+	}
+	
 	public int getIdVariazione() {
 		return idVariazione;
 	}
