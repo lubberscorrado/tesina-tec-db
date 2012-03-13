@@ -14,7 +14,9 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONObject;
 
 import com.exceptions.DatabaseException;
+import com.orb.StatoUtentePersonaleEnum;
 import com.orb.gestioneOggetti.GestionePrenotazione;
+import com.orb.gestioneOggetti.GestioneStatoUtentePersonale;
 import com.orb.gestioneOggetti.GestioneTenant;
 import com.orb.gestioneOggetti.GestioneUtentePersonale;
 import com.restaurant.WrapperTenant;
@@ -36,6 +38,8 @@ public class login extends HttpServlet {
 	private GestioneTenant gestioneTenant;
 	@EJB
 	private GestioneUtentePersonale gestioneUtentePersonale;
+	@EJB
+	private GestioneStatoUtentePersonale gestioneStatoUtentePersonale;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -60,6 +64,11 @@ public class login extends HttpServlet {
 		
 
 		if(action == null || action.length() == 0){	//LOGIN
+			
+			int idTenant = 0;
+			int idUtente = 1;
+
+			
 //
 //			String ristorante = request.getParameter("ristorante");
 //			String username = request.getParameter("username");
@@ -125,17 +134,37 @@ public class login extends HttpServlet {
 			//VERSIONE SENZA LOGIN
 			// Setto i valori della sessione
 			session.setAttribute("Logged", true);
-			session.setAttribute("idTenant", 0);
+			session.setAttribute("idTenant", idTenant);
+			session.setAttribute("idUtente", idUtente);
 			session.setAttribute("Privs", JSONResponse.PRIV_SuperAdministrator);
 			
-			System.out.print("Login from: "+request.getRemoteAddr());
+			
+			
+			System.out.println("Login from: "+request.getRemoteAddr()+" Tenant: "+idTenant+" User: "+idUtente);
+			try {
+				gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			
 			JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");	return;
 			
 		} else if(action.equals("logout")){//LOGOUT
 			session.setAttribute("Logged", false);
+			try {
+				gestioneStatoUtentePersonale.deleteStatoUtentePersonale(Integer.parseInt((String) session.getAttribute("idUtente")), Integer.parseInt((String) session.getAttribute("idTenant")));
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			request.getSession().invalidate();
-			JSONResponse.WriteOutput(response, true, "Logout effettuato correttamente");	return;
+			JSONResponse.WriteOutput(response, true, "Logout effettuato correttamente");
+			return;
 			
 		}else if(action.equals("login_info")){//LOGIN INFO
 			JSONObject json_obj = new JSONObject();
