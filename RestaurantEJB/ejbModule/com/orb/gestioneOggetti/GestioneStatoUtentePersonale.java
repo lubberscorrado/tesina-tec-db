@@ -40,11 +40,13 @@ public class GestioneStatoUtentePersonale {
 
 	public WrapperStatoUtentePersonale aggiungiStatoUtentePersonale(int idUtente,
 																	int idTenant,
-																	StatoUtentePersonaleEnum tipoAccesso,
-																	Timestamp loginTime)	throws DatabaseException {
+																	StatoUtentePersonaleEnum tipoAccesso	)	throws DatabaseException {
 		
 		try {
-			StatoUtentePersonale statoUtentePersonale = new StatoUtentePersonale(idUtente, idTenant, tipoAccesso, loginTime);
+			StatoUtentePersonale statoUtentePersonale = new StatoUtentePersonale();
+			statoUtentePersonale.setIdTenant(idTenant);
+			statoUtentePersonale.setIdUtente(idUtente);
+			statoUtentePersonale.setTipoAccesso(tipoAccesso);
 			em.persist(statoUtentePersonale);
 			return new WrapperStatoUtentePersonale(statoUtentePersonale);
 		
@@ -53,67 +55,20 @@ public class GestioneStatoUtentePersonale {
 										"("+ e.toString()+")" );
 		} 
 	}
+
 	
-	/**
-	 * Modifica le informazioni su una comanda. Non tutte le informazioni
-	 * possono essere modificate
-	 * @param idComanda Id della comanda da modificare
-	 * @param note Note della comanda modificata
-	 * @param quantita Quantità relativa alla comanda modificata
-	 * @param listIdVariazioniAssociate Lista delle variazioni associate alla comanda
-	 * @return
-	 */
-	public WrapperComanda updateComanda(int idComanda,
-										String note,
-										int quantita,
-										List<Integer> listIdVariazioniAssociate) throws DatabaseException {
-			
+	public void deleteStatoUtentePersonale(int idUtente, int idTenant) throws DatabaseException {
 		try {
-			
-			Comanda comanda = em.find(Comanda.class, idComanda);
-			if(comanda == null)
-				throw new DatabaseException("Errore durante la ricerca della comanda da aggiornare");
-				
-			comanda.setNote(note);
-			comanda.setQuantita(quantita);
-			
-			/* Rimuovo tutte le variazioni associate alla comanda */
-			comanda.getVariazioniAssociate().clear();
-			
-			/* Aggiungo le nuove variazioni */
-			for(int i=0; i< listIdVariazioniAssociate.size(); i++) {
-					Variazione variazione = em.find(Variazione.class, listIdVariazioniAssociate.get(i));
-					comanda.getVariazioniAssociate().add(variazione);
-			}
-			
-			return new WrapperComanda(comanda);
-			
-		} catch (DatabaseException e) {
-			/* Rilancia l'eccezione */
-			throw e;
-		} catch (Exception e) {
-			throw new DatabaseException("Errore durante la modifica della comanda (" +e.toString() +")");
-		}
-	 }
-		
-	/**
-	 * Elimina una comanda a partire dall'id
-	 * @param idComanda Id della comanda da eliminare
-	 * @throws DatabaseException
-	 */
-	
-	public void deleteComanda(int idComanda) throws DatabaseException {
-		try {
-			Comanda comanda = em.find(Comanda.class, idComanda);
-			if(comanda == null) 
-				throw new DatabaseException("Errore durante la ricerca della comanda da rimuovere");
-			em.remove(comanda);
+			StatoUtentePersonale statoUtentePersonale = em.find(StatoUtentePersonale.class, idUtente);
+			if(statoUtentePersonale == null) 
+				throw new DatabaseException("Errore durante la ricerca della sessione da rimuovere");
+			em.remove(statoUtentePersonale);
 			
 		} catch (DatabaseException e) {
 			/* Rilancia l'eccezione */
 			throw e;
 		}catch(Exception e) {
-			throw new DatabaseException("Errore durante l'eliminazione dell'area ("+ e.toString() + ")");
+			throw new DatabaseException("Errore durante l'eliminazione della sessione ("+ e.toString() + ")");
 		}
 	}
 

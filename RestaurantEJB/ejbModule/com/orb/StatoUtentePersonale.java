@@ -34,7 +34,7 @@ import javax.persistence.Table;
 @Entity
 @NamedQueries({
 	@NamedQuery(name = "getStatoUtentePersonale",
-				query = "SELECT t FROM Tavolo t WHERE t.idTenant = :idTenant")})
+				query = "SELECT t FROM StatoUtentePersonale t WHERE t.idTenant = :idTenant")})
 @Table(name="statoutentepersonale")
 public class StatoUtentePersonale {
 		
@@ -53,16 +53,7 @@ public class StatoUtentePersonale {
 	@Column(name="loginTime")
 	private Timestamp loginTime;
 	
-	public StatoUtentePersonale(int idUtente,
-								int idTenant,
-								StatoUtentePersonaleEnum tipoAccesso,
-								Timestamp loginTime					) 	{
-																			super();
-																			this.idUtente = idUtente;
-																			this.idTenant = idTenant;
-																			this.tipoAccesso = tipoAccesso;
-																			this.loginTime = loginTime;
-																		}
+	public StatoUtentePersonale(){super();}
 
 	public int getIdUtente() {
 		return idUtente;
