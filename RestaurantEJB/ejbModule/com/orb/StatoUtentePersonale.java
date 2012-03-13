@@ -40,7 +40,6 @@ public class StatoUtentePersonale {
 		
 	@Id
 	@Column(name="idUtente")
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int idUtente;
 		
 	@Column(name="idTenant")
