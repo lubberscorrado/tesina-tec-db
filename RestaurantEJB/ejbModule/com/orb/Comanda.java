@@ -36,7 +36,7 @@ public class Comanda {
 	@Column(name="quantita")
 	private int quantita;
 	
-	@Column(name="hashgroup")
+	@Column(name="hashgruppo")
 	private String hashGruppo;
 	
 	@Column(name="stato")
