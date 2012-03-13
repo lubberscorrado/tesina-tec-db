@@ -21,6 +21,7 @@ var _mainTabPanel = {
 			_tabella_stato_cameriere: null,
 			_tabella_stato_cuoco: null,
 			_tabella_gestione_personale: null,
+			_tabella_conto: null,
 		_tab_menu: null,
 		_tab_camerieri: null,
 		_tab_opzioni: null,
@@ -60,13 +61,19 @@ var _mainTabPanel = {
 		        features: [{ftype:'grouping'}],
 		        listeners:{
 		        	itemdblclick: function(view, record, item, index, e, eOpts){
+		        		_viewPort_panel_east.collapse();
 			        	_viewPort_panel_east.removeAll();
-			        	_viewPort_panel_east.setTitle(index);
-			        	_viewPort_panel_east.add({
-			        		xtype: 'label',
-			        		text: '<h1>Tavolo:</h1> '+record.get('Tavolo')
-			        	});
-			        	_viewPort_panel_east.expand(true);
+			        	_viewPort_panel_east.setTitle('');
+
+			        	// Inizio definizione stato tavolo
+			        		if( record.get('statoTavolo') == 'OCCUPATO' ){
+			        			_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
+			        			_viewPort_panel_east.add(
+						        	createTabellaConto( record.get('idTavolo') )
+						        );
+			        			_viewPort_panel_east.expand(true);
+			        		}
+			        	// Fine definizione stato tavolo
 			        },
 			        itemcontextmenu: function(view, rec, node, index, e) {
 			        	if(rec.get('statoTavolo') == 'OCCUPATO'){
@@ -148,11 +155,16 @@ var _mainTabPanel = {
 		        listeners:{
 		        	itemdblclick: function(view, record, item, index, e, eOpts){
 			        	_viewPort_panel_east.removeAll();
+			        	// Inizio definizione stato tavolo
+			        	//console.debug(view);
+			        	console.debug(record);
+			        	console.debug(item);
 			        	_viewPort_panel_east.setTitle(index);
 			        	_viewPort_panel_east.add({
 			        		xtype: 'label',
 			        		text: '<h1>Tavolo:</h1> '+record.get('Tavolo')
 			        	});
+			        	// Fine definizione stato tavolo
 			        	_viewPort_panel_east.expand(true);
 			        }
 		        },
@@ -1950,8 +1962,128 @@ var _mainTabPanel = {
 			Ext.getCmp('viewport_east').removeAll();
 			Ext.getCmp('viewport_east').expand();
 			Ext.getCmp('viewport_east').add(form);
-		}
+		},
+
+
+
 };
+
+function createTabellaConto(idTavolo){
+	console.debug('ODDEO: - '+idTavolo);
+	
+	
+	
+	this._tabella_conto = Ext.create('Ext.grid.Panel', {
+		title: 'Conto tavolo',
+		flex: 3,
+		align : 'stretch',
+		id: 'tabella_stato_tavolo',
+		margin: '2 2 2 2',
+		autoScroll: true,
+        store: Ext.getStore('datastore_stato_tavolo'),
+        columns: [
+            { header: 'IdTavolo',  	dataIndex: 'idTavolo', hidden: true },
+            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
+            { header: 'Piano',  	dataIndex: 'numeroPiano' },
+            { header: 'Area',  		dataIndex: 'nomeArea' },
+            { header: 'N°Posti', 	dataIndex: 'numPosti' },
+            { header: 'Cameriere', 	dataIndex: 'cameriere' },
+            { header: 'Stato', 		dataIndex: 'statoTavolo'}
+        ],
+        features: [{ftype:'grouping'}],
+        listeners:{
+        	itemdblclick: function(view, record, item, index, e, eOpts){
+//	        	_viewPort_panel_east.removeAll();
+//	        	// Inizio definizione stato tavolo
+//		        	console.debug(view);
+//		        	console.debug('Record: ');
+//		        	console.debug(record);
+//		        	console.debug(item);
+//		        	_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
+//		        	_viewPort_panel_east.add({
+//		        		xtype: 'label',
+//		        		text: '<h1>Tavolo:</h1> '+record.get('idTavolo')
+//		        	});
+//	        	// Fine definizione stato tavolo
+//	        	_viewPort_panel_east.expand(true);
+	        },
+	        itemcontextmenu: function(view, rec, node, index, e) {
+//	        	if(rec.get('statoTavolo') == 'OCCUPATO'){
+//	        		
+//	        	}
+//	        	
+//            	var contextMenu = null;
+//            	console.debug('CONTEXT MENU');
+//            	contextMenu = Ext.create('Ext.menu.Menu', {
+//            		items: [{
+//	                			text: 'Modifica utente',
+//	                        	handler: function(){
+//	                        		_mainTabPanel.updateComponentePersonale(rec);
+//	                        	}
+//                            }
+//                        ]
+//                });
+//            	
+//                contextMenu.showAt(e.getXY());
+////                return false;
+            }
+	        
+        },
+	    dockedItems: [{
+            xtype: 'toolbar',
+            dock: 'bottom',
+            items: ['Raggruppamenti: ',{
+                tooltip: 'Toggle the visibility of the summary row',
+                text: 'None',
+                handler: function(){
+                	Ext.getStore('datastore_stato_tavolo').clearGrouping();
+                }
+            },{
+                tooltip: 'Toggle the visibility of the summary row',
+                text: 'Piano',
+                handler: function(){
+                	Ext.getStore('datastore_stato_tavolo').group('nomePiano');
+                }
+            },{
+                tooltip: 'Toggle the visibility of the summary row',
+                text: 'Area',
+                handler: function(){
+                	Ext.getStore('datastore_stato_tavolo').group('nomeArea');
+                }
+            },{
+                tooltip: 'Toggle the visibility of the summary row',
+                text: 'Stato',
+                handler: function(){
+                	Ext.getStore('datastore_stato_tavolo').group('statoTavolo');
+                }
+            },'->',{
+                text: 'Aggiorna',
+                iconCls: 'icon-refresh',
+                handler: function(){
+                	Ext.getStore('datastore_stato_tavolo').load();
+                }
+            }]
+        }]	//Fine dockeditems
+
+        
+	});
+	
+	Ext.Ajax.request({
+		   url: 'gestioneConti',
+//		   success: someFn,
+//		   failure: otherFn,
+		   headers: {
+		       'my-header': 'foo',
+		       'kiss': 'ass'
+		   },
+		   params: {
+			   action: 'GET_CONTO',
+			   idTavolo: idTavolo
+		   }
+	});
+	return;
+};
+
 
 function titoloRaggruppamentoVariazioni(values) {
     //console.log(values);
