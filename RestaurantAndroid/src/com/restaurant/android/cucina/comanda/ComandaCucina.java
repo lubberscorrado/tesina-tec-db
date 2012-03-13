@@ -1,5 +1,6 @@
 package com.restaurant.android.cucina.comanda;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.Date;
  * 
  * @author Fabio Pierazzi
  */
-public class ComandaCucina {
+public class ComandaCucina implements Serializable {
 	// Comanda
 	private int idComanda;
 	private String statoComanda;

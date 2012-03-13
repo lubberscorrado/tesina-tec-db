@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    
+   	<!-- Scrollview che contiene l'intera pagina -->
+   
+   	<!-- Titolo -->
+    <TextView
+        android:id="@+id/tableCard_textView_Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:text="Scheda Comanda"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+     <ScrollView 
+	      	android:layout_height="fill_parent"
+	    	android:layout_width="fill_parent">
+	    	
+         <LinearLayout 
+	       	android:orientation="vertical"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent">
+				        
+             <!-- Tabella caratteristiche generali della comanda -->
+				<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				    android:layout_width="fill_parent"
+				    android:layout_height="fill_parent"
+				    android:stretchColumns="1"  
+    				android:layout_gravity="center"
+    				android:gravity="center"
+				    android:layout_margin="10dp">
+				
+				    <!-- Nome Voce Menu -->
+				    <TableRow>
+
+				        <TextView
+				            android:layout_column="1"
+				            android:text="Nome: "
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				           
+				            android:id="@+id/cucina_schedaComanda_textNomeVoceMenu"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				    </TableRow>
+				    
+				        
+				    <!-- Quantita -->
+				    <TableRow>
+
+				        <TextView
+				            android:layout_column="1"
+				            android:text="Quantità: "
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				            android:id="@+id/cucina_schedaComanda_textQuantitaComanda"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				        
+				    </TableRow>
+				
+				    <!-- Stato Comanda -->
+				    <TableRow>
+				       <TextView
+				            android:layout_column="1"
+				            android:text="Stato:"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				            android:id="@+id/cucina_schedaComanda_textStatoComanda"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				    </TableRow>
+				    
+				   <!-- Categoria Comanda -->
+				   <TableRow>
+
+				        <TextView
+				            android:layout_column="1"
+				            android:text="Categoria:"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				            android:id="@+id/cucina_schedaComanda_textCategoriaComanda"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				    </TableRow>
+				    
+				    <!-- Tavolo relativo alla comanda -->
+				    <TableRow>
+
+				        <TextView
+				            android:layout_column="1"
+				            android:text="Tavolo: "
+				           
+				             android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				            android:id="@+id/cucina_schedaComanda_textNomeTavolo"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				    </TableRow>
+				
+				</TableLayout>
+			
+			    <!-- Bottoni Menu -->
+			    <Button
+			        android:id="@+id/cucina_schedaComanda_buttonPrepara"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			      
+			        android:text="Prepara Comanda" />
+			    
+			    <Button
+			        android:id="@+id/cucina_schedaComanda_buttonPreparazioneCompletata"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			       
+			        android:text="Preparazione Completata" />
+			
+			    <Button
+			        android:id="@+id/cucina_schedaComanda_buttonAnnullaPreparazione"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			      
+			        android:text="Annulla Preparazione" />
+			
+			    <!-- 
+			    <Button
+			        android:id="@+id/cucina_schedaComanda_buttonEliminaComanda"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"
+			      
+			        android:text="Elimina Comanda" />
+			     -->
+			    
+			    	<!-- Note aggiuntive -->
+				    
+				    <!-- Titolo note aggiuntive -->
+				        <TextView
+				            android:layout_width="fill_parent"
+				            android:layout_height="wrap_content"
+				            android:text="Note aggiuntive:"
+				            android:gravity="center"
+				            android:layout_marginLeft="5dp"
+				            android:layout_marginRight="5dp"
+				            android:layout_marginTop="5dp"
+				            android:background="#222222"
+				            android:textAppearance="?android:attr/textAppearanceLarge" />
+				        
+				        <TextView
+				            android:id="@+id/cucina_schedaComanda_textNoteComanda"
+				            android:layout_width="fill_parent"
+				            android:layout_height="wrap_content"
+				            android:text=""
+				            android:layout_margin="5dp"
+				            android:textSize="16dp"
+				            android:background="#222222"
+				            android:padding="5dp"
+				            android:gravity="fill_horizontal" />
+			    
+				        
+			     <!-- Variazioni -->
+
+
+					 <!-- Titolo Elenco Variazioni -->
+				     <TextView
+				         android:id="@+id/cucina_schedaComanda_textView_titoloElencoVariazioni"
+				         android:layout_width="fill_parent"
+				         android:layout_height="wrap_content"
+				         android:layout_gravity="center"
+				         android:gravity="center"
+				         android:padding="5dp"
+				         android:layout_marginLeft="5dp"
+				         android:layout_marginRight="5dp"
+				         android:layout_marginBottom="2dp"
+				         android:layout_marginTop="10dp"
+				         android:background="#222222"
+				         android:text="Variazioni associate:"
+				         android:textAppearance="?android:attr/textAppearanceLarge" />
+		    
+			         <!-- Contenitore per la ListView dell'Elenco Variazioni -->
+			         <LinearLayout
+				         android:id="@+id/cucina_schedaComanda_linearLayout_contains_variazioniListView"
+				         android:orientation="horizontal"
+				         android:layout_width="fill_parent"
+				         android:layout_height="wrap_content"
+				         android:layout_weight="0.1" >
+				     
+					         <!-- ListView Vera e Propria -->
+				             <ListView 
+						        android:id="@+id/cucina_schedaComanda_variazioniListView" 
+						        android:layout_width="fill_parent" 
+						        android:layout_height="wrap_content" >
+						    </ListView>
+		                 
+		         	 </LinearLayout>
+			         
+			    	
+			             
+			             
+		   	</LinearLayout>
+		
+		</ScrollView>
+
+</LinearLayout>

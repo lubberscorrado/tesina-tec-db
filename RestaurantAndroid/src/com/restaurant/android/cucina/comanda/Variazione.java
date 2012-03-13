@@ -1,6 +1,8 @@
 package com.restaurant.android.cucina.comanda;
 
-public class Variazione {
+import java.io.Serializable;
+
+public class Variazione implements Serializable {
 	private String nomeVariazione;
 	private int idVariazione;
 	

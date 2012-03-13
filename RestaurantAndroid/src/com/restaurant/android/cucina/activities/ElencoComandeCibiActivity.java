@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
 import com.restaurant.android.cucina.comanda.ComandaCucina;
+import com.restaurant.android.cucina.comanda.Variazione;
 
 /** 
  * Activity della cucina che serve a mostrare l'elenco dei cibi
@@ -75,25 +77,18 @@ public class ElencoComandeCibiActivity extends Activity {
 	  	    public void onItemClick(AdapterView<?> parent, View view,
 			        int position, long id) {
 	  	    
-	  	    		
-//	 	    	 /* Sapendo la posizione dell'elemento che è stato 
-//	  	    	  * cliccato, ricavo l'oggetto dell'adapter */
-//	  	    	 Log.i(TAG, "Hai cliccato su: " + 
-//	  	    		  	m_adapter.getItem(position).getTableName() + ", che è " 
-//	  	    		  + m_adapter.getItem(position).getTableStatus());
-//	  	    	  
-//	  	    	 /* Apro una nuova activity con la scheda del tavolo */
-//	  	    	 Intent myIntent = new Intent(TablesListActivity.this, TableCardActivity.class);
-//	  	    	 // TablesListActivity.this.startActivity(myIntent);
-//	  	    	  
-//	  	    	 /* Creo un bundle per passare dei dati alla nuova activity */
-//		  	     Bundle b = new Bundle();
-//		  	     
-//		  	     
-//		  	     b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
-//		  	     b.putString("tableName", m_adapter.getItem(position).getTableName());
-//		  	     myIntent.putExtras(b);
-//		  	     startActivity(myIntent);
+	  	    	Log.d(TAG, "Eseguito click su uno degli elementi della ListView");
+	  	    	
+	  	    	/* Recupero la comanda selezionata */
+	  	    	ComandaCucina oggettoComandaSelezionata = (ComandaCucina) adapter_elencoCibi.getItem(position);
+
+	  	    	/* Apro una nuova activity con le info sulla comanda */	
+	  	    	Intent myIntent = new Intent(ElencoComandeCibiActivity.this, SchedaComandaCucinaActivity.class);
+	  	    	Bundle info = new Bundle();
+	  	    	info.putSerializable("oggettoComanda", oggettoComandaSelezionata);
+	  	    	myIntent.putExtras(info);
+	  	    	
+	  	    	startActivity(myIntent);
 	  	    }
 	      });
 	    }
@@ -166,9 +161,7 @@ public class ElencoComandeCibiActivity extends Activity {
 	        	getParametersMap.put("action", "ELENCO_COMANDE");
 	  			getParametersMap.put("tipoComande", "CIBO");
 
-	  			Log.d(TAG, "Punto 1");
 	  			String response = restApplication.makeHttpGetRequest(url + "ClientEJB/gestioneComande", getParametersMap);
-	  			Log.d(TAG, "Punto 2");
 	  			arrayList_elencoCibi.clear();
         	  
 //        	  /** Test: da rimuovere */
@@ -181,7 +174,7 @@ public class ElencoComandeCibiActivity extends Activity {
 //        	  }
 //        	  /** Fine Test*/
         	  
-	  		   Log.d(TAG, "Punto 2.5a: response: " + response);
+	  		   Log.d(TAG, "getElencoComandeCibi(), server 'response': " + response);
         	  /**********************************************************
         	   * Decodifica della risposa del server contenente lo stato 
         	   * dei tavoli.
@@ -196,8 +189,6 @@ public class ElencoComandeCibiActivity extends Activity {
         	  
         	  if(jsonObject.getBoolean("success") == true) {
         		  
-        		  Log.d(TAG, "Punto 3");
-        		  
         		  JSONArray jsonArray = jsonObject.getJSONArray("elencoComande");
         		  
         		  for(int i=0; i< jsonArray.length(); i++) {
@@ -207,6 +198,24 @@ public class ElencoComandeCibiActivity extends Activity {
         			  comandaCucina.setNomeTavolo(jsonArray.getJSONObject(i).getString("nomeTavolo"));
         			  comandaCucina.setQuantita(Integer.parseInt(jsonArray.getJSONObject(i).getString("quantita")));
         			  comandaCucina.setStatoComanda(jsonArray.getJSONObject(i).getString("statoComanda"));
+        			  comandaCucina.setNomeCategoria(jsonArray.getJSONObject(i).getString("nomeCategoria"));
+        			  comandaCucina.setNote(jsonArray.getJSONObject(i).getString("noteComanda"));
+        			  
+        			  /** Imposto Variazioni */
+        			  JSONArray jsonArray_variazioni = jsonArray.getJSONObject(i).getJSONArray("elencoVariazioni");
+        			  
+        			  ArrayList<Variazione> arrayList_variazioni = new ArrayList<Variazione>();
+        			  
+        			  for(int k=0; k<jsonArray_variazioni.length(); ++k) {
+        				  Variazione var = new Variazione();
+        				  var.setIdVariazione(Integer.parseInt(jsonArray_variazioni.getJSONObject(k).getString("idVariazione")));
+        				  var.setNomeVariazione(jsonArray_variazioni.getJSONObject(k).getString("nomeVariazione"));
+        				  arrayList_variazioni.add(var);
+//        				  Log.e(TAG, "Aggiunta variazione: " + var.getNomeVariazione()); 
+        			  }
+        			  
+        			  comandaCucina.setArrayList_variazioni(arrayList_variazioni);
+        			  /** Fine impostazione variazioni */
         			  
         			  arrayList_elencoCibi.add(comandaCucina);
           		  }
@@ -310,6 +319,7 @@ public class ElencoComandeCibiActivity extends Activity {
 	                        if(textView_nomeTavolo != null) {
 	                        	textView_nomeTavolo.setText(c.getNomeTavolo());
 	                        }
+	                        
                 	} catch(Exception e) {
                 		e.printStackTrace();
                 		Log.e(TAG, e.getMessage());

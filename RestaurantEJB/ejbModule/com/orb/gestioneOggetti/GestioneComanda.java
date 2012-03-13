@@ -324,12 +324,13 @@ public class GestioneComanda {
 				 ************************************************/
 				
 				
-				List<Variazione> listVariazioni;
-				List<WrapperVariazione> listWrapperVariazione = new ArrayList<WrapperVariazione>(); 
+				List<Variazione> listVariazioni = null;
+				
 				
 				/** Per tutte le comande presenti nella lista */
 				for(Comanda comanda : listComande) {
 					
+					List<WrapperVariazione> listWrapperVariazione = new ArrayList<WrapperVariazione>(); 
 					
 					/** Creo la comanda cucina che andrò ad inserire nella lista */
 					WrapperComandaCucina wrapperComandaCucina = new WrapperComandaCucina();
@@ -350,9 +351,12 @@ public class GestioneComanda {
 					
 					
 					// TODO: CHECK!!!
+//					System.out.println("listWrapperVariazione.size() = " + listWrapperVariazione.size());
 					
 					/* Copio la lista variazioni */
 					wrapperComandaCucina.setListVariazioni(listWrapperVariazione);
+					
+//					System.out.println("wrapperComandaCucina.getListVariazioni().size() = " + wrapperComandaCucina.getListVariazioni().size());
 					
 					/** Fine recupero variazioni */
 					

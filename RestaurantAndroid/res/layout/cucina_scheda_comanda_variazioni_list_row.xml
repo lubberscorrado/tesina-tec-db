@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Riga della ListView che mostra il Conto al cameriere -->  
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+	
+    		 <!-- Nome Variazione -->
+	         <TextView
+	             android:id="@+id/cucina_schedaComanda_listVariazioni_textViewNomeVariazione"
+	             android:layout_width="fill_parent"
+	             android:layout_height="fill_parent"
+	             android:layout_weight="1"
+	             android:layout_margin="5dp"
+	             android:padding="5dp"
+	             android:text="Più pomodoro"
+	             android:gravity="center_vertical|center_horizontal"
+	             android:background="#111111"
+	             android:textSize="13dp" />
+	
+</LinearLayout>
+
+
+      

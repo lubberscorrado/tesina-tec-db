@@ -24,6 +24,7 @@ import com.orb.gestioneOggetti.GestioneUtentePersonale;
 import com.restaurant.WrapperComanda;
 import com.restaurant.WrapperComandaCucina;
 import com.restaurant.WrapperUtentePersonale;
+import com.restaurant.WrapperVariazione;
 
 
 @WebServlet("/gestioneComande")
@@ -86,6 +87,7 @@ public class gestioneComande extends HttpServlet {
 				response.getWriter().print(jsonObject);
 				
 			} catch (Exception e) {
+				System.out.println("Servlet gestioneComande: si è verificato un errore occupando un tavolo.");
 				JSONResponse.WriteOutput(response, false, e.toString());
 				return;
 			}
@@ -270,10 +272,33 @@ public class gestioneComande extends HttpServlet {
 					
 					tempObject.put("idComanda", listaComandeCucina.get(i).getIdComanda());
 					tempObject.put("nomeVoceMenu", listaComandeCucina.get(i).getNomeVoceMenu());
+					tempObject.put("nomeCategoria", listaComandeCucina.get(i).getNomeCategoria());
 					tempObject.put("quantita", listaComandeCucina.get(i).getQuantita());
 					tempObject.put("statoComanda", listaComandeCucina.get(i).getStato());
 					tempObject.put("nomeTavolo", listaComandeCucina.get(i).getNomeTavolo());
 					
+					if(listaComandeCucina.get(i).getNote().equals("") || listaComandeCucina.get(i).getNote() == null) 
+						tempObject.put("noteComanda", "");
+					else
+						tempObject.put("noteComanda", listaComandeCucina.get(i).getNote());
+					
+					/** Elenco variazioni */
+					JSONArray tempArray_2 = new JSONArray();
+					List<WrapperVariazione> listaVariazioni = listaComandeCucina.get(i).getListVariazioni();
+					
+					for(int j=0; j<listaVariazioni.size(); j++) {
+						JSONObject tempObject_2 = new JSONObject();
+						tempObject_2.put("idVariazione", listaVariazioni.get(j).getIdVariazione());
+						tempObject_2.put("nomeVariazione", listaVariazioni.get(j).getNome());
+						tempObject_2.put("prezzoVariazione", listaVariazioni.get(j).getPrezzoVariazione());
+						tempArray_2.put(tempObject_2);
+					}
+					
+					tempObject.put("elencoVariazioni", tempArray_2);
+					/** Fine reperimento Elenco Variazioni */
+					
+					
+					/* Metto tutto in un array */
 					jsonArrayComande.put(tempObject);
 				}
 				
