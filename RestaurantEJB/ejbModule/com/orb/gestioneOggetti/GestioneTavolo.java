@@ -78,7 +78,7 @@ public class GestioneTavolo{
 			return new TreeNodeTavolo(tavolo);
 			
 		} catch (Exception e) {
-			throw new DatabaseException("Errore durante l'inserimento del tavolo + " +
+			throw new DatabaseException("Errore durante l'inserimento del tavolo " +
 										"("+ e.toString()+")");
 		}		
 	}
