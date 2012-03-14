@@ -62,7 +62,7 @@ function desktop_main(){
 		layout: 'fit',
 		collapsible: true,
         split: true,
-        width: 325,
+        width: 600,
         hidden: false,
         collapsed: true
 	});

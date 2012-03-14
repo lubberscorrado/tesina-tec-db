@@ -112,35 +112,73 @@ Ext.define('StatoCuoco', {
     }
 });
 
+/*
+ * Ext.define('variazioneVoceMenu', {
+	extend: 'Ext.data.Model',
+    fields: ['id','parentId','nome','descrizione','prezzo','tipo','text','categoriaDiAppartenenza','isEreditata','idCategoria'],
+    phantom : true,
+//    store: Ext.getStore('datastore_gestione_menu'),
+    proxy: {
+        type: 'rest',
+//        url : 'variazioneVoceMenu',
+        appendId : false,
+        api: {
+            create: 	'variazioneVoceMenu?action=create',
+            read: 		'variazioneVoceMenu?action=read',
+            update: 	'variazioneVoceMenu?action=update',
+            destroy: 	'variazioneVoceMenu?action=delete',
+        },
+        writer: {
+            type: 'singlepostnoaction'
+        },
+		reader: {
+	        type: 'json',
+	        idProperty: 'id',
+	        root: 'data'
+	    },
+	    actionMethods : {
+            create : 'POST',
+            read   : 'GET',
+            update : 'POST',
+            destroy: 'POST'
+        }
+    }
+});
+ */
+
 Ext.define('Comanda', {
     extend: 'Ext.data.Model',
+    /*comande":[{"stato":INVIATA,"variazioni":[],"nomeVoceMenu":"Bucatini all'amatriciana","prezzoVoceMenu":10,"idComanda":1,"quantita":3,"note":""},
+     * {"stato":INVIATA,"variazioni":[],"nomeVoceMenu":"Tortellini alla panna","prezzoVoceMenu":11,"idComanda":2,"quantita":3,"note":"\n\n"},{"stato":INVIATA,"variazioni"*/
     fields: [
-             {name: 'idVoceMenu', 		type: 'int',		useNull: true},
+             {name: 'idComanda', 		type: 'string',		useNull: true},
             // {name: 'idTavolo',  		type: 'int'},
-             {name: 'idRemoto',  		type: 'int'},
+             //{name: 'idRemoto',  		type: 'int'},
              {name: 'stato', 			type: 'string'},
-             {name: 'variazioni', 		type: 'string'},
+             {name: 'nomeVoceMenu', 	type: 'string'},
              {name: 'quantita', 		type: 'string'},
+             {name: 'prezzoVoceMenu',	type: 'string'},
+             {name: 'variazioni',    	type: 'text'},
              {name: 'note',    			type: 'string'}
     ],
     proxy: {
         type: 'rest',
-        url: 'gestioneConti',
-        appendId: true,
+        appendId: false,
+	    api: {
+	    	read: 		'gestioneConti?action=VISUALIZZA_CONTO',
+            create: 	'gestioneConti?action=create',
+            update: 	'gestioneConti?action=update',
+            destroy: 	'gestioneConti'
+        },
         writer: {
             type: 'singlepost'
         },
 		reader: {
 	        type: 'json',
-	        idProperty: 'idRemoto',
+	        model: 'Comanda',
+	        idProperty: 'idComanda',
 	        root: 'comande'
 	    },
-	    api: {
-            create: 	'gestioneConti?action=create',
-            read: 		'gestioneConti?action=GET_CONTO',
-            update: 	'gestioneConti?action=update',
-            destroy: 	'gestioneConti',
-        },
 	    actionMethods : {
             create : 'POST',
             read   : 'POST',
