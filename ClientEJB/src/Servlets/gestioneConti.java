@@ -115,6 +115,65 @@ public class gestioneConti extends HttpServlet {
 				JSONResponse.WriteOutput(response,  false, e.toString());
 				
 			}
+		}else if(request.getParameter("action").equals("VISUALIZZA_CONTO")) {
+			
+			/* **********************************************************************************
+			 * Richiedo il conto per la visualizzazione lato desktop alla logica di business 
+			 ************************************************************************************/
+			
+			try {
+				List<WrapperComanda> listaComande = businessConti.getConto(idTavolo);
+				JSONArray jsonArrayComande = new JSONArray();
+				
+				for(WrapperComanda comanda : listaComande) {
+					
+					TreeNodeVoceMenu voceMenu = gestioneComanda.getVoceMenuByComanda(comanda.getIdComanda());
+					WrapperVariazione wrapperVariazione;
+					
+					
+					JSONObject jsonObjectComanda = new JSONObject();
+					
+					/* ********************************************************
+					 * Informazioni necessarie relative al conto da passare
+					 * al client:
+					 * - idRemoto comanda
+					 * - nome della voce di menu associata
+					 * - note
+					 * - stato 
+					 * - array degli id delle variazioni (le variazioni hanno gli
+					 * 	stessi id sia su client che su server
+					 * - quantità
+					 ***********************************************************/
+					
+					jsonObjectComanda.put("idComanda", comanda.getIdComanda());
+					jsonObjectComanda.put("quantita", comanda.getQuantita());
+					jsonObjectComanda.put("nomeVoceMenu", voceMenu.getNome());
+					jsonObjectComanda.put("prezzoVoceMenu", voceMenu.getPrezzo()+"€");
+					
+					jsonObjectComanda.put("note", comanda.getNote());
+					jsonObjectComanda.put("quantita", comanda.getQuantita());
+					jsonObjectComanda.put("stato", comanda.getStato().toString());
+					
+					String variazioni = "";
+					
+					WrapperVariazione[] arrayWrapperVariazione = gestioneComanda.getVariazioniByComanda(comanda.getIdComanda());
+
+					for(int i=0; i<arrayWrapperVariazione.length; i++){
+						variazioni+=arrayWrapperVariazione[i].getNome()+" ["+arrayWrapperVariazione[i].getPrezzoVariazione()+"€]<br>";
+					}
+					
+					jsonObjectComanda.put("variazioni", variazioni);
+					jsonArrayComande.put(jsonObjectComanda);
+				}
+				
+				JSONResponse.WriteOutput(response,true, "OK", "comande", jsonArrayComande);
+				
+			} catch (DatabaseException e) {
+				JSONResponse.WriteOutput(response,  false, e.toString());
+				
+			}
 		}
+		
+		
 	}
 }
