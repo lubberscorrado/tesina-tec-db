@@ -32,7 +32,7 @@ public class BusinessNotifiche {
 	 * @return Lista di oggetti Notifica che rappresentano tutte le notifiche disponibili
 	 * per l'utente.
 	 */
-	public List<Notifica> getNotifiche(int idUtente) throws DatabaseException {
+	public List<Notifica> getNotifiche(int idUtente, String lastDateSqlFormatted) throws DatabaseException {
 		
 		
 		List<Notifica> listaNotifiche = new ArrayList<Notifica>();
@@ -42,7 +42,9 @@ public class BusinessNotifiche {
 		 * Recupero delle notifiche relative alle comande pronte 
 		 *************************************************************/
 		
-		List<WrapperComanda> listaComande = gestioneComanda.getComandeByStatoAndCameriere(StatoComandaEnum.PRONTA, idUtente);
+		List<WrapperComanda> listaComande = gestioneComanda.getComandeByStatoAndCameriere(	StatoComandaEnum.PRONTA, 
+																							idUtente,
+																							lastDateSqlFormatted);
 		
 		for(WrapperComanda comanda : listaComande) {
 			Notifica notifica = new Notifica();
