@@ -1,6 +1,7 @@
 package com.orb.gestioneOggetti;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import com.orb.TipoCategoriaEnum;
 import com.orb.UtentePersonale;
 import com.orb.Variazione;
 import com.orb.VoceMenu;
+import com.restaurant.TreeNodeTavolo;
 import com.restaurant.TreeNodeVoceMenu;
 import com.restaurant.WrapperComanda;
 import com.restaurant.WrapperComandaCucina;
@@ -505,6 +507,80 @@ public class GestioneComanda {
 			throw e;
 		} catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca della comanda (" + e.toString() +")");
+		}
+	}
+	
+	/**
+	 * Ritorna le comande (in un determinato stato) che sono  associate ai conti gestiti 
+	 * da uno specifico cameriere. Questo metodo viene utilizzato per la gestione delle
+	 * notifiche.
+	 * @param stato Stato delle comande che si vogliono ottenere
+	 * @param idCameriere Id del cameriere che gestisce il conto a cui sono associate
+	 * le comande
+	 * @return Lista delle comande conformi con i parametri di input
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 * @author Guerri Marco
+	 */
+	
+	public List<WrapperComanda> getComandeByStatoAndCameriere(	StatoComandaEnum stato, 
+																int idCameriere,
+																String lastCheckDate) 
+																throws DatabaseException {
+		
+		try {
+			
+			Query query = em.createQuery(	"SELECT c FROM Comanda c " +
+											"JOIN c.contoAppartenenza co " +
+											"JOIN co.cameriereAssociato ca " +
+											"WHERE " +
+											"ca.idUtente = :idUtente AND " +
+											"c.stato = :stato AND " +
+											"c.lastModified > :lastCheckDate");
+			
+			query.setParameter("idUtente", idCameriere);
+			query.setParameter("stato", stato);
+			
+			query.setParameter("lastCheckDate",  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(lastCheckDate));
+			
+			
+			List<Comanda> listaComande =  query.getResultList();
+			List<WrapperComanda> listaWrapperComande = new ArrayList<WrapperComanda>();
+			
+			for(Comanda comanda : listaComande) 
+				listaWrapperComande.add(new WrapperComanda(comanda));
+			
+			
+			return listaWrapperComande;
+		
+		} catch (Exception e) {
+			throw new DatabaseException("Errore durante la ricerca delle comande nello stato " +
+										stato.toString() + " (" + e.toString() + ")");
+		}
+		
+	}
+	
+	/**
+	 * Ritorna il tavolo a cui è associato una determinata comanda
+	 * @param idComanda Id della comanda per la quale si vuole ottenere il tavolo associato
+	 * @return Oggetto TreeNodeTavolo che rappresenta il tavolo a cui appartiene la comanda
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 * @author Guerri Marco
+	 */
+	
+	public TreeNodeTavolo getTavoloByIdComanda(int idComanda) throws DatabaseException{
+		
+		try {
+			Comanda comanda = em.find(Comanda.class, idComanda);
+			Conto conto = comanda.getContoAppartenenza();
+			Tavolo tavolo = conto.getTavoloAppartenenza();
+			
+			return new TreeNodeTavolo(tavolo);
+			
+		} catch(Exception e) {
+			throw new DatabaseException("Errore durante la ricerca del tavolo associato alla " +
+										"comanda (" + e.toString() +")");
 		}
 	}
 	
