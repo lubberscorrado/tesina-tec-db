@@ -1,9 +1,18 @@
 package com.restaurant.android.cucina.activities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,9 +23,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.restaurant.android.DbManager;
+import com.restaurant.android.Error;
 import com.restaurant.android.R;
+import com.restaurant.android.RestaurantApplication;
 import com.restaurant.android.Utility;
+import com.restaurant.android.cameriere.activities.Ordinazione;
+import com.restaurant.android.cameriere.activities.TableCardActivity;
 import com.restaurant.android.cucina.comanda.ComandaCucina;
 import com.restaurant.android.cucina.comanda.Variazione;
 
@@ -58,9 +73,7 @@ public class SchedaComandaCucinaActivity extends Activity {
 			buttonPreparaComanda.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View c) {
-	//				new OccupaTavoloAsyncTask().execute((Object[])null);
-	//				new LiberaTavoloAsyncTask().execute((Object[])null);
-	
+					new InviaPreparazioneComandaAsyncTask().execute((Object[]) null);
 				}
 			});
 			
@@ -69,7 +82,7 @@ public class SchedaComandaCucinaActivity extends Activity {
 			buttonPreparazioneCompletata.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View c) {
-	//				new OccupaTavoloAsyncTask().execute((Object[])null);
+					new InviaCompletataPreparazioneComandaAsyncTask().execute((Object[])null);
 				}
 			});
 			
@@ -78,7 +91,7 @@ public class SchedaComandaCucinaActivity extends Activity {
 			buttonAnnullaPreparazione.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View c) {
-	//				new OccupaTavoloAsyncTask().execute((Object[])null);
+					new InviaAnnullaPreparazioneAsyncTask().execute((Object[])null);
 				}
 			});
 		 	  
@@ -157,7 +170,7 @@ public class SchedaComandaCucinaActivity extends Activity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
         		
-        		Log.e(TAG, "getView() from VariazioniAdapter: beginning");
+//        		Log.e(TAG, "getView() from VariazioniAdapter: beginning");
                 View v = convertView;
                 if (v == null) {
                     LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -175,7 +188,7 @@ public class SchedaComandaCucinaActivity extends Activity {
                         }
                 }
                 
-                Log.e(TAG, "getView() from VariazioniAdapter: ending");
+//                Log.e(TAG, "getView() from VariazioniAdapter: ending");
 
                 return v;
           }
@@ -291,6 +304,222 @@ public class SchedaComandaCucinaActivity extends Activity {
     	}
 		
     	Log.d(TAG, "updateSchedaComandaCucina: ending");
+    }
+    
+    
+    /**
+     * Invio della richiesta per far passare la comanda dallo stato "INVIATA"
+     * allo stato "INPREPARAZIONE".
+     * @author Fabio Pierazzi
+     */
+    class InviaPreparazioneComandaAsyncTask extends AsyncTask<Object, Object, Error> {
+
+    	private ProgressDialog progressDialog;
+    	   	
+    	@Override
+    	protected void onPreExecute() {
+    		progressDialog = ProgressDialog.show(SchedaComandaCucinaActivity.this, "Attendere", "Invio richiesta di inizio preparazione della comanda");
+    	}
+    	
+    	@Override
+		protected Error doInBackground(Object... params) {
+			
+			RestaurantApplication restApp = ((RestaurantApplication)getApplication());
+			
+			try {
+				
+				HashMap<String,String> requestParameters = new HashMap<String,String>();
+		   		requestParameters.put("action","UPDATE_STATO");
+		   		requestParameters.put("idComanda", new Integer(comandaCucina.getIdComanda()).toString());
+		   		requestParameters.put("stato", "INPREPARAZIONE");
+		   		
+				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
+						requestParameters);
+				
+				JSONObject responseJsonObject = new JSONObject(response);
+									
+				if(responseJsonObject.getBoolean("success") == false) {
+					Log.e(TAG, "Errore nell'aggiornamento di stato della comanda");
+					return new Error(responseJsonObject.getString("message"), true);
+				} else {
+					
+					/* Aggiorno la lista delle ordinazioni sospese e delle ordinazioni confermate */
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							/** Aggiorno manualmente la GUI, visto che comunque quando una comanda 
+				    		 * passa "INPREPARAZIONE" non può più essere modificata */
+				    		comandaCucina.setStatoComanda("INPREPARAZIONE");
+				    		
+				    		updateSchedaComandaCucina();
+				    		
+							Log.d(TAG, "Aggiornamento stato comanda avvenuto con successo");
+							
+						}
+					});
+					return new Error("Preparazione Comande", false);
+				}
+				
+			} catch (Exception e) {
+				return new Error("Errore durante la conferma delle comande", true);
+			} finally {
+				progressDialog.dismiss();
+			}
+			
+		}
+    	
+    	@Override
+    	protected void onPostExecute(Error error) {
+    		
+    		
+     	   progressDialog.dismiss();
+     	   if(error.errorOccurred()) 
+     		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+     	 }
+    }
+    
+    /**
+     * Aggiorno lo stato della comanda: "INPREPARAZIONE" -> "PRONTA"
+     * @author Fabio Pierazzi
+     */
+    class InviaCompletataPreparazioneComandaAsyncTask extends AsyncTask<Object, Object, Error> {
+
+    	private ProgressDialog progressDialog;
+    	   	
+    	@Override
+    	protected void onPreExecute() {
+    		progressDialog = ProgressDialog.show(SchedaComandaCucinaActivity.this, "Attendere", "Invio richiesta di completamento preparazione della comanda");
+    	}
+    	
+    	@Override
+		protected Error doInBackground(Object... params) {
+			
+			RestaurantApplication restApp = ((RestaurantApplication)getApplication());
+			
+			try {
+				
+				HashMap<String,String> requestParameters = new HashMap<String,String>();
+		   		requestParameters.put("action","UPDATE_STATO");
+		   		requestParameters.put("idComanda", new Integer(comandaCucina.getIdComanda()).toString());
+		   		requestParameters.put("stato", "PRONTA");
+		   		
+				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
+						requestParameters);
+				
+				JSONObject responseJsonObject = new JSONObject(response);
+									
+				if(responseJsonObject.getBoolean("success") == false) {
+					Log.e(TAG, "Errore nell'aggiornamento di stato della comanda");
+					return new Error(responseJsonObject.getString("message"), true);
+				} else {
+					
+					/* Aggiorno la lista delle ordinazioni sospese e delle ordinazioni confermate */
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							/** Aggiorno manualmente la GUI, visto che comunque quando una comanda 
+				    		 * passa "INPREPARAZIONE" non può più essere modificata */
+				    		comandaCucina.setStatoComanda("PRONTA");
+				    		
+//				    		updateSchedaComandaCucina();
+				    		Toast.makeText(getApplicationContext(), "Operazione completata con successo", 20).show();
+				    		
+				    		Log.d(TAG, "Aggiornamento stato comanda avvenuto con successo");
+				    		
+				    		
+						}
+					});
+					return new Error("Preparazione Comande", false);
+				}
+				
+			} catch (Exception e) {
+				return new Error("Errore durante la conferma delle comande", true);
+			} finally {
+				progressDialog.dismiss();
+			}
+			
+		}
+    	
+    	@Override
+    	protected void onPostExecute(Error error) {
+    		
+    		
+     	   progressDialog.dismiss();
+     	   if(error.errorOccurred()) 
+     		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+     	   
+     	   /** Chiudo l'activity */
+     	   finish();
+     	 }
+    }
+
+    /** Cambio lo stato della comanda: "INPREPARAZIONE" -> "INVIATA"
+     * @author Fabio Pierazzi
+     */
+    class InviaAnnullaPreparazioneAsyncTask extends AsyncTask<Object, Object, Error> {
+
+    	private ProgressDialog progressDialog;
+    	   	
+    	@Override
+    	protected void onPreExecute() {
+    		progressDialog = ProgressDialog.show(SchedaComandaCucinaActivity.this, "Attendere", "Invio richiesta di annullamento preparazione della comanda");
+    	}
+    	
+    	@Override
+		protected Error doInBackground(Object... params) {
+			
+			RestaurantApplication restApp = ((RestaurantApplication)getApplication());
+			
+			try {
+				
+				HashMap<String,String> requestParameters = new HashMap<String,String>();
+		   		requestParameters.put("action","UPDATE_STATO");
+		   		requestParameters.put("idComanda", new Integer(comandaCucina.getIdComanda()).toString());
+		   		requestParameters.put("stato", "INVIATA");
+		   		
+				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
+						requestParameters);
+				
+				JSONObject responseJsonObject = new JSONObject(response);
+									
+				if(responseJsonObject.getBoolean("success") == false) {
+					Log.e(TAG, "Errore nell'aggiornamento di stato della comanda");
+					return new Error(responseJsonObject.getString("message"), true);
+				} else {
+					
+					/* Aggiorno la lista delle ordinazioni sospese e delle ordinazioni confermate */
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							/** Aggiorno manualmente la GUI, visto che comunque quando una comanda 
+				    		 * passa "INPREPARAZIONE" non può più essere modificata */
+				    		comandaCucina.setStatoComanda("INVIATA");
+				    		
+				    		updateSchedaComandaCucina();
+				    		
+							Log.d(TAG, "Aggiornamento stato comanda avvenuto con successo");
+							
+						}
+					});
+					return new Error("Preparazione Comande", false);
+				}
+				
+			} catch (Exception e) {
+				return new Error("Errore durante la conferma delle comande", true);
+			} finally {
+				progressDialog.dismiss();
+			}
+			
+		}
+    	
+    	@Override
+    	protected void onPostExecute(Error error) {
+    		
+    		
+     	   progressDialog.dismiss();
+     	   if(error.errorOccurred()) 
+     		   Toast.makeText(getApplicationContext(), error.getError(), 20).show();
+     	 }
     }
     
     /* Aggiorno la list view del conto ricaricando gli ordini dal database */

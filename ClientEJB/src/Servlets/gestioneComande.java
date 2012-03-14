@@ -19,6 +19,7 @@ import Utilita.JSONResponse;
 
 import com.business.BusinessComande;
 import com.business.BusinessTavolo;
+import com.exceptions.DatabaseException;
 import com.orb.StatoComandaEnum;
 import com.orb.gestioneOggetti.GestioneUtentePersonale;
 import com.restaurant.WrapperComanda;
@@ -76,7 +77,6 @@ public class gestioneComande extends HttpServlet {
 				int idTavolo = 0;
 				if(request.getParameter("idTavolo")!= null)
 					idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
-			
 			
 				businessTavolo.occupaTavolo(idTavolo, idTenant, utentePersonale.getIdUtentePersonale());
 			
@@ -261,7 +261,9 @@ public class gestioneComande extends HttpServlet {
 			
 			try {
 				String tipo = request.getParameter("tipoComande");
-				List<WrapperComandaCucina> listaComandeCucina =  businessComande.getElencoComandeByType(tipo);
+				
+				/* Nota: passo anche l'idTenant per filtrare i risultati letti */
+				List<WrapperComandaCucina> listaComandeCucina =  businessComande.getElencoComandeByType(idTenant, tipo);
 				
 				JSONObject jsonObject = new JSONObject();
 				
@@ -270,6 +272,7 @@ public class gestioneComande extends HttpServlet {
 				for(int i=0; i<listaComandeCucina.size(); ++i) {
 					JSONObject tempObject = new JSONObject();
 					
+					/* Parametri della comanda letta */
 					tempObject.put("idComanda", listaComandeCucina.get(i).getIdComanda());
 					tempObject.put("nomeVoceMenu", listaComandeCucina.get(i).getNomeVoceMenu());
 					tempObject.put("nomeCategoria", listaComandeCucina.get(i).getNomeCategoria());
@@ -313,6 +316,29 @@ public class gestioneComande extends HttpServlet {
 				JSONResponse.WriteOutput(response, false, e.toString());
 				return;
 			}
+			
+			
+		}  else if(request.getParameter("action").equals("UPDATE_STATO")) {
+			
+			int idComanda = Integer.parseInt(request.getParameter("idComanda"));
+			int idCucina = utentePersonale.getIdUtentePersonale();
+			String stato = request.getParameter("stato");
+			
+			JSONObject jsonObject = new JSONObject();
+			
+			try {
+				businessComande.modificaStatoComanda(idComanda, idCucina, stato);
+				jsonObject.put("success", true);
+				response.getWriter().print(jsonObject);
+			} catch (DatabaseException e) {
+				
+				jsonObject.put("success", false);
+				response.getWriter().print(jsonObject);
+				
+				System.out.println("Servlet gestioneComande: Errore durante l'update dello stato.");
+				e.printStackTrace();
+			}
+			
 		}
 	}
 	

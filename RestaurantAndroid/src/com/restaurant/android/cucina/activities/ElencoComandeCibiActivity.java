@@ -194,6 +194,7 @@ public class ElencoComandeCibiActivity extends Activity {
         		  for(int i=0; i< jsonArray.length(); i++) {
         			  ComandaCucina comandaCucina = new ComandaCucina();
         			  
+        			  comandaCucina.setIdComanda(Integer.parseInt(jsonArray.getJSONObject(i).getString("idComanda")));
         			  comandaCucina.setNomeVoceMenu(jsonArray.getJSONObject(i).getString("nomeVoceMenu"));
         			  comandaCucina.setNomeTavolo(jsonArray.getJSONObject(i).getString("nomeTavolo"));
         			  comandaCucina.setQuantita(Integer.parseInt(jsonArray.getJSONObject(i).getString("quantita")));

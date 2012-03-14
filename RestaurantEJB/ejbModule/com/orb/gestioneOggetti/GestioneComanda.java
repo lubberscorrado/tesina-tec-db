@@ -161,13 +161,68 @@ public class GestioneComanda {
 			throw new DatabaseException("Errore durante la modifica della comanda (" +e.toString() +")");
 		}
 	 }
+	
+	/**
+	 * Modifica lo stato di un comanda.
+	 * @param idComanda Id della comanda da modificare
+	 * @param stato Nuovo stato della comanda
+	 */
+	public void updateStatoComanda(int idComanda, int idCucina, String nuovoStato) throws DatabaseException {
+		try {
+			
+			Comanda comanda = em.find(Comanda.class, idComanda);
+			
+			if(comanda == null)
+				throw new DatabaseException("Errore durante la ricerca della comanda da aggiornare");
+			
+			StatoComandaEnum statoAttuale = comanda.getStato();
+			
+			if(statoAttuale == null) 
+				throw new DatabaseException("Errore durante la ricerca dello stato attuale della comanda da aggiornare");
+			
+			/* Se voglio richiederne la preparazione */
+			if(nuovoStato.equals("INPREPARAZIONE")) {
+				
+				if( ! (statoAttuale == StatoComandaEnum.INVIATA)) {
+					throw new DatabaseException("Errore durante la richiesta di messa in preparazione della comanda: " +
+							"qualcun altro sta già preparando la comanda.");
+				} else {
+					/* *****************************************************************
+					 * Associo la comanda alla cucina che l'ha presa in carico
+					 ******************************************************************/
+					UtentePersonale cucina = em.find(UtentePersonale.class, idCucina);
+					if(cucina == null)
+						throw new DatabaseException("Errore durante la ricerca della cucina responsabile per la comanda");
+					comanda.setCucinaAssociata(cucina);
+				}
+			}
+			
+			if(nuovoStato.equals("INVIATA"))
+				comanda.setStato(StatoComandaEnum.INVIATA);
+			else if(nuovoStato.equals("INPREPARAZIONE")) 
+				comanda.setStato(StatoComandaEnum.INPREPARAZIONE);
+			else if(nuovoStato.equals("PRONTA")) 
+				comanda.setStato(StatoComandaEnum.PRONTA);
+			else if(nuovoStato.equals("CONSEGNATA")) 
+				comanda.setStato(StatoComandaEnum.CONSEGNATA);
+			else if(nuovoStato.equals("SOSPESA"))
+				comanda.setStato(StatoComandaEnum.SOSPESA);
+				
+		} catch (DatabaseException e) {
+			/* Rilancia l'eccezione */
+			throw e;
+		} catch (Exception e) {
+			throw new DatabaseException("Errore durante la modifica della comanda (" +e.toString() +")");
+		}
+		
+	}
+
 		
 	/**
 	 * Elimina una comanda a partire dall'id
 	 * @param idComanda Id della comanda da eliminare
 	 * @throws DatabaseException
 	 */
-	
 	public void deleteComanda(int idComanda) throws DatabaseException {
 		try {
 			Comanda comanda = em.find(Comanda.class, idComanda);
@@ -182,7 +237,6 @@ public class GestioneComanda {
 			throw new DatabaseException("Errore durante l'eliminazione dell'area ("+ e.toString() + ")");
 		}
 	}
-
 	 
 	
 	/**
@@ -282,7 +336,7 @@ public class GestioneComanda {
 	 * @param type: può essumere i valori "CIBO", "BEVANDA"
 	 * @return Lista di comande
 	 */
-	public List<WrapperComandaCucina> getElencoComandeByType(String type) throws DatabaseException {
+	public List<WrapperComandaCucina> getElencoComandeByType(int idTenant, String type) throws DatabaseException {
 		
 		List<WrapperComandaCucina> listComandeCucina = new ArrayList<WrapperComandaCucina>();
 		
@@ -297,11 +351,15 @@ public class GestioneComanda {
 						"FROM Comanda c " +
 						"LEFT JOIN c.voceMenuAssociata v " +
 						"LEFT JOIN v.categoriaAppartenenza cat " +
-						"WHERE c.stato IN ('INVIATA','INPREPARAZIONE') " +
+						"WHERE c.stato IN ('INPREPARAZIONE', 'INVIATA') " +
 						"and cat.tipo=:tipo " +
-						"order by c.lastModified DESC, c.hashGruppo";
+						"and c.idTenant = :idTenant " +
+						"order by c.lastModified ASC, c.hashGruppo";
 				
 				Query query = em.createQuery(stringaQuery);
+				
+				System.out.println("Richiedo l'elenco comande per idTenant: " + idTenant);
+				query.setParameter("idTenant", idTenant);
 				
 				// TODO: imposta il parametro. Attualmente dà un problema il TipoCategoriaEnum
 				if(type.equals("CIBO")) {
@@ -323,9 +381,7 @@ public class GestioneComanda {
 				 * Recupero tutte le informazioni relative alle comande
 				 ************************************************/
 				
-				
 				List<Variazione> listVariazioni = null;
-				
 				
 				/** Per tutte le comande presenti nella lista */
 				for(Comanda comanda : listComande) {
@@ -422,6 +478,7 @@ public class GestioneComanda {
 		return listComandeCucina;
 		
 	}
+
 	
 	
 	/**

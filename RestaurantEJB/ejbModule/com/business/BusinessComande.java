@@ -107,6 +107,25 @@ public class BusinessComande {
 	}
 	
 	/**
+	 * Modifica lo stato di una comanda
+	 * @param stato il nuovo stato 
+	 * @throws DatabaseException
+	 */
+	public void modificaStatoComanda(int idComanda, int idCucina, String stato) throws DatabaseException{
+
+		StatoComandaEnum statoAttuale = gestioneComanda.getComandaById(idComanda).getStato();
+		
+		try {
+			gestioneComanda.updateStatoComanda(idComanda,idCucina, stato);
+		} catch(Exception e) {
+			throw new DatabaseException("Eccezione durante la modifica dello stato " +
+					"della comanda con id " + idComanda + ". " + e.toString());
+		}
+			
+	}
+	
+	
+	/**
 	 * Elimina una comanda
 	 * @param idComanda Id della comanda da eliminare
 	 * @throws DatabaseException 
@@ -145,12 +164,12 @@ public class BusinessComande {
 	 * Funzione per ottenere un elenco delle comande in base al tipo
 	 * @param type = CIBO, BEVANDA
 	 */
-	public List<WrapperComandaCucina> getElencoComandeByType(String type) {
+	public List<WrapperComandaCucina> getElencoComandeByType(int idTenant, String type) {
 		
 		List<WrapperComandaCucina> lista = new ArrayList<WrapperComandaCucina>();
 		
 		try {
-			lista = gestioneComanda.getElencoComandeByType(type);
+			lista = gestioneComanda.getElencoComandeByType(idTenant, type);
 		} catch (DatabaseException e) {
 			System.out.println("BusinessComande: eccezione invocando l'entity bean" );
 			e.printStackTrace();
