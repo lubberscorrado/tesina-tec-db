@@ -78,7 +78,7 @@ public class gestioneConti extends HttpServlet {
 					 * Informazioni necessarie relative al conto da passare
 					 * al client:
 					 * - idRemoto comanda
-					 * - nome della voce di menu associata
+					 * - idVoceMenu associata 
 					 * - note
 					 * - stato 
 					 * - array degli id delle variazioni (le variazioni hanno gli
