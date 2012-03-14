@@ -56,6 +56,7 @@ public class GestioneCategoria {
 			categoria.setNome(nome);
 			categoria.setDescrizione(descrizione);
 			categoria.setCategoriaPadre(categoriaPadre);
+			categoria.setTipo(categoriaPadre.getTipo());
 			
 			em.persist(categoria);
 			

@@ -423,4 +423,32 @@ public class GestioneComanda {
 		
 	}
 	
+	
+	/**
+	 * Ritorna le variazioni a partire dall'id della comanda
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 */
+	public WrapperVariazione[] getVariazioniByComanda(int idComanda) throws DatabaseException {
+		try {
+			Comanda comanda = em.find(Comanda.class, idComanda);
+			if(comanda == null) 
+				throw new DatabaseException("Impossibile trovare la comanda");
+			List<Variazione> listVariazione = comanda.getVariazioniAssociate();
+			WrapperVariazione[] arrayWrapperVariazione = new WrapperVariazione[listVariazione.size()];
+			
+			for(int i=0 ; i<listVariazione.size() ; i++) {
+				arrayWrapperVariazione[i] = new WrapperVariazione(listVariazione.get(i));
+			}
+			
+			return arrayWrapperVariazione;
+			
+		} catch (DatabaseException e) {
+			/* Rilancia l'eccezione */
+			throw e;
+		} catch(Exception e) {
+			throw new DatabaseException("Errore durante la ricerca della comanda (" + e.toString() +")");
+		}
+	}
+	
 }

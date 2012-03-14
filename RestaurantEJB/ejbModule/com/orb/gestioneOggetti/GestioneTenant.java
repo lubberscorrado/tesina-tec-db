@@ -8,6 +8,7 @@ import com.exceptions.DatabaseException;
 import com.mail.ThreadMailSender;
 import com.orb.Categoria;
 import com.orb.Tenant;
+import com.orb.TipoCategoriaEnum;
 import com.restaurant.TreeNodeCategoria;
 import com.restaurant.WrapperTenant;
 import com.restaurant.WrapperUtentePersonale;
@@ -116,12 +117,14 @@ public class GestioneTenant{
 				categoria.setIdTenant(wrapperTenant.getIdTenant());
 				categoria.setNome("Bevande");
 				categoria.setCategoriaPadre(categoriaPadre);
+				categoria.setTipo(TipoCategoriaEnum.BEVANDA);
 				em.persist(categoria);
 				
 			categoria = new Categoria();
 				categoria.setIdTenant(wrapperTenant.getIdTenant());
 				categoria.setNome("Cibo");
 				categoria.setCategoriaPadre(categoriaPadre);
+				categoria.setTipo(TipoCategoriaEnum.CIBO);
 				em.persist(categoria);
 			
 			return new WrapperTenant(tenant);
