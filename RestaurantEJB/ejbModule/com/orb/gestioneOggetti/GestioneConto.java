@@ -15,6 +15,7 @@ import com.orb.Conto;
 import com.orb.StatoContoEnum;
 import com.orb.Tavolo;
 import com.orb.UtentePersonale;
+import com.restaurant.TreeNodeTavolo;
 import com.restaurant.WrapperConto;
 
 @SuppressWarnings("unchecked") 
@@ -69,6 +70,8 @@ public class GestioneConto {
 			em.persist(conto);
 			return new WrapperConto(conto);
 			
+		} catch (DatabaseException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante l'inserimento del conto " +
 										"("+ e.toString() +")" );
@@ -98,16 +101,20 @@ public class GestioneConto {
 			
 			Conto conto = em.find(Conto.class, idConto);
 			if(conto == null)
-				throw new DatabaseException("Errore durante la ricerca del conto");
+				throw new DatabaseException("Errore durante la ricerca del conto  " + 
+											"(conto non esistente)");
 			conto.setPrezzo(prezzo);
 			conto.setTimeStampChiusura(timestampChiusura);
 			conto.setStato(stato);
 			em.persist(conto);
 		
 			return new WrapperConto(conto);
-	
+			
+		} catch (DatabaseException e) {
+			throw e;
 		} catch(Exception e) {
-			throw new DatabaseException("Errore durante l'aggiornamento del conto " + e.toString());
+			throw new DatabaseException("Errore durante l'aggiornamento del conto (" + 
+										e.toString() + ")");
 		}
 	}
 	
@@ -120,15 +127,24 @@ public class GestioneConto {
 	 */
 	public List<WrapperConto> getContiAperti(int idTavolo) throws DatabaseException {
 	
-		Query query = em.createQuery(	"SELECT c FROM Tavolo t JOIN t.conti c WHERE " +
-										"c.stato = 'APERTO' AND t.idTavolo = :idTavolo");
-		
-		query.setParameter("idTavolo", idTavolo);
-		List<WrapperConto> listConti = new ArrayList<WrapperConto>();
-		
-		for(Conto conto :  ((List<Conto>) query.getResultList())) 
-			listConti.add(new WrapperConto(conto));
-		
-		return listConti;
+		try {
+			
+			Query query = em.createQuery(	"SELECT c FROM Tavolo t JOIN t.conti c WHERE " +
+											"c.stato = 'APERTO' AND t.idTavolo = :idTavolo");
+			
+			query.setParameter("idTavolo", idTavolo);
+			List<WrapperConto> listConti = new ArrayList<WrapperConto>();
+			
+			for(Conto conto :  ((List<Conto>) query.getResultList())) 
+				listConti.add(new WrapperConto(conto));
+			
+			return listConti;
+					
+		}catch(Exception e) {
+			throw new DatabaseException(	"Errore durante la ricerca dei conti aperti " +
+											" associati al tavolo (" + e.toString() +")");
+		}
 	}
+	
+
 }
