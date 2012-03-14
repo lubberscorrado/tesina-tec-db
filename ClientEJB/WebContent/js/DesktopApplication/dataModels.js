@@ -1,4 +1,6 @@
-/* DEFINIZIONE DI UN WRITER PER LA RICHIESTA CLASSICA DEI PARAMETRI */
+///////////////////////////////////////////////////////////////////////
+// DEFINIZIONE DI UN WRITER PER LA RICHIESTA CLASSICA DEI PARAMETRI //
+/////////////////////////////////////////////////////////////////////
 Ext.define('Ext.data.writer.SinglePost', {
     extend: 'Ext.data.writer.Writer',
     alternateClassName: 'Ext.data.SinglePostWriter',
@@ -22,24 +24,10 @@ Ext.define('Ext.data.writer.SinglePostNoAction', {
     }
 });
 
-  
+///////////////////////////////////////
+// DEFINIZIONE DEI MODELLI DEI DATI //
+/////////////////////////////////////
 
-//Ext.define('Ext.data.writer.SinglePostNoAction', {
-//    extend: 'Ext.data.writer.Writer',
-//    alternateClassName: 'Ext.data.SinglePostNoActionWriter',
-//    alias: 'writer.singlepostnoaction',
-//
-//    writeRecords: function(request, data) {
-////    	console.debug(request);
-////    	console.debug(data);
-//    	//data[0].action = request.params.action;
-//        request.params = data[0];
-//        return request;
-//    }
-//});
-
-
-/*Definisco il modello dei dati*/
 Ext.define('StatoTavolo', {
     extend: 'Ext.data.Model',
     fields: [
@@ -121,6 +109,44 @@ Ext.define('StatoCuoco', {
 	        idProperty: 'id_tavolo',
 	        root: 'items'
 	    }
+    }
+});
+
+Ext.define('Comanda', {
+    extend: 'Ext.data.Model',
+    fields: [
+             {name: 'idVoceMenu', 		type: 'int',		useNull: true},
+            // {name: 'idTavolo',  		type: 'int'},
+             {name: 'idRemoto',  		type: 'int'},
+             {name: 'stato', 			type: 'string'},
+             {name: 'variazioni', 		type: 'string'},
+             {name: 'quantita', 		type: 'string'},
+             {name: 'note',    			type: 'string'}
+    ],
+    proxy: {
+        type: 'rest',
+        url: 'gestioneConti',
+        appendId: true,
+        writer: {
+            type: 'singlepost'
+        },
+		reader: {
+	        type: 'json',
+	        idProperty: 'idRemoto',
+	        root: 'comande'
+	    },
+	    api: {
+            create: 	'gestioneConti?action=create',
+            read: 		'gestioneConti?action=GET_CONTO',
+            update: 	'gestioneConti?action=update',
+            destroy: 	'gestioneConti',
+        },
+	    actionMethods : {
+            create : 'POST',
+            read   : 'POST',
+            update : 'POST',
+            destroy: 'POST'
+        }
     }
 });
 

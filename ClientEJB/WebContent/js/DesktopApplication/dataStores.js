@@ -8,7 +8,20 @@ function initStores(){
 		autoLoad: true,
 		//autoSync: true,
 		pageSize: 50
-		
+	});
+	
+	Ext.create('Ext.data.Store', {
+		storeId: 'datastore_conto',
+		//groupField: 'nomeArea',
+		model: 'Comanda',
+		//autoLoad: true,
+		//autoSync: true,
+		pageSize: 50,
+		listeners: {
+			beforeload: function( store, operation, eOpts ){
+				store.proxy.extraParams.idTavolo=this.idTavolo;
+			}
+		}
 	});
 	
 	if(_global._isAdministrator == true){

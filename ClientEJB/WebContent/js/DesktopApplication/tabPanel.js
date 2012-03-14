@@ -67,11 +67,14 @@ var _mainTabPanel = {
 
 			        	// Inizio definizione stato tavolo
 			        		if( record.get('statoTavolo') == 'OCCUPATO' ){
+			        			var idTavolo = record.get('idTavolo');
+			        			var tabella_conto = createTabellaConto( idTavolo );
 			        			_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
-			        			_viewPort_panel_east.add(
-						        	createTabellaConto( record.get('idTavolo') )
-						        );
+			        			_viewPort_panel_east.add(tabella_conto);			        			
 			        			_viewPort_panel_east.expand(true);
+			        			Ext.getStore('datastore_conto').idTavolo=idTavolo;
+			        			//Ext.getStore('datastore_conto').load();
+			        			tabella_conto.enable(true);
 			        		}
 			        	// Fine definizione stato tavolo
 			        },
@@ -1969,120 +1972,194 @@ var _mainTabPanel = {
 };
 
 function createTabellaConto(idTavolo){
-	console.debug('ODDEO: - '+idTavolo);
+	console.debug('IDTAVOLO: - '+idTavolo);
 	
-	
-	
-	this._tabella_conto = Ext.create('Ext.grid.Panel', {
-		title: 'Conto tavolo',
-		flex: 3,
-		align : 'stretch',
-		id: 'tabella_stato_tavolo',
-		margin: '2 2 2 2',
-		autoScroll: true,
-        store: Ext.getStore('datastore_stato_tavolo'),
-        columns: [
-            { header: 'IdTavolo',  	dataIndex: 'idTavolo', hidden: true },
-            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
-            { header: 'Piano',  	dataIndex: 'numeroPiano' },
-            { header: 'Area',  		dataIndex: 'nomeArea' },
-            { header: 'N°Posti', 	dataIndex: 'numPosti' },
-            { header: 'Cameriere', 	dataIndex: 'cameriere' },
-            { header: 'Stato', 		dataIndex: 'statoTavolo'}
-        ],
-        features: [{ftype:'grouping'}],
-        listeners:{
-        	itemdblclick: function(view, record, item, index, e, eOpts){
-//	        	_viewPort_panel_east.removeAll();
-//	        	// Inizio definizione stato tavolo
-//		        	console.debug(view);
-//		        	console.debug('Record: ');
-//		        	console.debug(record);
-//		        	console.debug(item);
-//		        	_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
-//		        	_viewPort_panel_east.add({
-//		        		xtype: 'label',
-//		        		text: '<h1>Tavolo:</h1> '+record.get('idTavolo')
-//		        	});
-//	        	// Fine definizione stato tavolo
-//	        	_viewPort_panel_east.expand(true);
-	        },
-	        itemcontextmenu: function(view, rec, node, index, e) {
-//	        	if(rec.get('statoTavolo') == 'OCCUPATO'){
-//	        		
-//	        	}
-//	        	
-//            	var contextMenu = null;
-//            	console.debug('CONTEXT MENU');
-//            	contextMenu = Ext.create('Ext.menu.Menu', {
-//            		items: [{
-//	                			text: 'Modifica utente',
-//	                        	handler: function(){
-//	                        		_mainTabPanel.updateComponentePersonale(rec);
-//	                        	}
-//                            }
-//                        ]
-//                });
-//            	
-//                contextMenu.showAt(e.getXY());
-////                return false;
-            }
-	        
-        },
-	    dockedItems: [{
-            xtype: 'toolbar',
-            dock: 'bottom',
-            items: ['Raggruppamenti: ',{
-                tooltip: 'Toggle the visibility of the summary row',
-                text: 'None',
-                handler: function(){
-                	Ext.getStore('datastore_stato_tavolo').clearGrouping();
-                }
-            },{
-                tooltip: 'Toggle the visibility of the summary row',
-                text: 'Piano',
-                handler: function(){
-                	Ext.getStore('datastore_stato_tavolo').group('nomePiano');
-                }
-            },{
-                tooltip: 'Toggle the visibility of the summary row',
-                text: 'Area',
-                handler: function(){
-                	Ext.getStore('datastore_stato_tavolo').group('nomeArea');
-                }
-            },{
-                tooltip: 'Toggle the visibility of the summary row',
-                text: 'Stato',
-                handler: function(){
-                	Ext.getStore('datastore_stato_tavolo').group('statoTavolo');
-                }
-            },'->',{
-                text: 'Aggiorna',
-                iconCls: 'icon-refresh',
-                handler: function(){
-                	Ext.getStore('datastore_stato_tavolo').load();
-                }
-            }]
-        }]	//Fine dockeditems
+	var tabella_conto = Ext.get('tabella_conto');
+	if(tabella_conto == undefined){
+		tabella_conto = Ext.create('Ext.grid.Panel', {
+			title: 'Conto tavolo',
+			//flex: 1,
+			//align : 'stretch',
+			id: 'tabella_conto',
+			margin: '2 2 2 2',
+			autoScroll: true,
+	        store: Ext.getStore('datastore_conto'),
+	        columns: [
+	            { header: 'IdVoceMenu',  	dataIndex: 'idVoceMenu', hidden: true },
+	            { header: 'Stato',  		dataIndex: 'stato' },
+	            { header: 'Variazioni',  	dataIndex: 'variazioni' },
+	            { header: 'Qnt',  			dataIndex: 'quantita' },
+	            { header: 'IdRemoto', 		dataIndex: 'idRemoto' },
+	            { header: 'Note', 			dataIndex: 'note' }
+	        ],
+	        features: [{ftype:'grouping'}],
+	        listeners:{
+	        	itemdblclick: function(view, record, item, index, e, eOpts){
+//		        	_viewPort_panel_east.removeAll();
+//		        	// Inizio definizione stato tavolo
+//			        	console.debug(view);
+//			        	console.debug('Record: ');
+//			        	console.debug(record);
+//			        	console.debug(item);
+//			        	_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
+//			        	_viewPort_panel_east.add({
+//			        		xtype: 'label',
+//			        		text: '<h1>Tavolo:</h1> '+record.get('idTavolo')
+//			        	});
+//		        	// Fine definizione stato tavolo
+//		        	_viewPort_panel_east.expand(true);
+		        },
+		        itemcontextmenu: function(view, rec, node, index, e) {
+//		        	if(rec.get('statoTavolo') == 'OCCUPATO'){
+//		        		
+//		        	}
+//		        	
+//	            	var contextMenu = null;
+//	            	console.debug('CONTEXT MENU');
+//	            	contextMenu = Ext.create('Ext.menu.Menu', {
+//	            		items: [{
+//		                			text: 'Modifica utente',
+//		                        	handler: function(){
+//		                        		_mainTabPanel.updateComponentePersonale(rec);
+//		                        	}
+//	                            }
+//	                        ]
+//	                });
+//	            	
+//	                contextMenu.showAt(e.getXY());
+////	                return false;
+	            }
+		    },
+		    dockedItems: [{
+	            xtype: 'toolbar',
+	            dock: 'bottom',
+	            items: ['Raggruppamenti: ',{
+	                tooltip: 'Toggle the visibility of the summary row',
+	                text: 'None',
+	                handler: function(){
+	                	Ext.getStore('datastore_stato_tavolo').clearGrouping();
+	                }
+	            },{
+	                tooltip: 'Toggle the visibility of the summary row',
+	                text: 'Piano',
+	                handler: function(){
+	                	Ext.getStore('datastore_stato_tavolo').group('nomePiano');
+	                }
+	            },{
+	                tooltip: 'Toggle the visibility of the summary row',
+	                text: 'Area',
+	                handler: function(){
+	                	Ext.getStore('datastore_stato_tavolo').group('nomeArea');
+	                }
+	            },{
+	                tooltip: 'Toggle the visibility of the summary row',
+	                text: 'Stato',
+	                handler: function(){
+	                	Ext.getStore('datastore_stato_tavolo').group('statoTavolo');
+	                }
+	            },'->',{
+	                text: 'Aggiorna',
+	                iconCls: 'icon-refresh',
+	                handler: function(){
+	                	Ext.getStore('datastore_conto').load();
+	                }
+	            }]
+	        }]	//Fine dockeditems
 
-        
-	});
+	        
+		});
+	}//fine if
 	
-	Ext.Ajax.request({
-		   url: 'gestioneConti',
+	return tabella_conto;
+};
+	
+//	Ext.Ajax.request({
+//
+//	   	url: 'gestioneConti',
+//	   	headers: {
+//		       'my-header': 'foo',
+//		       'kiss': 'ass'
+//	   	},
+//	   	params: {
+//			   action: 'GET_CONTO',
+//			   idTavolo: idTavolo
+//	   	},
+//	   	proxy: {
+//			   	type: 'ajax',
+////		        type: 'rest',
+////		        url : 'statoTavolo',
+////		        appendId: true,
+////		        writer: {
+////		            type: 'singlepost'
+////		        },
+//				reader: {
+//			        type: 'json',
+//			        model: 'Comanda',
+//			        //idProperty: 'id_tavolo',
+//			        root: 'comande'
+//			    }
+//	   	},
+//	   	success: function(response) {
+	   		//Ext.getStore('datastore_conto').insert(new Comanda());
+	   		
+	   		
+	   		
+	   		//var data = JSON.parse(response); 
+	   		//console.debug('['+response.responseText+']');
+	   		
+	   		//var json_response = Ext.JSON.decode('['+response.responseText+']',false);
+	   		//console.debug(data);
+	   		//var i = 0;
+	   		//for(; i<json_response.len)
+			   
+			   
+//           	Ext.getCmp('window_inserimentoNodoGestioneTavolo').destroy();
+//           	var parentId = null;
+//           	var nuovo_nodo = Ext.create('nodoGestioneTavolo', {
+//           		id: 			action.result.data[0].id,
+//           		parentId: 		action.result.data[0].parentId,
+//           		nome: 			action.result.data[0].nome,
+//               	tipo: 			action.result.data[0].tipo,
+//               	descrizione: 	action.result.data[0].descrizione,
+//               	enabled: 		action.result.data[0].enabled,
+//               	numeroPiano:	action.result.data[0].numeroPiano,
+//               	numPosti:		action.result.data[0].numPosti
+//           	});
+//           	
+//           	parentId = action.result.data[0].parentId;
+//           	
+//           	
+//           	
+//           	switch(action.result.data[0].tipo){
+//           		case 1: {
+//	                    		nuovo_nodo.set('parentId','root');
+//	                    		parentId = 'root';
+//               				break;
+//           		}
+//           		case 2: {
+//	                    		parentId = 'P'+action.result.data[0].parentId;
+//	                    		break;
+//                   }
+//           		case 3: {
+//	                    		parentId = 'A'+action.result.data[0].parentId;
+//	                    		break;
+//                   }
+//           		default: {parentId = 'root';	break;}
+//           	}
+////           	console.debug("PARENT ID NUOVO NODO: "+parentId);
+//           	console.debug('Nuovo nodo creato: '+nuovo_nodo.get('id')+' - '+nuovo_nodo.get('parentId')+' - '+nuovo_nodo.get('text')+' - '+nuovo_nodo.get('tipo'));
+//           	var nodo_padre = Ext.getStore('datastore_gestione_tavolo').getNodeById(parentId);
+//           	nodo_padre.appendChild(nuovo_nodo);
+//           	
+//           	Ext.Msg.alert('Info: ', action.result.message);
+//           	
+//           }
 //		   success: someFn,
 //		   failure: otherFn,
-		   headers: {
-		       'my-header': 'foo',
-		       'kiss': 'ass'
-		   },
-		   params: {
-			   action: 'GET_CONTO',
-			   idTavolo: idTavolo
-		   }
-	});
-	return;
-};
+		   
+//	});
+	
+
 
 
 function titoloRaggruppamentoVariazioni(values) {
