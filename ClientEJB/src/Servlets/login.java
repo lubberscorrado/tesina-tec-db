@@ -33,6 +33,7 @@ public class login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private HttpSession session = null;
 	private String action = null;
+	private String tipoAccesso = null;
 	
 	@EJB
 	private GestioneTenant gestioneTenant;
@@ -61,6 +62,8 @@ public class login extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		session = request.getSession();
 		action = request.getParameter("action");
+		tipoAccesso = request.getParameter("tipoAccesso");
+		
 		
 
 		if(action == null || action.length() == 0){	//LOGIN
