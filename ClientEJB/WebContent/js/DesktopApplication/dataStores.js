@@ -12,8 +12,20 @@ function initStores(){
 	
 	Ext.create('Ext.data.Store', {
 		storeId: 'datastore_conto',
-		//groupField: 'nomeArea',
 		model: 'Comanda',
+		//autoLoad: true,
+		//autoSync: true,
+		pageSize: 50,
+		listeners: {
+			beforeload: function( store, operation, eOpts ){
+				store.proxy.extraParams.idTavolo=this.idTavolo;
+			}
+		}
+	});
+	
+	Ext.create('Ext.data.Store', {
+		storeId: 'datastore_elenco_conti_tavolo',
+		model: 'Conto',
 		//autoLoad: true,
 		//autoSync: true,
 		pageSize: 50,

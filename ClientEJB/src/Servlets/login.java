@@ -143,7 +143,7 @@ public class login extends HttpServlet {
 			
 			
 			
-			System.out.println("Login from: "+request.getRemoteAddr()+" Tenant: "+idTenant+" User: "+idUtente);
+			System.out.println("Login from: "+request.getRemoteAddr()+" Tenant: "+idTenant+" User: "+idUtente+" - TipoAccesso:"+tipoAccesso);
 			try {
 				gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
 			} catch (DatabaseException e) {

@@ -188,6 +188,42 @@ Ext.define('Comanda', {
     }
 });
 
+Ext.define('Conto', {
+    extend: 'Ext.data.Model',
+    fields: [
+             {name: 'idConto', 				type: 'int',		useNull: true},
+             {name: 'timestampApertura', 	type: 'string'},
+             {name: 'timestampChiusura', 	type: 'string'},
+             {name: 'stato', 				type: 'string'},
+             {name: 'prezzo',				type: 'string'}
+    ],
+    proxy: {
+        type: 'rest',
+        appendId: false,
+	    api: {
+	    	read: 		'gestioneConti?action=GET_ELENCO_CONTI',
+            create: 	'gestioneConti?action=create',
+            update: 	'gestioneConti?action=update',
+            destroy: 	'gestioneConti'
+        },
+        writer: {
+            type: 'singlepost'
+        },
+		reader: {
+	        type: 'json',
+	        model: 'Conto',
+	        idProperty: 'idConto',
+	        root: 'conti'
+	    },
+	    actionMethods : {
+            create : 'POST',
+            read   : 'POST',
+            update : 'POST',
+            destroy: 'POST'
+        }
+    }
+});
+
 Ext.define('nodoGestioneTavolo', {
     /*extend: 'Ext.data.NodeInterface',*/
 	extend: 'Ext.data.Model',

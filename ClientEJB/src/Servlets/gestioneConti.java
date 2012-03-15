@@ -34,6 +34,8 @@ public class gestioneConti extends HttpServlet {
 	private BusinessConti businessConti;
 	@EJB
 	private GestioneComanda gestioneComanda;
+	@EJB
+	private GestioneConto gestioneConto;
 	private static final long serialVersionUID = 1L;
        
     
@@ -115,6 +117,37 @@ public class gestioneConti extends HttpServlet {
 				JSONResponse.WriteOutput(response,  false, e.toString());
 				
 			}
+		}else if(request.getParameter("action").equals("GET_ELENCO_CONTI")) {
+			
+			/* **********************************************************************************
+			 * Richiedo la lista dei conti associati ad un determinato tavolo
+			 ************************************************************************************/
+			
+			try {
+				
+				List<WrapperConto> listaConti = gestioneConto.getConti(idTavolo);
+				JSONArray jsonArrayConti = new JSONArray();
+				
+				for(WrapperConto conto : listaConti) {
+					
+					JSONObject jsonObjectConto = new JSONObject();
+					jsonObjectConto.put("idConto", conto.getIdConto());
+					jsonObjectConto.put("prezzo", conto.getPrezzo());
+					jsonObjectConto.put("stato", conto.getStato().toString());
+					jsonObjectConto.put("timestampApertura", conto.getTimestampApertura().toString());
+					jsonObjectConto.put("timestampChiusura", conto.getTimestampChiusura().toString());
+					
+					jsonArrayConti.put(jsonObjectConto);
+				}
+				
+				JSONResponse.WriteOutput(response,true, "OK", "conti", jsonArrayConti);
+				return;
+				
+			} catch (DatabaseException e) {
+				JSONResponse.WriteOutput(response,  false, e.toString());
+				
+			}
+			
 		}else if(request.getParameter("action").equals("VISUALIZZA_CONTO")) {
 			
 			/* **********************************************************************************
@@ -167,7 +200,7 @@ public class gestioneConti extends HttpServlet {
 				}
 				
 				JSONResponse.WriteOutput(response,true, "OK", "comande", jsonArrayComande);
-				
+				return;
 			} catch (DatabaseException e) {
 				JSONResponse.WriteOutput(response,  false, e.toString());
 				

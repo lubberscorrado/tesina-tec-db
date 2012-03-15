@@ -15,7 +15,7 @@ var login_main = function registration_main(){
 	    //height: 600,
 
 	    // The form will submit an AJAX request to this URL when submitted
-	    url: 'login',
+	    url: 'login?tipoAccesso=CASSIERE',
 /*
 	    // Fields will be arranged vertically, stretched to full width
 	    layout: 'anchor',
