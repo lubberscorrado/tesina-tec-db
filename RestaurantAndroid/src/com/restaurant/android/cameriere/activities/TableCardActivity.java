@@ -852,16 +852,9 @@ public class TableCardActivity extends Activity {
 					
 					if(o.getStato().equals("Deselezionata"))
 						continue;
+				
 					
-					/************************************************************
-					 * Cambio lo stato all'ordinazione sul database
-					 * locale.
-					 ************************************************************/
-					ContentValues ordinazioneInviata = new ContentValues();
-					ordinazioneInviata.put("stato","INVIATA");
-					db.update("comanda", ordinazioneInviata, "idComanda=" + o.getIdOrdinazione(), null);
-					
-					/************************************************************
+					/* ***********************************************************
 					 * Creazione dell'oggetto JSON che rappresenta la comanda
 					 * con tutte le variazioni associate
 					 ************************************************************/
@@ -908,14 +901,44 @@ public class TableCardActivity extends Activity {
 				JSONObject responseJsonObject = new JSONObject(response);
 									
 				if(responseJsonObject.getBoolean("success") == false) {
-					return new Error(responseJsonObject.getString("message"), true);
-				} else {
 					
-					/* **********************************************************************
+					/* **********************************************************
+					 * Se l'inserimento delle voci di menu all'interno del
+					 * databse sul server fallisce viene ritornato success:false.
+					 * La logica di business garantisce che se anche solo 1
+					 * inserimento non va a buon fine, viene fatto il 
+					 * rollback della transazione. A questo punto deve essere
+					 * notificato al cameriere l'errore. Se questo deriva dalla
+					 * mancanza di sincronizzazione tra il menu locale e il 
+					 * menu remoto (ad esempio perchè una voce di menu non
+					 * esiste più), sul server viene generata un'eccezione
+					 * che causa il rollback della transazione. Bisogna
+					 * notificare all'utente da quale comanda deriva l'errore
+					 ***********************************************************/
+					
+					return new Error(responseJsonObject.getString("message"), true);
+					
+				} else if(responseJsonObject.getBoolean("success") == true) {
+					
+					
+					/* ***********************************************************
+					 * L'inserimento delle comande è andato a buon fine. Cambio
+					 * lo stato di ciascuna comanda all'interno del database
+					 * locale.
+					 ************************************************************/
+					for(Ordinazione o: ordersWaitingListView_arrayOrdinazioni) {
+						ContentValues ordinazioneInviata = new ContentValues();
+						ordinazioneInviata.put("stato","INVIATA");
+						db.update(	"comanda", 
+									ordinazioneInviata, "idComanda=" + o.getIdOrdinazione(), 
+									null);
+					}
+					
+					/* ****************************************************************
 					 * Le comande sono state inviate al server e in risposta vengono
 					 * ritornati gli id remoti per future modifiche. Il database locale
 					 * viene aggiornato con gli id remoti
-					 ***********************************************************************/
+					 ******************************************************************/
 					
 					JSONArray jsonArrayIdComande = responseJsonObject.getJSONArray("idComande");
 					
@@ -937,7 +960,6 @@ public class TableCardActivity extends Activity {
 							getOrdersConfirmed();
 						}
 					});
-					return new Error("Comande inviate", false);
 				}
 				
 			} catch (Exception e) {
@@ -948,7 +970,8 @@ public class TableCardActivity extends Activity {
 				dbManager.close();
 			}
 			
-		}
+			return new Error("Comande inviate", false);
+    	}
     	
     	@Override
     	protected void onPostExecute(Error error) {
