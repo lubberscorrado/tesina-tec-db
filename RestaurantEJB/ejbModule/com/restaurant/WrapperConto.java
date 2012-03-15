@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import com.orb.Conto;
+import com.orb.StatoContoEnum;
 
 public class WrapperConto {
 	
@@ -12,6 +13,7 @@ public class WrapperConto {
 	private BigDecimal prezzo;
 	private Timestamp timestampApertura;
 	private Timestamp timestampChiusura;
+	private StatoContoEnum stato;
 	
 	public WrapperConto(Conto conto) {
 	
@@ -19,6 +21,7 @@ public class WrapperConto {
 		this.prezzo = conto.getPrezzo();
 		this.timestampApertura = conto.getTimeStampApertura();
 		this.timestampChiusura = conto.getTimeStampChiusura();
+		this.setStato(conto.getStato());
 	}
 	
 	public int getIdConto() {
@@ -48,6 +51,14 @@ public class WrapperConto {
 
 	public void setTimestampChiusura(Timestamp timestampChiusura) {
 		this.timestampChiusura = timestampChiusura;
+	}
+
+	public StatoContoEnum getStato() {
+		return stato;
+	}
+
+	public void setStato(StatoContoEnum stato) {
+		this.stato = stato;
 	}
 	
 		

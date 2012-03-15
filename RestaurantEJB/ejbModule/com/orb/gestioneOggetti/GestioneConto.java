@@ -134,6 +134,34 @@ public class GestioneConto {
 			
 			query.setParameter("idTavolo", idTavolo);
 			List<WrapperConto> listConti = new ArrayList<WrapperConto>();
+
+			for(Conto conto :  ((List<Conto>) query.getResultList())) 
+				listConti.add(new WrapperConto(conto));
+			
+			return listConti;
+					
+		}catch(Exception e) {
+			throw new DatabaseException(	"Errore durante la ricerca dei conti aperti " +
+											" associati al tavolo (" + e.toString() +")");
+		}
+	}
+	
+	
+	/**
+	 * Ritorna la lista dei conti associati ad un tavolo
+	 * @param idTavolo Id del tavolo per il quale si vuole ottenere la lista
+	 * @return Lista di oggetti WrapperConto
+	 * @throws DatabaseException Eccezione che incapsula le informazioni
+	 * sull'ultimo errore verificatosi
+	 */
+	public List<WrapperConto> getConti(int idTavolo) throws DatabaseException {
+	
+		try {
+			
+			Query query = em.createQuery(	"SELECT c FROM Tavolo t JOIN t.conti c WHERE t.idTavolo = :idTavolo");
+			
+			query.setParameter("idTavolo", idTavolo);
+			List<WrapperConto> listConti = new ArrayList<WrapperConto>();
 			
 			for(Conto conto :  ((List<Conto>) query.getResultList())) 
 				listConti.add(new WrapperConto(conto));
