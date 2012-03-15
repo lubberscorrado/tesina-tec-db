@@ -1,21 +1,335 @@
 package com.restaurant.android.cucina.activities;
 
-import com.restaurant.android.R;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
-/**
- * Activity della cucina che serve per mostrare l'elenco delle 
- * bevande richieste. 
+import com.restaurant.android.R;
+import com.restaurant.android.RestaurantApplication;
+import com.restaurant.android.cucina.comanda.ComandaCucina;
+import com.restaurant.android.cucina.comanda.Variazione;
+
+/** 
+ * Activity della cucina che serve a mostrare l'elenco dei cibi
+ * richiesti. 
  * 
  * @author Fabio Pierazzi
  */
 public class ElencoComandeBevandeActivity extends Activity {
+	
+	/* Variabile usata per il logging */
+	private static final String TAG = "ElencoComandeBevandeActivity";
+
+	private ListView elencoComandeBevandeListView;
+	private boolean runThread;
+	private boolean pauseThread;
+	// private ProgressDialog m_ProgressDialog = null;
+	private ArrayList<ComandaCucina> arrayList_elencoBevande = null;
+    private ElencoComandeCibi_Adapter adapter_elencoBevande;
+    private ElencoCibiUpdaterThread elencoBevande_updaterThread;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.cucina_elenco_bevande_list);
+		setContentView(R.layout.cucina_elenco_cibi_list);
+		  // Recupero il riferimento ad una ListView
+		  this.elencoComandeBevandeListView = (ListView) findViewById(R.id.cucina_listView_elencoComandeCibi);
+		  
+		  // Operazioni necessarie al corretto funzionamento della listView
+		  arrayList_elencoBevande = new ArrayList<ComandaCucina>();
+	      this.adapter_elencoBevande = new ElencoComandeCibi_Adapter(getApplicationContext(), 
+	    		  							R.layout.cucina_elenco_cibi_list_row, 
+	    		  							arrayList_elencoBevande);
+	      
+	      elencoComandeBevandeListView.setAdapter(this.adapter_elencoBevande);
+	      
+	      /**************************************************************
+	       * Avvio del thread di aggiornamento della lista dei tavoli
+	       **************************************************************/
+	      elencoBevande_updaterThread = new ElencoCibiUpdaterThread();
+	      runThread = true;
+	      pauseThread = false;
+	      Log.d(TAG,"Avvio il thread di aggiornamento dell'elenco delle comande");
+	      elencoBevande_updaterThread.start();
+	      
+	      
+	      /**************************************************************
+	       * Listener per il click su un elemento della lista dei tavoli 
+	       **************************************************************/
+	      
+	      elencoComandeBevandeListView.setOnItemClickListener(new OnItemClickListener() {
+	  	    public void onItemClick(AdapterView<?> parent, View view,
+			        int position, long id) {
+	  	    
+	  	    	Log.d(TAG, "Eseguito click su uno degli elementi della ListView");
+	  	    	
+	  	    	/* Recupero la comanda selezionata */
+	  	    	ComandaCucina oggettoComandaSelezionata = (ComandaCucina) adapter_elencoBevande.getItem(position);
+
+	  	    	/* Apro una nuova activity con le info sulla comanda */	
+	  	    	Intent myIntent = new Intent(ElencoComandeBevandeActivity.this, SchedaComandaCucinaActivity.class);
+	  	    	Bundle info = new Bundle();
+	  	    	info.putSerializable("oggettoComanda", oggettoComandaSelezionata);
+	  	    	myIntent.putExtras(info);
+	  	    	
+	  	    	startActivity(myIntent);
+	  	    }
+	      });
+	    }
 		
-	}
+		@Override
+		public void onResume() {
+			super.onResume();
+			Log.d(TAG,"OnResume");
+			/* Sveglio il thread sospeso */
+			pauseThread = false;
+			elencoBevande_updaterThread.Signal();
+		}
+		@Override
+		public void onPause() {
+			super.onPause();
+			Log.d(TAG,"OnPause");
+			pauseThread = true;
+		}
+		
+		@Override
+		public void onStart() {
+			super.onStart();
+			Log.d(TAG,"OnStart");
+			pauseThread = false;
+			elencoBevande_updaterThread.Signal();
+		}
+		
+		@Override
+		public void onStop() {
+			super.onStop();
+			Log.d(TAG,"OnStop");
+			pauseThread = true;
+		}
+		
+		@Override
+		public void onDestroy() {
+			super.onDestroy();
+			Log.d(TAG,"OnDestroy");
+			
+			
+			/* Imposto pauseThread a false in modo da non avere un problema di race
+			 * condition dovuto al fatto che il thread si sospende dopo la signal */
+			pauseThread = false;
+			runThread =false;
+			Log.d(TAG,"Stoppo il thread di aggiornamento dei tavoli");
+			runThread =false;
+			elencoBevande_updaterThread.Signal();
+			
+			/* Non dovrebbe essere strettamente necessario, il thread dovrebbe terminare
+			 * ugualmente */
+//			try {
+//				updaterThread.join();
+//			} catch (InterruptedException e) {
+//				Log.e("TablesListActivity","Errore durante il join del thread");
+//			}
+		}
+	
+	/**
+     * Metodo per reperire l'elenco delle comande da mostrare
+     * all'interno della ListView.
+     * @author Fabio Pierazzi
+     */
+    private void getElencoComandeCibi(){
+          try{
+        	  
+        	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
+        	  String url = ((RestaurantApplication)getApplication()).getHost();
+        	  
+	        	HashMap<String,String> getParametersMap = new HashMap<String,String>();
+	        	getParametersMap.put("action", "ELENCO_COMANDE");
+	  			getParametersMap.put("tipoComande", "BEVANDA");
+
+	  			String response = restApplication.makeHttpGetRequest(url + "ClientEJB/gestioneComande", getParametersMap);
+	  			arrayList_elencoBevande.clear();
+        	  
+//        	  /** Test: da rimuovere */
+//        	  for(int i=0; i<100; ++i) {
+//        		  ComandaCucina c = new ComandaCucina();
+//        		  c.setNomeVoceMenu("Spaghetti all'amatriciana magica");
+//        		  c.setStatoComanda("Pronto");
+//        		  c.setQuantita(3);
+//        		  arrayList_elencoCibi.add(c);
+//        	  }
+//        	  /** Fine Test*/
+        	  
+	  		   Log.d(TAG, "getElencoComandeBevande(), server 'response': " + response);
+        	  /**********************************************************
+        	   * Decodifica della risposa del server contenente lo stato 
+        	   * dei tavoli.
+        	   **********************************************************/
+	  		   if(response == null || response.equals("")) {
+	  			   Log.e(TAG, "Risposta vuota dal server per l'elenco comande"); 
+	  			   return;
+	  		   }
+        	  JSONObject jsonObject = new JSONObject(response);
+        	  
+        	  Log.d(TAG, "Punto 2.5: jsonObject.getBoolean('success'): " + jsonObject.getBoolean("success") );
+        	  
+        	  if(jsonObject.getBoolean("success") == true) {
+        		  
+        		  JSONArray jsonArray = jsonObject.getJSONArray("elencoComande");
+        		  
+        		  for(int i=0; i< jsonArray.length(); i++) {
+        			  ComandaCucina comandaCucina = new ComandaCucina();
+        			  
+        			  comandaCucina.setIdComanda(Integer.parseInt(jsonArray.getJSONObject(i).getString("idComanda")));
+        			  comandaCucina.setNomeVoceMenu(jsonArray.getJSONObject(i).getString("nomeVoceMenu"));
+        			  comandaCucina.setNomeTavolo(jsonArray.getJSONObject(i).getString("nomeTavolo"));
+        			  comandaCucina.setQuantita(Integer.parseInt(jsonArray.getJSONObject(i).getString("quantita")));
+        			  comandaCucina.setStatoComanda(jsonArray.getJSONObject(i).getString("statoComanda"));
+        			  comandaCucina.setNomeCategoria(jsonArray.getJSONObject(i).getString("nomeCategoria"));
+        			  comandaCucina.setNote(jsonArray.getJSONObject(i).getString("noteComanda"));
+        			  
+        			  /** Imposto Variazioni */
+        			  JSONArray jsonArray_variazioni = jsonArray.getJSONObject(i).getJSONArray("elencoVariazioni");
+        			  
+        			  ArrayList<Variazione> arrayList_variazioni = new ArrayList<Variazione>();
+        			  
+        			  for(int k=0; k<jsonArray_variazioni.length(); ++k) {
+        				  Variazione var = new Variazione();
+        				  var.setIdVariazione(Integer.parseInt(jsonArray_variazioni.getJSONObject(k).getString("idVariazione")));
+        				  var.setNomeVariazione(jsonArray_variazioni.getJSONObject(k).getString("nomeVariazione"));
+        				  arrayList_variazioni.add(var);
+//        				  Log.e(TAG, "Aggiunta variazione: " + var.getNomeVariazione()); 
+        			  }
+        			  
+        			  comandaCucina.setArrayList_variazioni(arrayList_variazioni);
+        			  /** Fine impostazione variazioni */
+        			  
+        			  arrayList_elencoBevande.add(comandaCucina);
+          		  }
+          	  }
+        	  
+        	  /**************************************************************************
+        	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
+        	   * la view.
+        	   **************************************************************************/
+        	  runOnUiThread(new Runnable() {
+        		  public void run() {
+        			  adapter_elencoBevande.notifyDataSetChanged();
+        		  }
+        	  });
+        	  
+        	  Log.i(	TAG + "[service]" + ": getElencoComandeCibi()", "Number of ComandeCibi Loaded: " + 
+            		  	arrayList_elencoBevande.size());
+              
+        } catch (Exception e) {
+        	Log.e(TAG + "[service]" + ": BACKGROUND_PROC", e.getMessage());
+        }
+    }
+	   
+	/**********************************************
+	 * Thread per l'aggiornamento della lista view 
+	 **********************************************/
+	private class ElencoCibiUpdaterThread extends Thread {
+		
+		private static final String TAG = "ElencoCibiUpdaterThread";
+   		final int DELAY = 3000;
+   		public void run() {
+   			while(runThread) {
+   				Log.d(TAG, "UPDATING...");
+   				getElencoComandeCibi();
+   				
+   				try {
+					Thread.sleep(DELAY);
+				} catch (InterruptedException e) {
+					Log.d(TAG, "Errore durante lo sleep del thread");
+				}
+   				if(pauseThread)
+					try {
+						Log.d(TAG, "Vado a letto");
+						this.Wait();
+					} catch (InterruptedException e) {
+						Log.d(TAG,"Errore durante il wait()");
+					}
+   			}
+   		}
+   		public synchronized void Wait() throws InterruptedException {
+   			wait();
+   			
+   		}
+   		public synchronized void Signal() {
+   			notify();
+   		}
+   	}
+	
+	
+	/************************************************************************
+	 * Adapter per gestire il rendering personalizzato degli elementi della lista 
+	 ************************************************************************/
+    
+	/* Adapter che stabilisce coem mostrare la roba in ordine */
+    private class ElencoComandeCibi_Adapter extends ArrayAdapter<ComandaCucina> {
+
+        private ArrayList<ComandaCucina> items;
+
+        public ElencoComandeCibi_Adapter(Context context, int textViewResourceId, ArrayList<ComandaCucina> items) {
+                super(context, textViewResourceId, items);
+                this.items = items;
+        }
+        
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+                View v = convertView;
+                if (v == null) {
+                    LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    v = vi.inflate(R.layout.cucina_elenco_cibi_list_row, null);
+                }
+                
+                ComandaCucina c = items.get(position);
+                
+                if (c != null) {
+                        
+                	try {
+	                		TextView textView_nomeComanda = (TextView) v.findViewById(R.id.cucina_elencoComandeCibi_textView_nomeComanda);
+	                        TextView textView_statoComanda = (TextView) v.findViewById(R.id.cucina_elencoComandeCibi_textView_statoComanda);
+	                        TextView textView_quantitaComanda = (TextView) v.findViewById(R.id.cucina_elencoComandeCibi_textView_quantitaComanda);
+	                        TextView textView_nomeTavolo = (TextView) v.findViewById(R.id.cucina_elencoComandeCibi_textView_nomeTavolo);
+	                        
+	                        if(textView_nomeComanda != null) {
+	                        	textView_nomeComanda.setText(c.getNomeVoceMenu());                            
+	                        }
+	                        if(textView_statoComanda != null){
+	                        	textView_statoComanda.setText(c.getStatoComanda());
+	                        }
+	                        if(textView_quantitaComanda != null) {
+	                        	textView_quantitaComanda.setText(Integer.toString(c.getQuantita()));
+	                        }
+	                        if(textView_nomeTavolo != null) {
+	                        	textView_nomeTavolo.setText(c.getNomeTavolo());
+	                        }
+	                        
+                	} catch(Exception e) {
+                		e.printStackTrace();
+                		Log.e(TAG, e.getMessage());
+                	}
+                		
+                        
+                }
+                return v;
+        }
+    }
+
 }
