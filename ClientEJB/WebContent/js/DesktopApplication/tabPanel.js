@@ -2058,11 +2058,15 @@ var _mainTabPanel = {
 			                handler: function(){
 			                	Ext.getStore('datastore_stato_tavolo').group('statoTavolo');
 			                }
-			            },*/'->',{
+			            },*/'Totale conto:',{
+			            	id: 'totale_tabella_conto',
+			            	text: '0.00'
+			            },'->',{
 			                text: 'Aggiorna',
 			                iconCls: 'icon-refresh',
 			                handler: function(){
 			                	Ext.getStore('datastore_conto').load();
+			                	Ext.get('totale_tabella_conto').dom.textContent = 'ZOCCOLE';
 			                }
 			            }]
 			        }]	//Fine dockeditems
