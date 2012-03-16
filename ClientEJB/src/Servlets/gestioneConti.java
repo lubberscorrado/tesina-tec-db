@@ -235,23 +235,16 @@ public class gestioneConti extends HttpServlet {
 			/* **********************************************************************************
 			 * Richiede la chiusura del conto
 			 ************************************************************************************/
-			JSONArray jsonArray = new JSONArray();
-			
-			
 			try {
 				int idConto = Integer.parseInt(request.getParameter("idConto"));
-				WrapperConto wrapperConto = gestioneConto.getContoById(idConto);
+				boolean contoChiuso = gestioneConto.chiudiContoById(idConto);
 				
-				JSONObject jsonobj = new JSONObject();
-				jsonArray.put(jsonobj);
+				if(contoChiuso){
+					JSONResponse.WriteOutput(response,true, "Il conto è stato chiuso correttamente");
+				}else{
+					JSONResponse.WriteOutput(response,false, "Il conto non è stato chiuso");
+				}
 				
-				jsonobj.put("idConto", wrapperConto.getIdConto());
-				jsonobj.put("prezzo", wrapperConto.getPrezzo());
-				jsonobj.put("stato", wrapperConto.getStato().toString());
-				jsonobj.put("timestampApertura", wrapperConto.getTimestampApertura().toString());
-				jsonobj.put("timestampChiusura", wrapperConto.getTimestampChiusura().toString());
-				
-				JSONResponse.WriteOutput(response,true, "OK", "conto", jsonArray);
 			} catch (DatabaseException e) {
 				JSONResponse.WriteOutput(response,  false, e.toString());
 			}
