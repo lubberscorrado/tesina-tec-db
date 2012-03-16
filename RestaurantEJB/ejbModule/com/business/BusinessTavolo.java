@@ -34,7 +34,7 @@ public class BusinessTavolo {
 	 * errore verificatosi
 	 */
 	
-	public void occupaTavolo(int idTavolo, int idTenant, int idCameriere) throws DatabaseException {
+	public void occupaTavolo(int idTavolo, int idTenant, int idCameriere, int numeroPersone) throws DatabaseException {
 			
 		/* ****************************************************
 		 * Verifica della correttezza dello stato del tavolo
@@ -62,6 +62,7 @@ public class BusinessTavolo {
 									idTavolo,  
 									idCameriere, 
 									new BigDecimal(0.0), 
+									numeroPersone,
 									new Timestamp(currentDate.getTime()), 
 									new Timestamp(currentDate.getTime()), 
 									StatoContoEnum.APERTO);

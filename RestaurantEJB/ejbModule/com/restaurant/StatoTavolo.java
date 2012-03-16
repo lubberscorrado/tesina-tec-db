@@ -1,6 +1,7 @@
 package com.restaurant;
 
 import com.orb.Area;
+import com.orb.Conto;
 import com.orb.Piano;
 import com.orb.Tavolo;
 import com.orb.UtentePersonale;
@@ -11,12 +12,13 @@ public class StatoTavolo {
 	private String nomeTavolo;
 	private int numeroPiano;
 	private String nomeArea;
+	private int numeroPersone;
 	private int numPosti;
 	private String statoTavolo;
 	private String cameriere;
 		
 	
-	public StatoTavolo(Tavolo t, Area a, Piano p, UtentePersonale u) {
+	public StatoTavolo(Tavolo t, Area a, Piano p, UtentePersonale u, Conto c) {
 		
 		super();
 		this.idTavolo = t.getIdTavolo();
@@ -25,6 +27,13 @@ public class StatoTavolo {
 		this.nomeArea = a.getNome();
 		this.numPosti = t.getNumposti();
 		this.statoTavolo = t.getStato().toString();
+		this.numeroPersone = 0;
+		
+		/* Setto il numero di persone assegnato al tavolo solo se il conto passato come parametro non è nullo */
+		if(c != null) 
+			this.numeroPersone = c.getNumeroPersone();
+		else
+			this.numeroPersone = 0;
 		
 		/* Setto il cameriere associato al tavolo solo se non è nullo */
 		if(u != null)
@@ -74,5 +83,13 @@ public class StatoTavolo {
 	}
 	public void setCameriere(String cameriere) {
 		this.cameriere = cameriere;
+	}
+
+	public int getNumeroPersone() {
+		return numeroPersone;
+	}
+
+	public void setNumeroPersone(int numeroPersone) {
+		this.numeroPersone = numeroPersone;
 	}
 }

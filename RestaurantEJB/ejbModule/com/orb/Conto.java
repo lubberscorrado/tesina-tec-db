@@ -24,6 +24,9 @@ public class Conto {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="idConto")
 	private int idConto;
+	
+	@Column(name="numeroPersone")
+	private int numeroPersone;
 
 	@Column(name="prezzo")	
 	private BigDecimal prezzo;
@@ -102,6 +105,12 @@ public class Conto {
 	}
 	public List<Comanda> getComande() {
 		return comande;
+	}
+	public int getNumeroPersone() {
+		return numeroPersone;
+	}
+	public void setNumeroPersone(int numeroPersone) {
+		this.numeroPersone = numeroPersone;
 	}
 
 }

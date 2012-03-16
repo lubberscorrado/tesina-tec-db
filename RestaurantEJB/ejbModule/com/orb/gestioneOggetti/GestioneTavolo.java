@@ -1,8 +1,8 @@
 package com.orb.gestioneOggetti;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -11,18 +11,16 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.xml.crypto.Data;
 
 import com.exceptions.DatabaseException;
 import com.orb.Area;
+import com.orb.Conto;
 import com.orb.Piano;
-import com.orb.Prenotazione;
 import com.orb.StatoContoEnum;
-import com.orb.Tavolo;
 import com.orb.StatoTavoloEnum;
+import com.orb.Tavolo;
 import com.orb.UtentePersonale;
 import com.restaurant.StatoTavolo;
-import com.restaurant.TreeNodeArea;
 import com.restaurant.TreeNodeTavolo;
 
 
@@ -193,11 +191,25 @@ public class GestioneTavolo{
 			}
 		
 			
-			/**********************************************************
-			 * Recupero il cameriere correntemente associato al tavolo
-			 ***********************************************************/
+			
+			
 			try {
 			
+				/**********************************************************
+				 * Recupera il conto correntemente associato al tavolo
+				 * ********************************************************/
+				Query queryConto = em.createQuery( 	"SELECT c FROM Conto c " +
+													"LEFT JOIN c.tavoloAppartenenza t " +
+													"WHERE c.stato = :stato AND t.idTavolo = :idTavolo ");
+				
+				queryConto.setParameter("stato", StatoContoEnum.APERTO);
+				queryConto.setParameter("idTavolo", tavolo.getIdTavolo());
+				
+				List<Conto> listaConti = queryConto.getResultList();
+				
+				/**********************************************************
+				 * Recupero il cameriere correntemente associato al tavolo
+				 ***********************************************************/
 				Query queryCameriere = em.createQuery(	"SELECT u FROM UtentePersonale u " +
 														"LEFT JOIN u.conti c " +
 														"LEFT JOIN c.tavoloAppartenenza t " +
@@ -212,7 +224,7 @@ public class GestioneTavolo{
 				if(listaCamerieri.size() == 0) {
 					/* Al tavolo non è associato alcun cameriere, probabilmente poichè non c'è 
 					 * alcun conto aperto */
-					listaStatoTavolo.add(new StatoTavolo(tavolo, area, piano, null));
+					listaStatoTavolo.add(new StatoTavolo(tavolo, area, piano, null, null));
 				}else {
 					
 					if(listaCamerieri.size()> 1)
@@ -224,7 +236,9 @@ public class GestioneTavolo{
 					listaStatoTavolo.add(new StatoTavolo(	tavolo, 
 															area, 
 															piano, 
-															listaCamerieri.get(listaCamerieri.size() - 1)));
+															listaCamerieri.get(listaCamerieri.size() - 1),
+															listaConti.get(0)
+															));
 				}
 		
 			}catch(Exception e) {

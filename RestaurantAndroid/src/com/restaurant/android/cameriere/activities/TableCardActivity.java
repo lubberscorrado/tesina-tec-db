@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.text.TabExpander;
-
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +22,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +33,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -105,7 +105,66 @@ public class TableCardActivity extends Activity {
 		occupaTavolo.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View c) {
-				new OccupaTavoloAsyncTask().execute((Object[])null);
+				
+					/***********************************************************************
+					 *  Mostro una finestra di dialogo dove chiedo quante persone ci sono
+					 *  ******************************************************************** */
+				    AlertDialog.Builder alert = new AlertDialog.Builder(TableCardActivity.this);                 
+				    alert.setTitle("Occupa Tavolo");  
+				    alert.setMessage("Numero persone: "); 
+				    
+				    /* EdiText per prendere l'input dell'utente */
+				    final EditText inputText_numPersone = new EditText(TableCardActivity.this); 
+				    DigitsKeyListener myDigitKeyListener =  new DigitsKeyListener(false, true);
+				    inputText_numPersone.setKeyListener(myDigitKeyListener);
+				    alert.setView(inputText_numPersone);
+
+				    /* Imposto bottone "Ok" e relativo Listener alla sua pressione */
+				    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {  
+				    
+				    public void onClick(DialogInterface dialog, int whichButton) {  
+				    	
+					    	   // recupero il valore dato in input dall'utente
+					           int numeroPersone_input = Integer.parseInt(inputText_numPersone.getText().toString());
+					           int numeroPostiDisponibili =  myTable.getNumPosti();
+					           
+					           // Valore booleano per verificare la correttezza dell'input
+					           boolean correct_value = false;
+							      
+					           if((numeroPersone_input > 0) && (numeroPersone_input <= numeroPostiDisponibili)) 
+							   	  correct_value = true;
+							     
+					           /* Se il valore è corretto: aggiorno la GUI, salvo il numeroPersone nell'oggetto del tavolo */
+					           if(correct_value) {
+										
+					        	   		/* Aggiorno l'oggetto myTable */
+										myTable.setNumPersone(numeroPersone_input);
+										
+										/* Invio la richiesta di aggiornamento per occupare il tavolo */
+										new OccupaTavoloAsyncTask().execute((Object[])null);
+										
+									} else {
+										/* Mostro messaggio d'errore */
+					    	    		Toast.makeText(getApplicationContext(), "Numero Persone inserito non " +
+					    	    				"accettabile! Riprovare.", Toast.LENGTH_SHORT).show();
+									}
+								
+								
+				           return;                  
+				          }  
+				        });  
+
+				       alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+				           public void onClick(DialogInterface dialog, int which) {
+				               // TODO Auto-generated method stub
+				               return;   
+				           }
+				       });
+				      alert.show();
+				      
+				     
+				
 			}
 		});
 		 	  
@@ -167,14 +226,7 @@ public class TableCardActivity extends Activity {
 		  	    	 /* Apro una nuova finestra con l'opzione di occupare il tavolo 
 		  	    	  * secondo la prenotazione */
 		  	    	 
-//		  	   	Intent myIntent = new Intent(TableCardActivity.this, TableCardActivity.class);
-//		  	    	  
-//		  	     /* Creo un bundle per passare dei dati alla nuova activity */
-//			  	     Bundle b = new Bundle();
-//			  	     b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
-//			  	     b.putString("tableName", m_adapter.getItem(position).getTableName());
-//			  	     myIntent.putExtras(b);
-//			  	     startActivity(myIntent);
+		  	    	 // TODO
 		  	    } 
 		  });
 		  
@@ -784,6 +836,12 @@ public class TableCardActivity extends Activity {
 		TextView stato = (TextView)findViewById(R.id.textStato);
 		stato.setText(myTable.getTableStatus());
 		
+		TextView numposti = (TextView) findViewById(R.id.textNumeroPosti);
+		numposti.setText(Integer.toString(myTable.getNumPosti()));
+		
+		TextView numpersone = (TextView) findViewById(R.id.textNumeroPersone);
+		numpersone.setText(Integer.toString(myTable.getNumPersone()));
+		
 		TextView numeroPiano = (TextView)findViewById(R.id.textNumeroPiano);
 		numeroPiano.setText(myTable.getPiano());
 
@@ -1081,6 +1139,7 @@ public class TableCardActivity extends Activity {
 	   		HashMap<String,String> requestParameters = new HashMap<String,String>();
 	   		requestParameters.put("action","OCCUPA_TAVOLO");
 	   		requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
+	   		requestParameters.put("numeroPersone", new Integer(myTable.getNumPersone()).toString());
 		  
 	   		try {
 	   			String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
@@ -1149,6 +1208,7 @@ public class TableCardActivity extends Activity {
 				if(jsonObject.getString("success").equals("true")) {
 					myTable.setTableStatus("LIBERO");
 					myTable.setCameriere("Non definito");
+					myTable.setNumPersone(0);
 					
 					/* Svuoto la list view delle ordinazioni inviate. Tutte le 
 					 * ordinazioni entrano a far parte di un conto non attivo */

@@ -2,7 +2,6 @@ package com.restaurant;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Date;
 
 import com.orb.Conto;
 import com.orb.StatoContoEnum;
@@ -11,6 +10,7 @@ public class WrapperConto {
 	
 	private int idConto;
 	private BigDecimal prezzo;
+	private int numeroPersone;
 	private Timestamp timestampApertura;
 	private Timestamp timestampChiusura;
 	private StatoContoEnum stato;
@@ -59,6 +59,14 @@ public class WrapperConto {
 
 	public void setStato(StatoContoEnum stato) {
 		this.stato = stato;
+	}
+
+	public int getNumeroPersone() {
+		return numeroPersone;
+	}
+
+	public void setNumeroPersone(int numeroPersone) {
+		this.numeroPersone = numeroPersone;
 	}
 	
 		

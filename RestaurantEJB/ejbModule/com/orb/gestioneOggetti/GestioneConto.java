@@ -44,6 +44,7 @@ public class GestioneConto {
 										int idTavolo,
 										int idCameriere,
 										BigDecimal prezzo,
+										int numeroPersone, 
 										Timestamp timestampApertura,
 										Timestamp timestampChiusura,
 										StatoContoEnum stato) throws DatabaseException {
@@ -66,6 +67,7 @@ public class GestioneConto {
 			conto.setStato(stato);
 			conto.setTavoloAppartenenza(tavolo);
 			conto.setCameriereAssociato(cameriere);
+			conto.setNumeroPersone(numeroPersone);
 			
 			em.persist(conto);
 			return new WrapperConto(conto);

@@ -97,6 +97,7 @@ public class JSONFromBean {
 		json_obj.put("nomeArea", 		statotavolo.getNomeArea());
 		json_obj.put("nomeTavolo", 		statotavolo.getNomeTavolo());
 		json_obj.put("statoTavolo", 	statotavolo.getStatoTavolo());
+		json_obj.put("numeroPersone", statotavolo.getNumeroPersone());
 		return json_obj;
 	}
 	

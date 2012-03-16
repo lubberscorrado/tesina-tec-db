@@ -78,6 +78,52 @@
 				            android:textAppearance="?android:attr/textAppearanceMedium"/>
 				    </TableRow>
 				    
+				   <!-- NumeroPosti -->
+				   <TableRow>
+
+				        <TextView
+				            android:layout_column="1"
+				            android:text="#Posti: "
+				           
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				            android:id="@+id/textNumeroPosti"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				    </TableRow>
+				    
+				       
+				   <!-- NumeroPersoneSedute -->
+				   <TableRow>
+
+				        <TextView
+				            android:layout_column="1"
+				            android:text="#Persone: "
+				           
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium" />
+				        
+				        <TextView
+				            android:id="@+id/textNumeroPersone"
+				            android:gravity="right"
+				            android:layout_width="190dp"
+				            android:layout_margin="3dp" 
+				            android:padding="3dp"
+				            android:background="#111111"
+				            android:textAppearance="?android:attr/textAppearanceMedium"/>
+				    </TableRow>
+				       
+				    
 				   <!-- Piano -->
 				   <TableRow>
 

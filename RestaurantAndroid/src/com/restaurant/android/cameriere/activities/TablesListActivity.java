@@ -163,6 +163,8 @@ public class TablesListActivity extends Activity {
         	  String url = ((RestaurantApplication)getApplication()).getHost();
         	  String response = restApplication.makeHttpGetRequest(url + "ClientEJB/statoTavolo", new HashMap<String, String>());
         	  
+        	  // Log.e(TAG, "getTableS() response: " + response);
+        	  
         	  m_tables.clear();
         	  
         	  /**********************************************************
@@ -179,6 +181,8 @@ public class TablesListActivity extends Activity {
         			  Table t = new Table();
         			  t.setTableName(jsonArray.getJSONObject(i).getString("nomeTavolo"));
         			  t.setTableStatus(jsonArray.getJSONObject(i).getString("statoTavolo"));
+        			  t.setNumPosti(Integer.parseInt(jsonArray.getJSONObject(i).getString("numPosti")));
+        			  t.setNumPersone(Integer.parseInt(jsonArray.getJSONObject(i).getString("numeroPersone")));
         			  t.setTableId(
         					  Integer.parseInt(
         							  jsonArray.getJSONObject(i).getString("idTavolo")));

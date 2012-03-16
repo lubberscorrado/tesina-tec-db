@@ -77,8 +77,11 @@ public class gestioneComande extends HttpServlet {
 				int idTavolo = 0;
 				if(request.getParameter("idTavolo")!= null)
 					idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
-			
-				businessTavolo.occupaTavolo(idTavolo, idTenant, utentePersonale.getIdUtentePersonale());
+				int numeroPersone = 0;
+				if(request.getParameter("numeroPersone") != null) 
+					numeroPersone = Integer.parseInt(request.getParameter("numeroPersone"));
+				
+				businessTavolo.occupaTavolo(idTavolo, idTenant, utentePersonale.getIdUtentePersonale(), numeroPersone);
 			
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("cameriere", utentePersonale.getNome());

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.CookieStore;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,6 +32,11 @@ import android.util.Log;
 public class RestaurantApplication extends Application {
 	
 	private DefaultHttpClient httpClient;
+	
+	/** TimeStamp dell'ultima notifica letta. Utilizzata per controllare se ci sono nuove notifiche 
+	 * e, in caso affermativo, segnalarlo al cameriere */
+	private Date lastNotificationTime;  
+	
 	@Override
 	public void onCreate() {
 		httpClient = new DefaultHttpClient();
@@ -164,5 +170,13 @@ public class RestaurantApplication extends Application {
 	public void onTerminate() {
 		super.onTerminate();
 		
+	}
+
+	public Date getLastNotificationTime() {
+		return lastNotificationTime;
+	}
+
+	public void setLastNotificationTime(Date lastNotificationTime) {
+		this.lastNotificationTime = lastNotificationTime;
 	}
 }

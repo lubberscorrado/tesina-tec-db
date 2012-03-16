@@ -16,6 +16,7 @@ public class Table implements Serializable {
 	    private String piano = "";
 	    private String area = "" ;
 	    private int numPosti = -1;
+	    private int numPersone = 0;
 	    private String cameriere = "";
 	    
 	    /* Statistiche dipendenti dallo stato */
@@ -67,6 +68,12 @@ public class Table implements Serializable {
 		}
 		public void setCameriere(String cameriere) {
 			this.cameriere = cameriere;
+		}
+		public int getNumPersone() {
+			return numPersone;
+		}
+		public void setNumPersone(int numPersone) {
+			this.numPersone = numPersone;
 		}
 		
 		
