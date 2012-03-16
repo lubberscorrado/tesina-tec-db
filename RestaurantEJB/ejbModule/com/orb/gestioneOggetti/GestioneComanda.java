@@ -584,4 +584,35 @@ public class GestioneComanda {
 		}
 	}
 	
+	
+	/**
+	 * Ritorna la lista delle comande appartenenti ad un conto
+	 * @param idConto Id del conto
+	 * @return Lista delle comande appartenenti al conto richiesto
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 * @author Castelli Andrea
+	 */
+	public List<WrapperComanda> getComandeByIdConto(int idConto) throws DatabaseException {
+		
+		try {
+		
+		Query query = em.createQuery(	"SELECT c FROM Comanda c JOIN c.contoAppartenenza co WHERE co.idConto = :idConto");
+		query.setParameter("idConto", idConto);
+		
+		
+		List<Comanda> listaComande =  query.getResultList();
+		List<WrapperComanda> listaWrapperComande = new ArrayList<WrapperComanda>();
+		for(Comanda comanda : listaComande) 
+		listaWrapperComande.add(new WrapperComanda(comanda));
+		
+		
+		return listaWrapperComande;
+		
+		} catch (Exception e) {
+			throw new DatabaseException("Errore durante la ricerca delle comande del conto (" + e.toString() + ")");
+		}
+		
+	}
+	
 }
