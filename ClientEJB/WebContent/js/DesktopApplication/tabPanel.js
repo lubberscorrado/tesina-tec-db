@@ -35,7 +35,6 @@ var _mainTabPanel = {
 		
 		getPanel 	: function(){	return this._panel;},
 		createTabStato : function(){
-			_mainTabPanel.initTabellaConto();
 			this._tabella_stato_tavolo = Ext.create('Ext.grid.Panel', {
 				title: 'Stato: tavoli',
 				flex: 3,
@@ -62,7 +61,7 @@ var _mainTabPanel = {
 		        listeners:{
 		        	itemdblclick: function(view, record, item, index, e, eOpts){
 		        		// Inizio definizione stato tavolo
-			        	_mainTabPanel.visualizzaConti(record.get('idTavolo'));
+			        	_mainTabPanel.visualizzaListaConti(record.get('idTavolo'));
 			        	// Fine definizione stato tavolo
 			        },
 			        itemcontextmenu: function(view, rec, node, index, e) {
@@ -1955,7 +1954,7 @@ var _mainTabPanel = {
 		},
 
 		
-		visualizzaConti : function(idTavolo){
+		visualizzaListaConti : function(idTavolo){
 			_viewPort_panel_east.removeAll(false);
 			_viewPort_panel_east.expand(true);
 			
@@ -1972,12 +1971,14 @@ var _mainTabPanel = {
 			        columns: [
 			            { header: 'IdConto',  	dataIndex: 'idConto', 				flex:1 , 	hidden: true},
 			            { header: 'Stato',  	dataIndex: 'stato', 				flex:1 },
-			            { header: 'Totale',  	dataIndex: 'prezzo', 				flex:1 },			          
+			            { header: 'Totale €',  	dataIndex: 'prezzo', 				flex:1 },			          
 			            { header: 'Creazione', 	dataIndex: 'timestampApertura', 	flex:2 },
 			            { header: 'Chiusura', 	dataIndex: 'timestampChiusura',	 	flex:2 }
 			        ],
 			        listeners:{
 			        	itemdblclick: function(view, record, item, index, e, eOpts){
+			        		console.debug('idConto: '+record.get('idConto'));
+			        		_mainTabPanel.visualizzaConto(	record.get('idConto'), idTavolo	);
 	//			        	_viewPort_panel_east.removeAll(false);
 	//			        	// Inizio definizione stato tavolo
 	//				        	console.debug(view);
@@ -1992,37 +1993,12 @@ var _mainTabPanel = {
 	//			        	// Fine definizione stato tavolo
 	//			        	_viewPort_panel_east.expand(true);
 				        },
-				        itemcontextmenu: function(view, rec, node, index, e) {
-			            }
+				        itemcontextmenu: function(view, rec, node, index, e) {}
 				    },
 				    dockedItems: [{
 			            xtype: 'toolbar',
 			            dock: 'bottom',
-			            items: [/*'Raggruppamenti: ',{
-			                tooltip: 'Toggle the visibility of the summary row',
-			                text: 'None',
-			                handler: function(){
-			                	Ext.getStore('datastore_stato_tavolo').clearGrouping();
-			                }
-			            },{
-			                tooltip: 'Toggle the visibility of the summary row',
-			                text: 'Piano',
-			                handler: function(){
-			                	Ext.getStore('datastore_stato_tavolo').group('nomePiano');
-			                }
-			            },{
-			                tooltip: 'Toggle the visibility of the summary row',
-			                text: 'Area',
-			                handler: function(){
-			                	Ext.getStore('datastore_stato_tavolo').group('nomeArea');
-			                }
-			            },{
-			                tooltip: 'Toggle the visibility of the summary row',
-			                text: 'Stato',
-			                handler: function(){
-			                	Ext.getStore('datastore_stato_tavolo').group('statoTavolo');
-			                }
-			            },*/'->',{
+			            items: ['->',{
 			                text: 'Aggiorna',
 			                iconCls: 'icon-refresh',
 			                handler: function(){
@@ -2063,8 +2039,23 @@ var _mainTabPanel = {
 			return;
 		},
 
-		initTabellaConto : function(){
-			if(!_mainTabPanel._tabella_conto){
+		visualizzaConto : function(idConto,idTavolo){
+			
+			var askWindow = Ext.get('window_visualizzazione_conto');
+			if(askWindow == undefined){
+				console.debug('CREO LA WINDOW LALALAL YAAAAAAAAAAAA');
+				askWindow = Ext.create('Ext.window.Window', {
+								id: 'window_visualizzazione_conto',
+				        	    title: 'Visualizzazione Conto',
+				        	    height: 350,
+				        	    width: 650,
+				        	    layout: 'fit',
+				        	    modal: true
+	        				});
+			}
+				
+			_mainTabPanel._tabella_conto = Ext.get('tabella_conto');
+			if(_mainTabPanel._tabella_conto == undefined){
 				console.debug("INIZIALIZZAZIONE TABELLA CONTO");
 				_mainTabPanel._tabella_conto = Ext.create('Ext.grid.Panel', {
 					id: 'tabella_conto',
@@ -2152,15 +2143,39 @@ var _mainTabPanel = {
 			                handler: function(){
 			                	Ext.getStore('datastore_stato_tavolo').group('statoTavolo');
 			                }
-			            },*/'Totale conto:',{
+			            },*/{
 			            	id: 'totale_tabella_conto',
 			            	text: '0.00'
 			            },'->',{
+			                text: 'Chiudi ordine',
+			                id: 'tabella_visualizza_conto_action_button',
+			                iconCls: 'icon-refresh',
+			                handler: function(){
+			                	
+			                	Ext.MessageBox.confirm('Conferma', 'Sei sicuro di voler chiudere l\'ordine?', function(btn){
+			        				if(btn == 'no') return;
+			        				
+			        				Ext.Ajax.request({
+			        				    url: 'gestioneConti',
+			        				    params: {
+			        				    	idConto: idConto,
+			        				        action: 'CHIUDI_CONTO'
+			        				    },
+			        				    success: function(response){
+			        				    	Ext.getStore('datastore_conto').load();
+						                	_mainTabPanel.updateVisualizzaConto(idConto,idTavolo);
+						                	Ext.get('tabella_visualizza_conto_action_button').destroy();
+			        				    }
+			        				});
+			        				
+			        			});
+			                	
+			                }
+			            },{
 			                text: 'Aggiorna',
 			                iconCls: 'icon-refresh',
 			                handler: function(){
-			                	Ext.getStore('datastore_conto').load();
-			                	Ext.get('totale_tabella_conto').dom.textContent = 'ZOCCOLE';
+			                	_mainTabPanel.updateVisualizzaConto(idConto,idTavolo);
 			                }
 			            }]
 			        }]	//Fine dockeditems
@@ -2168,8 +2183,36 @@ var _mainTabPanel = {
 			        
 				});
 			}
-		}
+			
+			_mainTabPanel.updateVisualizzaConto(idConto,idTavolo);
+			askWindow.add(_mainTabPanel._tabella_conto);
+			askWindow.show();
+		},
 		
+		updateVisualizzaConto : function(idConto,idTavolo){
+			Ext.Ajax.request({
+			    url: 'gestioneConti',
+			    params: {
+			    	idConto: idConto,
+			        action: 'INFO_CONTO'
+			    },
+			    success: function(response){
+			    	var text = response.responseText;
+			    	var objConto = Ext.JSON.decode(text,true);
+			    	console.debug(objConto.conto[0]);
+			    	Ext.get('totale_tabella_conto').dom.textContent = 'Stato: ['+objConto.conto[0].stato+']    Totale conto: '+objConto.conto[0].prezzo+'€';
+			    	Ext.getStore('datastore_conto').idTavolo=idTavolo;
+					Ext.getStore('datastore_conto').load();
+					
+					if(objConto.conto[0].stato == "APERTO" || objConto.conto[0].stato == "DAPAGARE"){
+						//Ext.get('tabella_visualizza_conto_action_button').dom.textContent = 'Chiudi';
+					}else{
+						Ext.get('tabella_visualizza_conto_action_button').destroy();
+					}
+			    }
+			});
+			
+		}
 		
 };
 

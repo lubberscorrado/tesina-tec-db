@@ -205,6 +205,56 @@ public class gestioneConti extends HttpServlet {
 				JSONResponse.WriteOutput(response,  false, e.toString());
 				
 			}
+		}else if(request.getParameter("action").equals("INFO_CONTO")) {
+			/* **********************************************************************************
+			 * Richiedo le informazioni del conto
+			 ************************************************************************************/
+			JSONArray jsonArray = new JSONArray();
+			
+			
+			try {
+				int idConto = Integer.parseInt(request.getParameter("idConto"));
+				WrapperConto wrapperConto = gestioneConto.getContoById(idConto);
+				
+				JSONObject jsonobj = new JSONObject();
+				jsonArray.put(jsonobj);
+				
+				jsonobj.put("idConto", wrapperConto.getIdConto());
+				jsonobj.put("prezzo", wrapperConto.getPrezzo());
+				jsonobj.put("stato", wrapperConto.getStato().toString());
+				jsonobj.put("timestampApertura", wrapperConto.getTimestampApertura().toString());
+				jsonobj.put("timestampChiusura", wrapperConto.getTimestampChiusura().toString());
+				
+				JSONResponse.WriteOutput(response,true, "OK", "conto", jsonArray);
+				return;
+			} catch (DatabaseException e) {
+				JSONResponse.WriteOutput(response,  false, e.toString());
+				
+			}
+		}else if(request.getParameter("action").equals("CHIUDI_CONTO")) {
+			/* **********************************************************************************
+			 * Richiede la chiusura del conto
+			 ************************************************************************************/
+			JSONArray jsonArray = new JSONArray();
+			
+			
+			try {
+				int idConto = Integer.parseInt(request.getParameter("idConto"));
+				WrapperConto wrapperConto = gestioneConto.getContoById(idConto);
+				
+				JSONObject jsonobj = new JSONObject();
+				jsonArray.put(jsonobj);
+				
+				jsonobj.put("idConto", wrapperConto.getIdConto());
+				jsonobj.put("prezzo", wrapperConto.getPrezzo());
+				jsonobj.put("stato", wrapperConto.getStato().toString());
+				jsonobj.put("timestampApertura", wrapperConto.getTimestampApertura().toString());
+				jsonobj.put("timestampChiusura", wrapperConto.getTimestampChiusura().toString());
+				
+				JSONResponse.WriteOutput(response,true, "OK", "conto", jsonArray);
+			} catch (DatabaseException e) {
+				JSONResponse.WriteOutput(response,  false, e.toString());
+			}
 		}
 		
 		
