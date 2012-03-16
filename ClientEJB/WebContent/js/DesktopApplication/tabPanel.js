@@ -2202,6 +2202,7 @@ var _mainTabPanel = {
 			    	console.debug(objConto.conto[0]);
 			    	Ext.get('totale_tabella_conto').dom.textContent = 'Stato: ['+objConto.conto[0].stato+']    Totale conto: '+objConto.conto[0].prezzo+'€';
 			    	Ext.getStore('datastore_conto').idTavolo=idTavolo;
+			    	Ext.getStore('datastore_conto').idConto=idConto;
 					Ext.getStore('datastore_conto').load();
 					
 					if(objConto.conto[0].stato == "APERTO" || objConto.conto[0].stato == "DAPAGARE"){

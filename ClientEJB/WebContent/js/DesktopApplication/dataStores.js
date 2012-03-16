@@ -19,6 +19,7 @@ function initStores(){
 		listeners: {
 			beforeload: function( store, operation, eOpts ){
 				store.proxy.extraParams.idTavolo=this.idTavolo;
+				store.proxy.extraParams.idConto=this.idConto;
 			}
 		}
 	});

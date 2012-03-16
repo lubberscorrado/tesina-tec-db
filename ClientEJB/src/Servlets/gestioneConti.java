@@ -56,6 +56,9 @@ public class gestioneConti extends HttpServlet {
 		int idTavolo = 0;
 		if(request.getParameter("idTavolo")!= null)
 			idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
+		int idConto = 0;
+		if(request.getParameter("idConto")!= null)
+			idConto = Integer.parseInt(request.getParameter("idConto"));
 		
 		if(request.getParameter("action").equals("GET_CONTO")) {
 			
@@ -155,7 +158,7 @@ public class gestioneConti extends HttpServlet {
 			 ************************************************************************************/
 			
 			try {
-				List<WrapperComanda> listaComande = businessConti.getConto(idTavolo);
+				List<WrapperComanda> listaComande = gestioneComanda.getComandeByIdConto(idConto);
 				JSONArray jsonArrayComande = new JSONArray();
 				
 				for(WrapperComanda comanda : listaComande) {
@@ -213,7 +216,7 @@ public class gestioneConti extends HttpServlet {
 			
 			
 			try {
-				int idConto = Integer.parseInt(request.getParameter("idConto"));
+				//int idConto = Integer.parseInt(request.getParameter("idConto"));
 				WrapperConto wrapperConto = gestioneConto.getContoById(idConto);
 				
 				JSONObject jsonobj = new JSONObject();
@@ -236,7 +239,7 @@ public class gestioneConti extends HttpServlet {
 			 * Richiede la chiusura del conto
 			 ************************************************************************************/
 			try {
-				int idConto = Integer.parseInt(request.getParameter("idConto"));
+				//int idConto = Integer.parseInt(request.getParameter("idConto"));
 				boolean contoChiuso = gestioneConto.chiudiContoById(idConto);
 				
 				if(contoChiuso){
