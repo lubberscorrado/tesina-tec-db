@@ -13,6 +13,7 @@ import javax.persistence.Query;
 import com.exceptions.DatabaseException;
 import com.orb.Conto;
 import com.orb.StatoContoEnum;
+import com.orb.StatoTavoloEnum;
 import com.orb.Tavolo;
 import com.orb.UtentePersonale;
 import com.restaurant.TreeNodeTavolo;
@@ -200,15 +201,34 @@ public class GestioneConto {
 			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idConto = :idConto");
 			query.setParameter("idConto", idConto);
 			List<Conto> listConto = query.getResultList();
-			WrapperConto wrapperConto = new WrapperConto(listConto.get(0));
 			
-			return true;
+			Conto conto = listConto.get(0);
+			Tavolo tavolo =	conto.getTavoloAppartenenza();
+			
+			StatoContoEnum statoConto = conto.getStato();
+			StatoTavoloEnum statoTavolo = tavolo.getStato();
+			
+			if(statoConto == StatoContoEnum.APERTO && ( statoTavolo == StatoTavoloEnum.OCCUPATO /*|| statoTavolo == StatoTavoloEnum.ASSEGNATO*/)){
+				conto.setStato(StatoContoEnum.CHIUSO);
+				tavolo.setStato(StatoTavoloEnum.PULIRE);
+				/*CREDO SERVA TRANSAZIONE*/
+				em.persist(conto);
+				em.persist(tavolo);
+				/*FINE CREDO SERVA TRANSAZIONE*/
+				return true;
+			}else if(statoConto == StatoContoEnum.DAPAGARE){
+				conto.setStato(StatoContoEnum.CHIUSO);
+				em.persist(conto);
+				return true;
+			}
+			
+			return false;
 					
 		}catch(Exception e) {
 			throw new DatabaseException(	"Errore durante la ricerca dei conti aperti " +
 											" associati al tavolo (" + e.toString() +")");
 		}
-		
+
 	}
 	
 
