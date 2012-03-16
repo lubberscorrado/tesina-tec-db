@@ -158,7 +158,7 @@ public class GestioneConto {
 	
 		try {
 			
-			Query query = em.createQuery(	"SELECT c FROM Tavolo t JOIN t.conti c WHERE t.idTavolo = :idTavolo");
+			Query query = em.createQuery(	"SELECT c FROM Tavolo t JOIN t.conti c WHERE t.idTavolo = :idTavolo ORDER BY c.idConto DESC");
 			
 			query.setParameter("idTavolo", idTavolo);
 			List<WrapperConto> listConti = new ArrayList<WrapperConto>();
@@ -172,6 +172,41 @@ public class GestioneConto {
 			throw new DatabaseException(	"Errore durante la ricerca dei conti aperti " +
 											" associati al tavolo (" + e.toString() +")");
 		}
+	}
+	
+	
+	public WrapperConto getContoById(int idConto) throws DatabaseException {
+		
+		try {
+			
+			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idConto = :idConto");
+			query.setParameter("idConto", idConto);
+			List<Conto> listConto = query.getResultList();
+			WrapperConto wrapperConto = new WrapperConto(listConto.get(0));
+			
+			return wrapperConto;
+					
+		}catch(Exception e) {
+			throw new DatabaseException(	"Errore durante la ricerca dei conti aperti " +
+											" associati al tavolo (" + e.toString() +")");
+		}
+	}
+	
+	public boolean chiudiContoById(int idConto) throws DatabaseException {
+		try {
+			
+			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idConto = :idConto");
+			query.setParameter("idConto", idConto);
+			List<Conto> listConto = query.getResultList();
+			WrapperConto wrapperConto = new WrapperConto(listConto.get(0));
+			
+			return true;
+					
+		}catch(Exception e) {
+			throw new DatabaseException(	"Errore durante la ricerca dei conti aperti " +
+											" associati al tavolo (" + e.toString() +")");
+		}
+		
 	}
 	
 
