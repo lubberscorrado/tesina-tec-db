@@ -52,11 +52,9 @@ public class BusinessNotifiche {
 			Notifica notifica = new Notifica();
 			TreeNodeTavolo tavolo = gestioneComanda.getTavoloByIdComanda(wrapperComanda.getIdComanda());
 			
+			notifica.setIdComanda(wrapperComanda.getIdComanda());
 			notifica.setTipoNotifica(TipoNotificaEnum.COMANDA_PRONTA);
-			
-			notifica.setIdTavolo(tavolo.getIdTavolo());
 			notifica.setNomeTavolo(tavolo.getNome());
-			
 			notifica.setIdVoceMenu(wrapperComanda.getIdVoceMenu());
 			notifica.setData(new Date());
 			
