@@ -42,22 +42,22 @@ public class BusinessNotifiche {
 		 * Recupero delle notifiche relative alle comande pronte 
 		 *************************************************************/
 		
-		List<WrapperComanda> listaComande = gestioneComanda.getComandeByStatoAndCameriere(	StatoComandaEnum.PRONTA, 
-																							idUtente,
-																							lastDateSqlFormatted);
+		List<WrapperComanda> listaComande = 
+				gestioneComanda.getComandeByStatoAndCameriere(	StatoComandaEnum.PRONTA, 
+																idUtente,
+																lastDateSqlFormatted);
 		
-		for(WrapperComanda comanda : listaComande) {
+		for(WrapperComanda wrapperComanda : listaComande) {
+			
 			Notifica notifica = new Notifica();
+			TreeNodeTavolo tavolo = gestioneComanda.getTavoloByIdComanda(wrapperComanda.getIdComanda());
 			
 			notifica.setTipoNotifica(TipoNotificaEnum.COMANDA_PRONTA);
 			
-			/* Recupero le informazioni sul tavolo */
-			
-			TreeNodeTavolo tavolo = gestioneComanda.getTavoloByIdComanda(comanda.getIdComanda());
 			notifica.setIdTavolo(tavolo.getIdTavolo());
 			notifica.setNomeTavolo(tavolo.getNome());
-		
-			notifica.setVoceMenu(gestioneVoceMenu.getVoceMenu(comanda.getIdVoceMenu()).getNome());
+			
+			notifica.setIdVoceMenu(wrapperComanda.getIdVoceMenu());
 			notifica.setData(new Date());
 			
 			listaNotifiche.add(notifica);

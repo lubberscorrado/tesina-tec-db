@@ -5,9 +5,9 @@ import java.util.Date;
 public class Notifica {
 	
 	private TipoNotificaEnum tipoNotifica;
-	private String nomeTavolo;
-	private String voceMenu;
+	private int idVoceMenu;
 	private int idTavolo;
+	private String nomeTavolo;
 	private Date data;
 	
 	public TipoNotificaEnum getTipoNotifica() {
@@ -22,11 +22,11 @@ public class Notifica {
 	public void setNomeTavolo(String nomeTavolo) {
 		this.nomeTavolo = nomeTavolo;
 	}
-	public String getVoceMenu() {
-		return voceMenu;
+	public int getIdVoceMenu() {
+		return idVoceMenu;
 	}
-	public void setVoceMenu(String voceMenu) {
-		this.voceMenu = voceMenu;
+	public void setIdVoceMenu(int idVoceMenu) {
+		this.idVoceMenu = idVoceMenu;
 	}
 	public int getIdTavolo() {
 		return idTavolo;

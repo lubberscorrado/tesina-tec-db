@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import com.exceptions.DatabaseException;
 
@@ -30,6 +34,9 @@ public class BusinessComande {
 	@EJB
 	private GestioneVoceMenu gestioneVoceMenu;
 	
+	@Resource
+	private SessionContext context;
+	
 	/**
 	 * Inserisce un gruppo di comande all'interno del database
 	 * @param listaComande Lista di oggetti WrapperComanda che rappresentano le comande da 
@@ -42,6 +49,7 @@ public class BusinessComande {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore 
 	 * verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<Integer> inserisciComande(	List<WrapperComanda> listaComande, 
 											int idTavolo, 
 											int idCameriere) throws DatabaseException {
@@ -57,25 +65,42 @@ public class BusinessComande {
 			
 		/* Hash che identifica univocamente il gruppo di comande */
 		String hashGruppo = generateString(new Random(), BusinessComande.characters, 64);
+		
+		try {
 			
-		for(WrapperComanda wrapperComanda : listaComande) {
+			for(WrapperComanda wrapperComanda : listaComande) {
 				
-			TreeNodeVoceMenu voceMenu = 
-					gestioneVoceMenu.getVoceMenu(wrapperComanda.getIdVoceMenu());
-				
-			WrapperComanda newWrapperComanda = 
-					gestioneComanda.aggiungiComanda(	wrapperComanda.getIdTenant(), 
-														wrapperComanda.getIdVoceMenu(),
-														listaContiAperti.get(0).getIdConto(),
-														idCameriere,
-														wrapperComanda.getNote(),
-														hashGruppo,
-														voceMenu.getPrezzo(),
-														wrapperComanda.getQuantita(),
-														wrapperComanda.getStato(),
-														wrapperComanda.getListIdVariazioni());
+				TreeNodeVoceMenu voceMenu = 
+						gestioneVoceMenu.getVoceMenu(wrapperComanda.getIdVoceMenu());
+					
+				WrapperComanda newWrapperComanda = 
+						gestioneComanda.aggiungiComanda(	wrapperComanda.getIdTenant(), 
+															wrapperComanda.getIdVoceMenu(),
+															listaContiAperti.get(0).getIdConto(),
+															idCameriere,
+															wrapperComanda.getNote(),
+															hashGruppo,
+															voceMenu.getPrezzo(),
+															wrapperComanda.getQuantita(),
+															wrapperComanda.getStato(),
+															wrapperComanda.getListIdVariazioni());
 			
-			listaIdRemotiComande.add(new Integer(newWrapperComanda.getIdComanda()));
+				listaIdRemotiComande.add(new Integer(newWrapperComanda.getIdComanda()));
+			
+			}
+			
+		} catch (DatabaseException e) {
+			
+			/* *****************************************************************
+			 * Si è verificata un eccezione durante l'inserimento delle comande.
+			 * Effettuo il rollback della transazione e rilancio l'eccezione.
+			 *******************************************************************/ 
+			 context.setRollbackOnly();
+			 
+			 /* Rilancio l'eccezione per la logica di presentazione */
+			 System.out.println("Inserimento comande rolled back con errore: " + e.toString());
+			 throw e;
+			
 		}
 		return listaIdRemotiComande;
 			
