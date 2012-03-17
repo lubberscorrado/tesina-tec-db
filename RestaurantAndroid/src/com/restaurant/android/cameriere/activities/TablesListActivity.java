@@ -57,7 +57,7 @@ public class TablesListActivity extends Activity {
       
       tableListView.setAdapter(this.m_adapter);
       
-      /**************************************************************
+      /* *************************************************************
        * Avvio del thread di aggiornamento della lista dei tavoli
        **************************************************************/
       updaterThread = new UpdaterThread();
@@ -67,7 +67,7 @@ public class TablesListActivity extends Activity {
       updaterThread.start();
       
       
-      /**************************************************************
+      /* *************************************************************
        * Listener per il click su un elemento della lista dei tavoli 
        **************************************************************/
       
@@ -167,7 +167,7 @@ public class TablesListActivity extends Activity {
         	  
         	  m_tables.clear();
         	  
-        	  /**********************************************************
+        	  /* *********************************************************
         	   * Decodifica della risposa del server contenente lo stato 
         	   * dei tavoli.
         	   **********************************************************/
@@ -190,7 +190,7 @@ public class TablesListActivity extends Activity {
           		  }
           	  }
         	  
-        	  /**************************************************************************
+        	  /* *************************************************************************
         	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
         	   * la view.
         	   **************************************************************************/
@@ -208,7 +208,7 @@ public class TablesListActivity extends Activity {
         }
     }
 	   
-	/**********************************************
+	/* *********************************************
 	 * Thread per l'aggiornamento della lista view 
 	 **********************************************/
 	private class UpdaterThread extends Thread {
@@ -242,7 +242,7 @@ public class TablesListActivity extends Activity {
    		}
    	}
    	
-	/************************************************************************
+	/* ***********************************************************************
 	 * Adapter per gestire il rendering personalizzato degli elementi della
 	 * lista 
 	 ************************************************************************/

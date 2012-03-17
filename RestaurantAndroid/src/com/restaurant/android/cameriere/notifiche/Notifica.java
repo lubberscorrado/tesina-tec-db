@@ -5,9 +5,8 @@ import java.util.Date;
 public class Notifica {
 	
 	private TipoNotifica tipoNotifica;
-	private int idTavolo;
+	private int idComanda;
 	private String nomeTavolo;
-	
 	private int idVoceMenu;
 	private String voceMenu;
 	
@@ -31,13 +30,6 @@ public class Notifica {
 	public void setVoceMenu(String voceMenu) {
 		this.voceMenu = voceMenu;
 	}
-	public int getIdTavolo() {
-		return idTavolo;
-	}
-	public void setIdTavolo(int idTavolo) {
-		this.idTavolo = idTavolo;
-	}
-	
 	public String getData() {
 		return data;
 	}
@@ -49,6 +41,12 @@ public class Notifica {
 	}
 	public void setIdVoceMenu(int idVoceMenu) {
 		this.idVoceMenu = idVoceMenu;
+	}
+	public int getIdComanda() {
+		return idComanda;
+	}
+	public void setIdComanda(int idComanda) {
+		this.idComanda = idComanda;
 	}
 	
 	

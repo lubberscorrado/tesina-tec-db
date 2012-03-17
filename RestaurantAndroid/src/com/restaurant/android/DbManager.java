@@ -23,7 +23,6 @@ public class DbManager extends SQLiteOpenHelper {
 	
 	public DbManager(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
-		Log.d("DbHelper", "Creating DB helper");
 		this.context = context;
 	}
 	
@@ -98,7 +97,7 @@ public class DbManager extends SQLiteOpenHelper {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL(	"create table if not exists notifiche (" +
 						 	"idNotifica integer primary key autoincrement, " +
-							
+							"idComanda int, " +
 						 	"tipoNotifica string, " +
 						 	"nomeTavolo string, " +
 							"idVoceMenu int," +

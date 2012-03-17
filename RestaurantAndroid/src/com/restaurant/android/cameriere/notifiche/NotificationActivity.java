@@ -13,9 +13,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -38,6 +40,11 @@ import com.restaurant.android.Error;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
 import com.restaurant.android.Utility;
+import com.restaurant.android.cameriere.activities.GestioneOrdinazioneActivity;
+import com.restaurant.android.cameriere.activities.Ordinazione;
+import com.restaurant.android.cameriere.activities.Table;
+import com.restaurant.android.cameriere.activities.TableCardActivity;
+import com.restaurant.android.cameriere.activities.TablesListActivity;
 
 /** 
  * Activity per mostrare l'elenco delle notifiche.
@@ -86,10 +93,55 @@ public class NotificationActivity extends Activity {
       filter = new IntentFilter("com.restaurant.android.NUOVA_NOTIFICA");
       receiverNotifiche = new ReceiverNotifiche();
      
-      
-      
-      
-	}
+      /* *********************************************************************
+       * Assegnazione del listener per il click sulla notifica.
+       ***********************************************************************/
+      notificationListView.setOnItemClickListener(new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long it) {
+			
+			Notifica notifica = notification_arrayList.get(position);
+			
+			if(notifica.getTipoNotifica().equals(TipoNotifica.COMANDA_PRONTA)) {
+				
+				
+				
+				final int idComanda = notifica.getIdComanda();
+				
+				Log.d("NotificationActivity", "Id della comanda è " + idComanda);
+				
+				/* *********************************************************
+				 * Gestione del passaggio di una comanda dallo stato PRONTA
+				 * allo stato CONSEGNATA.
+				 ***********************************************************/
+				AlertDialog.Builder builder = 
+	  	    			new AlertDialog.Builder(NotificationActivity.this);
+	  	    	
+	  	    	builder.setTitle("Gestione Notifica");
+	  	    	
+	  	    	//final int positionClicked = position;
+	  	    	final String[] opzioni = new String[]{"Consegnata","Indietro"};
+	  	    	
+	  	    	builder.setItems(opzioni,new DialogInterface.OnClickListener() {
+	  	    		
+	  	    	    public void onClick(DialogInterface dialog, int item_position) {
+	  	    	    	if(opzioni[item_position].equals("Consegnata")) {
+	  	    	    		new ConsegnaComandaAsyncTask().execute((Integer)idComanda);
+	  	    	    		
+	  	    	    	} else if (opzioni[item_position].equals("Indietro")) {
+	  	    	    		
+	  	    	    	}
+	  	    	    }
+	  	    	});
+	  	    	
+	  	    	builder.show();	
+				
+			}
+		}
+      });
+    }
 	
 	@Override
 	public void onResume() {
@@ -122,7 +174,6 @@ public class NotificationActivity extends Activity {
 			 * aggiornata la listview recuperando le notifiche non ancora gestite dal
 			 * database locale */
 			updateListViewNotifiche();
-			
 		}
 	}
 	
@@ -130,7 +181,6 @@ public class NotificationActivity extends Activity {
 	public void onPause() {
 		super.onPause();
 		Log.d(TAG,"OnPause");
-		
 	}
 	
 	@Override
@@ -212,9 +262,7 @@ public class NotificationActivity extends Activity {
                         		textView_notificationType.setText("Tavolo da Pulire");
                         		textView_notificationText.setText("Pulisci il tavolo '" + notifica.getNomeTavolo() + "'." );
                         	}
-                        		
                         }
-                        
                 }
                 return v;
         }
@@ -235,11 +283,11 @@ public class NotificationActivity extends Activity {
 		}
 	}
 	
-	/************************************************************************
+	/**
     * Async Task che acquisisce le notifiche presenti e aggiorna la list
     * view.
     * @author Guerri Marco
-    *************************************************************************/
+    */
    class GetNotificheAsyncTask extends AsyncTask<Object, Object, Error> {
 
 	   	@Override
@@ -305,9 +353,9 @@ public class NotificationActivity extends Activity {
 		   					 ***********************************************************/
 		   					ContentValues notifica = new ContentValues();
 			   				notifica.put("tipoNotifica", jsonObjectNotifica.getString("tipo"));
-			   				notifica.put("idTavolo", jsonObjectNotifica.getInt("idTavolo"));
 			   				notifica.put("nomeTavolo",jsonObjectNotifica.getString("nomeTavolo"));
 			   				notifica.put("idVoceMenu", jsonObjectNotifica.getInt("idVoceMenu"));
+			   				notifica.put("idComanda", jsonObjectNotifica.getInt("idComanda"));
 			   				
 			   				/* Ricavo dal database anche la descrizione della voce di menu
 			   				 * per non doverla estrarre durante il rendering della list
@@ -386,13 +434,84 @@ public class NotificationActivity extends Activity {
    }
    
    /**
+    * Async Task che gestisce il passaggio della comanda da IN PREPARAZIONE
+    * a CONSEGNATA
+    * @author Guerri Marco
+    */ 
+   class ConsegnaComandaAsyncTask extends AsyncTask<Object, Object, Error> {
+
+	   	@Override
+   		protected void onPreExecute() {
+	   	}
+   	
+	   	@Override
+		protected Error doInBackground(Object... params) {
+	   		DbManager dbManager = new DbManager(getApplicationContext());
+   			SQLiteDatabase db = dbManager.getWritableDatabase();
+   			
+	   		try {
+	   			int idComanda = (Integer)params[0];
+		   		/* Richiesta per passare la comanda allo stato consegnata */
+	   			
+	   			RestaurantApplication restApp = (RestaurantApplication)getApplication();
+		   		HashMap<String,String> requestParameters = new HashMap<String,String>();
+		   		requestParameters.put("action","UPDATE_STATO");
+		   		requestParameters.put("idComanda", "" + idComanda);
+		   		requestParameters.put("stato", "CONSEGNATA");
+		   		
+		   		/* *************************************************
+		   		 * Aggiorno la data di verifica delle notifiche. 
+		   		 ***************************************************/
+		   	
+		   		String response = 
+							restApp.makeHttpPostRequest(restApp.getHost() + 
+														"ClientEJB/gestioneComande", 
+														requestParameters);
+		   		
+		   		JSONObject jsonObjectResponse = new JSONObject(response);
+		   		if(jsonObjectResponse.getString("success").equals("true")) {
+		   			
+		   			/* La comanda è passato nello stato consegnata e può essere 
+		   			 * cancellata dal database locale */
+		   			db.delete("notifiche", "idComanda="+idComanda, null);
+		   		}
+		   		
+	   		} catch(Exception e) {
+	   			
+	   			return new Error("Errore durante la consegna della comanda (" +e.toString()+")",
+	   							true);
+	   		
+	   		}finally{
+	   			db.close();
+	   			dbManager.close();
+	   		}
+	   		
+	   		return new Error("",false);
+	   	}
+   	
+	   	@Override
+	   	protected void onPostExecute(Error error) {
+	   		
+	   	
+	   		if(error.errorOccurred()) {
+	   			Toast.makeText(getApplicationContext(), error.getError(), 50).show();
+	   		} else {
+	   			/* Aggiorno la listview delle notifiche. La notifica che è appena stata
+	   			 * gestita non compare più in elenco */
+	   			updateListViewNotifiche();
+	   		}
+	    }
+   }
+   
+   
+   /**
     * Aggiorna la lista associata alla listview delle notifiche
     * recuperandole dal database locale.
     */
    
    public void updateListViewNotifiche() {
 	   
-	   Log.d("List view notifiche","UPDATE UPDATE");
+
 	   DbManager dbManager = new DbManager(getApplicationContext());
 	   SQLiteDatabase db = dbManager.getWritableDatabase();
 	   notification_arrayList.clear();
@@ -401,7 +520,7 @@ public class NotificationActivity extends Activity {
 	
 	   cursorNotifiche = 
 			   db.query("notifiche", 
-						new String[] {"tipoNotifica,idTavolo,nomeTavolo,idVoceMenu,voceMenu,data"}, 
+						new String[] {"tipoNotifica,idComanda,nomeTavolo,idVoceMenu,voceMenu,data"}, 
 						"",
 						null,
 						null,
@@ -413,15 +532,14 @@ public class NotificationActivity extends Activity {
 	   cursorNotifiche.moveToFirst();
 	   while(!cursorNotifiche.isAfterLast()) {
 		   
-		 
 		   Notifica notifica = new Notifica();
 		   
 		   notifica.setTipoNotifica(TipoNotifica.valueOf(cursorNotifiche.getString(0)));
-		   notifica.setData(cursorNotifiche.getString(5));
-		   notifica.setIdTavolo(cursorNotifiche.getInt(1));
+		   notifica.setIdComanda(cursorNotifiche.getInt(1));
+		   notifica.setNomeTavolo(cursorNotifiche.getString(2));
 		   notifica.setIdVoceMenu(cursorNotifiche.getInt(3));
 		   notifica.setVoceMenu(cursorNotifiche.getString(4));
-		   notifica.setNomeTavolo(cursorNotifiche.getString(2));
+		   notifica.setData(cursorNotifiche.getString(5));
 		   
 		   notification_arrayList.add(notifica);
 		   
