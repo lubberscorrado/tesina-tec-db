@@ -30,6 +30,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 	
 	private final static String TAG = "LoginActivity";
 	
+	private Boolean logged = false;
+	
 	/* Alcune variabili private per la gestione del login.  */
 	private EditText etUsername;
 	private EditText etPassword;
@@ -49,6 +51,9 @@ public class LoginActivity extends Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
+        
+        /* logged = true, se può effettuare il login */
+        this.logged = false;
         
         /* Queste righe vanno DOPO "setContentView" */
         
@@ -80,6 +85,14 @@ public class LoginActivity extends Activity implements OnClickListener {
 	    });
     }
     
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.d(TAG, "onResume");
+		this.logged = false;
+	}
+
+    
 	 /*****************************************************************
 	  * Async Task che gestisce le richieste di login verso il server *
 	  *****************************************************************/
@@ -88,7 +101,7 @@ public class LoginActivity extends Activity implements OnClickListener {
      	@Override
 		protected Error doInBackground(HashMap<String, String>... hashMap) {
 		    		
-       		Boolean logged = false;
+       		logged = false;
 			RestaurantApplication restApp = ((RestaurantApplication)getApplication());
 
 			try {
@@ -147,11 +160,11 @@ public class LoginActivity extends Activity implements OnClickListener {
         		
         	} else {
         		/* Apro la nuova attività a seconda della funzionalità richiesta dall'utente */
-				if(radioButtonCameriere.isChecked()) {
+				if(radioButtonCameriere.isChecked() && logged == true) {
 					Log.i(TAG, "Login eseguito con successo per la richiesta dell'interfaccia Cameriere");
 					Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
 			  		LoginActivity.this.startActivity(myIntent);
-				} else if(radioButtonCucina.isChecked()) {
+				} else if(radioButtonCucina.isChecked() && logged == true) {
 					Log.i(TAG, "Login eseguito con successo per la richiesta dell'interfaccia Cucina");
 					Intent myIntent = new Intent(LoginActivity.this, Kitchen_HomeActivity.class);
 			  		LoginActivity.this.startActivity(myIntent);
