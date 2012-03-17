@@ -32,14 +32,13 @@ import android.util.Log;
 public class RestaurantApplication extends Application {
 	
 	private DefaultHttpClient httpClient;
-	
-	/** TimeStamp dell'ultima notifica letta. Utilizzata per controllare se ci sono nuove notifiche 
-	 * e, in caso affermativo, segnalarlo al cameriere */
-	private Date lastNotificationTime;  
+
+	private String lastNotificationCheckDate;
 	
 	@Override
 	public void onCreate() {
 		httpClient = new DefaultHttpClient();
+		lastNotificationCheckDate = "0000-00-00 00:00:00";
 	}
 		
 	/**
@@ -172,11 +171,11 @@ public class RestaurantApplication extends Application {
 		
 	}
 
-	public Date getLastNotificationTime() {
-		return lastNotificationTime;
+	public String getLastNotificationCheckDate() {
+		return lastNotificationCheckDate;
 	}
 
-	public void setLastNotificationTime(Date lastNotificationTime) {
-		this.lastNotificationTime = lastNotificationTime;
+	public void setLastNotificationCheckDate(String lastNotificationCheckDate) {
+		this.lastNotificationCheckDate = lastNotificationCheckDate;
 	}
 }
