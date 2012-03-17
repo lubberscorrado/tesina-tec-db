@@ -2,6 +2,7 @@ package Servlets;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -34,10 +35,7 @@ public class gestioneNotifiche extends HttpServlet {
         super();
         
     }
-
-	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -49,14 +47,13 @@ public class gestioneNotifiche extends HttpServlet {
 		try {
 			if(request.getParameter("action").equals("CHECK_NOTIFICHE")) {
 				
-				/* *********************************************************
+				/* **********************************************************
 				 * Verifica la presenza di notifiche senza mandarle in
 				 * output. Utilizzato dal service per notificare la 
-				 * necessità di aggiornamento all'activity.
-				 ***********************************************************/
+				 * necessità di aggiornamento all'activity. La data di ultima
+				 * ricerca viene acquisita da android.
+				 ************************************************************/
 				
-				/* Acquisisco dalla richiesta la data dell'ultima verifica della
-				 * presenza di notifiche. */
 				String lastDateSqlFormatted = request.getParameter("lastDate");
 				
 				List<Notifica> listaNotifiche = 
@@ -74,7 +71,13 @@ public class gestioneNotifiche extends HttpServlet {
 				
 				/* *********************************************************
 				 * Verifica la presenza di notifiche e le manda in output
-				 * formattandole in un oggetto JSON.
+				 * formattandole in un oggetto JSON. La data di ricerca
+				 * deve essere generata sul server in modo da essere 
+				 * allineata con la data di aggiornamento di MySQL (nel
+				 * caso in cui entrambi girino sulla stessa macchina). La
+				 * data di Android potrebbe essere non sincronizzata con
+				 * il server creando così dei problemi nella gestione
+				 * deglle notifiche.
 				 ***********************************************************/
 				
 				/* Acquisisco dalla richiesta la data dell'ultima verifica della
@@ -85,34 +88,40 @@ public class gestioneNotifiche extends HttpServlet {
 				List<Notifica> listaNotifiche = 
 						businessNotifiche.getNotifiche(idUtente, lastDateSqlFormatted);
 				
-				
 				JSONArray jsonArrayNotifiche = new JSONArray();
 				
 				for(Notifica notifica : listaNotifiche) {
 					
 					if(notifica.getTipoNotifica().equals(TipoNotificaEnum.COMANDA_PRONTA)) {
-						
 						JSONObject jsonObjectNotifica = new JSONObject();
+						
 						jsonObjectNotifica.put("tipo", notifica.getTipoNotifica().toString());
 						jsonObjectNotifica.put("idTavolo", notifica.getIdTavolo());
 						jsonObjectNotifica.put("nomeTavolo", notifica.getNomeTavolo());
-							
+						jsonObjectNotifica.put("idVoceMenu", notifica.getIdVoceMenu());
+						
 						jsonArrayNotifiche.put(jsonObjectNotifica);
 					
 					}else if(notifica.getTipoNotifica().equals(TipoNotificaEnum.TAVOLO_ASSEGNATO)) {
 						
+					} else if(notifica.getTipoNotifica().equals(TipoNotificaEnum.TAVOLO_DA_PULIRE)) {
+						
 					}
 				}
 				
-				JSONResponse.WriteOutput(response, true, "", "notifiche", jsonArrayNotifiche);
+				/* Invio in output al client la data generata dal server per la ricerca di
+				 * notifiche come "message" */
 				
-				
+				JSONResponse.WriteOutput(	response, 
+											true, 
+											new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), 
+											"notifiche", 
+											jsonArrayNotifiche);
 				
 				
 			}
 			
 		} catch (DatabaseException e) {
-			
 			
 			JSONResponse.WriteOutput(	response, false, 
 										"Errore durante la ricerca delle notifiche (" + 
