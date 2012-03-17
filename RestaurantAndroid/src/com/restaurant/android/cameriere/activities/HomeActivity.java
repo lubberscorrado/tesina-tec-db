@@ -58,12 +58,14 @@ public class HomeActivity extends TabActivity {
 	  	 * */
 	  	startNotificationUpdaterService();	  	
 	  
+	  	
+	  	
 	  	/** Alloco le risorse per mostrare i vari tab della Home page */
 	    Resources res = getResources(); // Resource object to get Drawables
 	    TabHost tabHost = getTabHost();  // The activity TabHost
 	    TabHost.TabSpec spec;  // Resusable TabSpec for each tab
 	    Intent intent;  // Reusable Intent for each tab
-
+	    
 	    /* Inserisco l'activity delle notifiche nel Tab */
 	    intent = new Intent().setClass(this, NotificationActivity.class);
 
@@ -87,14 +89,36 @@ public class HomeActivity extends TabActivity {
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
-	    /* Imposto il tab di default */
-	    tabHost.setCurrentTab(1);
+	    /* Verifico se questa activity è stata attivata per effetto di un notifica. In caso
+	     * affermativo devo settare come tab corrente quello delle notifiche. */
+	    
+	    if(	getIntent().getStringExtra("UPDATE_NOTIFICHE") != null &&
+	    	getIntent().getStringExtra("UPDATE_NOTIFICHE").equals("TRUE")) {
+	    	/* 
+	    	 * L'activity è stata attivata per effetti di una notifica dalla status
+	    	 * bar
+	    	 */
+	    	Log.d("HomeActivity", "Richiesto l'aggiornamento delle notifiche");
+	    	tabHost.setCurrentTab(0);
+	    	
+	    } else {
+	        /* Imposto il tab di default */
+		    tabHost.setCurrentTab(1);
+		}
+	    
+	    
+	    
+	    
 	    
 	    DbManager dbManager = new DbManager(getApplicationContext());
+	 
 	    //dbManager.dropTablesComande();
-	    dbManager.dropTablesComande();
-	    dbManager.createTablesComande();
-	    dbManager.BackUpDbToSD();
+	    //dbManager.createTablesComande();
+	   
+	    //dbManager.dropTableNotifiche();
+	    //dbManager.createTableNotifiche();
+	    
+	    //dbManager.BackUpDbToSD();
 	    dbManager.close();
 	}
 	
