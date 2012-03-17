@@ -42,6 +42,19 @@ public class GestioneStatoUtentePersonale {
 																	int idTenant,
 																	StatoUtentePersonaleEnum tipoAccesso	)	throws DatabaseException {
 		
+		//Se esiste già una sessione su db
+		try {
+			StatoUtentePersonale statoUtentePersonale = em.find(StatoUtentePersonale.class, idUtente);
+			if(statoUtentePersonale != null){
+				statoUtentePersonale.setTipoAccesso(tipoAccesso);
+				statoUtentePersonale.setLoginTime(null);
+				return new WrapperStatoUtentePersonale(statoUtentePersonale);
+			}
+			
+		}catch(Exception e) {
+		}
+		
+		//Se non esiste già una sessione su db
 		try {
 			StatoUtentePersonale statoUtentePersonale = new StatoUtentePersonale();
 			statoUtentePersonale.setIdTenant(idTenant);
