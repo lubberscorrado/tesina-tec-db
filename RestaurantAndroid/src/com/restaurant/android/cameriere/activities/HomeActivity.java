@@ -110,16 +110,16 @@ public class HomeActivity extends TabActivity {
 	    
 	    
 	    
-	    DbManager dbManager = new DbManager(getApplicationContext());
+	    //DbManager dbManager = new DbManager(getApplicationContext());
 	 
-	    dbManager.dropTablesComande();
-	    dbManager.createTablesComande();
+	    //dbManager.dropTablesComande();
+	    //dbManager.createTablesComande();
 	   
-	    dbManager.dropTableNotifiche();
-	    dbManager.createTableNotifiche();
+	    //dbManager.dropTableNotifiche();
+	    //dbManager.createTableNotifiche();
 	    
 	    //dbManager.BackUpDbToSD();
-	    dbManager.close();
+	   // dbManager.close();
 	}
 	
 	@Override
