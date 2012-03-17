@@ -183,6 +183,10 @@ public class LoginActivity extends Activity implements OnClickListener {
         postParameters = new HashMap<String,String>();
         postParameters.put("user", username);
         postParameters.put("password", password);
+        if(radioButtonCameriere.isChecked()) 
+        	postParameters.put("tipoAccesso", "CAMERIERE");
+        else if(radioButtonCucina.isChecked()) 
+        	postParameters.put("tipoAccesso", "CUOCO");
         
         progressDialog = ProgressDialog.show(this, "Attendere", "Logging in...");
             
