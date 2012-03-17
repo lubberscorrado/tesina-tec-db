@@ -145,7 +145,16 @@ public class login extends HttpServlet {
 			
 			System.out.println("Login from: "+request.getRemoteAddr()+" Tenant: "+idTenant+" User: "+idUtente+" - TipoAccesso:"+tipoAccesso);
 			try {
-				gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
+				if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
+					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
+				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
+					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CUOCO);
+				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
+					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CASSIERE);
+				}
+				
+				
+				
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
