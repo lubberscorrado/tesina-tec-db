@@ -1,51 +1,23 @@
 package com.restaurant.android.cameriere.notifiche;
 
+import java.util.Date;
+
 public class Notifica {
 	
-	private String notificationText = "";
-	private String notificationType = "";
-	private String dateTime = "";
-	private int idTavolo = -1;
-	private String nomeTavolo = "";
-	private int idOrdinazione = - 1;
-	private String nomeOrdinazione = "";
-	private int idConto = -1;
+	private TipoNotifica tipoNotifica;
+	private int idTavolo;
+	private String nomeTavolo;
 	
-	public String getNotificationText() {
-		return notificationText;
+	private int idVoceMenu;
+	private String voceMenu;
+	
+	private String data;
+	
+	public TipoNotifica getTipoNotifica() {
+		return tipoNotifica;
 	}
-	public void setNotificationText(String notificationText) {
-		this.notificationText = notificationText;
-	}
-	public String getNotificationType() {
-		return notificationType;
-	}
-	public void setNotificationType(String notificationType) {
-		this.notificationType = notificationType;
-	}
-	public String getDateTime() {
-		return dateTime;
-	}
-	public void setDateTime(String dateTime) {
-		this.dateTime = dateTime;
-	}
-	public int getIdTavolo() {
-		return idTavolo;
-	}
-	public void setIdTavolo(int idTavolo) {
-		this.idTavolo = idTavolo;
-	}
-	public int getIdOrdinazione() {
-		return idOrdinazione;
-	}
-	public void setIdOrdinazione(int idOrdinazione) {
-		this.idOrdinazione = idOrdinazione;
-	}
-	public int getIdConto() {
-		return idConto;
-	}
-	public void setIdConto(int idConto) {
-		this.idConto = idConto;
+	public void setTipoNotifica(TipoNotifica tipoNotifica) {
+		this.tipoNotifica = tipoNotifica;
 	}
 	public String getNomeTavolo() {
 		return nomeTavolo;
@@ -53,11 +25,32 @@ public class Notifica {
 	public void setNomeTavolo(String nomeTavolo) {
 		this.nomeTavolo = nomeTavolo;
 	}
-	public String getNomeOrdinazione() {
-		return nomeOrdinazione;
+	public String getVoceMenu() {
+		return voceMenu;
 	}
-	public void setNomeOrdinazione(String nomeOrdinazione) {
-		this.nomeOrdinazione = nomeOrdinazione;
+	public void setVoceMenu(String voceMenu) {
+		this.voceMenu = voceMenu;
 	}
+	public int getIdTavolo() {
+		return idTavolo;
+	}
+	public void setIdTavolo(int idTavolo) {
+		this.idTavolo = idTavolo;
+	}
+	
+	public String getData() {
+		return data;
+	}
+	public void setData(String data) {
+		this.data = data;
+	}
+	public int getIdVoceMenu() {
+		return idVoceMenu;
+	}
+	public void setIdVoceMenu(int idVoceMenu) {
+		this.idVoceMenu = idVoceMenu;
+	}
+	
+	
 	
 }
