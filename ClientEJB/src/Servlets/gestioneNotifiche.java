@@ -96,9 +96,13 @@ public class gestioneNotifiche extends HttpServlet {
 						JSONObject jsonObjectNotifica = new JSONObject();
 						
 						jsonObjectNotifica.put("tipo", notifica.getTipoNotifica().toString());
-						jsonObjectNotifica.put("idTavolo", notifica.getIdTavolo());
 						jsonObjectNotifica.put("nomeTavolo", notifica.getNomeTavolo());
 						jsonObjectNotifica.put("idVoceMenu", notifica.getIdVoceMenu());
+						
+						/* Ritorno anche l'id della comanda a cui è associata la notifica 
+						 * (nel caso di comanda pronta) così che possa essere identificata
+						 * la comanda per il passaggio allo stato 'CONSEGNATA' */
+						jsonObjectNotifica.put("idComanda", notifica.getIdComanda());
 						
 						jsonArrayNotifiche.put(jsonObjectNotifica);
 					

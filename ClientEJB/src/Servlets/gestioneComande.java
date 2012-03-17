@@ -323,6 +323,9 @@ public class gestioneComande extends HttpServlet {
 			
 		}  else if(request.getParameter("action").equals("UPDATE_STATO")) {
 			
+			/* Modfica lo stato di una comanda senza necessariamente 
+			 * associare ad una comanda l'id di una cucina */
+			
 			int idComanda = Integer.parseInt(request.getParameter("idComanda"));
 			int idCucina = utentePersonale.getIdUtentePersonale();
 			String stato = request.getParameter("stato");
