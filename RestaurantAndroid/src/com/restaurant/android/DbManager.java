@@ -42,16 +42,47 @@ public class DbManager extends SQLiteOpenHelper {
 	
 	public void createTables() {
 		SQLiteDatabase database = this.getWritableDatabase();
-		database.execSQL("create table categoria (idCategoria int, idCategoriaPadre int, nome string, descrizione string)");
-		database.execSQL("create table vocemenu (idVoceMenu int, idCategoria int, nome string, descrizione string, prezzo string)");
-		database.execSQL("create table variazione (idVariazione int, idCategoria int,  nome string, descrizione string, prezzo string, checked int)");
+		
+		database.execSQL(	"create table categoria ("+
+							"idCategoria int, " +
+							"idCategoriaPadre int, " +
+							"nome string, "+
+							"descrizione string)");
+		
+		database.execSQL(	"create table vocemenu (" +
+							"idVoceMenu int, " +
+							"idCategoria int, "+
+							"nome string, "+
+							"descrizione string, "+
+							"prezzo string)");
+		
+		database.execSQL(	"create table variazione ("+
+							"idVariazione int, "+
+							"idCategoria int, "+
+							"nome string, "+
+							"descrizione string, "+
+							"prezzo string, "+
+							"checked int)");
 		database.close();
 	}
 	
 	public void createTablesComande() {
+		
 		SQLiteDatabase database = this.getWritableDatabase();
-		database.execSQL("create table if not exists comanda (idComanda integer primary key autoincrement, idRemotoComanda int, idVoceMenu int, idTavolo int, quantita int, note string, stato string)");
-		database.execSQL("create table if not exists variazionecomanda (idVariazioneComanda integer primary key autoincrement, idComanda int, idVariazione, unique(idComanda, idVariazione))");
+		database.execSQL(	"create table if not exists comanda (" +
+							"idComanda integer primary key autoincrement, " +
+							"idRemotoComanda int, " + 
+							"idVoceMenu int, "+
+							"idTavolo int, "+
+							"quantita int, "+
+							"note string, "+
+							"stato string)");
+		
+		database.execSQL(	"create table if not exists variazionecomanda ("+
+							"idVariazioneComanda integer primary key autoincrement ,"+
+							"idComanda int, "+
+							"idVariazione, "+
+							"unique(idComanda, idVariazione))");
 		database.close();
 	}
 	
@@ -61,6 +92,28 @@ public class DbManager extends SQLiteOpenHelper {
 		database.execSQL("drop table if exists variazionecomanda");
 		database.close();
 	}
+	
+	
+	public void createTableNotifiche() {
+		SQLiteDatabase database = this.getWritableDatabase();
+		database.execSQL(	"create table if not exists notifiche (" +
+						 	"idNotifica integer primary key autoincrement, " +
+							
+						 	"tipoNotifica string, " +
+						 	"nomeTavolo string, " +
+							"idVoceMenu int," +
+						 	"voceMenu, "+ 
+						 	"idTavolo int, "+
+							"data string)");
+		database.close();
+	}
+	
+	public void dropTableNotifiche() {
+		SQLiteDatabase database = this.getWritableDatabase();
+		database.execSQL("drop table if exists notifiche");
+		database.close();
+	}
+
 	
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
