@@ -2147,7 +2147,7 @@ var _mainTabPanel = {
 			            	id: 'totale_tabella_conto',
 			            	text: '0.00'
 			            },'->',{
-			                text: 'Chiudi ordine',
+			                text: 'Chiudi conto',
 			                id: 'tabella_visualizza_conto_action_button',
 			                iconCls: 'icon-refresh',
 			                handler: function(){
@@ -2163,7 +2163,9 @@ var _mainTabPanel = {
 			        				    },
 			        				    success: function(response){
 			        				    	Ext.getStore('datastore_conto').load();
-			        				    	Ext.getStore('datastore_elenco_conti_tavolo').load();
+			        				    	Ext.getStore('datastore_elenco_conti_tavolo').load();	//Aggiornamento per la visualizzazione delle modifiche
+			        				    	Ext.getStore('datastore_stato_tavolo').load();			//Aggiornamento per la visualizzazione delle modifiche
+			        				    	
 						                	_mainTabPanel.updateVisualizzaConto(idConto,idTavolo);
 						                	Ext.get('tabella_visualizza_conto_action_button').destroy();
 			        				    }

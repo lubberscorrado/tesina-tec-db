@@ -11,6 +11,22 @@ function initStores(){
 	});
 	
 	Ext.create('Ext.data.Store', {
+		storeId: 'datastore_stato_cameriere',
+		model: 'StatoTavolo',
+		autoLoad: true,
+		//autoSync: true,
+		pageSize: 50
+	});
+	
+	Ext.create('Ext.data.Store', {
+		storeId: 'datastore_stato_cucina',
+		model: 'StatoTavolo',
+		autoLoad: true,
+		//autoSync: true,
+		pageSize: 50
+	});
+	
+	Ext.create('Ext.data.Store', {
 		storeId: 'datastore_conto',
 		model: 'Comanda',
 		//autoLoad: true,
