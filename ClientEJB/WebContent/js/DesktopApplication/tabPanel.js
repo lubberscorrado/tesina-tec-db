@@ -2163,6 +2163,7 @@ var _mainTabPanel = {
 			        				    },
 			        				    success: function(response){
 			        				    	Ext.getStore('datastore_conto').load();
+			        				    	Ext.getStore('datastore_elenco_conti_tavolo').load();
 						                	_mainTabPanel.updateVisualizzaConto(idConto,idTavolo);
 						                	Ext.get('tabella_visualizza_conto_action_button').destroy();
 			        				    }
