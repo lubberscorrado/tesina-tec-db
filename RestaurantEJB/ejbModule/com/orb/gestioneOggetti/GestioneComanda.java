@@ -144,7 +144,7 @@ public class GestioneComanda {
 				
 			comanda.setNote(note);
 			comanda.setQuantita(quantita);
-			
+		
 			/* Rimuovo tutte le variazioni associate alla comanda */
 			comanda.getVariazioniAssociate().clear();
 			
@@ -197,7 +197,18 @@ public class GestioneComanda {
 						throw new DatabaseException("Errore durante la ricerca della cucina responsabile per la comanda");
 					comanda.setCucinaAssociata(cucina);
 				}
+				
+			} else if(nuovoStato.equals("CONSEGNATA")) {
+				
+				if(!statoAttuale.equals(StatoComandaEnum.PRONTA)) {
+					throw new DatabaseException("Errore durante la consegna della comanda " +
+												". La comanda è in stato ("+ statoAttuale +")");
+				
+					
+				}
 			}
+			
+			// E' SUFFICIENTE comanda.setStato(StatoComandaEnum.valueOf(nuovoStato));
 			
 			if(nuovoStato.equals("INVIATA"))
 				comanda.setStato(StatoComandaEnum.INVIATA);
@@ -541,7 +552,8 @@ public class GestioneComanda {
 			query.setParameter("idUtente", idCameriere);
 			query.setParameter("stato", stato);
 			
-			query.setParameter("lastCheckDate",  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(lastCheckDate));
+			query.setParameter("lastCheckDate",  
+								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(lastCheckDate));
 			
 			
 			List<Comanda> listaComande =  query.getResultList();
@@ -597,7 +609,9 @@ public class GestioneComanda {
 		
 		try {
 		
-		Query query = em.createQuery(	"SELECT c FROM Comanda c JOIN c.contoAppartenenza co WHERE co.idConto = :idConto");
+		Query query = em.createQuery(	"SELECT c FROM Comanda c  " +
+										"JOIN c.contoAppartenenza co WHERE " +
+										"co.idConto = :idConto");
 		query.setParameter("idConto", idConto);
 		
 		
@@ -610,7 +624,8 @@ public class GestioneComanda {
 		return listaWrapperComande;
 		
 		} catch (Exception e) {
-			throw new DatabaseException("Errore durante la ricerca delle comande del conto (" + e.toString() + ")");
+			throw new DatabaseException("Errore durante la ricerca delle comande del conto " +
+										"(" + e.toString() + ")");
 		}
 		
 	}
