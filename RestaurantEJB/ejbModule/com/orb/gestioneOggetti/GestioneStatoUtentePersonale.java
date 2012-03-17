@@ -50,8 +50,8 @@ public class GestioneStatoUtentePersonale {
 				statoUtentePersonale.setLoginTime(null);
 				return new WrapperStatoUtentePersonale(statoUtentePersonale);
 			}
-			
 		}catch(Exception e) {
+			//Non faccio niente
 		}
 		
 		//Se non esiste già una sessione su db
