@@ -2,23 +2,16 @@ package com.orb.gestioneOggetti;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import com.exceptions.DatabaseException;
-import com.orb.Area;
 import com.orb.Categoria;
-import com.orb.Piano;
 import com.orb.VoceMenu;
-import com.restaurant.TreeNodeArea;
-import com.restaurant.TreeNodeCategoria;
-import com.restaurant.TreeNodePiano;
 import com.restaurant.TreeNodeVoceMenu;
 
 @SuppressWarnings("unchecked") 
@@ -116,7 +109,14 @@ public class GestioneVoceMenu{
 			 VoceMenu  voceMenu = em.find(VoceMenu.class, idVoceMenu);
 			 if(voceMenu == null)
 				 throw new DatabaseException("Errore durante la ricerca della voce di menu da eliminare");
-			 em.remove(voceMenu);
+			 
+			 /* Anziché rimuovere effettivamente la vocemenu dal DB, imposto il flag "removed=false" */
+			 /* TODO: si potrebbe migliorare, rimuovendo effettivamente da DB solo se 
+			  * non ci fosse nessuna comanda che fa riferimento a questa voce menu */
+			 
+//			 em.remove(voceMenu);
+			 voceMenu.setRemoved(true);
+			 
 		 } catch (Exception e) {
 			 throw new DatabaseException("Errore durante l'eliminazione della voce di menu ("+ e.toString() +")");
 		 }
@@ -127,16 +127,18 @@ public class GestioneVoceMenu{
 	 * poichè le categorie radice sono comuni a tutti i clienti.
 	 * @param idTenant Id del client a cui appartengono le voci del menu
 	 * @param idCategoria Categoria della quale si vogliono ottenere le voci di menu
+	 * @param removed : true, se voglio ottenere le voci di menu eliminate; false, se voglio ottenere le voci di menu ancora attive
 	 * @return Lista di oggetti TreeNodeVoceMenu che rappresentano le voci del menu 
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore verificatosi
 	 */
 		
-	public List<TreeNodeVoceMenu> getVociMenuByCategoria(int idTenant, int idCategoria) throws DatabaseException {
+	public List<TreeNodeVoceMenu> getVociMenuByCategoria(int idTenant, int idCategoria, boolean removed) throws DatabaseException {
 			
 		try {
 			Query query = em.createNamedQuery("getVociMenuByCategoria");
 			query.setParameter("idTenant", idTenant);
 			query.setParameter("idCategoria", idCategoria);
+		query.setParameter("removed", removed);
 			
 			List<VoceMenu> listaVociMenu = query.getResultList();
 			List<TreeNodeVoceMenu> listaTreeNodeVoceMenu = new ArrayList<TreeNodeVoceMenu>();

@@ -10,6 +10,7 @@ public class TreeNodeVoceMenu {
 	private String nome;
 	private String descrizione;
 	private BigDecimal prezzo;
+	private boolean removed; 
 	
 	public TreeNodeVoceMenu(VoceMenu voceMenu) {
 		
@@ -17,6 +18,7 @@ public class TreeNodeVoceMenu {
 		this.nome = voceMenu.getNome();
 		this.descrizione = voceMenu.getDescrizione();
 		this.prezzo = voceMenu.getPrezzo();
+		this.removed = voceMenu.getRemoved();
 		
 	}
 	
@@ -44,7 +46,13 @@ public class TreeNodeVoceMenu {
 	public void setPrezzo(BigDecimal prezzo) {
 		this.prezzo = prezzo;
 	}
-	
-	
 
+	public boolean getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
+	}
+	
 }

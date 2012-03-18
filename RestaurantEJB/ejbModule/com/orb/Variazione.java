@@ -21,7 +21,8 @@ import javax.persistence.Table;
 @NamedQueries({
 	@NamedQuery(name = "getVariazioniByCategoria",
 				query = "SELECT v FROM Variazione v JOIN v.categoriaAppartenenza c " +
-						"WHERE v.idTenant = :idTenant AND c.idCategoria = :idCategoria")})
+						"WHERE v.idTenant = :idTenant AND c.idCategoria = :idCategoria " +
+						"AND v.removed = :removed ")})
 public class Variazione {
 	
 	@Id
@@ -40,6 +41,9 @@ public class Variazione {
 	
 	@Column(name="prezzo")
 	private BigDecimal prezzo;
+	
+	@Column(name="removed")
+	private boolean removed;
 	
 	@ManyToOne
 	@JoinColumn(name="idCategoria", referencedColumnName="idCategoria")
@@ -99,6 +103,14 @@ public class Variazione {
 
 	public List<Comanda> getComande() {
 		return comande;
+	}
+
+	public boolean getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 
 }

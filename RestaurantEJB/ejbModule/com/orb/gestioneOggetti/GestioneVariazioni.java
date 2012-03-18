@@ -111,7 +111,10 @@ public class GestioneVariazioni {
 			Variazione variazione = em.find(Variazione.class, idVariazione);
 			if(variazione == null)
 				throw new DatabaseException("Errore durante la ricerca della variazione");
-			em.remove(variazione);
+
+			/* Anzichè rimuovere dal DB, metto flag "removed"=true */
+//			em.remove(variazione);
+			variazione.setRemoved(true);
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante la cancellazione della variazione (" + e.toString() +")");
 			
@@ -123,16 +126,18 @@ public class GestioneVariazioni {
 	 * @param idCategoria Id della categoria a cui appartengono le variazioni
 	 * @param idTenant Id del cliente a cui appartengono le variazioni (non è sufficiente
 	 * l'id della categoria poichè alcune categorie sono condivise tra i vari clienti)
+	 * @param removed : true, se devo ottenere le variazioni eliminate, false altrimenti
 	 * @return Lista di oggetti WrapperVariazione che rappresentano le variazioni disponibili
 	 * per la categoria
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore verificatosi
 	 */
 	
-	public List<WrapperVariazione> getVariazioniByCategoria(int idCategoria, int idTenant) throws DatabaseException {
+	public List<WrapperVariazione> getVariazioniByCategoria(int idCategoria, int idTenant, boolean removed) throws DatabaseException {
 		
 		try {
 			Query query = em.createNamedQuery("getVariazioniByCategoria");
 			query.setParameter("idCategoria", idCategoria);
+			query.setParameter("removed", removed);
 			
 			/* Per le variazioni non è sufficiente l'id della categoria di appartenenza,
 			 * poichè le categorie radice sono condivise da tutti gli utenti */

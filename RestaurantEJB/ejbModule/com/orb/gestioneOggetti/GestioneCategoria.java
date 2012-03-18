@@ -1,22 +1,16 @@
 package com.orb.gestioneOggetti;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import com.exceptions.DatabaseException;
-import com.orb.Area;
 import com.orb.Categoria;
-import com.orb.Piano;
-import com.restaurant.TreeNodeArea;
 import com.restaurant.TreeNodeCategoria;
-import com.restaurant.TreeNodePiano;
 
 @SuppressWarnings("unchecked") 
 @Stateless
@@ -114,7 +108,8 @@ public class GestioneCategoria {
 			 Categoria categoria = em.find(Categoria.class, idCategoria);
 			 if(categoria == null)
 				 throw new DatabaseException("Errore durante la ricerca della categoria da eliminare");
-			 em.remove(categoria);
+//			 em.remove(categoria);
+			 categoria.setRemoved(true);
 		
 		 } catch (DatabaseException e) {
 				throw e;
@@ -131,13 +126,14 @@ public class GestioneCategoria {
 	 * @param idTenant Id del cliente a cui appartengono le categorie. Necessario poichè alcune
 	 * categorie sono condivise.
 	 * @param idPadre Id della categoria padre
+	 * @param removed True per restituire le categorie rimosse (flag removed=true), False per restituire le categorie non rimosse (flag removed=false)
 	 * @return Lista di oggetti TreeNodeCategoria che rappresentano le categorie ottenute dal 
 	 * Database
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore 
 	 * verificatosi
 	 */
 	
-	public List<TreeNodeCategoria> getCategorie(int idTenant, int idPadre) throws DatabaseException {
+	public List<TreeNodeCategoria> getCategorie(int idTenant, int idPadre, boolean removed) throws DatabaseException {
 		
 		try {
 			
@@ -151,6 +147,7 @@ public class GestioneCategoria {
 			Query query= em.createNamedQuery("getCategorieFiglieDi");
 			query.setParameter("idCategoriaPadre", idPadre);
 			query.setParameter("idTenant", idTenant);
+			query.setParameter("removed", removed);
 						
 			List<Categoria> listaCategoria = (List<Categoria>)query.getResultList();
 			List<TreeNodeCategoria> listaTreeNodeCategoria= new ArrayList<TreeNodeCategoria>();

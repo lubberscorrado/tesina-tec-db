@@ -10,12 +10,14 @@ public class WrapperVariazione {
 	private String nome;
 	private String descrizione;
 	private BigDecimal prezzoVariazione;
+	private boolean removed;
 	
 	public WrapperVariazione(Variazione variazione) {
 		this.idVariazione = variazione.getIdVariazione();
 		this.nome = variazione.getNome();
 		this.descrizione = variazione.getDescrizone();
 		this.prezzoVariazione = variazione.getPrezzo();
+		this.removed = variazione.getRemoved();
 	}
 	
 	public WrapperVariazione(int id, String nome, String descrizione, BigDecimal prezzo) {
@@ -48,6 +50,14 @@ public class WrapperVariazione {
 	}
 	public void setPrezzoVariazione(BigDecimal prezzoVariazione) {
 		this.prezzoVariazione = prezzoVariazione;
+	}
+
+	public boolean getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 	
 	

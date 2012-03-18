@@ -8,11 +8,13 @@ public class TreeNodeCategoria {
 	private int idCategoriaPadre;
 	private String nome;
 	private String descrizione;
+	private boolean removed; 
 	
 	public TreeNodeCategoria(Categoria categoria) {
 		this.idCategoria = categoria.getIdCategoria();
 		this.nome = categoria.getNome();
 		this.descrizione = categoria.getDescrizione();
+		this.setRemoved(categoria.getRemoved());
 	}
 	
 	public int getIdCategoria() {
@@ -45,6 +47,14 @@ public class TreeNodeCategoria {
 	
 	public void setIdCategoriaPadre(int idCategoriaPadre) {
 		this.idCategoriaPadre = idCategoriaPadre;
+	}
+
+	public boolean getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 
 }

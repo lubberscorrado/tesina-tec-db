@@ -21,7 +21,8 @@ import javax.persistence.Table;
 				query = "SELECT v FROM VoceMenu v " +
 						"LEFT JOIN v.categoriaAppartenenza c WHERE "+
 						"c.idCategoria=:idCategoria AND "+
-						"v.idTenant=:idTenant")})
+						"v.idTenant=:idTenant " +
+						"AND v.removed = :removed ")})
 @Table(name="vocemenu")
 public class VoceMenu {
 	
@@ -41,6 +42,9 @@ public class VoceMenu {
 	
 	@Column(name="idTenant")
 	private int idTenant;
+	
+	@Column(name="removed")
+	private boolean removed;
 	
 	@OneToMany(mappedBy="voceMenuAssociata")
 	private List<Comanda> comande;
@@ -100,8 +104,13 @@ public class VoceMenu {
 	public void setCategoriaAppartenenza(Categoria categoriaAppartenenza) {
 		this.categoriaAppartenenza = categoriaAppartenenza;
 	}
-	
-	
 
+	public boolean getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
+	}
 	
 }

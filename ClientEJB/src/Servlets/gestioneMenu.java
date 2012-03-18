@@ -59,7 +59,7 @@ public class gestioneMenu extends HttpServlet {
 		
 		try{
 			if(node.equals("root")){
-				List<TreeNodeCategoria> listaCategorie = gestioneCategoria.getCategorie(idTenant, 1);
+				List<TreeNodeCategoria> listaCategorie = gestioneCategoria.getCategorie(idTenant, 1, false);
 				JSONArray json_array = new JSONArray();
 				JSONObject json_tmp = null;
 				if(listaCategorie != null){
@@ -73,8 +73,8 @@ public class gestioneMenu extends HttpServlet {
 				JSONResponse.WriteOutput(response, true, "OK", "data", json_array); return;
 			}else if(node.startsWith("C")){
 				int parentId = Integer.parseInt(	node.substring(1)	);
-				List<TreeNodeCategoria> listaCategorie = gestioneCategoria.getCategorie(idTenant, parentId);
-				List<TreeNodeVoceMenu> listaVociMenu = gestioneVoceMenu.getVociMenuByCategoria(idTenant, parentId);
+				List<TreeNodeCategoria> listaCategorie = gestioneCategoria.getCategorie(idTenant, parentId, false);
+				List<TreeNodeVoceMenu> listaVociMenu = gestioneVoceMenu.getVociMenuByCategoria(idTenant, parentId, false);
 				JSONArray json_array = new JSONArray();
 				JSONObject json_tmp = null;
 				if(listaCategorie != null){

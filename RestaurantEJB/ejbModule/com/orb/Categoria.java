@@ -23,7 +23,8 @@ import javax.persistence.Table;
 				query = "SELECT c FROM Categoria c " +
 						"LEFT JOIN c.categoriaPadre cp WHERE "+
 						"cp.idCategoria=:idCategoriaPadre AND "+
-						"c.idTenant=:idTenant")})
+						"c.idTenant=:idTenant AND " +
+						"c.removed = :removed")})
 @Table(name="categoria")
 public class Categoria {
 
@@ -40,6 +41,9 @@ public class Categoria {
 	
 	@Column(name="descrizione")
 	private String descrizione;
+	
+	@Column(name="removed")
+	private boolean removed;
 	
 	@Column(name="tipo")
 	@Enumerated(EnumType.STRING)
@@ -123,6 +127,14 @@ public class Categoria {
 
 	public void setTipo(TipoCategoriaEnum tipo) {
 		this.tipo = tipo;
+	}
+
+	public boolean getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 	
 	

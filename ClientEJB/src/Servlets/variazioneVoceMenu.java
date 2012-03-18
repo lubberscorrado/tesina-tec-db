@@ -66,7 +66,7 @@ public class variazioneVoceMenu extends HttpServlet {
 		try {
 			while(idCategoria > 0){
 				treeNodeCategoria = gestioneCategorie.getCategoriaById(idCategoria);
-				listaVariazioni = gestioneVariazioni.getVariazioniByCategoria(idCategoria, idTenant);
+				listaVariazioni = gestioneVariazioni.getVariazioniByCategoria(idCategoria, idTenant, false);
 				if(listaVariazioni != null){
 					for(int i=0; i<listaVariazioni.size(); i++){
 						json_tmp = JSONFromBean.jsonFromOBJ( listaVariazioni.get(i) );
