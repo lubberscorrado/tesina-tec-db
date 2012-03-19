@@ -148,9 +148,7 @@ public class TableCardActivity extends Activity {
 					    	    		Toast.makeText(getApplicationContext(), "Numero Persone inserito non " +
 					    	    				"accettabile! Riprovare.", Toast.LENGTH_SHORT).show();
 									}
-								
-								
-				           return;                  
+						   return;                  
 				          }  
 				        });  
 
@@ -410,12 +408,12 @@ public class TableCardActivity extends Activity {
 			  	    	
 			  	    	/* Elementi del menu della finestra di dialogo */
 			  	    	/* Se la voce è già selezionata */
-			  	    	 if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Selezionata")) {
+			  	    	 if(ordersWaitingListView_adapter.getItem(position).isSelezionata()) {
 			  	    		 dialogMenuItems[0] = "Deseleziona"; 
 			  	    		 dialogMenuItems[1] = "Modifica"; 
 			  	    		 dialogMenuItems[2] = "Rimuovi"; 
 			  	    	/* Se la voce non è ancora selezionata */
-			  	    	 } else if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Deselezionata")) {
+			  	    	 } else if(!ordersWaitingListView_adapter.getItem(position).isSelezionata()) {
 			  	    		 dialogMenuItems[0] = "Seleziona"; 
 			  	    		 dialogMenuItems[1] = "Modifica"; 
 			  	    		 dialogMenuItems[2] = "Rimuovi"; 
@@ -438,7 +436,7 @@ public class TableCardActivity extends Activity {
 			  	    	    	if(dialogMenuItems[item_position].equals("Seleziona")) {
 			  	    	    		
 			  	    	    		/* Seleziono la casella */
-			  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Selezionata");
+			  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setSelezionata(true);
 			  	    	    		/* Aggiorno la ListView */
 		  			  	    		ordersWaitingListView_adapter.notifyDataSetChanged();
 			  	    	    		
@@ -449,7 +447,7 @@ public class TableCardActivity extends Activity {
 			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 			  	    	    		
 			  	    	    		/* Deseleziono la casella */
-			  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setStato("Deselezionata");
+			  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setSelezionata(false);
 			  	    	    		/* Aggiorno la ListView */
 		  	    	    			ordersWaitingListView_adapter.notifyDataSetChanged();
 			  	    	    		
@@ -468,7 +466,6 @@ public class TableCardActivity extends Activity {
 			  	  	  	    		startActivity(myIntent);
 			  	  		  	     
 			  	    	    	} else if (dialogMenuItems[item_position].equals("Rimuovi")) {
-			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 			  	    	    		
 			  	    	    		/* *******************************************************
 			  	    	    		 * Rimuovo la comanda selezionata e tutte le variazioni
@@ -497,7 +494,6 @@ public class TableCardActivity extends Activity {
 			  	    	    		 * Aggiorno gli ordini da confermare nella listview
 			  	    	    		 ********************************************************/
 			  	    	    		updateListViewSospeseFromLocalDatabase();
-			  	    	    		Toast.makeText(getApplicationContext(), dialogMenuItems[item_position], Toast.LENGTH_SHORT).show();
 			  	    	    	}
 			  	    	    }
 			  	    	}); 
@@ -518,11 +514,11 @@ public class TableCardActivity extends Activity {
 		  	    	
 		  	    	 Log.i(TAG, "Hai cliccato (shortClick) su un'ordinazione in sospeso: " + ordersWaitingListView_adapter.getItem(position).getNome());
 		  	    	
-		  	    	if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Deselezionata")) {
-		  	    		ordersWaitingListView_adapter.getItem(position).setStato("Selezionata");
+		  	    	if(!ordersWaitingListView_adapter.getItem(position).isSelezionata()) {
+		  	    		ordersWaitingListView_adapter.getItem(position).setSelezionata(true);
 	    	    		ordersWaitingListView_adapter.notifyDataSetChanged();
-		  	    	} else if(ordersWaitingListView_adapter.getItem(position).getStato().equals("Selezionata")) {
-		  	    		ordersWaitingListView_adapter.getItem(position).setStato("Deselezionata");
+		  	    	} else if(ordersWaitingListView_adapter.getItem(position).isSelezionata()) {
+		  	    		ordersWaitingListView_adapter.getItem(position).setSelezionata(false);
   	    	    		ordersWaitingListView_adapter.notifyDataSetChanged();
 		  	    	}
 		  	    } 
@@ -691,7 +687,8 @@ public class TableCardActivity extends Activity {
         		  o.setNome(cursorNomeVoceMenu.getString(0));
         		  o.setQuantita(cursorOrdinazioniSospese.getInt(2));
         		  o.setNote(cursorOrdinazioniSospese.getString(3));
-        		  o.setStato("Selezionata");
+        		  o.setStato("SOSPESA");
+        		  o.setSelezionata(true);
         		  
         		  cursorOrdinazioniSospese.moveToNext();
         		  
@@ -830,13 +827,16 @@ public class TableCardActivity extends Activity {
                 		
                 		if(textView_stato != null) {
                 			textView_stato.setTextColor(Color.BLACK);
-                			textView_stato.setText(o.getStato());
+                			if(o.isSelezionata())
+                				textView_stato.setText("Selezionata");
+                			else 
+                				textView_stato.setText("Deselezionata");
                         }
                 		
-                		if(textView_stato.getText().equals("Selezionata")) {
+                		if(o.isSelezionata()) {
                 			// Metto a sfondo bianco le caselle stato
                 			textView_stato.setBackgroundColor(Color.GREEN);
-                		} else if (textView_stato.getText().equals("Deselezionata")) {
+                		} else {
                 			textView_stato.setBackgroundColor(Color.RED);
                 		}
                 }
@@ -942,7 +942,7 @@ public class TableCardActivity extends Activity {
 		} else if(myTable.getTableStatus().equals("PULIRE")) {
 		
 			Button btnOccupa = (Button)findViewById(R.id.button_tableCard_occupaTavolo);
-			btnOccupa.setEnabled(true);
+			btnOccupa.setEnabled(false);
 			Button btnPulisci = (Button)findViewById(R.id.button_tableCard_pulisciTavolo);
 			btnPulisci.setEnabled(true);
 			Button btnOrdina = (Button)findViewById(R.id.button_tableCard_prendiOrdinazione);
@@ -1001,7 +1001,7 @@ public class TableCardActivity extends Activity {
 				
 				for(Ordinazione o: ordersWaitingListView_arrayOrdinazioni) {
 					
-					if(o.getStato().equals("Deselezionata"))
+					if(!o.isSelezionata())
 						continue;
 					
 					/* ***********************************************************
@@ -1073,10 +1073,12 @@ public class TableCardActivity extends Activity {
 					
 					/* ***********************************************************
 					 * L'inserimento delle comande è andato a buon fine. Cambio
-					 * lo stato di ciascuna comanda all'interno del database
+					 * lo stato di ciascuna comanda INVIATA all'interno del database
 					 * locale.
 					 ************************************************************/
 					for(Ordinazione o: ordersWaitingListView_arrayOrdinazioni) {
+						if(!o.isSelezionata())
+							continue;
 						ContentValues ordinazioneInviata = new ContentValues();
 						ordinazioneInviata.put("stato","INVIATA");
 						db.update(	"comanda", 
@@ -1295,14 +1297,14 @@ public class TableCardActivity extends Activity {
 			try {
 				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
 																requestParameters);
-				Log.d("TableCardActivity", response);
+			
 				
 				JSONObject jsonObject = new JSONObject(response);
 				if(jsonObject.getString("success").equals("true")) {
 					myTable.setTableStatus("PULIRE");
 					myTable.setCameriere("Non definito");
 					myTable.setNumPersone(0);
-					
+					return new Error("", false);
 					
 				} else {
 					return new Error(jsonObject.getString("message"),true);
@@ -1313,25 +1315,20 @@ public class TableCardActivity extends Activity {
 			  return new Error("Errore durante la comunicazione con il server",true);
 			} catch (JSONException e) {
 			  return new Error("Errore durante la lettura della risposta dal server",true);
-			} finally {
-				runOnUiThread(new Runnable() {
-	   				@Override
-	   				public void run() {
-	   					contoListView_adapter.notifyDataSetChanged();
-	   					Utility.setListViewHeightBasedOnChildren(contoListView);
-	   					updateTableCardFromGlobalObject();
-	   					updateListViewContoFromLocalDatabase();
-	   					
-	   				}
-	   			});
 			}
-			return new Error("",false);
+			
 	   	}
 	
 	   	@Override
 	   	protected void onPostExecute(Error error) {
-	    	  if(error.errorOccurred()) 
+	    	  if(error.errorOccurred()) {
 	    		   Toast.makeText(getApplicationContext(), error.getError(), 40).show();
+	    	  } else {
+	    		  updateTableCardFromGlobalObject();
+	    		  updateListViewContoFromLocalDatabase();
+	    		  updateListViewSospeseFromLocalDatabase();
+	    	  }
+	    	 
 	    }
    }  
    

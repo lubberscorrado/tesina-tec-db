@@ -3,9 +3,6 @@ package com.restaurant.android.cameriere.activities;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.swing.text.TabExpander;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
@@ -318,7 +315,7 @@ public class GestioneOrdinazioneActivity extends Activity {
     	@Override
 		protected Error doInBackground(Object... params) {
 			
-    		/************************************************************************
+    		/* ***********************************************************************
     		 * Creo il JSONObject da inviare al server per la modifica delle comanda,
     		 * recuperando tutte le variazioni associate all'ordinazione 
     		 * dall'ArrayList aggiornata

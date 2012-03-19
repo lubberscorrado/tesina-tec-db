@@ -13,6 +13,7 @@ public class Ordinazione implements Serializable {
 	private int idRemotoOrdinazione;
 	private int idVoceMenu;
 	private String stato;
+	private boolean selezionata;
 	private ArrayList<Integer> idVariazioni;
 	
 	
@@ -24,6 +25,7 @@ public class Ordinazione implements Serializable {
 		this.idOrdinazione = 0;
 		this.idRemotoOrdinazione = 0;
 		this.stato ="";
+		selezionata = true;
 		idVariazioni = new ArrayList<Integer>();
 	}
 	
@@ -80,6 +82,14 @@ public class Ordinazione implements Serializable {
 	
 	public ArrayList<Integer> getListVariazioni() {
 		return idVariazioni;
+	}
+
+	public boolean isSelezionata() {
+		return selezionata;
+	}
+
+	public void setSelezionata(boolean selezionata) {
+		this.selezionata = selezionata;
 	}
 	
 	

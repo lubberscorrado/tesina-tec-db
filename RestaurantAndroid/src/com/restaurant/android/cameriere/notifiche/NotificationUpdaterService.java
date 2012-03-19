@@ -199,7 +199,7 @@ public class NotificationUpdaterService extends Service {
 			this.notification.defaults |= Notification.DEFAULT_SOUND;
 			// Vibrazione
 			this.notification.defaults |= Notification.DEFAULT_VIBRATE;
-			this.notification.setLatestEventInfo(this, "Nuova Notifica", "Ce ne sono tante belle nuove", pendingIntent);
+			this.notification.setLatestEventInfo(this, "Restaurant Android", notifica, pendingIntent);
 			this.notificationManager.notify(0, this.notification);
 			
 		} catch (Exception e) {

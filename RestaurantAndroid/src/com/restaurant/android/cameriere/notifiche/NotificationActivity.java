@@ -332,8 +332,11 @@ public class NotificationActivity extends Activity {
    	
 	   	@Override
 		protected Error doInBackground(Object... params) {
-	  
-	   		try {
+	   		
+	   		DbManager dbManager = new DbManager(getApplicationContext());
+   			SQLiteDatabase db = dbManager.getWritableDatabase();
+	   		
+   			try {
 				RestaurantApplication restApp = (RestaurantApplication)getApplication();
 		   		HashMap<String,String> requestParameters = new HashMap<String,String>();
 		   		requestParameters.put("action","GET_NOTIFICHE");
@@ -369,8 +372,6 @@ public class NotificationActivity extends Activity {
 		   			/* **************************************************************
 		   			 * Aggiorno il database inserendo le notifiche appena ottenute
 		   			 ****************************************************************/
-		   			DbManager dbManager = new DbManager(getApplicationContext());
-		   			SQLiteDatabase db = dbManager.getWritableDatabase();
 		   			
 		   			JSONArray jsonArrayNotifiche = new JSONArray();
 		   			
@@ -446,7 +447,11 @@ public class NotificationActivity extends Activity {
 			} catch (JSONException e) {
 				return new Error(	"Errore di decodifica della risposta dal server durante "+
 									"la richiesta delle modifiche", true);
+			}finally{
+				db.close();
+	   			dbManager.close();
 			}
+   			
 	   		return new Error("",false);
 	   	}
    	
