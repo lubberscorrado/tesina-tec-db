@@ -1,5 +1,6 @@
 package com.restaurant;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -22,6 +23,7 @@ public class TreeNodeTavolo {
 	private String descrizione;
 	private boolean enabled;
 	private StatoTavoloEnum stato;
+	private Date lastModified;
 	private int idTenant;
 	private int numposti;
 	
@@ -34,6 +36,7 @@ public class TreeNodeTavolo {
 		this.stato = tavolo.getStato();
 		this.idTenant = tavolo.getIdTenant();
 		this.numposti = tavolo.getNumposti();
+		this.lastModified = tavolo.getLastModified();
 	}
 	
 	
@@ -52,6 +55,7 @@ public class TreeNodeTavolo {
 		this.stato = stato;
 		this.idTenant = idTenant;
 		this.numposti = numposti;
+		this.lastModified = new Date();
 	}
 
 
@@ -100,6 +104,12 @@ public class TreeNodeTavolo {
 	}
 	public void setIdTenant(int idTenant) {
 		this.idTenant = idTenant;
+	}
+	public Date getLastModified() {
+		return lastModified;
+	}
+	public void setLastModified(Date lastModified) {
+		this.lastModified = lastModified;
 	}
 	
 }

@@ -2,6 +2,7 @@ package com.restaurant;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.orb.Comanda;
@@ -16,6 +17,7 @@ public class WrapperComanda {
 	private BigDecimal prezzo;
 	private int quantita;
 	private int idVoceMenu;
+	private Date lastModified;
 	private StatoComandaEnum stato;
 	private List<Integer> listIdVariazioni;
 	
@@ -29,7 +31,7 @@ public class WrapperComanda {
 		this.prezzo = new BigDecimal(0);
 		this.quantita = 0;
 		this.stato = StatoComandaEnum.SOSPESA;
-		
+		this.lastModified = new Date();
 		listIdVariazioni = new ArrayList<Integer>();
 	}
 
@@ -43,6 +45,7 @@ public class WrapperComanda {
 		this.prezzo = comanda.getPrezzo();
 		this.quantita = comanda.getQuantita();
 		this.stato = comanda.getStato();
+		this.lastModified = comanda.getLastModified();
 		
 		listIdVariazioni = new ArrayList<Integer>();
 		
@@ -118,7 +121,13 @@ public class WrapperComanda {
 	public void setIdVoceMenu(int idVoceMenu) {
 		this.idVoceMenu = idVoceMenu;
 	}
-	
-	
+
+	public Date getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(Date lastModified) {
+		this.lastModified = lastModified;
+	}
 	
 }

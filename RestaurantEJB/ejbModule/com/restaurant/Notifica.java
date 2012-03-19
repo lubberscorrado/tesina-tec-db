@@ -7,8 +7,9 @@ public class Notifica {
 	private TipoNotificaEnum tipoNotifica;
 	private int idComanda;
 	private int idVoceMenu;
+	private int idTavolo;
 	private String nomeTavolo;
-	private Date data;
+	private Date lastModfied;
 	
 	public TipoNotificaEnum getTipoNotifica() {
 		return tipoNotifica;
@@ -28,17 +29,23 @@ public class Notifica {
 	public void setIdVoceMenu(int idVoceMenu) {
 		this.idVoceMenu = idVoceMenu;
 	}
-	public Date getData() {
-		return data;
+	public Date getLastModfied() {
+		return lastModfied;
 	}
-	public void setData(Date data) {
-		this.data = data;
+	public void setLastModfied(Date lastModfied) {
+		this.lastModfied = lastModfied;
 	}
 	public int getIdComanda() {
 		return idComanda;
 	}
 	public void setIdComanda(int idComanda) {
 		this.idComanda = idComanda;
+	}
+	public int getIdTavolo() {
+		return idTavolo;
+	}
+	public void setIdTavolo(int idTavolo) {
+		this.idTavolo = idTavolo;
 	}
 	
 }

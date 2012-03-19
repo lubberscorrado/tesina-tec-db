@@ -562,7 +562,6 @@ public class GestioneComanda {
 			for(Comanda comanda : listaComande) 
 				listaWrapperComande.add(new WrapperComanda(comanda));
 			
-			
 			return listaWrapperComande;
 		
 		} catch (Exception e) {

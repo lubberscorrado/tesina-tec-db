@@ -30,6 +30,7 @@ public class BusinessConti {
 	 * appartenti al conto aperto
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo
 	 * errore verificatosi
+	 * @author Guerri Marco
 	 */
 	public List<WrapperComanda> getConto(int idTavolo) throws DatabaseException {
 				

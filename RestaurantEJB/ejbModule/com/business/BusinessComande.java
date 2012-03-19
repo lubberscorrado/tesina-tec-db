@@ -98,7 +98,6 @@ public class BusinessComande {
 			 context.setRollbackOnly();
 			 
 			 /* Rilancio l'eccezione per la logica di presentazione */
-			 System.out.println("Inserimento comande rolled back con errore: " + e.toString());
 			 throw e;
 			
 		}

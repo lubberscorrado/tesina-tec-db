@@ -1,6 +1,7 @@
 package com.orb;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -49,6 +50,9 @@ public class Tavolo {
 	
 	@Column(name="numposti")
 	private int numposti;
+	
+	@Column(name="lastModified")
+	private Date lastModified;
 	
 	@OneToMany(mappedBy="tavoloAppartenenza")
 	private List<Conto> conti;
@@ -160,6 +164,14 @@ public class Tavolo {
 
 	public List<Conto> getConti() {
 		return conti;
+	}
+
+	public Date getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(Date lastModified) {
+		this.lastModified = lastModified;
 	}
 
 }

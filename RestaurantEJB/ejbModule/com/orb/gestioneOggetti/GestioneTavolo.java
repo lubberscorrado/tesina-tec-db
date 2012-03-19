@@ -1,6 +1,8 @@
 package com.orb.gestioneOggetti;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -14,6 +16,7 @@ import javax.persistence.Query;
 
 import com.exceptions.DatabaseException;
 import com.orb.Area;
+import com.orb.Comanda;
 import com.orb.Conto;
 import com.orb.Piano;
 import com.orb.StatoContoEnum;
@@ -22,6 +25,7 @@ import com.orb.Tavolo;
 import com.orb.UtentePersonale;
 import com.restaurant.StatoTavolo;
 import com.restaurant.TreeNodeTavolo;
+import com.restaurant.WrapperComanda;
 
 
 @SuppressWarnings("unchecked")
@@ -142,8 +146,7 @@ public class GestioneTavolo{
 	
 	
 	/** 
-	 * Ritorna lo stato di tutti i tavoli a partire dall'id del cliente. Non richiede
-	 * l'attivazione di una transazione da parte del container (AUTOCOMMIT lasciato di default a 1)
+	 * Ritorna lo stato di tutti i tavoli a partire dall'id del cliente. 
 	 * poichè tutte le entity sono eagerly fetched.
 	 * @param idTenant Id del cliente
 	 * @return Lista di oggetti StatoTavolo che incapsulano le informazioni
@@ -151,28 +154,29 @@ public class GestioneTavolo{
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'errore che si è verificato.
 	 */
-	@TransactionAttribute(TransactionAttributeType.NEVER)
 	public List<StatoTavolo> getStatoTavoli(int idTenant) throws DatabaseException {
 		
 		/* Ottengo tutti i tavoli associato al cliente, forzando l'acquisizione delle aree e 
 		 * dei piani in un'unica query. Senza il FETCH JOIN il metodo di fetch delle enitità 
 		 * (eager) è a discrezione  del persistence framework */
 		
-		// TODO Lasciare la gestione del metodo di fetch al persistence framework?
 		List<Tavolo> listTavoli = null;
 		
 		try {
-			Query query = em.createQuery(	"SELECT t FROM Tavolo t LEFT JOIN FETCH t.areaAppartenenza a " +
-											"LEFT JOIN FETCH a.pianoAppartenenza WHERE t.idTenant = :idTenant");	
+			Query query = em.createQuery(	"SELECT t FROM Tavolo t " +
+											"LEFT JOIN FETCH t.areaAppartenenza a " +
+											"LEFT JOIN FETCH a.pianoAppartenenza WHERE " +
+											"t.idTenant = :idTenant");	
 			
 			query.setParameter("idTenant", idTenant);
 			listTavoli = query.getResultList();
 			
 		} catch(Exception e) {
-			throw new DatabaseException("Errore durante la ricerca dei tavoli ("+ e.toString()+")");
+			throw new DatabaseException("Errore durante la ricerca dei tavoli (" + 
+										e.toString()+")");
 		}
 		
-		/*****************************************************************************
+		/* ****************************************************************************
 		 * Recupero tutte le informazioni associate al tavolo (area, piano, cameriere)
 		 *****************************************************************************/
 		
@@ -189,13 +193,10 @@ public class GestioneTavolo{
 				throw new DatabaseException("Errore durante la ricerca dei piani e delle aree " +
 											"(" + e.toString() + ")");
 			}
-		
-			
-			
 			
 			try {
 			
-				/**********************************************************
+				/* *********************************************************
 				 * Recupera il conto correntemente associato al tavolo
 				 * ********************************************************/
 				Query queryConto = em.createQuery( 	"SELECT c FROM Conto c " +
@@ -207,12 +208,12 @@ public class GestioneTavolo{
 				
 				List<Conto> listaConti = queryConto.getResultList();
 				
-				/**********************************************************
+				/* *********************************************************
 				 * Recupero il cameriere correntemente associato al tavolo
 				 ***********************************************************/
 				Query queryCameriere = em.createQuery(	"SELECT u FROM UtentePersonale u " +
-														"LEFT JOIN u.conti c " +
-														"LEFT JOIN c.tavoloAppartenenza t " +
+														"JOIN u.conti c " +
+														"JOIN c.tavoloAppartenenza t " +
 														"WHERE c.stato = :stato AND t.idTavolo = :idTavolo");
 				
 				queryCameriere.setParameter("stato", StatoContoEnum.APERTO);
@@ -261,8 +262,6 @@ public class GestioneTavolo{
 	 * un tavolo
 	 * @throws DatabaseException Generica eccezione durante le operazioni sul database
 	 */
-	
-		
 	public List<TreeNodeTavolo> getTavoloByArea(int idArea) throws DatabaseException {
 		
 		Area area;
@@ -312,6 +311,66 @@ public class GestioneTavolo{
 		}catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca del tavolo (" + e.toString() + ")");
 		}
+	}
+	
+	/**
+	 * Ritorna i tavoli associati ad un determinato cameriere che si trovano in un determinato
+	 * stato. Viene utilizzato per la gestione delle notifiche.
+	 * @param stato Stato dei tavoli che si vogliono recuperare
+	 * @param idUtente Id del cameriere al quale sono associati i tavoli
+	 * @return Lista dei tavoli
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
+	 * verificatosi
+	 */
+	
+	
+	/**
+	 * Ritorna i tavoli associati ad un cameriere che si trovano in un determinato stato.
+	 * Questo metodo viene utilizzato per la gestione delle notifiche per ottenere
+	 * l'elenco dei tavoli da pulire
+	 * @param stato Stato dei tavoli che si vogliono recuperare
+	 * @param idUtente Id del cameriere al quale sono associati i tavoli
+	 * @param lastCheckDate Data dell'ultima ricerca. Ritorna solo le tuple che 
+	 * sono state modificate
+	 * @return Lista dei tavoli recuperati
+	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore 
+	 * verificatosi
+	 */
+	public List<TreeNodeTavolo> getTavoliByStatoAndCameriere(	StatoTavoloEnum stato, 
+																int idUtente,
+																String lastCheckDate)
+																throws DatabaseException{
+		
+		List<Tavolo> listaTavoli = new ArrayList<Tavolo>();
+		List<TreeNodeTavolo> listaTreeNodeTavolo = new ArrayList<TreeNodeTavolo>();
+		
+		try {
+			Query query = em.createQuery(	"SELECT DISTINCT t FROM Tavolo t "+
+											"JOIN t.conti co " +
+											"JOIN co.cameriereAssociato ca WHERE " +
+											"t.stato = :stato AND " +
+											"ca.idUtente = :idUtente AND " +
+											"t.lastModified > :lastCheckDate");
+					
+			
+			query.setParameter("idUtente", idUtente);
+			query.setParameter("stato", stato);
+			query.setParameter(	"lastCheckDate", 
+								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+								.parse(lastCheckDate));
+			
+			listaTavoli = query.getResultList();
+			
+			for(Tavolo tavolo : listaTavoli) {
+				listaTreeNodeTavolo.add(new TreeNodeTavolo(tavolo));
+			}
+			return listaTreeNodeTavolo;
+			
+		}catch(Exception e) {
+			throw new DatabaseException("Errore durante la ricerca dei tavoli nello stato " +
+										stato.toString() + " ("+ e.toString() +")");
+		}
+		
 	}
 	
 }
