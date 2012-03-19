@@ -109,8 +109,6 @@ public class HomeActivity extends TabActivity {
 	    DbManager dbManager = new DbManager(getApplicationContext());
 	 
 	    dbManager.createTablesComande();
-	   
-	   
 	    dbManager.createTableNotifiche();
 	    
 	    dbManager.BackUpDbToSD();
