@@ -2007,14 +2007,41 @@ var _mainTabPanel = {
 				            { header: 'Creazione', 	dataIndex: 'timestampApertura', 	flex:2 },
 				            { header: 'Chiusura', 	dataIndex: 'timestampChiusura',	 	flex:2 }
 				        ],
+				listeners:{
+					afterrender: function(thisCmp, eOpts ){
+						console.debug('fuck fuck shit fuck');
+					},
+					afterlayout: function(thisCmp, lay, eOpts ){
+						console.debug('ASDEREEAWSDO'+thisCmp.getSize());
+					},
+					itemdblclick: function(view, record, item, index, e, eOpts){
+		        		console.debug('idConto: '+record.get('idConto'));
+		        		_mainTabPanel.visualizzaConto(	record.get('idConto'), record.get('idTavolo')	);
+//			        	_viewPort_panel_east.removeAll(false);
+//			        	// Inizio definizione stato tavolo
+//				        	console.debug(view);
+//				        	console.debug('Record: ');
+//				        	console.debug(record);
+//				        	console.debug(item);
+//				        	_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
+//				        	_viewPort_panel_east.add({
+//				        		xtype: 'label',
+//				        		text: '<h1>Tavolo:</h1> '+record.get('idTavolo')
+//				        	});
+//			        	// Fine definizione stato tavolo
+//			        	_viewPort_panel_east.expand(true);
+			        },
+			        itemcontextmenu: function(view, rec, node, index, e) {}
+				},
+				        
 		        // paging bar on the bottom
 		        bbar: Ext.create('Ext.PagingToolbar', {
 		            store: Ext.getStore('datastore_storico_conti'),
 		            displayInfo: true,
-		            displayMsg: 'Displaying topics {0} - {1} of {2}',
+		            displayMsg: 'Conti visualizzati {0} - {1} di {2}',
 		            emptyMsg: "Non ci sono conti da visualizzare",
 		            items:[
-		                '-', 'Trololo'/*{
+		                '-'/*, 'Trololo',/*{
 		                text: 'Show Preview',
 		                pressed: pluginExpanded,
 		                enableToggle: true,

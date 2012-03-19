@@ -263,7 +263,7 @@ function initStores(){
 			model: 'StoricoConto',
 			autoLoad: true,
 			//autoSync: true,
-			pageSize: 10,
+			pageSize: 30,
 			remoteSort: true,
 			
 //			proxy: {
