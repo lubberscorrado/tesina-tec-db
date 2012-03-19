@@ -166,7 +166,18 @@ public class login extends HttpServlet {
 		} else if(action.equals("logout")){//LOGOUT
 			session.setAttribute("Logged", false);
 			try {
-				gestioneStatoUtentePersonale.deleteStatoUtentePersonale(Integer.parseInt((String) session.getAttribute("idUtente")), Integer.parseInt((String) session.getAttribute("idTenant")));
+				Object obj_idUtente = session.getAttribute("idUtente");
+				Object obj_idTenant = session.getAttribute("idTenant");
+				
+				if(obj_idTenant == null || obj_idUtente == null){
+					session.invalidate();
+					JSONResponse.WriteOutput(response, true, "Logout effettuato correttamente");
+					return;
+				}
+				
+				int idUtente = (Integer) session.getAttribute("idUtente");
+				int idTenant = (Integer) session.getAttribute("idTenant");
+				gestioneStatoUtentePersonale.deleteStatoUtentePersonale(idUtente,idTenant);
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
