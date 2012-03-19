@@ -195,6 +195,44 @@ public class GestioneConto {
 		}
 	}
 	
+	public List<WrapperConto> getContoByIdTenant(int idTenant) throws DatabaseException {
+		
+		try {
+			
+			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idTenant = :idTenant ORDER BY timeStampChiusura DESC");
+			query.setParameter("idTenant", idTenant);
+			List<WrapperConto> listConti = new ArrayList<WrapperConto>();
+			
+			for(Conto conto :  ((List<Conto>) query.getResultList())) 
+				listConti.add(new WrapperConto(conto));
+			
+			return listConti;
+					
+		}catch(Exception e) {
+			throw new DatabaseException(	"Errore durante la ricerca dei conti del tenant richiesto (" + e.toString() +")");
+		}
+	}
+	
+	public Long getNumContiByIdTenant(int idTenant) throws DatabaseException {
+		
+		try {
+			
+			Query query = em.createQuery(	"SELECT COUNT(*) FROM Conto c WHERE c.idTenant = :idTenant");
+			query.setParameter("idTenant", idTenant);
+			int results = 0;
+			
+//			List<WrapperConto> listConti = new ArrayList<WrapperConto>();
+//			
+//			for(Conto conto :  ((List<Conto>) query.getResultList())) 
+//				listConti.add(new WrapperConto(conto));
+			
+			return (Long) query.getSingleResult();
+					
+		}catch(Exception e) {
+			throw new DatabaseException(	"Errore durante il calcolo del numero dei conti del tenant (" + e.toString() +")");
+		}
+	}
+	
 	public boolean chiudiContoById(int idConto) throws DatabaseException {
 		try {
 			
