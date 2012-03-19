@@ -14,6 +14,7 @@ public class WrapperConto {
 	private Timestamp timestampApertura;
 	private Timestamp timestampChiusura;
 	private StatoContoEnum stato;
+	private int idTavolo;
 	
 	public WrapperConto(Conto conto) {
 	
@@ -21,7 +22,8 @@ public class WrapperConto {
 		this.prezzo = conto.getPrezzo();
 		this.timestampApertura = conto.getTimeStampApertura();
 		this.timestampChiusura = conto.getTimeStampChiusura();
-		this.setStato(conto.getStato());
+		this.stato = conto.getStato();
+		this.idTavolo = conto.getTavoloAppartenenza().getIdTavolo();
 	}
 	
 	public int getIdConto() {
@@ -67,6 +69,14 @@ public class WrapperConto {
 
 	public void setNumeroPersone(int numeroPersone) {
 		this.numeroPersone = numeroPersone;
+	}
+
+	public int getIdTavolo() {
+		return idTavolo;
+	}
+
+	public void setIdTavolo(int idTavolo) {
+		this.idTavolo = idTavolo;
 	}
 	
 		

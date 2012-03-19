@@ -25,7 +25,9 @@ import com.orb.VoceMenu;
 import com.restaurant.TreeNodeVoceMenu;
 import com.restaurant.WrapperComanda;
 import com.restaurant.WrapperComandaCucina;
+import com.restaurant.WrapperConto;
 import com.restaurant.WrapperStatoUtentePersonale;
+import com.restaurant.WrapperUtentePersonale;
 import com.restaurant.WrapperVariazione;
 
 @SuppressWarnings("unchecked") 
@@ -84,7 +86,43 @@ public class GestioneStatoUtentePersonale {
 			throw new DatabaseException("Errore durante l'eliminazione della sessione ("+ e.toString() + ")");
 		}
 	}
+	
+	
+	public List<WrapperUtentePersonale> getLoggedCamerieri(int idTenant) throws DatabaseException {
+		try {
+			Query query = em.createNamedQuery("SELECT u FROM statoutentepersonale s JOIN utentepersonale u WHERE s.idUtente = u.idUtente AND s.idTenant = :idTenant AND s.tipoAccesso = :stato");
+			query.setParameter("idTenant", idTenant);
+			query.setParameter("stato", StatoUtentePersonaleEnum.CAMERIERE);
+			
+			List<WrapperUtentePersonale> listWrapperUtentePersonale = new ArrayList<WrapperUtentePersonale>();
+			
+			for(UtentePersonale utentePersonale :  ((List<UtentePersonale>) query.getResultList())) 
+				listWrapperUtentePersonale.add(new WrapperUtentePersonale(utentePersonale));
+			
+			return listWrapperUtentePersonale;
+			
+		}catch(Exception e) {
+			throw new DatabaseException("Errore durante l'eliminazione della sessione ("+ e.toString() + ")");
+		}
+	}
 
+	public List<WrapperUtentePersonale> getLoggedCuochi(int idTenant) throws DatabaseException {
+		try {
+			Query query = em.createNamedQuery("SELECT u FROM statoutentepersonale s JOIN utentepersonale u WHERE s.idUtente = u.idUtente AND s.idTenant = :idTenant AND s.tipoAccesso = :stato");
+			query.setParameter("idTenant", idTenant);
+			query.setParameter("stato", StatoUtentePersonaleEnum.CUOCO);
+			
+			List<WrapperUtentePersonale> listWrapperUtentePersonale = new ArrayList<WrapperUtentePersonale>();
+			
+			//for(StatoUtentePersonale statoUtentePersonale :  ((List<StatoUtentePersonale>) query.getResultList())) 
+			//	listWrapperUtentePersonale.add(new WrapperUtentePersonale(statoUtentePersonale));
+			
+			return listWrapperUtentePersonale;
+			
+		}catch(Exception e) {
+			throw new DatabaseException("Errore durante l'eliminazione della sessione ("+ e.toString() + ")");
+		}
+	}
 	 
 	
 	/**
