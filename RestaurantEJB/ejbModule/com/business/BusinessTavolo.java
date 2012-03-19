@@ -181,8 +181,6 @@ public class BusinessTavolo {
 										tavolo.isEnabled());
 			
 		}catch(DatabaseException e) {
-			System.out.println("ECCEZIONE  ECCEZIONE ECCEZIONE ");
-			
 			throw e;
 		}
 	}
