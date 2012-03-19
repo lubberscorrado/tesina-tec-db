@@ -478,7 +478,7 @@ Ext.define('StoricoConto', {
 	        model: 'Conto',
 	        idProperty: 'idConto',
 	        root: 'conti',
-	        totalProperty: 'total'
+	        totalProperty: 'results'
 	    },
 	    actionMethods : {
             create : 'POST',

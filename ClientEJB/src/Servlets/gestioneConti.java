@@ -158,11 +158,21 @@ public class gestioneConti extends HttpServlet {
 			 * Richiedo la lista dei conti associati ad un determinato tavolo
 			 ************************************************************************************/
 			int idTenant = (Integer) request.getSession().getAttribute("idTenant");
+			int start;
+			int limit;
+			
+			try{
+				start = Integer.parseInt(request.getParameter("start"));
+				limit = Integer.parseInt(request.getParameter("limit"));
+			}catch(Exception e){
+				System.out.println("ECCEZIONE MAGICA LALALAL");
+				start = 0;
+				limit = 25;
+			}
 			JSONArray jsonArrayConti = new JSONArray();
 			
 			try {
-				
-				List<WrapperConto> listaConti = gestioneConto.getContoByIdTenant(idTenant);
+				List<WrapperConto> listaConti = gestioneConto.getContoByIdTenant(idTenant,start,limit);
 				
 				for(WrapperConto conto : listaConti) {
 					
@@ -194,8 +204,8 @@ public class gestioneConti extends HttpServlet {
 			JSONObject json_out = new JSONObject();
 			json_out.put("success", true);
 			json_out.put("message", "OK");
-			json_out.put("results", results);
 			json_out.put("conti", jsonArrayConti);
+			json_out.put("results", results);
 			response.getWriter().println(json_out);
 			
 		}else if(request.getParameter("action").equals("VISUALIZZA_CONTO")) {

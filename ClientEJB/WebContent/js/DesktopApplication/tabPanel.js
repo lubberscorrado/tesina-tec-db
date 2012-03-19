@@ -1987,7 +1987,7 @@ var _mainTabPanel = {
 //		        loadMask: true,
 		        viewConfig: {
 		            id: 'gv',
-//		            emptyText:'Non ci sono conti da visualizzare.',
+		            emptyText:'Non ci sono conti da visualizzare.',
 //		            forceFit: true,
 //		            trackOver: false,
 //		            stripeRows: false,
