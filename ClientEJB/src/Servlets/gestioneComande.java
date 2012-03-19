@@ -39,7 +39,6 @@ public class gestioneComande extends HttpServlet {
 	private BusinessComande businessComande;
     @EJB
     private GestioneUtentePersonale gestioneUtentePersonale;
- 
     
 	public gestioneComande() {
         super();
@@ -51,10 +50,14 @@ public class gestioneComande extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		System.out.println("Servlet gestioneComande: sono stata invocata!");
 		
-		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere))
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere) || 
+			(Integer) request.getSession().getAttribute("idTenant") == null || 
+			(Integer)request.getSession().getAttribute("idUtente") == null) {
+			
 			return;
+		}
+		
 		int idTenant = (Integer) request.getSession().getAttribute("idTenant");
 			
 		WrapperUtentePersonale utentePersonale;
@@ -68,7 +71,8 @@ public class gestioneComande extends HttpServlet {
 			return;
 		}
 		
-		if(request.getParameter("action").equals("OCCUPA_TAVOLO")) {
+		if( request.getParameter("action") != null &&
+			request.getParameter("action").equals("OCCUPA_TAVOLO")) {
 			
 			/* ****************************************************************************
 			 * Viene occupato il tavolo e aperto il conto associato
@@ -77,11 +81,15 @@ public class gestioneComande extends HttpServlet {
 				int idTavolo = 0;
 				if(request.getParameter("idTavolo")!= null)
 					idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
+			
 				int numeroPersone = 0;
 				if(request.getParameter("numeroPersone") != null) 
 					numeroPersone = Integer.parseInt(request.getParameter("numeroPersone"));
 				
-				businessTavolo.occupaTavolo(idTavolo, idTenant, utentePersonale.getIdUtentePersonale(), numeroPersone);
+				businessTavolo.occupaTavolo(idTavolo, 
+											idTenant, 
+											utentePersonale.getIdUtentePersonale(), 
+											numeroPersone);
 			
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("cameriere", utentePersonale.getNome());
@@ -90,12 +98,12 @@ public class gestioneComande extends HttpServlet {
 				response.getWriter().print(jsonObject);
 				
 			} catch (Exception e) {
-				System.out.println("Servlet gestioneComande: si è verificato un errore occupando un tavolo.");
 				JSONResponse.WriteOutput(response, false, e.toString());
 				return;
 			}
 		
-		} else if(request.getParameter("action").equals("LIBERA_TAVOLO")) {
+		} else if(	request.getParameter("action") != null &&
+					request.getParameter("action").equals("LIBERA_TAVOLO")) {
 			
 			/* ****************************************************************************
 			 * Viene liberato il tavolo e settato il conto come 
@@ -103,23 +111,36 @@ public class gestioneComande extends HttpServlet {
 			 *****************************************************************************/
 			
 			try {
-				
 				int idTavolo = 0;
-			
 				if(request.getParameter("idTavolo")!= null)
 					idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
+				
 				businessTavolo.liberaTavolo(idTavolo);
-				
-				
 				JSONResponse.WriteOutput(response, true, "");
 			
 			} catch (Exception e) {
-				
 				JSONResponse.WriteOutput(response, false, e.toString());
 				return;
 			}
 			
-		} else if(request.getParameter("action").equals("INSERISCI_COMANDE")){
+		} else if(request.getParameter("action").equals("PULISCI_TAVOLO")) {
+			
+			try {
+				int idTavolo = 0;
+				if(request.getParameter("idTavolo")!= null)
+					idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
+					
+				businessTavolo.pulisciTavolo(idTavolo);
+				
+				JSONResponse.WriteOutput(response, true, "");
+			
+			} catch(Exception e) {
+				JSONResponse.WriteOutput(response, false, e.toString());
+				return;
+			}
+			
+		} else if(	request.getParameter("action") != null &&
+					request.getParameter("action").equals("INSERISCI_COMANDE")){
 			
 			/* ****************************************************************************
 			 * Riceve un gruppo di ordinazioni destinate ad un determinato tavolo.
@@ -168,10 +189,10 @@ public class gestioneComande extends HttpServlet {
 					listaComande.add(wrapperComanda);
 				}
 				
-				// TODO Sistemare id cameriere che è settato staticamente a 1
+				int idUtente = (Integer)request.getSession().getAttribute("idUtente");
 				List<Integer> listaIdRemoti = businessComande.inserisciComande(	listaComande, 
 																				idTavolo, 
-																				1);
+																				idUtente);
 					
 					
 				/* Array JSON che contiene gli id associati alle comande sul
@@ -191,12 +212,12 @@ public class gestioneComande extends HttpServlet {
 				
 				
 			} catch (Exception e) {
-			
 				JSONResponse.WriteOutput(response, false, e.toString());
 				return;
 			}
 			
-		} else if(request.getParameter("action").equals("MODIFICA_COMANDA")) {
+		} else if(	request.getParameter("action") != null &&
+					request.getParameter("action").equals("MODIFICA_COMANDA")) {
 			
 			/* ****************************************************************************
 			 * Decodifica la richiesta di modifica di una comanda e la passa alla logica
@@ -237,7 +258,8 @@ public class gestioneComande extends HttpServlet {
 				return;
 			}
 			
-		} else if (request.getParameter("action").equals("ELIMINA_COMANDA")) {
+		} else if (	request.getParameter("action") != null &&
+					request.getParameter("action").equals("ELIMINA_COMANDA")) {
 			
 			/* ****************************************************************************
 			 * Acquisisce l'id della comanda da eliminare e passa la richiesta alla logica
@@ -245,8 +267,13 @@ public class gestioneComande extends HttpServlet {
 			 *****************************************************************************/
 			
 			try {
+				
+				if(request.getParameter("idRemotoComanda") == null)
+					return;
+				
 				int idRemotoComanda = new Integer(request.getParameter("idRemotoComanda"));
 				businessComande.eliminaComanda(idRemotoComanda);
+				
 				JSONResponse.WriteOutput(response, true, "Comanda eliminata");
 			} catch (Exception e) {
 				JSONResponse.WriteOutput(response, false, e.toString());

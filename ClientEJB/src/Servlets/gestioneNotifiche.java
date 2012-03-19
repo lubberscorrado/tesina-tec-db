@@ -40,13 +40,19 @@ public class gestioneNotifiche extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere))
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere) ||
+			(Integer) request.getSession().getAttribute("idUtente") == null) {
+			
 			return;
+		}
+		
 		int idUtente = (Integer) request.getSession().getAttribute("idUtente");
 		
 		try {
-			if(request.getParameter("action").equals("CHECK_NOTIFICHE")) {
-				
+	
+			if(	request.getParameter("action") != null && 
+				request.getParameter("action").equals("CHECK_NOTIFICHE")) {
+			
 				/* **********************************************************
 				 * Verifica la presenza di notifiche senza mandarle in
 				 * output. Utilizzato dal service per notificare la 
@@ -54,20 +60,23 @@ public class gestioneNotifiche extends HttpServlet {
 				 * ricerca viene acquisita da android.
 				 ************************************************************/
 				
-				String lastDateSqlFormatted = request.getParameter("lastDate");
+				String lastDateSqlFormatted = 
+						request.getParameter("lastDate") == null ? 
+						new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").format(new Date()) :
+						request.getParameter("lastDate");
 				
 				List<Notifica> listaNotifiche = 
 						businessNotifiche.getNotifiche(	idUtente,lastDateSqlFormatted);
 				
-				if(listaNotifiche.size() > 0) {
+				if(listaNotifiche.size() > 0)
 					JSONResponse.WriteOutput(response, true, "CHECK_NOTIFICHE_PRESENTI");
-					return;
-				} else {
+				else 
 					JSONResponse.WriteOutput(response, true, "CHECK_NOTIFICHE_NON_PRESENTI");
-					return;
-				}
 				
-			} else if(request.getParameter("action").equals("GET_NOTIFICHE")) {
+				return;
+				
+			} else if(	request.getParameter("action") != null && 
+						request.getParameter("action").equals("GET_NOTIFICHE")) {
 				
 				/* *********************************************************
 				 * Verifica la presenza di notifiche e le manda in output
@@ -82,8 +91,11 @@ public class gestioneNotifiche extends HttpServlet {
 				
 				/* Acquisisco dalla richiesta la data dell'ultima verifica della
 				 * presenza di notifiche */
-				String lastDateSqlFormatted = request.getParameter("lastDate");
 				
+				String lastDateSqlFormatted = 
+						request.getParameter("lastDate") == null ? 
+						new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").format(new Date()) :
+						request.getParameter("lastDate");
 			
 				List<Notifica> listaNotifiche = 
 						businessNotifiche.getNotifiche(idUtente, lastDateSqlFormatted);
@@ -92,45 +104,38 @@ public class gestioneNotifiche extends HttpServlet {
 				
 				for(Notifica notifica : listaNotifiche) {
 					
-					if(notifica.getTipoNotifica().equals(TipoNotificaEnum.COMANDA_PRONTA)) {
-						JSONObject jsonObjectNotifica = new JSONObject();
+					JSONObject jsonObjectNotifica = new JSONObject();
 						
-						jsonObjectNotifica.put("tipo", notifica.getTipoNotifica().toString());
-						jsonObjectNotifica.put("nomeTavolo", notifica.getNomeTavolo());
-						jsonObjectNotifica.put("idVoceMenu", notifica.getIdVoceMenu());
+					jsonObjectNotifica.put("tipo", notifica.getTipoNotifica().toString());
+					jsonObjectNotifica.put("idTavolo", notifica.getIdTavolo());
+					jsonObjectNotifica.put("nomeTavolo", notifica.getNomeTavolo());
+					jsonObjectNotifica.put("idVoceMenu", notifica.getIdVoceMenu());
 						
-						/* Ritorno anche l'id della comanda a cui è associata la notifica 
-						 * (nel caso di comanda pronta) così che possa essere identificata
-						 * la comanda per il passaggio allo stato 'CONSEGNATA' */
-						jsonObjectNotifica.put("idComanda", notifica.getIdComanda());
+					/* Ritorno anche l'id della comanda a cui è associata la notifica 
+					 * (nel caso di comanda pronta) così che possa essere identificata
+					 * la comanda per il passaggio allo stato 'CONSEGNATA' */
+					jsonObjectNotifica.put("idComanda", notifica.getIdComanda());
 						
-						jsonArrayNotifiche.put(jsonObjectNotifica);
+					String lastModified = 
+							new SimpleDateFormat("HH:mm").format(notifica.getLastModfied());
 					
-					}else if(notifica.getTipoNotifica().equals(TipoNotificaEnum.TAVOLO_ASSEGNATO)) {
-						
-					} else if(notifica.getTipoNotifica().equals(TipoNotificaEnum.TAVOLO_DA_PULIRE)) {
-						
-					}
+					jsonObjectNotifica.put("lastModified", lastModified);
+					jsonArrayNotifiche.put(jsonObjectNotifica);
 				}
 				
 				/* Invio in output al client la data generata dal server per la ricerca di
 				 * notifiche come "message" */
-				
 				JSONResponse.WriteOutput(	response, 
 											true, 
 											new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), 
 											"notifiche", 
 											jsonArrayNotifiche);
-				
-				
 			}
 			
 		} catch (DatabaseException e) {
-			
 			JSONResponse.WriteOutput(	response, false, 
 										"Errore durante la ricerca delle notifiche (" + 
 										e.toString() + ")");
-			
 		}
 	}
 
