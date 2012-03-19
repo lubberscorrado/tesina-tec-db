@@ -2119,40 +2119,16 @@ var _mainTabPanel = {
 				    dockedItems: [{
 			            xtype: 'toolbar',
 			            dock: 'bottom',
-			            items: [/*'Raggruppamenti: ',{
-			                tooltip: 'Toggle the visibility of the summary row',
-			                text: 'None',
-			                handler: function(){
-			                	Ext.getStore('datastore_stato_tavolo').clearGrouping();
-			                }
-			            },{
-			                tooltip: 'Toggle the visibility of the summary row',
-			                text: 'Piano',
-			                handler: function(){
-			                	Ext.getStore('datastore_stato_tavolo').group('nomePiano');
-			                }
-			            },{
-			                tooltip: 'Toggle the visibility of the summary row',
-			                text: 'Area',
-			                handler: function(){
-			                	Ext.getStore('datastore_stato_tavolo').group('nomeArea');
-			                }
-			            },{
-			                tooltip: 'Toggle the visibility of the summary row',
-			                text: 'Stato',
-			                handler: function(){
-			                	Ext.getStore('datastore_stato_tavolo').group('statoTavolo');
-			                }
-			            },*/{
+			            items: [{
 			            	id: 'totale_tabella_conto',
 			            	text: '0.00'
 			            },'->',{
 			                text: 'Chiudi conto',
 			                id: 'tabella_visualizza_conto_action_button',
-			                iconCls: 'icon-refresh',
+			                iconCls: 'icon-close',
 			                handler: function(){
 			                	
-			                	Ext.MessageBox.confirm('Conferma', 'Sei sicuro di voler chiudere l\'ordine?', function(btn){
+			                	Ext.MessageBox.confirm('Conferma', 'Sei sicuro di voler chiudere il conto?', function(btn){
 			        				if(btn == 'no') return;
 			        				
 			        				Ext.Ajax.request({
@@ -2211,7 +2187,7 @@ var _mainTabPanel = {
 					if(objConto.conto[0].stato == "APERTO" || objConto.conto[0].stato == "DAPAGARE"){
 						//Ext.get('tabella_visualizza_conto_action_button').dom.textContent = 'Chiudi';
 					}else{
-						Ext.get('tabella_visualizza_conto_action_button').destroy();
+						//Ext.get('tabella_visualizza_conto_action_button').destroy();
 					}
 			    }
 			});
