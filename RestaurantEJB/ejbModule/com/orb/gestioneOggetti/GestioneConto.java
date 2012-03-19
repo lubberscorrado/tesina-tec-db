@@ -195,11 +195,20 @@ public class GestioneConto {
 		}
 	}
 	
-	public List<WrapperConto> getContoByIdTenant(int idTenant) throws DatabaseException {
-		
+	/**
+	 * Permette di ottenere lo storico dei conti di un Tenant con funzionalità di paging.
+	 * @param idTenant
+	 * @param start
+	 * @param limit
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public List<WrapperConto> getContoByIdTenant(int idTenant, int start, int limit) throws DatabaseException {
+
 		try {
-			
-			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idTenant = :idTenant ORDER BY timeStampChiusura DESC");
+			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idTenant = :idTenant ORDER BY idConto DESC");//ORDER BY timeStampChiusura DESC
+			query.setFirstResult(start);
+			query.setMaxResults(limit);
 			query.setParameter("idTenant", idTenant);
 			List<WrapperConto> listConti = new ArrayList<WrapperConto>();
 			
@@ -213,19 +222,18 @@ public class GestioneConto {
 		}
 	}
 	
+	/**
+	 * Ritorna il numero totali di conti appartenenti ad un Tenant.
+	 * @param idTenant
+	 * @return
+	 * @throws DatabaseException
+	 */
 	public Long getNumContiByIdTenant(int idTenant) throws DatabaseException {
-		
 		try {
 			
 			Query query = em.createQuery(	"SELECT COUNT(*) FROM Conto c WHERE c.idTenant = :idTenant");
 			query.setParameter("idTenant", idTenant);
 			int results = 0;
-			
-//			List<WrapperConto> listConti = new ArrayList<WrapperConto>();
-//			
-//			for(Conto conto :  ((List<Conto>) query.getResultList())) 
-//				listConti.add(new WrapperConto(conto));
-			
 			return (Long) query.getSingleResult();
 					
 		}catch(Exception e) {
@@ -233,6 +241,12 @@ public class GestioneConto {
 		}
 	}
 	
+	/**
+	 * Permette di settare come CHIUSO lo stato di un conto.
+	 * @param idConto
+	 * @return
+	 * @throws DatabaseException
+	 */
 	public boolean chiudiContoById(int idConto) throws DatabaseException {
 		try {
 			
