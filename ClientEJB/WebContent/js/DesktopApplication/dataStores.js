@@ -234,5 +234,64 @@ function initStores(){
 			    }
 		    }
 		});
+		
+		
+//	    var store = Ext.create('Ext.data.Store', {
+//        pageSize: 50,
+//        model: 'ForumThread',
+//        remoteSort: true,
+//        proxy: {
+//            // load using script tags for cross domain, if the data in on the same domain as
+//            // this page, an HttpProxy would be better
+//            type: 'jsonp',
+//            url: 'http://www.sencha.com/forum/topics-browse-remote.php',
+//            reader: {
+//                root: 'topics',
+//                totalProperty: 'totalCount'
+//            },
+//            // sends single sort as multi parameter
+//            simpleSortMode: true
+//        },
+//        sorters: [{
+//            property: 'lastpost',
+//            direction: 'DESC'
+//        }]
+//    });
+		
+		Ext.create('Ext.data.Store', {
+			storeId: 'datastore_storico_conti',
+			model: 'StoricoConto',
+			autoLoad: true,
+			//autoSync: true,
+			pageSize: 5,
+			remoteSort: true,
+			
+//			proxy: {
+//	            // load using script tags for cross domain, if the data in on the same domain as
+//	            // this page, an HttpProxy would be better
+//	            type: 'jsonp',
+//	            url: 'gestioneConti?action=GET_STORICO_CONTI',
+//	            
+//	            writer: {
+//	                type: 'singlepost'
+//	            },
+//	            reader: {
+//	                root: 'topics',
+//	                totalProperty: 'totalCount'
+//	            },
+//	            // sends single sort as multi parameter
+//	            simpleSortMode: true,
+//	            actionMethods : {
+//	                create : 'POST',
+//	                read   : 'POST',
+//	                update : 'POST',
+//	                destroy: 'POST'
+//	            }
+//	        },
+	        sorters: [{
+	            property: 'lastpost',
+	            direction: 'DESC'
+	        }]
+		});
 	}
 }

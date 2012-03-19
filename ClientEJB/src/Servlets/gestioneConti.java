@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.jms.Session;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -120,7 +121,7 @@ public class gestioneConti extends HttpServlet {
 				JSONResponse.WriteOutput(response,  false, e.toString());
 				
 			}
-		}else if(request.getParameter("action").equals("GET_ELENCO_CONTI")) {
+}else if(request.getParameter("action").equals("GET_ELENCO_CONTI")) {
 			
 			/* **********************************************************************************
 			 * Richiedo la lista dei conti associati ad un determinato tavolo
@@ -150,6 +151,52 @@ public class gestioneConti extends HttpServlet {
 				JSONResponse.WriteOutput(response,  false, e.toString());
 				
 			}
+			
+		}else if(request.getParameter("action").equals("GET_STORICO_CONTI")) {
+			
+			/* **********************************************************************************
+			 * Richiedo la lista dei conti associati ad un determinato tavolo
+			 ************************************************************************************/
+			int idTenant = (Integer) request.getSession().getAttribute("idTenant");
+			JSONArray jsonArrayConti = new JSONArray();
+			
+			try {
+				
+				List<WrapperConto> listaConti = gestioneConto.getContoByIdTenant(idTenant);
+				
+				for(WrapperConto conto : listaConti) {
+					
+					JSONObject jsonObjectConto = new JSONObject();
+					jsonObjectConto.put("idConto", conto.getIdConto());
+					jsonObjectConto.put("prezzo", conto.getPrezzo());
+					jsonObjectConto.put("stato", conto.getStato().toString());
+					jsonObjectConto.put("timestampApertura", conto.getTimestampApertura().toString());
+					jsonObjectConto.put("timestampChiusura", conto.getTimestampChiusura().toString());
+					
+					jsonArrayConti.put(jsonObjectConto);
+				}
+				
+								
+			} catch (DatabaseException e) {
+				JSONResponse.WriteOutput(response,  false, e.toString());
+				return;
+			}
+			
+			long results = 0;
+			try {
+				results = gestioneConto.getNumContiByIdTenant(idTenant);
+			} catch (DatabaseException e) {
+				JSONResponse.WriteOutput(response,  false, e.toString());
+				return;
+			}
+			
+			//Gestione output
+			JSONObject json_out = new JSONObject();
+			json_out.put("success", true);
+			json_out.put("message", "OK");
+			json_out.put("results", results);
+			json_out.put("conti", jsonArrayConti);
+			response.getWriter().println(json_out);
 			
 		}else if(request.getParameter("action").equals("VISUALIZZA_CONTO")) {
 			

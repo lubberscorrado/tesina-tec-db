@@ -29,6 +29,8 @@ var _mainTabPanel = {
 		_tab_gestione_personale: null,
 		_tab_gestione_menu: null,
 		
+		_tab_storico_conti: null,
+		
 		_tabella_conto: null,
 		_tabella_lista_conti_tavolo: null,
 
@@ -1953,6 +1955,87 @@ var _mainTabPanel = {
 			Ext.getCmp('viewport_east').add(form);
 		},
 
+		createTabStoricoConti : function(){
+			///////INIZIO
+			var pluginExpanded = true;
+		    
+			// pluggable renders
+//		    function renderTopic(value, p, record) {
+//		        return Ext.String.format(
+//		            '<b><a href="http://sencha.com/forum/showthread.php?t={2}" target="_blank">{0}</a></b><a href="http://sencha.com/forum/forumdisplay.php?f={3}" target="_blank">{1} Forum</a>',
+//		            value,
+//		            record.data.forumtitle,
+//		            record.getId(),
+//		            record.data.forumid
+//		        );
+//		    }
+//
+//		    function renderLast(value, p, r) {
+//		        return Ext.String.format('{0}<br/>by {1}', Ext.Date.dateFormat(value, 'M j, Y, g:i a'), r.get('lastposter'));
+//		    }
+
+		    
+		    
+		    var grid = Ext.create('Ext.grid.Panel', {
+		    	id:	'tabella_storico_conti',
+//		        width: 700,
+//		        height: 500,
+//		    	forceFit: true,
+		        title: 'Storico conti',
+		        store: Ext.getStore('datastore_storico_conti'),
+//		        disableSelection: true,
+//		        loadMask: true,
+		        viewConfig: {
+		            id: 'gv',
+//		            emptyText:'Non ci sono conti da visualizzare.',
+//		            forceFit: true,
+//		            trackOver: false,
+//		            stripeRows: false,
+//		            plugins: [{
+//		                ptype: 'preview',
+//		                bodyField: 'excerpt',
+//		                expanded: true,
+//		                pluginId: 'preview'
+//		            }]
+		        },
+		        
+		        // grid columns
+		        columns: [
+				            { header: 'IdConto',  	dataIndex: 'idConto', 				flex:1 , 	hidden: true},
+				            { header: 'Stato',  	dataIndex: 'stato', 				flex:1 },
+				            { header: 'Totale €',  	dataIndex: 'prezzo', 				flex:1 },			          
+				            { header: 'Creazione', 	dataIndex: 'timestampApertura', 	flex:2 },
+				            { header: 'Chiusura', 	dataIndex: 'timestampChiusura',	 	flex:2 }
+				        ],
+		        // paging bar on the bottom
+		        bbar: Ext.create('Ext.PagingToolbar', {
+		            store: Ext.getStore('datastore_storico_conti'),
+		            displayInfo: true,
+		            displayMsg: 'Displaying topics {0} - {1} of {2}',
+		            emptyMsg: "Non ci sono conti da visualizzare",
+		            items:[
+		                '-', 'Trololo'/*{
+		                text: 'Show Preview',
+		                pressed: pluginExpanded,
+		                enableToggle: true,
+		                toggleHandler: function(btn, pressed) {
+		                    var preview = Ext.getCmp('gv').getPlugin('preview');
+		                    preview.toggleExpanded(pressed);
+		                }
+		            }*/]
+		        })
+		    });
+
+		    // trigger the data store load
+		    //Ext.getStore('datastore_storico_conti').loadPage(1);
+		    //Ext.getCmp('main_tabPanel').add( Ext.getCmp('tabella_storico_conti') );
+			return grid;
+		    ///////FINE
+		},
+		addTabStoricoConti : function(){
+			this._tab_storico_conti = this.createTabStoricoConti();
+			Ext.getCmp('main_tabPanel').add( Ext.getCmp('tabella_storico_conti') );
+		},
 		
 		visualizzaListaConti : function(idTavolo){
 			_viewPort_panel_east.removeAll(false);

@@ -4,6 +4,9 @@ var _viewPort;
 var _viewPort_panel_east;
 var _viewPort_panel_west;
 
+var sessionFunction;
+var scheduledUpdate;
+
 var _global = {
 		_restaurant : 'BOH',
 		_user : 'Gennaro',
@@ -34,6 +37,7 @@ function main(){
 		    	_global._isAdministrator = 	json_response.isAdministrator;
 		    	if( _global._isCassiere == true){
 		    		desktop_main();
+		    		sessionFunction=setTimeout("startScheduledActions()",10000);
 		    	}
 	    	}else{
 	    		location.replace('index_login.jsp');
@@ -98,5 +102,18 @@ function desktop_main(){
 		_mainTabPanel.addTabGestioneTavolo();
 		_mainTabPanel.addTabGestioneMenu();
 		_mainTabPanel.addTabGestionePersonale();
+		_mainTabPanel.addTabStoricoConti();
 	}
+};
+
+function startScheduledActions(){
+	aggiornamentoAutomaticoDati();
+}
+
+function aggiornamentoAutomaticoDati(){
+	Ext.getStore('datastore_stato_tavolo').load();
+	Ext.getStore('datastore_stato_cameriere').load();
+	Ext.getStore('datastore_stato_cucina').load();
+	
+	scheduledUpdate=setTimeout("aggiornamentoAutomaticoDati()",300000);
 };

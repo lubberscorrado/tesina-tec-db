@@ -449,3 +449,43 @@ Ext.define('personale', {
 //    	 });
 //    }
 //});
+
+
+Ext.define('StoricoConto', {
+    extend: 'Ext.data.Model',
+    fields: [
+             {name: 'idConto', 				type: 'int',		useNull: true},
+             {name: 'timestampApertura', 	type: 'string'},
+             {name: 'timestampChiusura', 	type: 'string'},
+             {name: 'stato', 				type: 'string'},
+             {name: 'prezzo',				type: 'string'}
+    ],
+    idProperty: 'threadid',
+    proxy: {
+        type: 'rest',
+        appendId: false,
+	    api: {
+	    	read: 		'gestioneConti?action=GET_STORICO_CONTI',
+            create: 	'gestioneConti?action=create',
+            update: 	'gestioneConti?action=update',
+            destroy: 	'gestioneConti'
+        },
+        writer: {
+            type: 'singlepost'
+        },
+		reader: {
+	        type: 'json',
+	        model: 'Conto',
+	        idProperty: 'idConto',
+	        root: 'conti',
+	        totalProperty: 'total'
+	    },
+	    actionMethods : {
+            create : 'POST',
+            read   : 'POST',
+            update : 'POST',
+            destroy: 'POST'
+        }
+    }
+});
+
