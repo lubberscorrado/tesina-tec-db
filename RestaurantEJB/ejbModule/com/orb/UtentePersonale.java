@@ -46,6 +46,9 @@ public class UtentePersonale {
 	@Column(name="isAdmin")
 	private boolean isAdmin;
 	
+	@Column(name="removed")
+	private boolean removed;
+	
 	@OneToMany(mappedBy="cameriereAssociato")
 	private List<Conto> conti;
 	
@@ -150,6 +153,14 @@ public class UtentePersonale {
 
 	public List<Comanda> getComandePreseInCarico() {
 		return comandePreseInCarico;
+	}
+
+	public boolean getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 
 }

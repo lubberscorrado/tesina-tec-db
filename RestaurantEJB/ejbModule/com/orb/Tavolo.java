@@ -1,6 +1,5 @@
 package com.orb;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -8,12 +7,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -23,7 +20,9 @@ import javax.persistence.Table;
 @Entity
 @NamedQueries({
 	@NamedQuery(name = "getTavoli",
-				query = "SELECT t FROM Tavolo t WHERE t.idTenant = :idTenant")})
+				query = "SELECT t FROM Tavolo t " +
+						"WHERE t.idTenant = :idTenant " +
+						"AND t.removed = :removed ")})
 @Table(name="tavolo")
 public class Tavolo {
 		
@@ -53,6 +52,9 @@ public class Tavolo {
 	
 	@Column(name="lastModified")
 	private Date lastModified;
+	
+	@Column(name="removed")
+	private boolean removed;
 	
 	@OneToMany(mappedBy="tavoloAppartenenza")
 	private List<Conto> conti;
@@ -172,6 +174,14 @@ public class Tavolo {
 
 	public void setLastModified(Date lastModified) {
 		this.lastModified = lastModified;
+	}
+
+	public boolean getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 
 }

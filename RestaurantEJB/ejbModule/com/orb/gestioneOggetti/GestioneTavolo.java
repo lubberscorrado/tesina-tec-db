@@ -138,7 +138,8 @@ public class GestioneTavolo{
 			Tavolo tavolo = em.find(Tavolo.class, idTavolo);
 			if(tavolo == null)
 				throw new DatabaseException("Errore durante la ricerca del tavolo");
-			em.remove(tavolo);
+//			em.remove(tavolo);
+			tavolo.setRemoved(true);
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante l'eliminazione del tavolo ("+ e.toString() +")" );
 		}
@@ -149,12 +150,13 @@ public class GestioneTavolo{
 	 * Ritorna lo stato di tutti i tavoli a partire dall'id del cliente. 
 	 * poichè tutte le entity sono eagerly fetched.
 	 * @param idTenant Id del cliente
+	 * @param "false" per ottenere i tavoli non eliminati, "true" per ottenere i tavoli eliminati
 	 * @return Lista di oggetti StatoTavolo che incapsulano le informazioni
 	 *  sullo stato di un tavolo
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'errore che si è verificato.
 	 */
-	public List<StatoTavolo> getStatoTavoli(int idTenant) throws DatabaseException {
+	public List<StatoTavolo> getStatoTavoli(int idTenant, boolean removed) throws DatabaseException {
 		
 		/* Ottengo tutti i tavoli associato al cliente, forzando l'acquisizione delle aree e 
 		 * dei piani in un'unica query. Senza il FETCH JOIN il metodo di fetch delle enitità 
@@ -166,9 +168,11 @@ public class GestioneTavolo{
 			Query query = em.createQuery(	"SELECT t FROM Tavolo t " +
 											"LEFT JOIN FETCH t.areaAppartenenza a " +
 											"LEFT JOIN FETCH a.pianoAppartenenza WHERE " +
-											"t.idTenant = :idTenant");	
+											"t.idTenant = :idTenant AND " +
+											"t.removed = :removed ");	
 			
 			query.setParameter("idTenant", idTenant);
+			query.setParameter("removed", removed);
 			listTavoli = query.getResultList();
 			
 		} catch(Exception e) {
@@ -258,11 +262,12 @@ public class GestioneTavolo{
 	 * al persistence contex (l'entity manager è transaction scoped). Se una transazione
 	 * JTA non è avviata, l'entità area diventa subito detached.
 	 * @param idArea Id dell'area della quale si vogliono ottenere i tavoli
+	 * @param removed : "false" se voglio ottenere i tavoli non eliminati; "true" se voglio ottenere gli eliminati
 	 * @return Lista di oggetti TreeNodeTavolo che incapsulano le informazioni su
 	 * un tavolo
 	 * @throws DatabaseException Generica eccezione durante le operazioni sul database
 	 */
-	public List<TreeNodeTavolo> getTavoloByArea(int idArea) throws DatabaseException {
+	public List<TreeNodeTavolo> getTavoloByArea(int idArea, boolean removed) throws DatabaseException {
 		
 		Area area;
 		
@@ -282,8 +287,14 @@ public class GestioneTavolo{
 			listaTavoli = area.getTavoli();	
 			listaTreeNodeTavolo = new ArrayList<TreeNodeTavolo>();
 		
-			for(Tavolo tavolo : listaTavoli) 
-				listaTreeNodeTavolo.add(new TreeNodeTavolo(tavolo));
+			for(Tavolo tavolo : listaTavoli) {
+				/* Aggiungo al wrapper solo i tavoli che m'interessano */
+				if(tavolo.getRemoved() == removed) {
+					listaTreeNodeTavolo.add(new TreeNodeTavolo(tavolo));
+				}
+				
+			}
+				
 			
 		}catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca dei tavoli associati ad un area " +

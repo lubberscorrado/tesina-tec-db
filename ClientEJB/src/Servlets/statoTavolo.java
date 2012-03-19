@@ -50,7 +50,7 @@ public class statoTavolo extends HttpServlet {
     	JSONObject json_out = new JSONObject();
 		
     	try {
-			lista_statoTavolo = gestioneTavolo.getStatoTavoli( idTenant );
+			lista_statoTavolo = gestioneTavolo.getStatoTavoli( idTenant , false);
 		} catch (DatabaseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

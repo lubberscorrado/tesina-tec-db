@@ -52,7 +52,7 @@ public class gestionePersonale extends HttpServlet {
 		idTenant = (Integer) request.getSession().getAttribute("idTenant");
 
 		try {
-			List<WrapperUtentePersonale> listaWrapperUtentePersonale = gestioneUtentePersonale.getUtentePersonaleTenant(idTenant);
+			List<WrapperUtentePersonale> listaWrapperUtentePersonale = gestioneUtentePersonale.getUtentePersonaleTenant(idTenant, false);
 			
 			for(int i=0; i<listaWrapperUtentePersonale.size(); i++){
 				json_tmp = JSONFromBean.jsonFromOBJ(listaWrapperUtentePersonale.get(i));

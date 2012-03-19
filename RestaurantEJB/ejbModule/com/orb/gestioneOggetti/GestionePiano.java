@@ -111,7 +111,8 @@ public class GestionePiano {
 			if(piano == null)
 				throw new DatabaseException("Errore durante la ricerca del piano da eliminare");
 			
-			em.remove(piano);
+//			em.remove(piano);
+			piano.setRemoved(true);
 		} catch (Exception e) {
 			throw new DatabaseException("Errore durante la cancellazione del piano ("+ e.toString() + ")");
 			
@@ -121,16 +122,18 @@ public class GestionePiano {
 	/**
 	 * Ritorna i piani appartenenti ad un cliente
 	 * @param idTenant Id del cliente
+	 * @param removed "true" per tornare i piani rimossi, "false" per tornare i piani non rimossi
 	 * @return Lista di oggetti TreeNodePiano che incapsulano le informazioni
 	 * sui piani.
 	 * @throws DatabaseException 
 	 */
 	
-	public List<TreeNodePiano> getPiani(int idTenant) throws DatabaseException {
+	public List<TreeNodePiano> getPiani(int idTenant, boolean removed) throws DatabaseException {
 		
 		try {
 			Query query = em.createNamedQuery("getPiani");
 			query.setParameter("idTenant", idTenant);
+			query.setParameter("removed", removed);
 			
 			List<Piano> listaPiano = (List<Piano>)query.getResultList();
 			List<TreeNodePiano> listaTreeNodePiano = new ArrayList<TreeNodePiano>();

@@ -155,7 +155,8 @@ public class GestioneUtentePersonale{
 			 UtentePersonale utentePersonale = em.find(UtentePersonale.class, idUtentePersonale);
 			 if(utentePersonale == null)
 				 throw new DatabaseException("Errore durante la ricerca dell'utente da rimuovere");
-			 em.remove(utentePersonale);
+//			 em.remove(utentePersonale);
+			 utentePersonale.setRemoved(true);
 		 } catch (DatabaseException e) {
 				throw e;
 		 } catch (Exception e) {
@@ -167,16 +168,20 @@ public class GestioneUtentePersonale{
 	/** 
 	 * Ritorna l'elenco di tutti gli utenti appartenenti ad un cliente 
 	 * @param idTenant Id del cliente
+	 * @param removed "false" per restituire gli utenti personale non eliminati dal DB
 	 * @return Oggetto WrapperUtentePersonale che rappresenta un utente
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'ultimo errore verificatosi
 	 */
 	 
-	public List<WrapperUtentePersonale> getUtentePersonaleTenant(int idTenant) throws DatabaseException {
+	public List<WrapperUtentePersonale> getUtentePersonaleTenant(int idTenant, boolean removed) throws DatabaseException {
 		try {
 			
-			Query query = em.createQuery("SELECT a FROM UtentePersonale a WHERE a.idTenant = :idTenant");
+			Query query = em.createQuery("SELECT a FROM UtentePersonale a " +
+					"WHERE a.idTenant = :idTenant " +
+					"AND a.removed = :removed ");
 			query.setParameter("idTenant", idTenant);
+			query.setParameter("removed", removed);
 			List<UtentePersonale> listaUtentePersonale = (List<UtentePersonale>)query.getResultList();
 			List<WrapperUtentePersonale> listaWrapperUtentePersonale = new ArrayList<WrapperUtentePersonale>();
 			

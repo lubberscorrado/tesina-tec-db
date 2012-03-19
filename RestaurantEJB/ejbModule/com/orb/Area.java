@@ -33,6 +33,9 @@ public class Area {
 	
 	@Column(name="enabled")
 	private boolean enabled;
+	
+	@Column(name="removed")
+	private boolean removed;
 		
 	@ManyToOne
 	@JoinColumn(name="idPiano", referencedColumnName="idPiano")
@@ -92,6 +95,14 @@ public class Area {
 
 	public void setIdTenant(int idTenant) {
 		this.idTenant = idTenant;
+	}
+
+	public boolean getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 
 	

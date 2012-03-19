@@ -1,7 +1,6 @@
 package com.orb.gestioneOggetti;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -11,12 +10,8 @@ import javax.persistence.Query;
 
 import com.exceptions.DatabaseException;
 import com.orb.Area;
-import com.orb.StatoTavoloEnum;
-import com.orb.Tavolo;
-
 import com.orb.Piano;
 import com.restaurant.TreeNodeArea;
-import com.restaurant.TreeNodeTavolo;
 
 @SuppressWarnings("unchecked") 
 @Stateless
@@ -107,7 +102,8 @@ public class GestioneArea{
 			 Area area = em.find(Area.class, idArea);
 			 if(area == null)
 				 throw new DatabaseException("Errore durante la ricerca dell'area da rimuovere");
-			 em.remove(area);
+//			 em.remove(area);
+			 area.setRemoved(true);
 		 } catch (Exception e) {
 			 throw new DatabaseException("Errore durante l'eliminazione dell'area ("+ e.toString() +")");
 		 }
@@ -116,16 +112,21 @@ public class GestioneArea{
 	/** 
 	 * Ritorna l'elenco di tutte le aree appartenenti ad un cliente 
 	 * @param idTenant Id del cliente
+	 * @param removed "false" per ottenere le aree non eliminate dal DB
 	 * @return Oggetto TreeNodeArea che rappresenta un area di un cliente
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'ultimo errore verificatosi
 	 */
 	 
-	public List<TreeNodeArea> getAreeTenant(int idTenant) throws DatabaseException {
+	public List<TreeNodeArea> getAreeTenant(int idTenant, boolean removed) throws DatabaseException {
 		try {
 			
-			Query query = em.createQuery("SELECT a FROM Area a WHERE a.idTenant = :idTenant");
+			Query query = em.createQuery("SELECT a FROM Area a " +
+										 "WHERE a.idTenant = :idTenant " +
+										 "AND a.removed = :removed ");
 			query.setParameter("idTenant", idTenant);
+			query.setParameter("removed", removed);
+			
 			List<Area> listaAree = (List<Area>)query.getResultList();
 			List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
 			
@@ -143,11 +144,12 @@ public class GestioneArea{
 	/** 
 	 * Ritorna la lista delle aree associate ad un determinato piano
 	 * @param idPiano id del piano del quale si vuole ottenere la lista delle aree
+	 * @param removed "false" per tornare le aree non eliminate, "true" otherwise
 	 * @return Lista di oggetti TreeNodeArea che incapsulano di dati di un area
 	 * @throws DatabaseException Eccezione di errore durante l'accesso al database
 	 */
 	
-	public List<TreeNodeArea> getAreeByPiano(int idPiano) throws DatabaseException {
+	public List<TreeNodeArea> getAreeByPiano(int idPiano, boolean removed) throws DatabaseException {
 	
 		try {
 			
@@ -160,8 +162,11 @@ public class GestioneArea{
 			List<Area> listaAree = piano.getAree();
 			List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
 			
-			for(Area area : listaAree) 
-				listaTreeNodeArea.add(new TreeNodeArea(area));
+			for(Area area : listaAree)  {
+				if(area.getRemoved() == removed)
+					listaTreeNodeArea.add(new TreeNodeArea(area));
+			}
+				
 				
 			return listaTreeNodeArea;
 				

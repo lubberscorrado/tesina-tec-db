@@ -1,7 +1,6 @@
 package Servlets;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -13,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import sun.org.mozilla.javascript.internal.IdScriptableObject;
 
 import Utilita.JSONFromBean;
 import Utilita.JSONResponse;
@@ -75,7 +72,7 @@ public class gestioneTavolo extends HttpServlet {
 			//PIANI
 			if(request.getParameter("node").equals("root")){
 			
-				List<TreeNodePiano> lista_piani = gestionePiano.getPiani(idTenant);
+				List<TreeNodePiano> lista_piani = gestionePiano.getPiani(idTenant, false);
 				TreeNodePiano piano = null;
 				if(lista_piani != null){
 					for(int i=0; i<lista_piani.size();i++){
@@ -91,7 +88,7 @@ public class gestioneTavolo extends HttpServlet {
 			}else if (request.getParameter("node").startsWith("P")){
 			
 				int idPiano = Integer.parseInt( request.getParameter("node").substring(1) );
-				List<TreeNodeArea> lista_aree = gestioneArea.getAreeByPiano( idPiano );
+				List<TreeNodeArea> lista_aree = gestioneArea.getAreeByPiano( idPiano , false );
 				TreeNodeArea area = null;
 				if(lista_aree != null){
 					for(int i=0; i<lista_aree.size();i++){
@@ -109,7 +106,7 @@ public class gestioneTavolo extends HttpServlet {
 			}else if (request.getParameter("node").startsWith("A")){
 			
 				int idArea = Integer.parseInt( request.getParameter("node").substring(1) );
-				List<TreeNodeTavolo> lista_tavoli = gestioneTavolo.getTavoloByArea(idArea);
+				List<TreeNodeTavolo> lista_tavoli = gestioneTavolo.getTavoloByArea(idArea, false);
 				TreeNodeTavolo tavolo = null;
 				if(lista_tavoli != null){
 					for(int i=0; i<lista_tavoli.size();i++){

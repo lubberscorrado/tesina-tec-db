@@ -1,19 +1,12 @@
 package com.orb;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -22,7 +15,9 @@ import javax.persistence.Table;
 @Entity
 @NamedQueries({
 	@NamedQuery(name = "getPiani",
-				query = "SELECT p FROM Piano p WHERE p.idTenant = :idTenant")})
+				query = "SELECT p FROM Piano p " +
+						"WHERE p.idTenant = :idTenant " +
+						"AND p.removed = :removed ")})
 @Table(name="piano")
 public class Piano {
 		
@@ -45,6 +40,9 @@ public class Piano {
 	
 	@Column(name="enabled")
 	private boolean enabled;
+	
+	@Column(name="removed")
+	private boolean removed;
 	
 	@OneToMany(mappedBy="pianoAppartenenza")
 	private List<Area> listAree;
@@ -99,6 +97,14 @@ public class Piano {
 
 	public List<Area> getAree() {
 		return listAree;
+	}
+
+	public boolean getRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 
 	
