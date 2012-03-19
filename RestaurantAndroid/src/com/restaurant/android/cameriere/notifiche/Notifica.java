@@ -1,12 +1,11 @@
 package com.restaurant.android.cameriere.notifiche;
 
-import java.util.Date;
-
 public class Notifica {
 	
 	private TipoNotifica tipoNotifica;
 	private int idComanda;
 	private int idTavolo;
+	private int idNotifica;
 	private String nomeTavolo;
 	private int idVoceMenu;
 	private String voceMenu;
@@ -55,7 +54,10 @@ public class Notifica {
 	public void setIdTavolo(int idTavolo) {
 		this.idTavolo = idTavolo;
 	}
-	
-	
-	
+	public int getIdNotifica() {
+		return idNotifica;
+	}
+	public void setIdNotifica(int idNotifica) {
+		this.idNotifica = idNotifica;
+	}
 }

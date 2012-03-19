@@ -106,7 +106,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 		resetFlagVariazioni();
 		
 		/* Recupera gli id delle variazioni associate alla comanda corrente */
-		updateArrayListVariazioni();
+		getVariazioniFromDatabase();
 		
 		/* Ripristina correttamente tutte le flag delle variazioni */
 		updateFlagVariazioni();
@@ -448,7 +448,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 	 * Recupera gli id delle variazioni che sono associate all'ordinazione corrente
 	 * dal database.
 	 */
-	public void updateArrayListVariazioni() {
+	public void getVariazioniFromDatabase() {
 		
 		Cursor cursorElencoVariazioni = db.query("variazionecomanda", new String[] {"idVariazione"}, "idComanda=" + myOrdinazione.getIdOrdinazione(), null, null, null, null);
 		elencoVariazioniAssociateAOrdinazione.clear();

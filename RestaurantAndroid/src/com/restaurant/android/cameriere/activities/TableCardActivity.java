@@ -162,9 +162,6 @@ public class TableCardActivity extends Activity {
 				           }
 				       });
 				      alert.show();
-				      
-				     
-				
 			}
 		});
 		 	  
@@ -176,7 +173,76 @@ public class TableCardActivity extends Activity {
 		liberaTavolo.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View c) {
-				new LiberaTavoloAsyncTask().execute((Object[])null);
+				
+				/* **********************************************************
+				 * Chiedo conferma all'utente che sia veramente l'operazione 
+				 * che vuole fare
+				 ************************************************************/
+				AlertDialog.Builder builder = new AlertDialog.Builder(TableCardActivity.this);
+				builder	.setMessage("Procedere liberando il tavolo? Eventuali ordinazioni " +
+									"sospese verrannno cancellate.")
+						.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								
+								/* Cancello dal database locale TUTTE le ordinazioni
+								 * presenti nel conto (sia SOSPESE che NON) poichè non 
+								 * sarà più necessario visualizzarle sul client android.
+								 * Cancello anche le variazioni associate alle ordinazioni. */
+								
+								DbManager dbManager = new DbManager(getApplicationContext());
+								SQLiteDatabase db = dbManager.getWritableDatabase();
+								
+								List<Integer> listaComande = new ArrayList<Integer>();
+								
+								Cursor cursorOrdinazioni;
+								cursorOrdinazioni = db.query(	"comanda", new String[] {"idComanda"}, 
+																"idTavolo="+myTable.getTableId(),
+																null,
+																null,
+																null,
+																null,
+																null);
+								
+								cursorOrdinazioni.moveToFirst();
+								
+								while(!cursorOrdinazioni.isAfterLast()) {
+									listaComande.add(new Integer(cursorOrdinazioni.getInt(0)));
+									cursorOrdinazioni.moveToNext();
+								}
+								
+								cursorOrdinazioni.close();
+								
+								/* ******************************************************
+								 * Cancello comande e variazioni associate in base agli
+								 * id recuperati in precedenza 
+								 ********************************************************/
+								String idComande = "(";
+							
+								for(Integer id : listaComande)
+									idComande = idComande + id + ",";
+								
+								idComande = idComande.substring(0, 	idComande.lastIndexOf(",") > 0 ? 
+																	idComande.lastIndexOf(",") : 1 );
+								idComande = idComande + ")";
+								
+								db.delete("comanda", "idComanda IN " + idComande, null);
+								db.delete("variazionecomanda","idComanda IN " + idComande, null);
+								
+								/* ***********************************************
+								 * Libero il tavolo
+								 *************************************************/
+								new LiberaTavoloAsyncTask().execute((Object[])null);
+							}
+						})
+						.setNegativeButton("No", new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								
+							}
+						});
+				builder.show();
 			}
 		});
 		
@@ -405,20 +471,32 @@ public class TableCardActivity extends Activity {
 			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 			  	    	    		
 			  	    	    		/* *******************************************************
-			  	    	    		 * Rimuovo la comanda selezionata 
+			  	    	    		 * Rimuovo la comanda selezionata e tutte le variazioni
+			  	    	    		 * associate ad essa.
 			  	    	    		 ********************************************************/
 			  	    	    		DbManager dbManager = new DbManager(getApplicationContext());
 			  	    	    		SQLiteDatabase db;
 			  	    	    		
 			  	    	    		db = dbManager.getWritableDatabase();
-			  	    	    		db.delete("comanda", "idComanda=" + ordersWaitingListView_arrayOrdinazioni.get(positionClicked).getIdOrdinazione(), null);
+			  	    	    		
+			  	    	    		db.delete(	"comanda", "idComanda=" + 
+			  	    	    					ordersWaitingListView_arrayOrdinazioni
+			  	    	    					.get(positionClicked)
+			  	    	    					.getIdOrdinazione(), 
+			  	    	    					null);
+			  	    	    		
+			  	    	    		db.delete(	"variazionecomanda","idComanda=" +
+			  	    	    					ordersWaitingListView_arrayOrdinazioni
+			  	    	    					.get(positionClicked)
+			  	    	    					.getIdOrdinazione(), null);
+			  	    	    		
 			  	    	    		db.close();
 			  	    	    		dbManager.close();
 			  	    	    		  	    	    		
 			  	    	    		/* *******************************************************
 			  	    	    		 * Aggiorno gli ordini da confermare nella listview
 			  	    	    		 ********************************************************/
-			  	    	    		getOrdersWaitingToBeConfirmed();
+			  	    	    		updateListViewSospeseFromLocalDatabase();
 			  	    	    		Toast.makeText(getApplicationContext(), dialogMenuItems[item_position], Toast.LENGTH_SHORT).show();
 			  	    	    	}
 			  	    	    }
@@ -470,7 +548,7 @@ public class TableCardActivity extends Activity {
 		  * Sincronizzo il conto con il server se la flag è true
 		  ******************************************************************/
 		  if(TableCardActivity.updateConto)
-			  new GetContoAsyncTask().execute((Object[]) null);
+			  new GetContoToLocalDatabaseAsyncTask().execute((Object[]) null);
 		  
 		  TableCardActivity.updateConto = false;
 		  
@@ -481,13 +559,13 @@ public class TableCardActivity extends Activity {
 		super.onResume();
 		Log.d("TableCardActivity","OnResume");
 		
-		new TableCardAsyncTask().execute((Object[])null);
+		new UpdateTableObjectAsyncTask().execute((Object[])null);
 		
 		/* **************************************************************** 
 		  * Sincronizzo il conto con il server se la flag è true
 		  ******************************************************************/
 		  if(TableCardActivity.updateConto)
-			  new GetContoAsyncTask().execute((Object[]) null);
+			  new GetContoToLocalDatabaseAsyncTask().execute((Object[]) null);
 		  
 		  TableCardActivity.updateConto = false;
 		  
@@ -495,8 +573,8 @@ public class TableCardActivity extends Activity {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				getOrdersConfirmed();
-				getOrdersWaitingToBeConfirmed();
+				updateListViewContoFromLocalDatabase();
+				updateListViewSospeseFromLocalDatabase();
 				
 			}
 		});
@@ -573,7 +651,7 @@ public class TableCardActivity extends Activity {
      * salvate solo locamente
      * @author Fabio Pierazzi
      ************************************************************************/
-    private void getOrdersWaitingToBeConfirmed(){
+    private void updateListViewSospeseFromLocalDatabase(){
     	
     	Log.i(TAG, "Entrato in getOrdersWaitingToBeConfirmed();");
           try{
@@ -629,15 +707,11 @@ public class TableCardActivity extends Activity {
         	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
         	   * la view.
         	   **************************************************************************/
-        	  runOnUiThread(new Runnable() {
-        		  public void run() {
-        	
-        			  ordersWaitingListView_adapter.notifyDataSetChanged();
+        	   ordersWaitingListView_adapter.notifyDataSetChanged();
         			         			  
-            		  /* Modifico manualmente la nuova altezza della listView */
-                      Utility.setListViewHeightBasedOnChildren(ordersWaitingListView);
-        		  }
-        	  });
+            	/* Modifico manualmente la nuova altezza della listView */
+                Utility.setListViewHeightBasedOnChildren(ordersWaitingListView);
+        	  
        
           } catch (Exception e) {
         	Log.e("TableCardActivity", e.toString());
@@ -650,9 +724,8 @@ public class TableCardActivity extends Activity {
      * in cucina (direttamente da database).
      * @author Guerri Marco
      ************************************************************************/
-    private void getOrdersConfirmed(){
+    private void updateListViewContoFromLocalDatabase(){
     	
-    	Log.i(TAG, "getOrdersConfirmed()");
           try{
         	  
         	  contoListView_arrayOrdinazioni.clear();
@@ -703,19 +776,11 @@ public class TableCardActivity extends Activity {
         	  dbManager.close();
         	  
         	  /* *************************************************************************
-        	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
-        	   * la view.
+        	   * Aggiornamento dell'interfaccia grafica. 
         	   **************************************************************************/
-        	  runOnUiThread(new Runnable() {
-        		  public void run() {
-        			
-        			  contoListView_adapter.notifyDataSetChanged();
-
-        		      Utility.setListViewHeightBasedOnChildren(contoListView);
-        		     
-        		  }
-        	  });
-              
+       		  contoListView_adapter.notifyDataSetChanged();
+       	      Utility.setListViewHeightBasedOnChildren(contoListView);
+             
         } catch (Exception e) {
         	Log.e("TableCardActivity", e.toString());
         }
@@ -831,10 +896,11 @@ public class TableCardActivity extends Activity {
     }
   
     /* ***********************************************************************
-     * Aggiorna le textbox con le informazioni sul tavolo
+     * Aggiorna le textbox con le informazioni sul tavolo recuperate
+     * dall'oggetto globale senza conivolgere il server
      * @author Guerri Marco
      *************************************************************************/
-    public void updateStatoTavolo() {
+    public void updateTableCardFromGlobalObject() {
     	
  
 		TextView textView_tableName = (TextView) findViewById(R.id.tableCard_textView_Title);
@@ -920,11 +986,10 @@ public class TableCardActivity extends Activity {
     		DbManager dbManager = new DbManager(getApplicationContext());
 			SQLiteDatabase db = dbManager.getWritableDatabase();
 			RestaurantApplication restApp = ((RestaurantApplication)getApplication());
-    	
-			
+    		
 			try {
 				
-				/****************************************************************
+				/* ***************************************************************
 				 * Costruisco l'oggetto JSON che rappresenta tutte le ordinazioni
 				 * con tutte le voci di menu e le variazioni associate.
 				 ****************************************************************/
@@ -938,7 +1003,6 @@ public class TableCardActivity extends Activity {
 					
 					if(o.getStato().equals("Deselezionata"))
 						continue;
-				
 					
 					/* ***********************************************************
 					 * Creazione dell'oggetto JSON che rappresenta la comanda
@@ -992,7 +1056,7 @@ public class TableCardActivity extends Activity {
 					 * Se l'inserimento delle voci di menu all'interno del
 					 * databse sul server fallisce viene ritornato success:false.
 					 * La logica di business garantisce che se anche solo 1
-					 * inserimento non va a buon fine, viene fatto il 
+					 * inserimento non va a buon fine, venga fatto il 
 					 * rollback della transazione. A questo punto deve essere
 					 * notificato al cameriere l'errore. Se questo deriva dalla
 					 * mancanza di sincronizzazione tra il menu locale e il 
@@ -1042,8 +1106,8 @@ public class TableCardActivity extends Activity {
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							getOrdersWaitingToBeConfirmed();
-							getOrdersConfirmed();
+							updateListViewSospeseFromLocalDatabase();
+							updateListViewContoFromLocalDatabase();
 						}
 					});
 				}
@@ -1073,7 +1137,7 @@ public class TableCardActivity extends Activity {
      * del tavolo
      * @author Guerri Marco
      *************************************************************************/
-    class TableCardAsyncTask extends AsyncTask<Object, Object, Error> {
+    class UpdateTableObjectAsyncTask extends AsyncTask<Object, Object, Error> {
 
     	private ProgressDialog progressDialog;
     	   	
@@ -1098,7 +1162,7 @@ public class TableCardActivity extends Activity {
 			
 			Log.d("TableListAsyncTask" , response);
 			
-			/*****************************************************************
+			/* ****************************************************************
 			 * Aggiornamento dell'interfaccia grafica dello stato del tavolo
 			 *****************************************************************/
 			try {
@@ -1125,8 +1189,9 @@ public class TableCardActivity extends Activity {
 					myTable.setCameriere(jsonArray.getJSONObject(i).getString("cameriere"));
 					runOnUiThread(new Runnable() {
 						public void run() {
-							updateStatoTavolo();
-							getOrdersWaitingToBeConfirmed();
+							updateTableCardFromGlobalObject();
+							updateListViewSospeseFromLocalDatabase();
+							updateListViewContoFromLocalDatabase();
 						}
 					});
 								
@@ -1194,7 +1259,7 @@ public class TableCardActivity extends Activity {
 	   			runOnUiThread(new Runnable() {
 	   				@Override
 	   				public void run() {
-	   					updateStatoTavolo();
+	   					updateTableCardFromGlobalObject();
 	   				}
 	   			});
 	   		}
@@ -1238,10 +1303,6 @@ public class TableCardActivity extends Activity {
 					myTable.setCameriere("Non definito");
 					myTable.setNumPersone(0);
 					
-					/* Svuoto la list view delle ordinazioni inviate. Tutte le 
-					 * ordinazioni entrano a far parte di un conto non attivo */
-					contoListView_arrayOrdinazioni.clear();
-					
 					
 				} else {
 					return new Error(jsonObject.getString("message"),true);
@@ -1258,7 +1319,9 @@ public class TableCardActivity extends Activity {
 	   				public void run() {
 	   					contoListView_adapter.notifyDataSetChanged();
 	   					Utility.setListViewHeightBasedOnChildren(contoListView);
-	   					updateStatoTavolo();
+	   					updateTableCardFromGlobalObject();
+	   					updateListViewContoFromLocalDatabase();
+	   					
 	   				}
 	   			});
 			}
@@ -1320,7 +1383,7 @@ public class TableCardActivity extends Activity {
 					runOnUiThread(new Runnable() {
 		   				@Override
 		   				public void run() {
-		   					getOrdersConfirmed();
+		   					updateListViewContoFromLocalDatabase();
 		   				}
 		   			});
 					
@@ -1405,7 +1468,7 @@ public class TableCardActivity extends Activity {
 	   		if(error.errorOccurred()) {
 	   			Toast.makeText(getApplicationContext(), error.getError(), 50).show();
 	   		} else {
-	   			new TableCardAsyncTask().execute((Object[]) null);
+	   			new UpdateTableObjectAsyncTask().execute((Object[]) null);
 	   		}
 	    }
   }
@@ -1415,7 +1478,7 @@ public class TableCardActivity extends Activity {
     * al tavolo e le salve sul database locale. 
     * @author Guerri Marco
     ************************************************************************/
-   class GetContoAsyncTask extends AsyncTask<Object, Object, Error> {
+   class GetContoToLocalDatabaseAsyncTask extends AsyncTask<Object, Object, Error> {
 	   
 	   	DbManager dbManager;
 	   	SQLiteDatabase db;
@@ -1435,7 +1498,7 @@ public class TableCardActivity extends Activity {
 			requestParameters.put("action","GET_CONTO");
 			requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
 			  
-			Log.d("TableCardActivity", "****** AGGIORNO IL CONTO ********");
+			
 			try {
 				
 				/* ********************************************************
@@ -1483,12 +1546,9 @@ public class TableCardActivity extends Activity {
 				idComande = idComande.substring(0, 	idComande.lastIndexOf(",") > 0 ? 
 													idComande.lastIndexOf(",") : 1 );
 				idComande = idComande + ")";
-				Log.d("TableCardActivity", idComande);
 				
-				Log.d("TableCardActivity" , "ID comande: " + idComande);
 				db.delete("comanda", "idComanda IN " + idComande, null);
 				db.delete("variazionecomanda","idComanda IN " + idComande, null);
-				
 				
 				/* ******************************************************
 				 * Richiesta al server per ottenere il conto associato
@@ -1506,7 +1566,6 @@ public class TableCardActivity extends Activity {
 				JSONObject jsonObject = new JSONObject(response);
 				
 				if(jsonObject.getBoolean("success") == true) {
-					
 					
 					JSONArray jsonArrayComande = jsonObject.getJSONArray("comande");
 					
@@ -1573,8 +1632,8 @@ public class TableCardActivity extends Activity {
 	  		} else {
 	  			
 	  			/* Aggiorno la listview del conto */
-	  			getOrdersConfirmed();
-				contoListView_adapter.notifyDataSetChanged();
+	  			updateListViewContoFromLocalDatabase();
+				
 				Utility.setListViewHeightBasedOnChildren(contoListView);
 				
 	  		}

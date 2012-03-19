@@ -104,10 +104,12 @@ public class NotificationActivity extends Activity {
 			
 			Notifica notifica = notification_arrayList.get(position);
 			
+			final int idComanda = notifica.getIdComanda();
+			final int idNotifica = notifica.getIdNotifica();
+			
 			if(notifica.getTipoNotifica().equals(TipoNotifica.COMANDA_PRONTA)) {
 			
-				final int idComanda = notifica.getIdComanda();
-				
+						
 				/* *********************************************************
 				 * Gestione del passaggio di una comanda dallo stato PRONTA
 				 * allo stato CONSEGNATA.
@@ -123,7 +125,9 @@ public class NotificationActivity extends Activity {
 	  	    		
 	  	    	    public void onClick(DialogInterface dialog, int item_position) {
 	  	    	    	if(opzioni[item_position].equals("Consegnata")) {
-	  	    	    		new ConsegnaComandaAsyncTask().execute((Integer)idComanda);
+	  	    	    		Object[] arrayId = new Object[]{idNotifica, idComanda};
+	  	    	    		
+	  	    	    		new ConsegnaComandaAsyncTask().execute(arrayId);
 	  	    	    		
 	  	    	    	} else if (opzioni[item_position].equals("Indietro")) {
 	  	    	    		
@@ -143,15 +147,29 @@ public class NotificationActivity extends Activity {
 				
 				builder.setTitle("Gestione Notifica");
 				final int idTavolo = notifica.getIdTavolo();
-				final String[] opzioni = new String[] {"Pulito", "Indietro"};
+				final String[] opzioni = new String[] {"Pulito", "Indietro", "Elimina"};
 				
 				builder.setItems(opzioni, new DialogInterface.OnClickListener() {
 					
 					@Override
 					public void onClick(DialogInterface dialog, int item_position) {
 						if(opzioni[item_position].equals("Pulito")) {
+							
 							new PulisciTavoloAsyncTask().execute((Integer)idTavolo);
 						} else if(opzioni[item_position].equals("Indietro")) {
+							
+						}else if(opzioni[item_position].equals("Elimina")) {
+							
+							DbManager dbManager = new DbManager(getApplicationContext());
+							SQLiteDatabase db = dbManager.getWritableDatabase();
+							
+							db.delete(	"notifiche", 
+										"idNotifica=" + idNotifica, 
+										null);
+							updateListViewNotificheFromDatabase();
+							
+							db.close();
+							dbManager.close();
 							
 						}
 						
@@ -194,13 +212,17 @@ public class NotificationActivity extends Activity {
 			/* Non è stata segnalata la presenza di nuove notifiche. Viene semplicemente
 			 * aggiornata la listview recuperando le notifiche non ancora gestite dal
 			 * database locale */
-			updateListViewNotifiche();
+			updateListViewNotificheFromDatabase();
 		}
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
+		if(receiverRegistered) {
+			unregisterReceiver(receiverNotifiche);
+			NotificationActivity.receiverRegistered = false;
+		}
 		Log.d(TAG,"OnPause");
 	}
 	
@@ -215,7 +237,7 @@ public class NotificationActivity extends Activity {
 		super.onStop();
 		Log.d(TAG,"OnStop");
 		
-		/* Rimouvo il receiver per i broadcast intent del serice */
+		/* Rimuovo il receiver per i broadcast intent del serice */
 		if(receiverRegistered) {
 			unregisterReceiver(receiverNotifiche);
 			NotificationActivity.receiverRegistered = false;
@@ -434,7 +456,7 @@ public class NotificationActivity extends Activity {
 	   			Toast.makeText(getApplicationContext(), error.getError(), 50);
 	   		} else {
 	   			Log.d("NotificationActivity", "Aggiorno la listview delle notifiche");
-	   			updateListViewNotifiche();
+	   			updateListViewNotificheFromDatabase();
 	   		}
 	   		
 	    }
@@ -457,7 +479,8 @@ public class NotificationActivity extends Activity {
    			SQLiteDatabase db = dbManager.getWritableDatabase();
    			
 	   		try {
-	   			int idComanda = (Integer)params[0];
+	   			int idNotifica= (Integer)params[0];
+	   			int idComanda = (Integer)params[1];
 		   		/* Richiesta per passare la comanda allo stato consegnata */
 	   			
 	   			RestaurantApplication restApp = (RestaurantApplication)getApplication();
@@ -480,17 +503,19 @@ public class NotificationActivity extends Activity {
 		   			
 		   			/* La comanda è passato nello stato consegnata e può essere 
 		   			 * cancellata dal database locale */
-		   			db.delete("notifiche", "idComanda="+idComanda, null);
+		   			db.delete("notifiche", "idNotifica="+idNotifica, null);
+		   			
 		   		} else {
-		   			Toast.makeText(	getApplicationContext(), 
-		   							"Errore durante il cambio di stato della comanda",
-		   							50).show();
+		   			String message = jsonObjectResponse.getString("message");
+		   			return new Error(	"Errore durante la consegna della comanda (" + message +")",
+		   								true);
 		   		}
 		   		
 	   		} catch(Exception e) {
 	   			
-	   			return new Error("Errore durante la consegna della comanda (" +e.toString()+")",
-	   							true);
+	   			e.printStackTrace();
+	   			return new Error(	"Errore durante la consegna della comanda (" +e.toString()+")",
+	   								true);
 	   		
 	   		}finally{
 	   			db.close();
@@ -509,7 +534,7 @@ public class NotificationActivity extends Activity {
 	   		} else {
 	   			/* Aggiorno la listview delle notifiche. La notifica che è appena stata
 	   			 * gestita non compare più in elenco */
-	   			updateListViewNotifiche();
+	   			updateListViewNotificheFromDatabase();
 	   		}
 	    }
    }
@@ -561,6 +586,9 @@ public class NotificationActivity extends Activity {
 		   			db.delete(	"notifiche", 
 		   						"idTavolo="+idTavolo + " AND tipoNotifica='TAVOLO_DA_PULIRE'", 
 		   						null);
+		   		} else {
+		   			return new Error(	"Errore durante la pulitura del tavolo ("+
+		   								jsonObjectResponse.getString("message") + ")", true);
 		   		}
 		   		
 	   		} catch(Exception e) {
@@ -583,7 +611,7 @@ public class NotificationActivity extends Activity {
 	   		} else {
 	   			/* Aggiorno la listview delle notifiche. La notifica che è appena stata
 	   			 * gestita non compare più in elenco */
-	   			updateListViewNotifiche();
+	   			updateListViewNotificheFromDatabase();
 	   		}
 	    }
   }
@@ -594,7 +622,7 @@ public class NotificationActivity extends Activity {
     * recuperandole dal database locale.
     */
    
-   public void updateListViewNotifiche() {
+   public void updateListViewNotificheFromDatabase() {
 	   
 
 	   DbManager dbManager = new DbManager(getApplicationContext());
@@ -605,7 +633,7 @@ public class NotificationActivity extends Activity {
 	
 	   cursorNotifiche = 
 			   db.query("notifiche", 
-						new String[] {"tipoNotifica,idComanda,nomeTavolo,idVoceMenu,voceMenu,data,idTavolo"}, 
+						new String[] {"idNotifica,tipoNotifica,idComanda,idTavolo,nomeTavolo,idVoceMenu,voceMenu,data"}, 
 						"",
 						null,
 						null,
@@ -619,13 +647,15 @@ public class NotificationActivity extends Activity {
 		   
 		   Notifica notifica = new Notifica();
 		   
-		   notifica.setTipoNotifica(TipoNotifica.valueOf(cursorNotifiche.getString(0)));
-		   notifica.setIdComanda(cursorNotifiche.getInt(1));
-		   notifica.setNomeTavolo(cursorNotifiche.getString(2));
-		   notifica.setIdVoceMenu(cursorNotifiche.getInt(3));
-		   notifica.setVoceMenu(cursorNotifiche.getString(4));
-		   notifica.setData(cursorNotifiche.getString(5));
-		   notifica.setIdTavolo(cursorNotifiche.getInt(6));
+		   notifica.setIdNotifica(cursorNotifiche.getInt(0));
+		   
+		   notifica.setTipoNotifica(TipoNotifica.valueOf(cursorNotifiche.getString(1)));
+		   notifica.setIdComanda(cursorNotifiche.getInt(2));
+		   notifica.setIdTavolo(cursorNotifiche.getInt(3));
+		   notifica.setNomeTavolo(cursorNotifiche.getString(4));
+		   notifica.setIdVoceMenu(cursorNotifiche.getInt(5));
+		   notifica.setVoceMenu(cursorNotifiche.getString(6));
+		   notifica.setData(cursorNotifiche.getString(7));
 		   
 		   notification_arrayList.add(notifica);
 		   
