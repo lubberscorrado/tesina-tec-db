@@ -206,7 +206,7 @@ public class GestioneConto {
 	public List<WrapperConto> getContoByIdTenant(int idTenant, int start, int limit) throws DatabaseException {
 
 		try {
-			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idTenant = :idTenant ORDER BY idConto DESC");//ORDER BY timeStampChiusura DESC
+			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idTenant = :idTenant ORDER BY timeStampChiusura DESC");
 			query.setFirstResult(start);
 			query.setMaxResults(limit);
 			query.setParameter("idTenant", idTenant);
@@ -223,7 +223,7 @@ public class GestioneConto {
 	}
 	
 	/**
-	 * Ritorna il numero totali di conti appartenenti ad un Tenant.
+	 * Ritorna il numero totale di conti appartenenti ad un Tenant.
 	 * @param idTenant
 	 * @return
 	 * @throws DatabaseException
