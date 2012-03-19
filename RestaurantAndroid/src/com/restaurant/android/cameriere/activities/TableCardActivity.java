@@ -106,7 +106,7 @@ public class TableCardActivity extends Activity {
 			@Override
 			public void onClick(View c) {
 				
-					/***********************************************************************
+					/* **********************************************************************
 					 *  Mostro una finestra di dialogo dove chiedo quante persone ci sono
 					 *  ******************************************************************** */
 				    AlertDialog.Builder alert = new AlertDialog.Builder(TableCardActivity.this);                 
@@ -180,6 +180,19 @@ public class TableCardActivity extends Activity {
 			}
 		});
 		
+		Button btnPulisci = (Button)findViewById(R.id.button_tableCard_pulisciTavolo);
+		
+		
+		/* ****************************************************************
+		 * 	Bottone per pulire il tavolo
+		 ******************************************************************/
+		
+		btnPulisci.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				new PulisciTavoloAsyncTask().execute((Object[])null);
+			}
+		});
 		
 		Button button_prendiOrdinazione = (Button) findViewById(R.id.button_tableCard_prendiOrdinazione);
 		  
@@ -377,7 +390,7 @@ public class TableCardActivity extends Activity {
 			  	    	    	} else if (dialogMenuItems[item_position].equals("Modifica")) {
 			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 			  	    	    		
-			  	    	    		/********************************************************
+			  	    	    		/* *******************************************************
 			  	    	    		 * Avvio l'activity di modifica dell'ordinazione sospesa
 			  	    	    		 ********************************************************/
 			  	    	    		
@@ -391,7 +404,7 @@ public class TableCardActivity extends Activity {
 			  	    	    	} else if (dialogMenuItems[item_position].equals("Rimuovi")) {
 			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 			  	    	    		
-			  	    	    		/********************************************************
+			  	    	    		/* *******************************************************
 			  	    	    		 * Rimuovo la comanda selezionata 
 			  	    	    		 ********************************************************/
 			  	    	    		DbManager dbManager = new DbManager(getApplicationContext());
@@ -402,7 +415,7 @@ public class TableCardActivity extends Activity {
 			  	    	    		db.close();
 			  	    	    		dbManager.close();
 			  	    	    		  	    	    		
-			  	    	    		/********************************************************
+			  	    	    		/* *******************************************************
 			  	    	    		 * Aggiorno gli ordini da confermare nella listview
 			  	    	    		 ********************************************************/
 			  	    	    		getOrdersWaitingToBeConfirmed();
@@ -468,7 +481,7 @@ public class TableCardActivity extends Activity {
 		super.onResume();
 		Log.d("TableCardActivity","OnResume");
 		
-		new TableListAsyncTask().execute((Object[])null);
+		new TableCardAsyncTask().execute((Object[])null);
 		
 		/* **************************************************************** 
 		  * Sincronizzo il conto con il server se la flag è true
@@ -612,7 +625,7 @@ public class TableCardActivity extends Activity {
         	  db.close();
         	  dbManager.close();
         	  
-        	  /**************************************************************************
+        	  /* *************************************************************************
         	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
         	   * la view.
         	   **************************************************************************/
@@ -632,7 +645,7 @@ public class TableCardActivity extends Activity {
           
     }
     
-    /************************************************************************
+    /* ***********************************************************************
      * Metodo per reperire l'elenco delle ordinazioni che sono state inviate
      * in cucina (direttamente da database).
      * @author Guerri Marco
@@ -689,7 +702,7 @@ public class TableCardActivity extends Activity {
         	  db.close();
         	  dbManager.close();
         	  
-        	  /**************************************************************************
+        	  /* *************************************************************************
         	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
         	   * la view.
         	   **************************************************************************/
@@ -710,7 +723,7 @@ public class TableCardActivity extends Activity {
     }
     
     
-    /************************************************************************
+    /* ***********************************************************************
 	 * Adapter per gestire la lista delle ordinaizoni che devono essere
 	 * confermate dal cameriere prima di essere inviate in cucina.
 	 ************************************************************************/
@@ -766,7 +779,7 @@ public class TableCardActivity extends Activity {
         }
     }
 
-    /************************************************************************
+    /* ***********************************************************************
      * Adapter le prenotazioni. 
      * @author Fabio Pierazzi
      ************************************************************************/
@@ -817,7 +830,7 @@ public class TableCardActivity extends Activity {
         }
     }
   
-    /************************************************************************
+    /* ***********************************************************************
      * Aggiorna le textbox con le informazioni sul tavolo
      * @author Guerri Marco
      *************************************************************************/
@@ -847,28 +860,43 @@ public class TableCardActivity extends Activity {
 
 		/* Visibilità dei pulsanti */
 		
-		if(myTable.getTableStatus().equals("LIBERO")) {
-			
-			Button btnOccupa = (Button)findViewById(R.id.button_tableCard_occupaTavolo);
-			btnOccupa.setEnabled(true);
-			Button btnOrdina = (Button)findViewById(R.id.button_tableCard_prendiOrdinazione);
-			btnOrdina.setEnabled(false);
-			Button btnCedi= (Button)findViewById(R.id.button_tableCard_cediTavolo);
-			btnCedi.setEnabled(false);
-			Button btnLibera = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
-			btnLibera.setEnabled(false);
-			
-		} else if(myTable.getTableStatus().equals("OCCUPATO")) {
+		if(	myTable.getTableStatus().equals("OCCUPATO")) {
 			
 			Button btnOccupa = (Button)findViewById(R.id.button_tableCard_occupaTavolo);
 			btnOccupa.setEnabled(false);
+			Button btnPulisci = (Button)findViewById(R.id.button_tableCard_pulisciTavolo);
+			btnPulisci.setVisibility(0);;
 			Button btnOrdina = (Button)findViewById(R.id.button_tableCard_prendiOrdinazione);
 			btnOrdina.setEnabled(true);
-			Button btnCedi= (Button)findViewById(R.id.button_tableCard_cediTavolo);
-			btnCedi.setEnabled(true);
+			//Button btnCedi= (Button)findViewById(R.id.button_tableCard_cediTavolo);
+			//btnCedi.setEnabled(true);
 			Button btnLibera = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
 			btnLibera.setEnabled(true);
 			
+		} else if(myTable.getTableStatus().equals("PULIRE")) {
+		
+			Button btnOccupa = (Button)findViewById(R.id.button_tableCard_occupaTavolo);
+			btnOccupa.setEnabled(true);
+			Button btnPulisci = (Button)findViewById(R.id.button_tableCard_pulisciTavolo);
+			btnPulisci.setEnabled(true);
+			Button btnOrdina = (Button)findViewById(R.id.button_tableCard_prendiOrdinazione);
+			btnOrdina.setEnabled(false);
+			//Button btnCedi= (Button)findViewById(R.id.button_tableCard_cediTavolo);
+			//btnCedi.setEnabled(false);
+			Button btnLibera = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
+			btnLibera.setEnabled(false);
+			
+		} else {
+			Button btnOccupa = (Button)findViewById(R.id.button_tableCard_occupaTavolo);
+			btnOccupa.setEnabled(true);
+			Button btnPulisci = (Button)findViewById(R.id.button_tableCard_pulisciTavolo);
+			btnPulisci.setEnabled(false); 
+			Button btnOrdina = (Button)findViewById(R.id.button_tableCard_prendiOrdinazione);
+			btnOrdina.setEnabled(false);
+			//Button btnCedi= (Button)findViewById(R.id.button_tableCard_cediTavolo);
+			//btnCedi.setEnabled(false);
+			Button btnLibera = (Button)findViewById(R.id.button_tableCard_liberaTavolo);
+			btnLibera.setEnabled(false);
 		}
 	}
     
@@ -1045,7 +1073,7 @@ public class TableCardActivity extends Activity {
      * del tavolo
      * @author Guerri Marco
      *************************************************************************/
-    class TableListAsyncTask extends AsyncTask<Object, Object, Error> {
+    class TableCardAsyncTask extends AsyncTask<Object, Object, Error> {
 
     	private ProgressDialog progressDialog;
     	   	
@@ -1206,7 +1234,7 @@ public class TableCardActivity extends Activity {
 				
 				JSONObject jsonObject = new JSONObject(response);
 				if(jsonObject.getString("success").equals("true")) {
-					myTable.setTableStatus("LIBERO");
+					myTable.setTableStatus("PULIRE");
 					myTable.setCameriere("Non definito");
 					myTable.setNumPersone(0);
 					
@@ -1322,7 +1350,65 @@ public class TableCardActivity extends Activity {
 	    		   Toast.makeText(getApplicationContext(), error.getError(), 40).show();
 	    }
   }  
+   /************************************************************************
+    * Async task che richiede al server di settare lo stato di un tavolo
+    * da "PULIRE" a "LIBERO"
+    * @author Guerri Marco
+    ************************************************************************/
    
+   class PulisciTavoloAsyncTask extends AsyncTask<Object, Object, Error> {
+
+	   	@Override
+  		protected void onPreExecute() {
+	   	}
+  	
+	   	@Override
+		protected Error doInBackground(Object... params) {
+	   	
+	   		try {
+	   		
+		   		/* Richiesta per passare la comanda allo stato consegnata */
+	   			RestaurantApplication restApp = (RestaurantApplication)getApplication();
+		   		HashMap<String,String> requestParameters = new HashMap<String,String>();
+		   		
+		   		requestParameters.put("action","PULISCI_TAVOLO");
+		   		requestParameters.put("idTavolo", ""+ myTable.getTableId());
+		   		
+		   		
+		   		/* *************************************************
+		   		 * Aggiorno la data di verifica delle notifiche. 
+		   		 ***************************************************/
+		   	
+		   		String response = 
+							restApp.makeHttpPostRequest(restApp.getHost() + 
+														"ClientEJB/gestioneComande", 
+														requestParameters);
+		   		
+		   		JSONObject jsonObjectResponse = new JSONObject(response);
+		   		
+		   		if(jsonObjectResponse.getString("success").equals("true")) {
+		   			return new Error("", false);
+		   			
+		   		} else {
+		   			return new Error(	"Errore durante la pulizia del tavolo",
+   										true);
+		   		}
+		   		
+	   		} catch(Exception e) {
+	   			return new Error("Errore durante la pulizia del tavolo (" +e.toString()+")",
+	   							true);
+	   		}
+	   	}
+  	
+	   	@Override
+	   	protected void onPostExecute(Error error) {
+	   		if(error.errorOccurred()) {
+	   			Toast.makeText(getApplicationContext(), error.getError(), 50).show();
+	   		} else {
+	   			new TableCardAsyncTask().execute((Object[]) null);
+	   		}
+	    }
+  }
    
    /************************************************************************
     * Async Task che recupera le informazioni sul conto aperto associato

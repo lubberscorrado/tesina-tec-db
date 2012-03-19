@@ -106,10 +106,6 @@ public class HomeActivity extends TabActivity {
 		    tabHost.setCurrentTab(1);
 		}
 	    
-	    
-	    
-	    
-	    
 	    //DbManager dbManager = new DbManager(getApplicationContext());
 	 
 	    //dbManager.dropTablesComande();
@@ -119,7 +115,7 @@ public class HomeActivity extends TabActivity {
 	    //dbManager.createTableNotifiche();
 	    
 	    //dbManager.BackUpDbToSD();
-	   // dbManager.close();
+	    //dbManager.close();
 	}
 	
 	@Override

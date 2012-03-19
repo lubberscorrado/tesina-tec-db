@@ -6,6 +6,7 @@ public class Notifica {
 	
 	private TipoNotifica tipoNotifica;
 	private int idComanda;
+	private int idTavolo;
 	private String nomeTavolo;
 	private int idVoceMenu;
 	private String voceMenu;
@@ -47,6 +48,12 @@ public class Notifica {
 	}
 	public void setIdComanda(int idComanda) {
 		this.idComanda = idComanda;
+	}
+	public int getIdTavolo() {
+		return idTavolo;
+	}
+	public void setIdTavolo(int idTavolo) {
+		this.idTavolo = idTavolo;
 	}
 	
 	

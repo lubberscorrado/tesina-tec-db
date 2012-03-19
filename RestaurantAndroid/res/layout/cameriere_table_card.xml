@@ -185,13 +185,21 @@
 			      
 			        android:text="Prendi Ordinazione" />
 			
+			     <Button
+			        android:id="@+id/button_tableCard_pulisciTavolo"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:text="Pulisci Tavolo" />
+			     
+			    <!--  
 			    <Button
 			        android:id="@+id/button_tableCard_cediTavolo"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
 			       
 			        android:text="Cedi Tavolo ad un'altro cameriere" />
-			
+				-->
+				
 			    <Button
 			        android:id="@+id/button_tableCard_liberaTavolo"
 			        android:layout_width="fill_parent"
