@@ -55,11 +55,23 @@ public class gestioneConti extends HttpServlet {
 			return;
 
 		int idTavolo = 0;
-		if(request.getParameter("idTavolo")!= null)
-			idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
 		int idConto = 0;
-		if(request.getParameter("idConto")!= null)
-			idConto = Integer.parseInt(request.getParameter("idConto"));
+		
+		try{
+			if(request.getParameter("idTavolo")!= null)
+				idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
+		}catch(Exception e){
+			JSONResponse.WriteOutput(response,  false, "Errore di parsing di idTavolo");
+		}
+		
+		try{
+			if(request.getParameter("idConto")!= null)
+				idConto = Integer.parseInt(request.getParameter("idConto"));
+		}catch(Exception e){
+			JSONResponse.WriteOutput(response,  false, "Errore di parsing di idConto");
+		}
+		
+		
 		
 		if(request.getParameter("action").equals("GET_CONTO")) {
 			
