@@ -148,6 +148,7 @@ public class gestioneConti extends HttpServlet {
 					
 					JSONObject jsonObjectConto = new JSONObject();
 					jsonObjectConto.put("idConto", conto.getIdConto());
+					jsonObjectConto.put("idTavolo", conto.getIdTavolo());
 					jsonObjectConto.put("prezzo", conto.getPrezzo());
 					jsonObjectConto.put("stato", conto.getStato().toString());
 					jsonObjectConto.put("timestampApertura", conto.getTimestampApertura().toString());
@@ -190,6 +191,7 @@ public class gestioneConti extends HttpServlet {
 					
 					JSONObject jsonObjectConto = new JSONObject();
 					jsonObjectConto.put("idConto", conto.getIdConto());
+					jsonObjectConto.put("idTavolo", conto.getIdTavolo());
 					jsonObjectConto.put("prezzo", conto.getPrezzo());
 					jsonObjectConto.put("stato", conto.getStato().toString());
 					jsonObjectConto.put("timestampApertura", conto.getTimestampApertura().toString());

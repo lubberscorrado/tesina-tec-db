@@ -455,6 +455,7 @@ Ext.define('StoricoConto', {
     extend: 'Ext.data.Model',
     fields: [
              {name: 'idConto', 				type: 'int',		useNull: true},
+             {name: 'idTavolo', 			type: 'int',		useNull: true},
              {name: 'timestampApertura', 	type: 'string'},
              {name: 'timestampChiusura', 	type: 'string'},
              {name: 'stato', 				type: 'string'},

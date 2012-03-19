@@ -2153,7 +2153,6 @@ var _mainTabPanel = {
 			
 			var askWindow = Ext.get('window_visualizzazione_conto');
 			if(askWindow == undefined){
-				console.debug('CREO LA WINDOW LALALAL YAAAAAAAAAAAA');
 				askWindow = Ext.create('Ext.window.Window', {
 								id: 'window_visualizzazione_conto',
 				        	    title: 'Visualizzazione Conto',
@@ -2166,7 +2165,6 @@ var _mainTabPanel = {
 				
 			_mainTabPanel._tabella_conto = Ext.get('tabella_conto');
 			if(_mainTabPanel._tabella_conto == undefined){
-				console.debug("INIZIALIZZAZIONE TABELLA CONTO");
 				_mainTabPanel._tabella_conto = Ext.create('Ext.grid.Panel', {
 					id: 'tabella_conto',
 					title: 'Conto tavolo',
@@ -2231,7 +2229,7 @@ var _mainTabPanel = {
 			            dock: 'bottom',
 			            items: [{
 			            	id: 'totale_tabella_conto',
-			            	text: '0.00'
+			            	text: '0.00€'
 			            },'->',{
 			                text: 'Chiudi conto',
 			                id: 'tabella_visualizza_conto_action_button',
@@ -2296,8 +2294,10 @@ var _mainTabPanel = {
 					
 					if(objConto.conto[0].stato == "APERTO" || objConto.conto[0].stato == "DAPAGARE"){
 						//Ext.get('tabella_visualizza_conto_action_button').dom.textContent = 'Chiudi';
+					}else if(objConto.conto[0].stato == "CHIUSO"){
+						//
 					}else{
-						//Ext.get('tabella_visualizza_conto_action_button').destroy();
+						Ext.get('tabella_visualizza_conto_action_button').destroy();
 					}
 			    }
 			});
