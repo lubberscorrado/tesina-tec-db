@@ -357,19 +357,16 @@ public class gestioneComande extends HttpServlet {
 			int idCucina = utentePersonale.getIdUtentePersonale();
 			String stato = request.getParameter("stato");
 			
-			JSONObject jsonObject = new JSONObject();
-			
 			try {
 				businessComande.modificaStatoComanda(idComanda, idCucina, stato);
-				jsonObject.put("success", true);
-				response.getWriter().print(jsonObject);
+			
+				JSONResponse.WriteOutput(response, true, "");
+				
 			} catch (DatabaseException e) {
 				
-				jsonObject.put("success", false);
-				response.getWriter().print(jsonObject);
+				JSONResponse.WriteOutput(response, true, e.toString());
 				
-				System.out.println("Servlet gestioneComande: Errore durante l'update dello stato.");
-				e.printStackTrace();
+		
 			}
 			
 		}
