@@ -90,7 +90,7 @@ function desktop_main(){
 	            //_tabPanel,
 	            _mainTabPanel.getPanel(),
 	            _viewPort_panel_east,
-	            _viewPort_panel_west
+	            //_viewPort_panel_west
 	   ]
 	});
 	
