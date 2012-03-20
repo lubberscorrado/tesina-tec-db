@@ -46,9 +46,10 @@ public class variazioneVoceMenu extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//Controllo dei privilegi di accesso
-		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
-			return;
-		}
+		if( !JSONResponse.UserAccessControlAnyPrivs(request, response, new int[]{JSONResponse.PRIV_Cassiere,JSONResponse.PRIV_Cameriere,JSONResponse.PRIV_Cuoco}) ){
+    		return;
+    	}
+		
 		idTenant = (Integer) request.getSession().getAttribute("idTenant");
 		String idCategoriaString = request.getParameter("idCategoria");
 		int idCategoria = 0;
