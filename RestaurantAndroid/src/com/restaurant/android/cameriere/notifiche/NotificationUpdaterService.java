@@ -142,14 +142,16 @@ public class NotificationUpdaterService extends Service {
 			   		
 					Thread.sleep(DELAY);
 					
+					/* IMPORTANTE: Mettere in tutte le eccezione la flag = false altrimenti 
+					 * va in loop  */
 				} catch(InterruptedException e) {
 					notificationUpdaterService.runFlag = false;
 				} catch (ClientProtocolException e) {
-					
+					notificationUpdaterService.runFlag = false;
 				} catch (IOException e) {
-					
+					notificationUpdaterService.runFlag = false;
 				} catch (JSONException e) {
-					
+					notificationUpdaterService.runFlag = false;
 				}
 			}
 		}
