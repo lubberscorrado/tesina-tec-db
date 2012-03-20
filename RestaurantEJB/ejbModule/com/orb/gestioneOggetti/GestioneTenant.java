@@ -3,6 +3,7 @@ package com.orb.gestioneOggetti;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import com.exceptions.DatabaseException;
 import com.mail.ThreadMailSender;
@@ -70,14 +71,20 @@ public class GestioneTenant{
 			tenant.setSuperadmin(superadmin);
 			tenant.setPasswd(passwd);
 			
-			//CONTROLLARE L'UNIVOCITA' DELLA PIVA
-			//TODO
 			
+			Query query = em.createQuery("SELECT t FROM Tenant t WHERE t.piva = :piva");
+			query.setParameter("piva", tenant.getPiva());
 			
+			Tenant findTenant;
+			try{
+				findTenant = (Tenant) query.getSingleResult();
+			}catch(Exception e){
+				findTenant = null;
+			}
 			
-			Tenant findTenant = em.find(Tenant.class, 0);
 			if(findTenant != null)
 				throw new DatabaseException("Partita IVA già registrata nel sistema.");
+			
 			
 			em.persist(tenant);
 			

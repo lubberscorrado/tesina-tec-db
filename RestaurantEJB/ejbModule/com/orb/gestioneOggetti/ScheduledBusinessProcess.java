@@ -27,9 +27,9 @@ public class ScheduledBusinessProcess {
     }
 	
 	@SuppressWarnings("unused")
-	@Schedule(minute="*", hour="*", dayOfWeek="*", dayOfMonth="*", month="*", year="*", info="MyTimer")
+	@Schedule(minute="*/10", hour="*", dayOfWeek="*", dayOfMonth="*", month="*", year="*", info="MyTimer")
     private void scheduledTimeout(final Timer t) {
-        System.out.println("@Schedulex called at: " + new java.util.Date());
+        System.out.println("@Esecuzione fatturazioni: called at: " + new java.util.Date());
 //        Query query = em.createQuery("SELECT t FROM Tenant t");
 //        List<Tenant> listTenant = query.getResultList();
 //        float canoneMensile = 15.00f;
@@ -56,10 +56,10 @@ public class ScheduledBusinessProcess {
 	
 
 	@SuppressWarnings("unused")
-	@Schedule(minute="*/5", hour="*", dayOfWeek="*", dayOfMonth="*", month="*", year="*", info="MyTimer2")
-    private void scheduledTimeout2(final Timer t) {
-        System.out.println("@Schedulexxx called at: " + new java.util.Date());
-        Query query = em.createQuery("DELETE FROM StatoUtentePersonale s WHERE (now()-s.loginTime) > 7400");
+	@Schedule(minute="*/5", hour="*", dayOfWeek="*", dayOfMonth="*", month="*", year="*", info="removeExpiredSession")
+    private void removeExpiredSession(final Timer t) {
+        //System.out.println("@Cancellazione vecchie sessioni: called at: " + new java.util.Date());
+        Query query = em.createQuery("DELETE FROM StatoUtentePersonale s WHERE (now()-s.loginTime) > 1800");
         query.executeUpdate();
     }
 }
