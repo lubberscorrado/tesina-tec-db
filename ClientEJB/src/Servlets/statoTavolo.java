@@ -41,7 +41,7 @@ public class statoTavolo extends HttpServlet {
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	//Controllo dei privilegi di accesso
-    	if( !JSONResponse.UserAccessControlAnyPrivs(request, response, new int[] {JSONResponse.PRIV_Cassiere,JSONResponse.PRIV_Cameriere})){
+    	if( !JSONResponse.UserAccessControlAnyPrivs(request, response, new int[] {JSONResponse.PRIV_Cassiere,JSONResponse.PRIV_Cameriere,JSONResponse.PRIV_Cuoco})){
     		return;
     	}
     			
