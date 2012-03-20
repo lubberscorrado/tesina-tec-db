@@ -153,6 +153,7 @@ public class gestioneConti extends HttpServlet {
 					jsonObjectConto.put("stato", conto.getStato().toString());
 					jsonObjectConto.put("timestampApertura", conto.getTimestampApertura().toString());
 					jsonObjectConto.put("timestampChiusura", conto.getTimestampChiusura().toString());
+					jsonObjectConto.put("numeroPersone", conto.getNumeroPersone());
 					
 					jsonArrayConti.put(jsonObjectConto);
 				}
