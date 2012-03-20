@@ -196,7 +196,7 @@ public class gestioneConti extends HttpServlet {
 					jsonObjectConto.put("stato", conto.getStato().toString());
 					jsonObjectConto.put("timestampApertura", conto.getTimestampApertura().toString());
 					jsonObjectConto.put("timestampChiusura", conto.getTimestampChiusura().toString());
-					
+					jsonObjectConto.put("numeroPersone", conto.getNumeroPersone());
 					jsonArrayConti.put(jsonObjectConto);
 				}
 				
@@ -298,6 +298,7 @@ public class gestioneConti extends HttpServlet {
 				jsonobj.put("stato", wrapperConto.getStato().toString());
 				jsonobj.put("timestampApertura", wrapperConto.getTimestampApertura().toString());
 				jsonobj.put("timestampChiusura", wrapperConto.getTimestampChiusura().toString());
+				jsonobj.put("numeroPersone", wrapperConto.getNumeroPersone());
 				
 				JSONResponse.WriteOutput(response,true, "OK", "conto", jsonArray);
 				return;

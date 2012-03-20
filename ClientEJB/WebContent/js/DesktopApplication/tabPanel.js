@@ -162,7 +162,7 @@ var _mainTabPanel = {
 		            //height: 100,
 		            items: ['->',{
 		                text: 'Aggiorna',
-		                iconCls: '/ExtJS/resources/themes/images/gray/tree/drop-add.gif',
+		                iconCls: 'icon-refresh',
 		                handler: function(){
 		                    // empty record
 		                	Ext.getStore('datastore_stato_cameriere').load();
@@ -1916,11 +1916,12 @@ var _mainTabPanel = {
 		        
 		        // grid columns
 		        columns: [
-				            { header: 'IdConto',  	dataIndex: 'idConto', 				flex:1 , 	hidden: true},
-				            { header: 'Stato',  	dataIndex: 'stato', 				flex:1 },
-				            { header: 'Totale €',  	dataIndex: 'prezzo', 				flex:1 },			          
-				            { header: 'Creazione', 	dataIndex: 'timestampApertura', 	flex:2 },
-				            { header: 'Chiusura', 	dataIndex: 'timestampChiusura',	 	flex:2 }
+				            { header: 'IdConto',  		dataIndex: 'idConto', 				flex:1 , 	hidden: true},
+				            { header: 'Stato',  		dataIndex: 'stato', 				flex:1 },
+				            { header: 'Totale €',  		dataIndex: 'prezzo', 				flex:1 },
+				            { header: 'Num Persone',  	dataIndex: 'numeroPersone', 		flex:1 },	
+				            { header: 'Creazione', 		dataIndex: 'timestampApertura', 	flex:2 },
+				            { header: 'Chiusura', 		dataIndex: 'timestampChiusura',	 	flex:2 }
 				        ],
 				listeners:{
 					afterrender: function(thisCmp, eOpts ){
@@ -1994,11 +1995,12 @@ var _mainTabPanel = {
 			            emptyText: 'Non sono presenti conti'        
 			        },
 			        columns: [
-			            { header: 'IdConto',  	dataIndex: 'idConto', 				flex:1 , 	hidden: true},
-			            { header: 'Stato',  	dataIndex: 'stato', 				flex:1 },
-			            { header: 'Totale €',  	dataIndex: 'prezzo', 				flex:1 },			          
-			            { header: 'Creazione', 	dataIndex: 'timestampApertura', 	flex:2 },
-			            { header: 'Chiusura', 	dataIndex: 'timestampChiusura',	 	flex:2 }
+			            { header: 'IdConto',  		dataIndex: 'idConto', 				flex:1 , 	hidden: true},
+			            { header: 'Stato',  		dataIndex: 'stato', 				flex:1 },
+			            { header: 'Num Persone',  	dataIndex: 'numeroPersone', 		flex:1 },
+			            { header: 'Totale €',  		dataIndex: 'prezzo', 				flex:1 },			          
+			            { header: 'Creazione', 		dataIndex: 'timestampApertura', 	flex:2 },
+			            { header: 'Chiusura', 		dataIndex: 'timestampChiusura',	 	flex:2 }
 			        ],
 			        listeners:{
 			        	itemdblclick: function(view, record, item, index, e, eOpts){

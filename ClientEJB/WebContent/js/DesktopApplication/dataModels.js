@@ -81,7 +81,7 @@ Ext.define('StatoCameriere', {
 		reader: {
 	        type: 'json',
 	        model: 'StatoCameriere',
-	        idProperty: 'id_tavolo',
+	        idProperty: 'idUtente',
 	        root: 'statoUtente'
 	    }
     }
@@ -114,7 +114,7 @@ Ext.define('StatoCuoco', {
 		reader: {
 	        type: 'json',
 	        model: 'StatoCuoco',
-	        idProperty: 'id_tavolo',
+	        idProperty: 'idUtente',
 	        root: 'statoUtente'
 	    }
     }
@@ -203,7 +203,8 @@ Ext.define('Conto', {
              {name: 'timestampApertura', 	type: 'string'},
              {name: 'timestampChiusura', 	type: 'string'},
              {name: 'stato', 				type: 'string'},
-             {name: 'prezzo',				type: 'string'}
+             {name: 'prezzo',				type: 'string'},
+             {name: 'numeroPersone',		type: 'int'}
     ],
     proxy: {
         type: 'rest',
