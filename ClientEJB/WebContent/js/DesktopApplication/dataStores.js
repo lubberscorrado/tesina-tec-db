@@ -149,20 +149,12 @@ function initStores(){
 			listeners: {
 				beforeload: function( store, operation, eOpts ){
 //					store.proxy.extraParams.idCategoria=idCategoria;
-					console.debug('BEFORE LOAD');
+					//console.debug('BEFORE LOAD');
 				},
 				beforesync: function( options, eOpts ){
-//								console.debug('beforesync');
-								console.debug(options);
-//					//			console.debug(eOpts);
-//								if(options.update){
-//									console.debug('Create OR Update');
-//								}
-					console.debug('BEFORE SYNC');
-//					alert('BEFORE SYNC');
 				},
 				beforeprefetch: function( thisStore, operation, eOpts ){
-					console.debug('BEFORE PREFETCH');
+					//console.debug('BEFORE PREFETCH');
 				},
 				write: function(store, operation, eOpts ){
 //					console.debug('writerello');
@@ -172,7 +164,7 @@ function initStores(){
 //					
 //					operation.request.params.action = 'Cicisbeo';
 //					
-					console.debug('WRITE');
+					//console.debug('WRITE');
 				},
 				update: function( thisStore, record, operation, eOpts ){
 //					console.debug('updaterello');
@@ -182,7 +174,7 @@ function initStores(){
 //		//			Ext.data.Model.EDIT
 //		//			Ext.data.Model.REJECT
 //		//			Ext.data.Model.COMMIT
-					console.debug('UPDATE');
+					//console.debug('UPDATE');
 					var r = thisStore.getProxy().getReader().jsonData;
 			    	if(!r.success){
 //			    		alert(r.message);
@@ -194,7 +186,7 @@ function initStores(){
 //					console.debug(index);
 //					console.debug(record);
 //					console.debug(store);
-					console.debug('REMOVE');
+					//console.debug('REMOVE');
 				},
 				
 				beforeappend: function( thisNode, newChildNode, eOpts ){
@@ -214,19 +206,19 @@ function initStores(){
 //		            	//newChildNode.set('parentId', 'P'+newChildNode.get('parentId'));
 //		            	//newChildNode.set('icon', newChildNode.get('profile_image_url'));
 //		            }
-					console.debug('BEFORE APPEND');
+					//console.debug('BEFORE APPEND');
 				},
 				append: function( thisNode, newChildNode, index, eOpts ) {
-					console.debug('APPEND');
+					//console.debug('APPEND');
 			    },
 			    datachanged: function( thisStore, eOpts ){
-			    	console.debug('DATACHANGED');
+			    	//console.debug('DATACHANGED');
 //			    	console.debug(thisStore);
 //			    	console.debug(eOpts);
 			    },
 			    load: function( thisStore, records, successful, operation, eOpts ){
-			    	console.debug('PROVIAMOLOO');
-			    	console.debug(thisStore);
+			    	//console.debug('PROVIAMOLOO');
+			    	//console.debug(thisStore);
 			    	var r = thisStore.getProxy().getReader().jsonData;
 			    	if(!r.success){
 //			    		alert(r.message);

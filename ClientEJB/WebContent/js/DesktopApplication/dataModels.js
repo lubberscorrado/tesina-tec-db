@@ -120,39 +120,7 @@ Ext.define('StatoCuoco', {
     }
 });
 
-/*
- * Ext.define('variazioneVoceMenu', {
-	extend: 'Ext.data.Model',
-    fields: ['id','parentId','nome','descrizione','prezzo','tipo','text','categoriaDiAppartenenza','isEreditata','idCategoria'],
-    phantom : true,
-//    store: Ext.getStore('datastore_gestione_menu'),
-    proxy: {
-        type: 'rest',
-//        url : 'variazioneVoceMenu',
-        appendId : false,
-        api: {
-            create: 	'variazioneVoceMenu?action=create',
-            read: 		'variazioneVoceMenu?action=read',
-            update: 	'variazioneVoceMenu?action=update',
-            destroy: 	'variazioneVoceMenu?action=delete',
-        },
-        writer: {
-            type: 'singlepostnoaction'
-        },
-		reader: {
-	        type: 'json',
-	        idProperty: 'id',
-	        root: 'data'
-	    },
-	    actionMethods : {
-            create : 'POST',
-            read   : 'GET',
-            update : 'POST',
-            destroy: 'POST'
-        }
-    }
-});
- */
+
 
 Ext.define('Comanda', {
     extend: 'Ext.data.Model',
@@ -196,6 +164,8 @@ Ext.define('Comanda', {
     }
 });
 
+
+
 Ext.define('Conto', {
     extend: 'Ext.data.Model',
     fields: [
@@ -232,6 +202,8 @@ Ext.define('Conto', {
         }
     }
 });
+
+
 
 Ext.define('nodoGestioneTavolo', {
     /*extend: 'Ext.data.NodeInterface',*/
@@ -272,6 +244,8 @@ Ext.define('nodoGestioneTavolo', {
     }
 });
 
+
+
 Ext.define('nodoGestioneMenu', {
 	extend: 'Ext.data.Model',
     fields: ['id','parentId','nome','descrizione','prezzo','tipo','text'],
@@ -310,6 +284,8 @@ Ext.define('nodoGestioneMenu', {
     }
 });
 
+
+
 Ext.define('variazioneVoceMenu', {
 	extend: 'Ext.data.Model',
     fields: ['id','parentId','nome','descrizione','prezzo','tipo','text','categoriaDiAppartenenza','isEreditata',/*'action',*/'idCategoria'],
@@ -341,6 +317,8 @@ Ext.define('variazioneVoceMenu', {
         }
     }
 });
+
+
 
 Ext.define('personale', {
 	extend: 'Ext.data.Model',
@@ -442,22 +420,6 @@ Ext.define('personale', {
     }
 });
 
-//var originalModelSave = Ext.data.Model.prototype.save;
-//Ext.override(Ext.data.Model, {
-//    save: function() {
-//    	//alert('KAsdasd');
-//    	console.debug('TANTE TROIE DI ALTRI TEMPII DAI CAZZOOO');
-//    	//originalModelSave.apply(this, arguments);
-//    	 this.callOverridden({
-//    		success: function(rec, op) {
-//    			Ext.Msg.alert("Failed",'Successo lento');
-//    		},
-//    		failure: function(rec, op) {
-//    			Ext.Msg.alert("Failed",'Fallimento lento');
-//    		}
-//    	 });
-//    }
-//});
 
 
 Ext.define('StoricoConto', {
