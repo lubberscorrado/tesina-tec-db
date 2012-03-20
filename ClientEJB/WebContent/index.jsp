@@ -2,24 +2,53 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
+	
+	<!-- 
+		<script type="text/javascript" language="Javascript" SRC="./ExtJS/ext-all.js"></script>
+		<link rel="stylesheet" type="text/css" href="./ExtJS/resources/css/ext-all-gray.css" />
+	-->
+	<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.0.7-gpl/resources/css/ext-all-gray.css" />
+	
+	<script type="text/javascript" language="Javascript" SRC="./js/Login/main.js"></script>
+	<script type="text/javascript" language="javascript">
+		function DisabilitaIE4(){
+		    if (event.button == 2){
+		        return false;
+		    }
+		}
+
+		function DisabilitaNS4(e){
+		    if (document.layers || document.getElementById && !document.all){
+		        if (e.which == 2 || e.which == 3) {
+		            return false;
+		        }
+		    }
+		}
+
+		document.onload = function () {
+		    if (document.layers){
+		        document.captureEvents(Event.MOUSEDOWN);
+		        document.onmousedown = DisabilitaNS4;
+		    }	else if (document.all && !document.getElementById){
+		        document.onmousedown = DisabilitaIE4;
+		    }
+		}
+		
+		document.oncontextmenu = function(){	return false;	}
+	</script>
 
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-		<title>Restaurant Manager</title>
+		<title>Restaurant Manager - Registrazione</title>
 	</head>
 	
 	<body>
-	
-	<!--
-		<a href='index_login.jsp' title='Effettua il login!'><h1>Effettua il login!</h1></a>
-		<a href='index_registrazione.jsp' title='Registra il tuo ristorante!'><h1>Registra il tuo ristorante!</h1></a>
-		<a href='index_desktop.jsp' title='Accesso alla versione desktop'><h1>Accesso alla versione desktop</h1></a>
-	-->
-		<script type="text/javascript" language="javascript">
-			location.replace('index_desktop.jsp');
+		<div id='div_centrale' align="center" style="margin:20px"></div>
+		<script type="text/javascript">
+			/*Quando il documento è caricato eseguo l'applicazione*/
+			Ext.EventManager.onDocumentReady(login_main);
 		</script>
-		
 	</body>
-	
 	
 </html>
