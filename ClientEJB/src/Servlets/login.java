@@ -93,7 +93,7 @@ public class login extends HttpServlet {
 				try{
 					idTenant = Integer.valueOf(ristorante);
 				}catch(Exception e){
-					JSONResponse.WriteLoginPrivs(request, response, false, "Id del ristorante mancante!");
+					JSONResponse.WriteOutput(response, false, "Id del ristorante mancante!");
 					return;
 				}
 				
