@@ -30,7 +30,7 @@
 	    	android:layout_marginRight="10px"/>
 
 		<EditText
-		    android:id="@+id/editText1"
+		    android:id="@+id/login_idTenant"
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
 		    android:inputType="number"
@@ -46,7 +46,7 @@
 	    	android:layout_marginRight="10px"
 		    />
 		<EditText
-			android:id="@+id/username"
+			android:id="@+id/login_username"
 			android:singleLine="true"
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
 	    	android:layout_marginRight="10px"/>
 	
 		<EditText
-			android:id="@+id/password"
+			android:id="@+id/login_password"
 			android:password="true"
 			android:singleLine="true"
 		    android:layout_width="fill_parent"

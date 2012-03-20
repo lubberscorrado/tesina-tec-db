@@ -35,6 +35,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	/* Alcune variabili private per la gestione del login.  */
 	private EditText etUsername;
 	private EditText etPassword;
+	private EditText etIdTenant;
 	private Button btnLogin;
 	private Button btnCancel;
 	private RadioButton radioButtonCameriere;
@@ -56,9 +57,9 @@ public class LoginActivity extends Activity implements OnClickListener {
         this.logged = false;
         
         /* Queste righe vanno DOPO "setContentView" */
-        
-        etUsername = (EditText)findViewById(R.id.username);
-        etPassword = (EditText)findViewById(R.id.password);
+        etIdTenant = (EditText)findViewById(R.id.login_idTenant);
+        etUsername = (EditText)findViewById(R.id.login_username);
+        etPassword = (EditText)findViewById(R.id.login_password);
         btnLogin = (Button)findViewById(R.id.login_button);
         btnCancel = (Button)findViewById(R.id.cancel_button);
 
@@ -66,9 +67,13 @@ public class LoginActivity extends Activity implements OnClickListener {
         radioButtonCameriere = (RadioButton)findViewById(R.id.radioButtonCameriere);
         radioButtonCucina = (RadioButton)findViewById(R.id.radioButtonCucina);
         
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+//        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences settings = getSharedPreferences("RESTAURANT", 0);
         String username = settings.getString("username", "");
         String password = settings.getString("password", "");
+        String idTenant = settings.getString("idTenant", "");
+        
+        etIdTenant.setText(idTenant);
         etUsername.setText(username);
         etPassword.setText(password);
        
@@ -121,18 +126,19 @@ public class LoginActivity extends Activity implements OnClickListener {
 		        if(jObject.getBoolean("success") == true) 
 		        	logged = true;
 		        	
-				Log.e("LoginTask", "isCassiere: " + jObject.getJSONObject("privs").getString("isCassiere"));
+				Log.e("LoginTask", "isCameriere: " + jObject.getJSONObject("privs").getString("isCameriere"));
 				Log.e("LoginTask", "isCuoco: " + jObject.getJSONObject("privs").getString("isCuoco"));
 					
 				if(logged) {
-						
-					if( (radioButtonCameriere.isChecked() && !jObject.getJSONObject("privs").getString("isCassiere").equals("true")) ||
-						(radioButtonCucina.isChecked() && !jObject.getJSONObject("privs").getString("isCuoco").equals("true"))) {
-							
-						/* Il login è stato effettuato correttamente ma non sia hanno i privilegi per accedere alla 
-						 * funzionalità richiesta  */
-				
+					
+					if(radioButtonCameriere.isChecked() && !jObject.getJSONObject("privs").getString("isCameriere").equals("true")) {
 						logged = false;
+						return new Error("Permessi non opportuni per visualizzare l'interfaccia Cameriere.", true);
+					}
+					
+					if( radioButtonCucina.isChecked() && !jObject.getJSONObject("privs").getString("isCuoco").equals("true")) {
+						logged = false;
+						return new Error("Permessi non opportuni per visualizzare l'interfaccia Cucina.", true);
 					}
 				}
 				
@@ -174,13 +180,13 @@ public class LoginActivity extends Activity implements OnClickListener {
 		  		
         	}
         }
-   
     }
 
 	@Override
 	public void onClick(View v) {
 		// Check Login
-  		String username = etUsername.getText().toString();
+  		String idTenant = etIdTenant.getText().toString();
+		String username = etUsername.getText().toString();
   		String password = etPassword.getText().toString();
   		
         // We need an Editor object to make preference changes.
@@ -189,13 +195,16 @@ public class LoginActivity extends Activity implements OnClickListener {
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("username", username);
         editor.putString("password", password);
+        editor.putString("idTenant", idTenant);
         
         // Commit the edits!
         editor.commit();
         
         postParameters = new HashMap<String,String>();
-        postParameters.put("user", username);
+        postParameters.put("username", username);
         postParameters.put("password", password);
+        postParameters.put("idTenant", idTenant);
+        
         if(radioButtonCameriere.isChecked()) 
         	postParameters.put("tipoAccesso", "CAMERIERE");
         else if(radioButtonCucina.isChecked()) 
