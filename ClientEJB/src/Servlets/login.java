@@ -156,7 +156,7 @@ public class login extends HttpServlet {
 									session.setAttribute("Logged", false);
 						    		return;
 						    	}
-							}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
+							}/*else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
 								if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere)	){
 									session.setAttribute("Logged", false);
 						    		return;
@@ -166,7 +166,7 @@ public class login extends HttpServlet {
 									session.setAttribute("Logged", false);
 						    		return;
 						    	}
-							}
+							}*/
 							
 							
 							
