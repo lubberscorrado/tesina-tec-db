@@ -35,6 +35,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	private EditText etUsername;
 	private EditText etPassword;
 	private EditText etIdTenant;
+	private EditText etHost;
 	private Button btnLogin;
 	private Button btnCancel;
 	private RadioButton radioButtonCameriere;
@@ -58,6 +59,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         /* Queste righe vanno DOPO "setContentView" */
         etIdTenant = (EditText)findViewById(R.id.login_idTenant);
         etUsername = (EditText)findViewById(R.id.login_username);
+        etHost =  (EditText)findViewById(R.id.login_host);
         etPassword = (EditText)findViewById(R.id.login_password);
         btnLogin = (Button)findViewById(R.id.login_button);
         btnCancel = (Button)findViewById(R.id.cancel_button);
@@ -211,15 +213,20 @@ public class LoginActivity extends Activity implements OnClickListener {
   		String idTenant = etIdTenant.getText().toString();
 		String username = etUsername.getText().toString();
   		String password = etPassword.getText().toString();
+  		String host = etHost.getText().toString();
   		
-  		if(idTenant.equals("") || idTenant == null || username.equals("") || username == null || password.equals("") || password == null) {
+  		if(host.equals("") || idTenant.equals("") || idTenant == null || username.equals("") || username == null || password.equals("") || password == null) {
   			Toast.makeText(getApplicationContext(), "Errore! Tutti i parametri di Login sono obbligatori!", 20).show();
+  			return;
   		}
   		
         // We need an Editor object to make preference changes.
         // All objects are from android.context.Context
   		SharedPreferences settings = getSharedPreferences("RESTAURANT", 0);
         SharedPreferences.Editor editor = settings.edit();
+        
+        ((RestaurantApplication)getApplication()).setHost(host);
+        
         editor.putString("username", username);
         editor.putString("password", password);
         editor.putString("idTenant", idTenant);

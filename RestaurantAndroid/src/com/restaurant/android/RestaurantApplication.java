@@ -33,10 +33,12 @@ public class RestaurantApplication extends Application {
 	
 	private DefaultHttpClient httpClient;
 
+	private String host;
 	private String lastNotificationCheckDate;
 	
 	@Override
 	public void onCreate() {
+		host = "http://192.168.1.104:8080/";
 		httpClient = new DefaultHttpClient();
 		lastNotificationCheckDate = "0000-00-00 00:00:00";
 	}
@@ -51,40 +53,43 @@ public class RestaurantApplication extends Application {
 	 */
 	public synchronized String makeHttpPostRequest(	String url, 
 													HashMap<String, String > postParametersMap) throws 	ClientProtocolException, IOException {
-		
-		HttpPost httpPost = new HttpPost(url);
-      
-       	List<NameValuePair> listPostParameters = new ArrayList<NameValuePair>(2);
-        	
-       	for(String key : postParametersMap.keySet()){
-       		/* Costruisco la lista dei parametri da passare alla richiesta POST */
-        	listPostParameters.add(new BasicNameValuePair(key, postParametersMap.get(key)));
-        }
-       	
-       	/* Setto i parametri per la richiesta POST codificandoli come URL encoded */
-       	httpPost.setEntity(new UrlEncodedFormEntity(listPostParameters));
-        	
-       
-       	/* Effettuo la richiesta HTTP */
-        HttpResponse response = httpClient.execute(httpPost);
-                
-        /* Log dei cookies */
-        List<Cookie> cookies = httpClient.getCookieStore().getCookies();
-
-       	if (cookies.isEmpty()) {
-       	   Log.d("RestaurantApplication", "POST REQUEST, No cookies");
-       	} else {
-       		for(Cookie c : cookies) {
-       		    if(c.getName().equals("JSESSIONID")) { 
-       				Log.e("POST REQUEST, JSESSIONID" , c.getValue());
-       			} else {
-       				Log.e("POST REQUEST, Cookie" , c.getName() + " - " + c.getValue());
-       			}
-       		}
-       	}
-       	String responseBody = EntityUtils.toString(response.getEntity());
-        	
-        return responseBody;
+		try {
+			HttpPost httpPost = new HttpPost(url);
+	      
+	       	List<NameValuePair> listPostParameters = new ArrayList<NameValuePair>(2);
+	        	
+	       	for(String key : postParametersMap.keySet()){
+	       		/* Costruisco la lista dei parametri da passare alla richiesta POST */
+	        	listPostParameters.add(new BasicNameValuePair(key, postParametersMap.get(key)));
+	        }
+	       	
+	       	/* Setto i parametri per la richiesta POST codificandoli come URL encoded */
+	       	httpPost.setEntity(new UrlEncodedFormEntity(listPostParameters));
+	        	
+	       
+	       	/* Effettuo la richiesta HTTP */
+	        HttpResponse response = httpClient.execute(httpPost);
+	                
+	        /* Log dei cookies */
+	        List<Cookie> cookies = httpClient.getCookieStore().getCookies();
+	
+	       	if (cookies.isEmpty()) {
+	       	   Log.d("RestaurantApplication", "POST REQUEST, No cookies");
+	       	} else {
+	       		for(Cookie c : cookies) {
+	       		    if(c.getName().equals("JSESSIONID")) { 
+	       				Log.e("POST REQUEST, JSESSIONID" , c.getValue());
+	       			} else {
+	       				Log.e("POST REQUEST, Cookie" , c.getName() + " - " + c.getValue());
+	       			}
+	       		}
+	       	}
+	       	String responseBody = EntityUtils.toString(response.getEntity());
+	        	
+	        return responseBody;
+		}catch(Exception e) {
+			return "";
+		}
 	}
 	
 	/**
@@ -96,17 +101,21 @@ public class RestaurantApplication extends Application {
 	 */
 	public synchronized String makeHttpJsonPostRequest(String url, JSONObject jsonObject) throws ClientProtocolException, IOException {
 		
-		HttpPost httpPost = new HttpPost(url);
-	      
-		StringEntity jsonBody = new StringEntity(jsonObject.toString());
-		httpPost.setEntity(jsonBody);
-        
-       	/* Effettuo la richiesta HTTP */
-        HttpResponse response = httpClient.execute(httpPost);
-                
-       	String responseBody = EntityUtils.toString(response.getEntity());
-        	
-        return responseBody;
+		try {
+			HttpPost httpPost = new HttpPost(url);
+		      
+			StringEntity jsonBody = new StringEntity(jsonObject.toString());
+			httpPost.setEntity(jsonBody);
+	        
+	       	/* Effettuo la richiesta HTTP */
+	        HttpResponse response = httpClient.execute(httpPost);
+	                
+	       	String responseBody = EntityUtils.toString(response.getEntity());
+	        	
+	        return responseBody;
+		}catch(Exception e) {
+			return "";
+		}
 	}
 	
 	/**
@@ -162,9 +171,14 @@ public class RestaurantApplication extends Application {
 	}
 	
 	public String getHost() {
-		return "http://192.168.1.103:8080/";
+		return host;
+		
 	}
 	
+	public void setHost(String host) {
+		this.host = host;
+		
+	}
 	@Override
 	public void onTerminate() {
 		super.onTerminate();

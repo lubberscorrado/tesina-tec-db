@@ -20,7 +20,23 @@
 		    android:gravity="center"
 		    android:text="Please enter your login"
 		    android:textAppearance="?android:attr/textAppearanceLarge"/>
-	
+		
+		<TextView
+		    android:id="@+id/textViewHost"
+		   	android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="Host" 
+		    android:layout_marginLeft="10px"
+	    	android:layout_marginRight="10px"/>
+
+		<EditText
+		    android:id="@+id/login_host"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_marginLeft="10px"
+	    	android:layout_marginRight="10px" >
+		</EditText>
+		
 		<TextView
 		    android:id="@+id/textView2"
 		   	android:layout_width="wrap_content"

@@ -354,6 +354,7 @@ public class NotificationActivity extends Activity {
 														"ClientEJB/gestioneNotifiche", 
 														requestParameters);
 		   		
+		   		System.out.println(response);
 		   		JSONObject jsonObjectResponse = new JSONObject(response);
 		   		
 		   		if(jsonObjectResponse.getString("success").equals("true")) {
