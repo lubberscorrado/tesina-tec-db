@@ -106,6 +106,7 @@ public class LoginActivity extends Activity implements OnClickListener {
      	@Override
 		protected Error doInBackground(HashMap<String, String>... hashMap) {
 		    		
+     		String errorMessage = "";
        		logged = false;
 			RestaurantApplication restApp = ((RestaurantApplication)getApplication());
 
@@ -125,6 +126,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 					
 		        if(jObject.getBoolean("success") == true) 
 		        	logged = true;
+		        else
+		        	errorMessage = jObject.getString("message");
 		        	
 				Log.e("LoginTask", "isCameriere: " + jObject.getJSONObject("privs").getString("isCameriere"));
 				Log.e("LoginTask", "isCuoco: " + jObject.getJSONObject("privs").getString("isCuoco"));
@@ -150,7 +153,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 				Log.e("LoginTask", "Eccezione IO" + e.toString());
 				return  new Error("Errore di connettività", true);
 			} catch (JSONException e) {
-				return  new Error("Errore durante la lettura della risposta dal server", true);
+				if(errorMessage.equals(""))
+					return  new Error("Errore durante la lettura della risposta dal server", true);
+				else 
+					return  new Error(errorMessage, true);
 			} finally {
 				progressDialog.dismiss();
 			}
