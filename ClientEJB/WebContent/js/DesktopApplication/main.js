@@ -26,7 +26,7 @@ function main(){
 	    },
 	    success: function(response){
 	    	var json_response = Ext.JSON.decode(response.responseText);
-	    	console.debug('Logged '+json_response.logged);
+	    	//console.debug('Logged '+json_response.logged);
 
 	    	if( json_response.logged == true){
 	    		_global._restaurant = 		json_response.restaurant;

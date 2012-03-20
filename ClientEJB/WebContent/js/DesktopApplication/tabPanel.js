@@ -72,7 +72,7 @@ var _mainTabPanel = {
 			        	}
 			        	
 	                	var contextMenu = null;
-	                	console.debug('CONTEXT MENU');
+	                	//console.debug('CONTEXT MENU');
 	                	contextMenu = Ext.create('Ext.menu.Menu', {
 	                		items: [{
 			                			text: 'Modifica utente',
@@ -1146,7 +1146,7 @@ var _mainTabPanel = {
         	    items:[form],
         	    listeners:{
         	    	afterrender: function( thisWindow, eOpts ){
-        	    		console.debug('Altezzaaaa');
+        	    		//console.debug('Altezzaaaa');
         	    		thisWindow.setHeight( Ext.getCmp('form_gestioneMenu').getHeight()+37 );
         	    	}
         	    }
@@ -1553,12 +1553,12 @@ var _mainTabPanel = {
 //						grid.down('#delete_gestione_personale').setDisabled(!records.length);
 //					}
 			        statesave: function( thisStateful, state, eOpts ){
-			        	console.debug('STATESAVE');
+			        	//console.debug('STATESAVE');
 			        },
 			        
 			        itemcontextmenu: function(view, rec, node, index, e) {
 	                	var contextMenu = null;
-	                	console.debug('CONTEXT MENU');
+	                	//console.debug('CONTEXT MENU');
 	                	contextMenu = Ext.create('Ext.menu.Menu', {
 	                		items: [{
 			                			text: 'Modifica utente',
@@ -1742,10 +1742,10 @@ var _mainTabPanel = {
 					                    	action : this.up('form').action
 					                    },
 					                    success: function(form, action) {
-					                    	console.debug('GUARDAAAAA');
-					                    	console.debug(action);
+					                    	//console.debug('GUARDAAAAA');
+					                    	//console.debug(action);
 					                    	if( action.params.action == 'create' ){
-					                    		console.debug('OK SUCCESSO CREATE');
+					                    		//console.debug('OK SUCCESSO CREATE');
 					                    		
 					                    		var nuovo_nodo = Ext.create('personale', {
 						                    		id: 			action.result.data[0].id,
@@ -1839,7 +1839,7 @@ var _mainTabPanel = {
         	    items:[form],
         	    listeners:{
         	    	afterrender: function( thisWindow, eOpts ){
-        	    		console.debug('Altezzaaaa');
+        	    		//console.debug('Altezzaaaa');
         	    		thisWindow.setHeight( Ext.getCmp('form_gestionePersonale').getHeight()+37 );
         	    	}
         	    }
@@ -1925,13 +1925,11 @@ var _mainTabPanel = {
 				        ],
 				listeners:{
 					afterrender: function(thisCmp, eOpts ){
-						console.debug('fuck fuck shit fuck');
 					},
 					afterlayout: function(thisCmp, lay, eOpts ){
-						console.debug('ASDEREEAWSDO'+thisCmp.getSize());
 					},
 					itemdblclick: function(view, record, item, index, e, eOpts){
-		        		console.debug('idConto: '+record.get('idConto'));
+		        		//console.debug('idConto: '+record.get('idConto'));
 		        		_mainTabPanel.visualizzaConto(	record.get('idConto'), record.get('idTavolo')	);
 //			        	_viewPort_panel_east.removeAll(false);
 //			        	// Inizio definizione stato tavolo
@@ -2204,7 +2202,7 @@ var _mainTabPanel = {
 			    success: function(response){
 			    	var text = response.responseText;
 			    	var objConto = Ext.JSON.decode(text,true);
-			    	console.debug(objConto.conto[0]);
+			    	//console.debug(objConto.conto[0]);
 			    	Ext.get('totale_tabella_conto').dom.textContent = 'Stato: ['+objConto.conto[0].stato+']    Totale conto: '+objConto.conto[0].prezzo+'€';
 			    	Ext.getStore('datastore_conto').idTavolo=idTavolo;
 			    	Ext.getStore('datastore_conto').idConto=idConto;
