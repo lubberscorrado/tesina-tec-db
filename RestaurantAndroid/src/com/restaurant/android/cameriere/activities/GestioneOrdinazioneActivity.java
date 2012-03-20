@@ -108,7 +108,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 		/* Ripristina correttamente tutte le flag delle variazioni */
 		updateFlagVariazioni();
 		
-		updateLayoutVariazioni();
+		updateLinearLayoutVariazioni();
 		     			
 		button_aumentaQuantita = (Button) findViewById(R.id.buttonAumentaQuantita);
 		button_aumentaQuantita.setOnClickListener(new OnClickListener() {
@@ -219,7 +219,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 		builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
 			@Override
 			public void onCancel(DialogInterface dialog) {
-				updateLayoutVariazioni();
+				updateLinearLayoutVariazioni();
 			}
 		});
 		
@@ -262,7 +262,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 					    myOrdinazione.setIdOrdinazione(c.getInt(0)); 
 					c.close();
 					
-					updateVariazioni();
+					updateVariazioniOnLocalDb();
 					finish();
 				
 				} else if(myOrdinazione.getStato().equals("SOSPESA")) {
@@ -271,8 +271,8 @@ public class GestioneOrdinazioneActivity extends Activity {
 					 * Aggiorno le informazioni della comanda sospesa all'interno del 
 					 * database locale
 					 *************************************************************************/
-					updateOrdinazione();
-					updateVariazioni();
+					updateOrdinazioneOnLocalDb();
+					updateVariazioniOnLocalDb();
 					finish();
 				} else {
 				
@@ -296,10 +296,12 @@ public class GestioneOrdinazioneActivity extends Activity {
 				}
 			}
 		});
+		
+		
 	}
 	
 	/**
-	 * Async Task per la modfica di un ordinazione che è già stata 
+	 * Async Task per la modfica di un'ordinazione che è già stata 
 	 * inviata al server
 	 * @author Guerri Marco
 	 */
@@ -347,8 +349,8 @@ public class GestioneOrdinazioneActivity extends Activity {
 				if(jsonObjectResponse.getBoolean("success") == true)  {
 				
 					/* L'ordinazione deve essere ora modificato in locale */
-					updateOrdinazione();
-					updateVariazioni();
+					updateOrdinazioneOnLocalDb();
+					updateVariazioniOnLocalDb();
 					
 					return new Error("Ordinazione modificata", false );
 				
@@ -374,10 +376,8 @@ public class GestioneOrdinazioneActivity extends Activity {
     	@Override
     	protected void onPostExecute(Error error) {
      	   progressDialog.dismiss();
-     	  
-     		Toast.makeText(getApplicationContext(), error.getError(), 50).show();
-     	     
-     	  finish();
+     	   Toast.makeText(getApplicationContext(), error.getError(), 50).show();
+     	   finish();
     	}
     		
     }
@@ -387,7 +387,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 	 * locale
 	 * @author Guerri Marco
 	 */
-	public void updateVariazioni() {
+	public void updateVariazioniOnLocalDb() {
 		
 		/* Aggiorno le variazioni associate all'ordinazione aggiungendo e inserendo
 		  nel database variazionecomanda (se replico una coppia
@@ -417,7 +417,7 @@ public class GestioneOrdinazioneActivity extends Activity {
 	 * @author Guerri Marco
 	 */
 	
-	public void updateOrdinazione() {
+	public void updateOrdinazioneOnLocalDb() {
 		ContentValues ordinazioneModificata = new ContentValues();
 		ordinazioneModificata.put("quantita", editText_quantita.getText().toString());
 		ordinazioneModificata.put("note", editText_note.getText().toString());
@@ -463,13 +463,12 @@ public class GestioneOrdinazioneActivity extends Activity {
 	 * dal database il nome delle variazioni. Potrebbe essere ottimizzato per evitare
 	 * un ulteriore accesso al DB, usando informazioni estratte in precedenza.
 	 */
-	public void updateLayoutVariazioni() {
+	public void updateLinearLayoutVariazioni() {
 		
 		linearLayout.removeAllViews();
 			
 		for(Integer idVariazioneAssociata : elencoVariazioniAssociateAOrdinazione) {
 			
-			Log.d("VARIAZIONE!!!", "VARIAZIONE!!!");
 			Cursor nomeVariazione = db.query("variazione", new String[] {"nome"}, "idVariazione=" + idVariazioneAssociata, null, null, null, null, null);
 			nomeVariazione.moveToFirst();
 			

@@ -74,7 +74,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 		
 		try {
 		
-			/*********************************************************
+			/* ********************************************************
 			 * Aquisizione delle categorie figlie della categoria 
 			 * con id idCategoriaPadre
 			 *********************************************************/
@@ -96,7 +96,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			}
 			cursorCategoria.close();
 			
-			/*********************************************************
+			/* ********************************************************
 			 * Aquisizione delle voci di menu associate alla categoria
 			 * padre corrente
 			 *********************************************************/
@@ -220,7 +220,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			DbManager dbManager =  new DbManager(getApplicationContext());
 			SQLiteDatabase db = dbManager.getWritableDatabase();
 			
-			/*************************************************************
+			/* ************************************************************
 			 * Ricerco l'id della categoria padre che ha come idCategoria 
 			 * l'idCategoriaPadre attuale 
 			 *************************************************************/
@@ -247,7 +247,7 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 			 */
 			if(!voceMenu.isCategoria()) {
 				
-				/****************************************************************************
+				/* ***************************************************************************
 				 * Suppongo che cliccando su una voce di menu dalla lista menu si apra sempre
 				 * una nuova ordinazione anche se sono presenti ordinazioni in sospeso per
 				 * quella stessa voce di menù. In alternativa dovrei ricercare eventuali 

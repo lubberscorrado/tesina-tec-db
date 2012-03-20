@@ -140,9 +140,6 @@ public class NotificationUpdaterService extends Service {
 			   			
 			   		}
 			   		
-										
-				
-					
 					Thread.sleep(DELAY);
 					
 				} catch(InterruptedException e) {
@@ -160,7 +157,7 @@ public class NotificationUpdaterService extends Service {
 	
 	/** 
 	 * Invia nuove notifiche nella StatusBar 
-	 * @author Fabio Pierazzi
+	 * @author Fabio Pierazzi, Guerri Marco
 	 */
 	private void sendNotifications(String notifica) {
 		

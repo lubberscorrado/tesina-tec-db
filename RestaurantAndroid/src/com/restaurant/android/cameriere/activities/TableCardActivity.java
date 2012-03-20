@@ -182,53 +182,10 @@ public class TableCardActivity extends Activity {
 						.setPositiveButton("Si", new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
-								
-								/* Cancello dal database locale TUTTE le ordinazioni
-								 * presenti nel conto (sia SOSPESE che NON) poichè non 
-								 * sarà più necessario visualizzarle sul client android.
-								 * Cancello anche le variazioni associate alle ordinazioni. */
-								
-								DbManager dbManager = new DbManager(getApplicationContext());
-								SQLiteDatabase db = dbManager.getWritableDatabase();
-								
-								List<Integer> listaComande = new ArrayList<Integer>();
-								
-								Cursor cursorOrdinazioni;
-								cursorOrdinazioni = db.query(	"comanda", new String[] {"idComanda"}, 
-																"idTavolo="+myTable.getTableId(),
-																null,
-																null,
-																null,
-																null,
-																null);
-								
-								cursorOrdinazioni.moveToFirst();
-								
-								while(!cursorOrdinazioni.isAfterLast()) {
-									listaComande.add(new Integer(cursorOrdinazioni.getInt(0)));
-									cursorOrdinazioni.moveToNext();
-								}
-								
-								cursorOrdinazioni.close();
-								
-								/* ******************************************************
-								 * Cancello comande e variazioni associate in base agli
-								 * id recuperati in precedenza 
-								 ********************************************************/
-								String idComande = "(";
-							
-								for(Integer id : listaComande)
-									idComande = idComande + id + ",";
-								
-								idComande = idComande.substring(0, 	idComande.lastIndexOf(",") > 0 ? 
-																	idComande.lastIndexOf(",") : 1 );
-								idComande = idComande + ")";
-								
-								db.delete("comanda", "idComanda IN " + idComande, null);
-								db.delete("variazionecomanda","idComanda IN " + idComande, null);
-								
+					
 								/* ***********************************************
-								 * Libero il tavolo
+								 * Libero il tavolo e cancello le ordinazioni
+								 * associate ad esso
 								 *************************************************/
 								new LiberaTavoloAsyncTask().execute((Object[])null);
 							}
@@ -298,12 +255,7 @@ public class TableCardActivity extends Activity {
 	       *****************************************************************/
 	      prenotationListView.setOnItemClickListener(new OnItemClickListener() {
 		  	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		  	    	 Log.i(TAG, "Hai cliccato su una prenotazione: " + prenotationListView_adapter.getItem(position).getNomeCliente());
-
-		  	    	 /* Apro una nuova finestra con l'opzione di occupare il tavolo 
-		  	    	  * secondo la prenotazione */
-		  	    	 
-		  	    	 // TODO
+		  	    
 		  	    } 
 		  });
 		  
@@ -312,7 +264,6 @@ public class TableCardActivity extends Activity {
 		   * del conto
 		   ******************************************************************/
 		  
-		  // Recupero riferimento a conto
 		  this.contoListView = (ListView) findViewById(R.id.listView_contoList);
 	  
 		  this.contoListView_arrayOrdinazioni = new ArrayList<Ordinazione>();
@@ -357,6 +308,7 @@ public class TableCardActivity extends Activity {
 	  	  	  	    		myIntent.putExtras(b);
 	  	  	  	    	
 	  	  	  	    		startActivity(myIntent);
+	  	  	  	    		
 			  			 } else if(dialogMenuItems[item_position].equals("Elimina")) {
 			  				 
 			  				 Object[] eliminaComandaParams =  { 	contoListView_arrayOrdinazioni
@@ -440,11 +392,9 @@ public class TableCardActivity extends Activity {
 			  	    	    		/* Aggiorno la ListView */
 		  			  	    		ordersWaitingListView_adapter.notifyDataSetChanged();
 			  	    	    		
-			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 			  	    	    		
 			  	    	    	} else if (dialogMenuItems[item_position].equals("Deseleziona")) {
 			  	    	    		
-			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 			  	    	    		
 			  	    	    		/* Deseleziono la casella */
 			  	    	    		ordersWaitingListView_adapter.getItem(positionClicked).setSelezionata(false);
@@ -452,7 +402,6 @@ public class TableCardActivity extends Activity {
 		  	    	    			ordersWaitingListView_adapter.notifyDataSetChanged();
 			  	    	    		
 			  	    	    	} else if (dialogMenuItems[item_position].equals("Modifica")) {
-			  	    	    		Log.w(TAG, dialogMenuItems[item_position]);
 			  	    	    		
 			  	    	    		/* *******************************************************
 			  	    	    		 * Avvio l'activity di modifica dell'ordinazione sospesa
@@ -512,8 +461,6 @@ public class TableCardActivity extends Activity {
 		  ordersWaitingListView.setOnItemClickListener(new OnItemClickListener() {
 		  	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		  	    	
-		  	    	 Log.i(TAG, "Hai cliccato (shortClick) su un'ordinazione in sospeso: " + ordersWaitingListView_adapter.getItem(position).getNome());
-		  	    	
 		  	    	if(!ordersWaitingListView_adapter.getItem(position).isSelezionata()) {
 		  	    		ordersWaitingListView_adapter.getItem(position).setSelezionata(true);
 	    	    		ordersWaitingListView_adapter.notifyDataSetChanged();
@@ -535,8 +482,6 @@ public class TableCardActivity extends Activity {
 					return;
 				else 
 					new InviaOrdinazioniAsyncTask().execute((Object[])null);
-				
-				
 			}
 		});
 		  
@@ -545,35 +490,44 @@ public class TableCardActivity extends Activity {
 		  ******************************************************************/
 		  if(TableCardActivity.updateConto)
 			  new GetContoToLocalDatabaseAsyncTask().execute((Object[]) null);
-		  
 		  TableCardActivity.updateConto = false;
+		  
+		  
+		  /* **************************************************************
+		   * Aggiorno le list view del conto e delle comande sospese 
+		   * ricaricando le comande dal database 
+		   ****************************************************************/
+			updateListViewSospeseFromLocalDatabase();
+			updateListViewContoFromLocalDatabase();
 		  
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
+		
 		Log.d("TableCardActivity","OnResume");
 		
+		/* Aggiorno l'oggetto Table. E' necessario per quanto
+		 * on resume viene chiamato dopo onCreate */
 		new UpdateTableObjectAsyncTask().execute((Object[])null);
 		
+		
 		/* **************************************************************** 
-		  * Sincronizzo il conto con il server se la flag è true
-		  ******************************************************************/
-		  if(TableCardActivity.updateConto)
-			  new GetContoToLocalDatabaseAsyncTask().execute((Object[]) null);
-		  
+		 * Sincronizzo il conto con il server se la flag è true
+		 ******************************************************************/
+		 if(TableCardActivity.updateConto)
+			 new GetContoToLocalDatabaseAsyncTask().execute((Object[]) null);
 		  TableCardActivity.updateConto = false;
 		  
-		/* Aggiorno la lista delle ordinazioni sospese e delle ordinazioni confermate */
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				updateListViewContoFromLocalDatabase();
-				updateListViewSospeseFromLocalDatabase();
-				
-			}
-		});
+		/* **************************************************************
+		 * Aggiorno le list view del conto e delle comande sospese 
+		 * ricaricando le comande dal database 
+		 ****************************************************************/
+		updateListViewSospeseFromLocalDatabase();
+		updateListViewContoFromLocalDatabase();
+			
+		
 	}
 	
 	@Override
@@ -748,15 +702,18 @@ public class TableCardActivity extends Activity {
         		  Cursor cursorNomeVoceMenu;
         		  cursorNomeVoceMenu = db.query("vocemenu", new String[] {"nome"}, "idVoceMenu=" + cursorOrdinazioniInviate.getInt(1),
         				  						null, null, null, null, null);
-        		  
         		  cursorNomeVoceMenu.moveToFirst();
+        		  String vocemenu = "Non definito";
+        		  if(!cursorNomeVoceMenu.isAfterLast())
+        			  vocemenu = cursorNomeVoceMenu.getString(0);
+        		  cursorNomeVoceMenu.close();
         		  
         		  Ordinazione o = new Ordinazione();
         		  
         		  o.setIdOrdinazione(cursorOrdinazioniInviate.getInt(0));
         		  o.setIdVoceMenu(cursorOrdinazioniInviate.getInt(1));
         		  o.setIdTavolo(myTable.getTableId());
-        		  o.setNome(cursorNomeVoceMenu.getString(0));
+        		  o.setNome(vocemenu);
         		  o.setQuantita(cursorOrdinazioniInviate.getInt(2));
         		  o.setNote(cursorOrdinazioniInviate.getString(3));
         		  o.setIdRemotoOrdinazione(cursorOrdinazioniInviate.getInt(4));
@@ -764,8 +721,9 @@ public class TableCardActivity extends Activity {
         		  
         		  cursorOrdinazioniInviate.moveToNext();
         		  
-        		  cursorNomeVoceMenu.close();
         		  contoListView_arrayOrdinazioni.add(o);
+        		  
+        		  
            	  }
         	  
         	  cursorOrdinazioniInviate.close();
@@ -1155,14 +1113,13 @@ public class TableCardActivity extends Activity {
 			String response = "";
 					
 			try {
-				response = restApp.makeHttpGetRequest(restApp.getHost() + "ClientEJB/statoTavolo", new HashMap<String,String>());
+				response = restApp.makeHttpGetRequest(restApp.getHost() + 
+							"ClientEJB/statoTavolo", new HashMap<String,String>());
 			} catch (ClientProtocolException e) {
 				
 			} catch (IOException e) {
 				return new Error("Richiesta effettuata correttamente", false );
 			}
-			
-			Log.d("TableListAsyncTask" , response);
 			
 			/* ****************************************************************
 			 * Aggiornamento dell'interfaccia grafica dello stato del tavolo
@@ -1189,11 +1146,12 @@ public class TableCardActivity extends Activity {
 					myTable.setTableStatus(jsonArray.getJSONObject(i).getString("statoTavolo"));
 					myTable.setPiano(jsonArray.getJSONObject(i).getString("numeroPiano"));
 					myTable.setCameriere(jsonArray.getJSONObject(i).getString("cameriere"));
+					
 					runOnUiThread(new Runnable() {
 						public void run() {
 							updateTableCardFromGlobalObject();
-							updateListViewSospeseFromLocalDatabase();
-							updateListViewContoFromLocalDatabase();
+						//	updateListViewSospeseFromLocalDatabase();
+						//	updateListViewContoFromLocalDatabase();
 						}
 					});
 								
@@ -1294,19 +1252,65 @@ public class TableCardActivity extends Activity {
 			requestParameters.put("action","LIBERA_TAVOLO");
 			requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
 			  
+			DbManager dbManager = new DbManager(getApplicationContext());
+			SQLiteDatabase db = dbManager.getWritableDatabase();
+			
 			try {
 				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
 																requestParameters);
-			
 				
 				JSONObject jsonObject = new JSONObject(response);
 				if(jsonObject.getString("success").equals("true")) {
+					
 					myTable.setTableStatus("PULIRE");
 					myTable.setCameriere("Non definito");
 					myTable.setNumPersone(0);
+					
+					/* Cancello dal database locale TUTTE le ordinazioni
+					 * presenti nel conto (sia SOSPESE che NON) poichè non 
+					 * sarà più necessario visualizzarle sul client android.
+					 * Cancello anche le variazioni associate alle ordinazioni. */
+					
+					List<Integer> listaComande = new ArrayList<Integer>();
+					
+					Cursor cursorOrdinazioni;
+					cursorOrdinazioni = db.query(	"comanda", new String[] {"idComanda"}, 
+													"idTavolo="+myTable.getTableId(),
+													null,
+													null,
+													null,
+													null,
+													null);
+					
+					cursorOrdinazioni.moveToFirst();
+					
+					while(!cursorOrdinazioni.isAfterLast()) {
+						listaComande.add(new Integer(cursorOrdinazioni.getInt(0)));
+						cursorOrdinazioni.moveToNext();
+					}
+					
+					cursorOrdinazioni.close();
+					
+					/* ******************************************************
+					 * Cancello comande e variazioni associate in base agli
+					 * id recuperati in precedenza 
+					 ********************************************************/
+					String idComande = "(";
+				
+					for(Integer id : listaComande)
+						idComande = idComande + id + ",";
+					
+					idComande = idComande.substring(0, 	idComande.lastIndexOf(",") > 0 ? 
+														idComande.lastIndexOf(",") : 1 );
+					idComande = idComande + ")";
+					
+					db.delete("comanda", "idComanda IN " + idComande, null);
+					db.delete("variazionecomanda","idComanda IN " + idComande, null);
+					
 					return new Error("", false);
 					
 				} else {
+					
 					return new Error(jsonObject.getString("message"),true);
 				}
 			} catch (ClientProtocolException e) {
@@ -1315,6 +1319,9 @@ public class TableCardActivity extends Activity {
 			  return new Error("Errore durante la comunicazione con il server",true);
 			} catch (JSONException e) {
 			  return new Error("Errore durante la lettura della risposta dal server",true);
+			}finally{
+				db.close();
+				dbManager.close();
 			}
 			
 	   	}
@@ -1465,7 +1472,11 @@ public class TableCardActivity extends Activity {
 	   		if(error.errorOccurred()) {
 	   			Toast.makeText(getApplicationContext(), error.getError(), 50).show();
 	   		} else {
-	   			new UpdateTableObjectAsyncTask().execute((Object[]) null);
+	   			myTable.setCameriere("Non definito");
+	   			myTable.setNumPersone(0);
+	   			myTable.setTableStatus("PULIRE");
+	   			
+	   			updateTableCardFromGlobalObject();
 	   		}
 	    }
   }
@@ -1477,9 +1488,7 @@ public class TableCardActivity extends Activity {
     ************************************************************************/
    class GetContoToLocalDatabaseAsyncTask extends AsyncTask<Object, Object, Error> {
 	   
-	   	DbManager dbManager;
-	   	SQLiteDatabase db;
-	   
+	
 	   	@Override
    		protected void onPreExecute() {
 	   	}
@@ -1487,8 +1496,8 @@ public class TableCardActivity extends Activity {
 	   	@Override
 		protected Error doInBackground(Object... params) {
 			
-	   		dbManager = new DbManager(getApplicationContext());
-	   		db = dbManager.getWritableDatabase();
+	   		DbManager dbManager = new DbManager(getApplicationContext());
+	   		SQLiteDatabase db = dbManager.getWritableDatabase();
 	   		
 	   		RestaurantApplication restApp = (RestaurantApplication)getApplication();
 			HashMap<String,String> requestParameters = new HashMap<String,String>();
@@ -1608,8 +1617,7 @@ public class TableCardActivity extends Activity {
 							db.insertOrThrow("variazionecomanda", null, variazione);
 						}
 					}
-					dbManager.close();
-					db.close();
+			
 					return new Error("",false);
 					
 				} else {
@@ -1620,6 +1628,9 @@ public class TableCardActivity extends Activity {
 				
 			} catch (Exception e) {
 				return new Error(e.toString(),true);
+			}finally {
+				dbManager.close();
+				db.close();
 			}
 		}
 	  	@Override
@@ -1630,8 +1641,6 @@ public class TableCardActivity extends Activity {
 	  			
 	  			/* Aggiorno la listview del conto */
 	  			updateListViewContoFromLocalDatabase();
-				
-				Utility.setListViewHeightBasedOnChildren(contoListView);
 				
 	  		}
 	   	}

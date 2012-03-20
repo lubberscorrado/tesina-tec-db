@@ -63,9 +63,7 @@ public class TablesListActivity extends Activity {
       updaterThread = new UpdaterThread();
       runThread = true;
       pauseThread = false;
-      Log.d("TablesListActivity","Avvio il thread di aggiornamento dei tavoli");
       updaterThread.start();
-      
       
       /* *************************************************************
        * Listener per il click su un elemento della lista dei tavoli 
@@ -74,13 +72,6 @@ public class TablesListActivity extends Activity {
       tableListView.setOnItemClickListener(new OnItemClickListener() {
   	    public void onItemClick(AdapterView<?> parent, View view,
 		        int position, long id) {
-  	    
-  	    		
- 	    	 /* Sapendo la posizione dell'elemento che è stato 
-  	    	  * cliccato, ricavo l'oggetto dell'adapter */
-  	    	 Log.i(TAG, "Hai cliccato su: " + 
-  	    		  	m_adapter.getItem(position).getTableName() + ", che è " 
-  	    		  + m_adapter.getItem(position).getTableStatus());
   	    	  
   	    	 /* Apro una nuova activity con la scheda del tavolo */
   	    	 Intent myIntent = new Intent(TablesListActivity.this, TableCardActivity.class);
@@ -88,7 +79,6 @@ public class TablesListActivity extends Activity {
   	    	  
   	    	 /* Creo un bundle per passare dei dati alla nuova activity */
 	  	     Bundle b = new Bundle();
-	  	     
 	  	     
 	  	     b.putSerializable("tableObject", (Table) m_adapter.getItem(position));
 	  	     b.putString("tableName", m_adapter.getItem(position).getTableName());
@@ -128,6 +118,14 @@ public class TablesListActivity extends Activity {
 		pauseThread = true;
 	}
 	
+	/**
+	 * Metodo onDestroy chiamato quando l'activity viene distrutta.
+	 * Riavvia il thread nel caso fosse stato precedentemente stoppato
+	 * (onDestroy tipicamente viene chiamato dopo onStop) e imposta
+	 * la flag per la terminazione del thread
+	 * 
+	 * @author Guerri Marco
+	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -138,12 +136,11 @@ public class TablesListActivity extends Activity {
 		 * condition dovuto al fatto che il thread si sospende dopo la signal */
 		pauseThread = false;
 		runThread =false;
-		Log.d("TablesListActivity","Stoppo il thread di aggiornamento dei tavoli");
-		runThread =false;
 		updaterThread.Signal();
 		
 		/* Non dovrebbe essere strettamente necessario, il thread dovrebbe terminare
-		 * ugualmente */
+		 * ugualmente anche senza effettuare il join */
+		
 //		try {
 //			updaterThread.join();
 //		} catch (InterruptedException e) {
@@ -156,7 +153,7 @@ public class TablesListActivity extends Activity {
      * all'interno della ListView. 
      * @author Fabio Pierazzi
      */
-    private void getTables(){
+    private void getTablesFromServer(){
           try{
         	  
         	  RestaurantApplication restApplication = (RestaurantApplication)getApplication();
@@ -199,25 +196,22 @@ public class TablesListActivity extends Activity {
         			  m_adapter.notifyDataSetChanged();
         		  }
         	  });
-        	  
-        	  Log.i(	"TablesListService" + ": getTables()", "Number of Tables Loaded: " + 
-            		  	m_tables.size());
               
         } catch (Exception e) {
         	Log.e("TablesListService" + ": BACKGROUND_PROC", e.getMessage());
         }
     }
 	   
-	/* *********************************************
-	 * Thread per l'aggiornamento della lista view 
-	 **********************************************/
+	/******************************************************
+	 * Thread di aggiornamento della lista dei tavoli
+	 * @author Guerri Marco
+	 ******************************************************/
 	private class UpdaterThread extends Thread {
 		
-   		final int DELAY = 3000;
+   		final int DELAY = 10000;
    		public void run() {
    			while(runThread) {
-   				Log.d("UpdaterThread", "UPDATING...");
-   				getTables();
+   				getTablesFromServer();
    				
    				try {
 					Thread.sleep(DELAY);
@@ -226,7 +220,6 @@ public class TablesListActivity extends Activity {
 				}
    				if(pauseThread)
 					try {
-						Log.d("UpdaterThread", "Vado a letto");
 						this.Wait();
 					} catch (InterruptedException e) {
 						Log.d("UpdaterThread","Errore durante il wait()");
@@ -244,10 +237,8 @@ public class TablesListActivity extends Activity {
    	
 	/* ***********************************************************************
 	 * Adapter per gestire il rendering personalizzato degli elementi della
-	 * lista 
+	 * lista tavoli
 	 ************************************************************************/
-    
-	/* Adapter che stabilisce coem mostrare la roba in ordine */
     private class TableAdapter extends ArrayAdapter<Table> {
 
         private ArrayList<Table> items;

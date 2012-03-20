@@ -204,7 +204,6 @@ public class NotificationActivity extends Activity {
 			 * service. Vengono richieste le nuove notifiche, salvate sul database
 			 * locale e aggiornata la list view */
 			
-			Log.d("NOtificationActivity", "Notifica avvenuta quando non ero attiva");
 			new GetNotificheAsyncTask().execute((Object[]) null);
 			NotificationActivity.updateNofitications = false;
 		} else {
@@ -313,7 +312,6 @@ public class NotificationActivity extends Activity {
 	class ReceiverNotifiche extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.d("NotificationActivity","Ricevuto intent di aggiornamento");
 			new GetNotificheAsyncTask().execute((Object[]) null);
 			NotificationActivity.updateNofitications = false;
 		}
@@ -367,7 +365,6 @@ public class NotificationActivity extends Activity {
 		   			String dataUltimoAggiornamento = jsonObjectResponse.getString("message");
 		   			restApp.setLastNotificationCheckDate(dataUltimoAggiornamento);
 		   			
-		   			Log.d(	"Notification Activity", "EFFETTUATA RICHIESTA DI AGGIORNAMENTO");
 		   			
 		   			/* **************************************************************
 		   			 * Aggiorno il database inserendo le notifiche appena ottenute
@@ -426,10 +423,6 @@ public class NotificationActivity extends Activity {
 			   		
 			   			db.insertOrThrow("notifiche",null, notifica);
 		   			}
-		   			
-		   			db.close();
-		   			dbManager.close();
-		   		
 		   		} else {
 		   			
 		   			Toast.makeText(getApplicationContext(), 
