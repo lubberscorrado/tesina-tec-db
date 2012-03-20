@@ -224,8 +224,11 @@ public class login extends HttpServlet {
 //			}
 			
 //			JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");	return;
+		
 			
-		} else if(action.equals("logout")){//LOGOUT
+			
+		//LOGOUT
+		} else if(action.equals("logout")){
 			session.setAttribute("Logged", false);
 			try {
 				Object obj_idUtente = session.getAttribute("idUtente");
@@ -251,8 +254,13 @@ public class login extends HttpServlet {
 			JSONResponse.WriteOutput(response, true, "Logout effettuato correttamente");
 			return;
 			
-		}else if(action.equals("login_info")){//LOGIN INFO
+			
+			
+		//LOGIN INFO
+		}else if(action.equals("login_info")){
 			JSONObject json_obj = new JSONObject();
+			
+			//Controllo se l'utente è loggato; e se lo è controllo i privilegi
 			try{
 				if(session == null || session.isNew() || session.getAttribute("Logged").equals(false)){
 					json_obj.put("logged", false);
@@ -266,28 +274,33 @@ public class login extends HttpServlet {
 				
 					json_obj.put("restaurant", 	session.getAttribute("Ristorante"));
 					json_obj.put("user", 		session.getAttribute("Username"));
+					
+					//Aggiorno i record di sessione
+					int idUtente = (Integer) session.getAttribute("idUtente");
+					int idTenant = (Integer) session.getAttribute("idTenant");
+					try {
+						if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
+							gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
+						}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
+							gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CUOCO);
+						}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
+							gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CASSIERE);
+						}
+					} catch (DatabaseException e) {
+						e.printStackTrace();
+					}
+					
+					
+					
 				}
 			}catch(Exception e){
 				json_obj.put("logged", false);
-				return;
 			}
+			
 			json_obj.put("success", true);
 			response.getWriter().println(json_obj);
 			
-			//Aggiorno i record di sessione
-			int idUtente = (Integer) session.getAttribute("idUtente");
-			int idTenant = (Integer) session.getAttribute("idTenant");
-			try {
-				if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
-					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
-				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
-					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CUOCO);
-				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
-					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CASSIERE);
-				}
-			} catch (DatabaseException e) {
-				e.printStackTrace();
-			}
+			
 			
 			return;
 		}
