@@ -51,7 +51,7 @@ public class gestioneTavolo extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//Controllo dei privilegi di accesso
-		if( !( JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere) || JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cassiere) ) ){
+		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
 			return;
 		}
 		
