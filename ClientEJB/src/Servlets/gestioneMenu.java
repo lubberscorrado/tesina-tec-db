@@ -46,7 +46,7 @@ public class gestioneMenu extends HttpServlet {
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	//Controllo dei privilegi di accesso
-    	if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Administrator) ){
+    	if( !JSONResponse.UserAccessControlAnyPrivs(request, response, new int[]{JSONResponse.PRIV_Cassiere,JSONResponse.PRIV_Cameriere,JSONResponse.PRIV_Cuoco}) ){
     		return;
     	}
     	
