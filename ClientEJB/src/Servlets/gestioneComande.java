@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.validator.util.privilegedactions.GetConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -92,7 +93,8 @@ public class gestioneComande extends HttpServlet {
 											numeroPersone);
 			
 				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("cameriere", utentePersonale.getNome());
+				jsonObject.put("cameriere", utentePersonale.getNome() + "" +
+											utentePersonale.getCognome());
 				jsonObject.put("success", true);
 				
 				response.getWriter().print(jsonObject);
