@@ -55,7 +55,6 @@ public class gestioneComande extends HttpServlet {
 		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere) || 
 			(Integer) request.getSession().getAttribute("idTenant") == null || 
 			(Integer)request.getSession().getAttribute("idUtente") == null) {
-			
 			return;
 		}
 		
@@ -76,7 +75,9 @@ public class gestioneComande extends HttpServlet {
 			request.getParameter("action").equals("OCCUPA_TAVOLO")) {
 			
 			/* ****************************************************************************
-			 * Viene occupato il tavolo e aperto il conto associato
+			 * Viene occupato il tavolo e aperto il conto associato. Se l'id del tavolo
+			 * è nullo ritorna un'eccezione perchè non è in grado di trovare il tavolo
+			 * associato.
 			 *****************************************************************************/
 			try {
 				int idTavolo = 0;
@@ -96,7 +97,7 @@ public class gestioneComande extends HttpServlet {
 				jsonObject.put("cameriere", utentePersonale.getNome() + " " +
 											utentePersonale.getCognome());
 				jsonObject.put("success", true);
-				
+			
 				response.getWriter().print(jsonObject);
 				
 			} catch (Exception e) {
@@ -108,16 +109,19 @@ public class gestioneComande extends HttpServlet {
 					request.getParameter("action").equals("LIBERA_TAVOLO")) {
 			
 			/* ****************************************************************************
-			 * Viene liberato il tavolo e settato il conto come 
-			 * DAPAGARE
+			 * Viene liberato il tavolo e settato il conto come  DAPAGARE. Se il
+			 * tavolo non è settato ritorna un'eccezione poichè non è in grado di 
+			 * trovare un tavolo con id 0
 			 *****************************************************************************/
 			
 			try {
+				
 				int idTavolo = 0;
 				if(request.getParameter("idTavolo")!= null)
 					idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
 				
 				businessTavolo.liberaTavolo(idTavolo);
+				
 				JSONResponse.WriteOutput(response, true, "");
 			
 			} catch (Exception e) {
@@ -127,6 +131,10 @@ public class gestioneComande extends HttpServlet {
 			
 		} else if(request.getParameter("action").equals("PULISCI_TAVOLO")) {
 			
+			/* ************************************************************************
+			 * Effettua il passaggio di stato di un tavolo da PULIRE a LIBERO
+			 **************************************************************************/
+			 
 			try {
 				int idTavolo = 0;
 				if(request.getParameter("idTavolo")!= null)
@@ -162,6 +170,8 @@ public class gestioneComande extends HttpServlet {
 				reader.read(httpBody, 0, length);
 				JSONObject jsonObjectOrdinazioni = new JSONObject(new String(httpBody));
 				JSONArray jsonArrayOrdinazioni = jsonObjectOrdinazioni.getJSONArray("comande");
+				
+				
 				
 				int idTavolo = jsonObjectOrdinazioni.getInt("idTavolo");
 				
@@ -269,11 +279,10 @@ public class gestioneComande extends HttpServlet {
 			 *****************************************************************************/
 			
 			try {
+				int idRemotoComanda = 0;
+				if(request.getParameter("idRemotoComanda") != null)
+					idRemotoComanda = new Integer(request.getParameter("idRemotoComanda"));
 				
-				if(request.getParameter("idRemotoComanda") == null)
-					return;
-				
-				int idRemotoComanda = new Integer(request.getParameter("idRemotoComanda"));
 				businessComande.eliminaComanda(idRemotoComanda);
 				
 				JSONResponse.WriteOutput(response, true, "Comanda eliminata");
@@ -350,25 +359,28 @@ public class gestioneComande extends HttpServlet {
 			}
 			
 			
-		}  else if(request.getParameter("action").equals("UPDATE_STATO")) {
+		}  else if(	request.getParameter("action") != null &&
+					request.getParameter("action").equals("UPDATE_STATO")) {
 			
 			/* Modfica lo stato di una comanda senza necessariamente 
 			 * associare ad una comanda l'id di una cucina */
 			
-			int idComanda = Integer.parseInt(request.getParameter("idComanda"));
+			int idComanda = 0;
+			if(request.getParameter("idComanda") != null)
+				idComanda = Integer.parseInt(request.getParameter("idComanda"));
+			
 			int idCucina = utentePersonale.getIdUtentePersonale();
-			String stato = request.getParameter("stato");
+			
+			String stato = "";
+			if(request.getParameter("stato")!= null) 
+				stato = request.getParameter("stato");
 			
 			try {
 				businessComande.modificaStatoComanda(idComanda, idCucina, stato);
-			
 				JSONResponse.WriteOutput(response, true, "");
 				
 			} catch (DatabaseException e) {
-				
 				JSONResponse.WriteOutput(response, true, e.toString());
-				
-		
 			}
 			
 		}

@@ -42,7 +42,6 @@ public class gestioneNotifiche extends HttpServlet {
 		
 		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere) ||
 			(Integer) request.getSession().getAttribute("idUtente") == null) {
-			
 			return;
 		}
 		

@@ -57,39 +57,33 @@ public class gestioneConti extends HttpServlet {
 		int idTavolo = 0;
 		int idConto = 0;
 		
-		try{
+		try {
 			if(request.getParameter("idTavolo")!= null)
 				idTavolo = Integer.parseInt(request.getParameter("idTavolo"));
-		}catch(Exception e){
-			JSONResponse.WriteOutput(response,  false, "Errore di parsing di idTavolo");
-		}
-		
-		try{
+			
 			if(request.getParameter("idConto")!= null)
 				idConto = Integer.parseInt(request.getParameter("idConto"));
-		}catch(Exception e){
-			JSONResponse.WriteOutput(response,  false, "Errore di parsing di idConto");
+		
+		}catch(NumberFormatException e) {
+			/* Prosegue, solleverà un'eccezione per l'id nullo */
 		}
 		
-		
-		
-		if(request.getParameter("action").equals("GET_CONTO")) {
+	
+		if(	request.getParameter("action")!= null &&
+			request.getParameter("action").equals("GET_CONTO")) {
 			
 			/* ******************************************************************
 			 * Richiedo la lista di tutte le ordinazioni alla logica di business 
 			 ********************************************************************/
-			
 			try {
 				
 				List<WrapperComanda> listaComande = businessConti.getConto(idTavolo);
 				JSONArray jsonArrayComande = new JSONArray();
 				
 				for(WrapperComanda comanda : listaComande) {
-					
 					TreeNodeVoceMenu voceMenu = 
 							gestioneComanda.getVoceMenuByComanda(comanda.getIdComanda());
-					
-					
+		
 					JSONObject jsonObjectComanda = new JSONObject();
 					
 					/* ********************************************************
@@ -116,7 +110,6 @@ public class gestioneConti extends HttpServlet {
 					 ************************************************************/
 					JSONArray jsonArrayVariazioni = new JSONArray();
 					
-					
 					for(Integer idVariazione : comanda.getListIdVariazioni()) {
 						JSONObject jsonObjectIdVariazione = new JSONObject();
 						jsonObjectIdVariazione.put("id", idVariazione);
@@ -133,19 +126,18 @@ public class gestioneConti extends HttpServlet {
 				JSONResponse.WriteOutput(response,  false, e.toString());
 				
 			}
-}else if(request.getParameter("action").equals("GET_ELENCO_CONTI")) {
+		}else if(request.getParameter("action").equals("GET_ELENCO_CONTI")) {
 			
 			/* **********************************************************************************
 			 * Richiedo la lista dei conti associati ad un determinato tavolo
 			 ************************************************************************************/
 			
 			try {
-				
+			
 				List<WrapperConto> listaConti = gestioneConto.getConti(idTavolo);
 				JSONArray jsonArrayConti = new JSONArray();
 				
 				for(WrapperConto conto : listaConti) {
-					
 					JSONObject jsonObjectConto = new JSONObject();
 					jsonObjectConto.put("idConto", conto.getIdConto());
 					jsonObjectConto.put("idTavolo", conto.getIdTavolo());
@@ -154,7 +146,6 @@ public class gestioneConti extends HttpServlet {
 					jsonObjectConto.put("timestampApertura", conto.getTimestampApertura().toString());
 					jsonObjectConto.put("timestampChiusura", conto.getTimestampChiusura().toString());
 					jsonObjectConto.put("numeroPersone", conto.getNumeroPersone());
-					
 					jsonArrayConti.put(jsonObjectConto);
 				}
 				
