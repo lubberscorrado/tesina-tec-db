@@ -90,13 +90,31 @@ public class LoginActivity extends Activity implements OnClickListener {
 	    });
     }
     
-	@Override
+    @Override
 	public void onResume() {
 		super.onResume();
-		Log.d(TAG, "onResume");
-		this.logged = false;
+		
+		Log.d("HomeActivity", "Effettuo il logout");
+		RestaurantApplication restApp = (RestaurantApplication)getApplication();
+		HashMap<String, String> postParametersMap = new HashMap<String,String>();;
+		
+		postParametersMap.put("action", "logout");
+	
+		try {
+			String response = ((RestaurantApplication)getApplication()).
+									makeHttpPostRequest(restApp.getHost() + 
+														"ClientEJB/login", 
+														postParametersMap);
+			JSONObject jsonObjecResponse = new JSONObject(response);
+			
+			if(jsonObjecResponse.getString("success").equals("true")) {
+				this.logged = false;
+			}
+		
+		} catch (Exception e) {
+			/* Errore durante il logout, inutile notificarlo... */
+		}
 	}
-
     
 	 /*****************************************************************
 	  * Async Task che gestisce le richieste di login verso il server *

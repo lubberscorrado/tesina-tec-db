@@ -490,22 +490,6 @@ public class TableCardActivity extends Activity {
 					new InviaOrdinazioniAsyncTask().execute((Object[])null);
 			}
 		});
-		  
-		 /* **************************************************************** 
-		  * Sincronizzo il conto con il server se la flag è true
-		  ******************************************************************/
-		  if(TableCardActivity.updateConto)
-			  new GetContoToLocalDatabaseAsyncTask().execute((Object[]) null);
-		  TableCardActivity.updateConto = false;
-		  
-		  
-		  /* **************************************************************
-		   * Aggiorno le list view del conto e delle comande sospese 
-		   * ricaricando le comande dal database 
-		   ****************************************************************/
-			updateListViewSospeseFromLocalDatabase();
-			updateListViewContoFromLocalDatabase();
-		  
 	}
 	
 	@Override

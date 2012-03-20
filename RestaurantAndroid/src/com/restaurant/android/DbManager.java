@@ -42,20 +42,20 @@ public class DbManager extends SQLiteOpenHelper {
 	public void createTablesMenu() {
 		SQLiteDatabase database = this.getWritableDatabase();
 		
-		database.execSQL(	"create table categoria ("+
+		database.execSQL(	"create table if not exists categoria ("+
 							"idCategoria int, " +
 							"idCategoriaPadre int, " +
 							"nome string, "+
 							"descrizione string)");
 		
-		database.execSQL(	"create table vocemenu (" +
+		database.execSQL(	"create table if not exists vocemenu (" +
 							"idVoceMenu int, " +
 							"idCategoria int, "+
 							"nome string, "+
 							"descrizione string, "+
 							"prezzo string)");
 		
-		database.execSQL(	"create table variazione ("+
+		database.execSQL(	"create table if not exists variazione ("+
 							"idVariazione int, "+
 							"idCategoria int, "+
 							"nome string, "+

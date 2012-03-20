@@ -32,6 +32,8 @@ import com.restaurant.android.DbManager;
 import com.restaurant.android.Error;
 import com.restaurant.android.R;
 import com.restaurant.android.RestaurantApplication;
+import com.restaurant.android.cameriere.activities.TableCardActivity.GetContoToLocalDatabaseAsyncTask;
+import com.restaurant.android.cameriere.activities.TableCardActivity.UpdateTableObjectAsyncTask;
 import com.restaurant.android.cameriere.notifiche.NotificationActivity;
 import com.restaurant.android.cameriere.notifiche.NotificationUpdaterService;
 import com.restaurant.android.cameriere.prenotazioni.PrenotationsListActivity;
@@ -96,7 +98,6 @@ public class HomeActivity extends TabActivity {
 	    	 * L'activity è stata attivata per effetti di una notifica dalla status
 	    	 * bar
 	    	 */
-	    	Log.d("HomeActivity", "Richiesto l'aggiornamento delle notifiche");
 	    	tabHost.setCurrentTab(0);
 	    	
 	    } else {
