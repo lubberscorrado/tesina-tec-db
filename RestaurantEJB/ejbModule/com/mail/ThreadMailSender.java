@@ -2,15 +2,12 @@ package com.mail;
 
 import javax.mail.MessagingException;
 
-import com.exceptions.DatabaseException;
-
 public class ThreadMailSender implements Runnable {
 
 	private String[] sendTo;
 	private String subject;
 	private String message;
 	private String from;
-	
 	
 	public ThreadMailSender(int idTenant, String superadmin, String passwd,String email) throws InterruptedException{
 		Thread.currentThread().setName("ThreadMailSender");
@@ -26,6 +23,24 @@ public class ThreadMailSender implements Runnable {
 					"Username:\t\t"+ superadmin +"\n" +
 					"Password:\t\t"+ passwd +"\n\n" +
 					"Mandaci i tuoi feedback per un servizio sempre migliore!");
+		
+	}
+	
+	/*INVIO FATTURE*/
+	public ThreadMailSender(String ragioneSociale,long numeroConti,float canoneMensile,float costoConto,String email) throws InterruptedException{
+		Thread.currentThread().setName("ThreadMailSender");
+		
+		sendTo = new String[1];
+		sendTo[0] = new String(email);
+		
+		from = 		new String("YouRestaurant");
+		subject = 	new String("Fatturazione servizio YouRestaurant");
+		message =	new String("Fatturazione servizio YouRestaurant - " +ragioneSociale+"\n" +
+				"Canone mensile: " +canoneMensile+"€\n" +
+				"Numero conti del mese:" +numeroConti+"\n" +
+				"Costo/Conto: " +costoConto+"€\n" +
+				"Totale:"+(canoneMensile+(costoConto*numeroConti))+"€\n\n" +
+				"Mandaci i tuoi feedback per un servizio sempre migliore!");
 		
 	}
 
