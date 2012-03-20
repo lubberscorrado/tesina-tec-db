@@ -149,8 +149,24 @@ public class login extends HttpServlet {
 							session.setAttribute("idUtente", tmp.getIdUtentePersonale());
 							session.setAttribute("Privs", privilegi);
 							
-							WrapperTenant wrapperTenant = gestioneTenant.getTenantById(idTenant);
+							//Se l'utente cerca di accedere all'interfaccia web, ma non ha i privilegi blocco il login!
+							if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
+								if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cassiere)	){
+						    		return;
+						    	}
+							}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
+								if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere)	){
+						    		return;
+						    	}
+							}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
+								if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cuoco)	){
+						    		return;
+						    	}
+							}
 							
+							
+							
+							WrapperTenant wrapperTenant = gestioneTenant.getTenantById(idTenant);
 							session.setAttribute("Ristorante", wrapperTenant.getRagioneSociale());
 							session.setAttribute("Username", tmp.getUsername());
 							JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");
@@ -253,9 +269,26 @@ public class login extends HttpServlet {
 				}
 			}catch(Exception e){
 				json_obj.put("logged", false);
+				return;
 			}
 			json_obj.put("success", true);
 			response.getWriter().println(json_obj);
+			
+			//Aggiorno i record di sessione
+			int idUtente = (Integer) session.getAttribute("idUtente");
+			int idTenant = (Integer) session.getAttribute("idTenant");
+			try {
+				if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
+					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
+				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
+					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CUOCO);
+				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
+					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CASSIERE);
+				}
+			} catch (DatabaseException e) {
+				e.printStackTrace();
+			}
+			
 			return;
 		}
 
