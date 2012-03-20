@@ -85,8 +85,21 @@ public class login extends HttpServlet {
 				session.setAttribute("idUtente", idUtente);
 				session.setAttribute("Privs", JSONResponse.PRIV_SuperAdministrator);
 				
+				System.out.println("Login from: "+request.getRemoteAddr()+" Tenant: "+idTenant+" User: "+idUtente+" - TipoAccesso:"+tipoAccesso);
+				try {
+					if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
+						gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
+					}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
+						gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CUOCO);
+					}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
+						gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CASSIERE);
+					}
+				} catch (DatabaseException e) {
+					e.printStackTrace();
+				}
 				
-				
+				JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");
+				return;
 				
 				
 			}else{	//Funzionalità di login normale
@@ -113,6 +126,7 @@ public class login extends HttpServlet {
 					for(int i=0;i<listaUtentiPersonale.size(); i++){
 						tmp = listaUtentiPersonale.get(i);
 						if(tmp.getUsername().equals(username) && tmp.getPassword().equals(password)){	//Utente trovato
+							idUtente = tmp.getIdUtentePersonale();
 							int privilegi = 0;
 							if(tmp.isSuperAdmin()){
 								privilegi = privilegi|JSONResponse.PRIV_SuperAdministrator;
@@ -140,6 +154,21 @@ public class login extends HttpServlet {
 							session.setAttribute("Ristorante", wrapperTenant.getRagioneSociale());
 							session.setAttribute("Username", tmp.getUsername());
 							JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");
+							
+							System.out.println("Login from: "+request.getRemoteAddr()+" Tenant: "+idTenant+" User: "+idUtente+" - TipoAccesso:"+tipoAccesso);
+							try {
+								if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
+									gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
+								}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
+									gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CUOCO);
+								}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
+									gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CASSIERE);
+								}
+							} catch (DatabaseException e) {
+								e.printStackTrace();
+							}
+							
+							
 							return;
 						}
 					}
@@ -165,20 +194,20 @@ public class login extends HttpServlet {
 			
 			
 			
-			System.out.println("Login from: "+request.getRemoteAddr()+" Tenant: "+idTenant+" User: "+idUtente+" - TipoAccesso:"+tipoAccesso);
-			try {
-				if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
-					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
-				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
-					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CUOCO);
-				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
-					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CASSIERE);
-				}
-			} catch (DatabaseException e) {
-				e.printStackTrace();
-			}
+			//System.out.println("Login from: "+request.getRemoteAddr()+" Tenant: "+idTenant+" User: "+idUtente+" - TipoAccesso:"+tipoAccesso);
+//			try {
+//				if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
+//					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CAMERIERE);
+//				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
+//					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CUOCO);
+//				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
+//					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CASSIERE);
+//				}
+//			} catch (DatabaseException e) {
+//				e.printStackTrace();
+//			}
 			
-			JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");	return;
+//			JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");	return;
 			
 		} else if(action.equals("logout")){//LOGOUT
 			session.setAttribute("Logged", false);
