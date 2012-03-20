@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -52,6 +53,17 @@ public class StatoUtentePersonale {
 	@Column(name="loginTime")
 	private Timestamp loginTime;
 	
+//	@ManyToOne
+//	@JoinColumn(name="idPiano", referencedColumnName="idPiano")
+//	private Piano pianoAppartenenza;
+//	
+//	@OneToMany(mappedBy="areaAppartenenza")
+//	private List<Tavolo> tavoli;
+	
+	@OneToOne
+	@JoinColumn(name="idUtente", referencedColumnName="idUtente")
+	private UtentePersonale utentePersonale;
+	
 	public StatoUtentePersonale(){super();}
 
 	public int getIdUtente() {
@@ -84,6 +96,14 @@ public class StatoUtentePersonale {
 
 	public void setLoginTime(Timestamp loginTime) {
 		this.loginTime = loginTime;
+	}
+
+	public UtentePersonale getUtentePersonale() {
+		return utentePersonale;
+	}
+
+	public void setUtentePersonale(UtentePersonale utentePersonale) {
+		this.utentePersonale = utentePersonale;
 	}
 
 

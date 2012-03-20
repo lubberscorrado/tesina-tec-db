@@ -28,6 +28,7 @@ import com.restaurant.WrapperComandaCucina;
 import com.restaurant.WrapperConto;
 import com.restaurant.WrapperStatoUtentePersonale;
 import com.restaurant.WrapperUtentePersonale;
+import com.restaurant.WrapperUtentePersonaleVisualizzazioneStato;
 import com.restaurant.WrapperVariazione;
 
 @SuppressWarnings("unchecked") 
@@ -88,39 +89,41 @@ public class GestioneStatoUtentePersonale {
 	}
 	
 	
-	public List<WrapperUtentePersonale> getLoggedCamerieri(int idTenant) throws DatabaseException {
+	public List<WrapperUtentePersonaleVisualizzazioneStato> getLoggedCamerieri(int idTenant) throws DatabaseException {
 		try {
-			Query query = em.createNamedQuery("SELECT u FROM statoutentepersonale s JOIN utentepersonale u WHERE s.idUtente = u.idUtente AND s.idTenant = :idTenant AND s.tipoAccesso = :stato");
+			Query query = em.createQuery("SELECT u FROM StatoUtentePersonale s JOIN s.utentePersonale u WHERE s.idTenant = :idTenant AND s.tipoAccesso = :tipoAccesso");
 			query.setParameter("idTenant", idTenant);
-			query.setParameter("stato", StatoUtentePersonaleEnum.CAMERIERE);
+			query.setParameter("tipoAccesso", StatoUtentePersonaleEnum.CAMERIERE);
 			
-			List<WrapperUtentePersonale> listWrapperUtentePersonale = new ArrayList<WrapperUtentePersonale>();
-			
-			for(UtentePersonale utentePersonale :  ((List<UtentePersonale>) query.getResultList())) 
-				listWrapperUtentePersonale.add(new WrapperUtentePersonale(utentePersonale));
+			List<WrapperUtentePersonaleVisualizzazioneStato> listWrapperUtentePersonale = new ArrayList<WrapperUtentePersonaleVisualizzazioneStato>();
+
+			for(UtentePersonale utentePersonale :  ((List<UtentePersonale>) query.getResultList())) {
+				listWrapperUtentePersonale.add(	new WrapperUtentePersonaleVisualizzazioneStato(utentePersonale, StatoUtentePersonaleEnum.CAMERIERE)	);
+			}
 			
 			return listWrapperUtentePersonale;
 			
 		}catch(Exception e) {
-			throw new DatabaseException("Errore durante l'eliminazione della sessione ("+ e.toString() + ")");
+			throw new DatabaseException("Errore durante la ricerca delle sessioni dei camerieri loggati ("+ e.toString() + ")");
 		}
 	}
 
-	public List<WrapperUtentePersonale> getLoggedCuochi(int idTenant) throws DatabaseException {
+	public List<WrapperUtentePersonaleVisualizzazioneStato> getLoggedCuochi(int idTenant) throws DatabaseException {
 		try {
-			Query query = em.createNamedQuery("SELECT u FROM statoutentepersonale s JOIN utentepersonale u WHERE s.idUtente = u.idUtente AND s.idTenant = :idTenant AND s.tipoAccesso = :stato");
+			Query query = em.createQuery("SELECT u FROM StatoUtentePersonale s JOIN s.utentePersonale u WHERE s.idTenant = :idTenant AND s.tipoAccesso = :tipoAccesso");
 			query.setParameter("idTenant", idTenant);
-			query.setParameter("stato", StatoUtentePersonaleEnum.CUOCO);
+			query.setParameter("tipoAccesso", StatoUtentePersonaleEnum.CUOCO);
 			
-			List<WrapperUtentePersonale> listWrapperUtentePersonale = new ArrayList<WrapperUtentePersonale>();
-			
-			//for(StatoUtentePersonale statoUtentePersonale :  ((List<StatoUtentePersonale>) query.getResultList())) 
-			//	listWrapperUtentePersonale.add(new WrapperUtentePersonale(statoUtentePersonale));
+			List<WrapperUtentePersonaleVisualizzazioneStato> listWrapperUtentePersonale = new ArrayList<WrapperUtentePersonaleVisualizzazioneStato>();
+
+			for(UtentePersonale utentePersonale :  ((List<UtentePersonale>) query.getResultList())) {
+				listWrapperUtentePersonale.add(	new WrapperUtentePersonaleVisualizzazioneStato(utentePersonale, StatoUtentePersonaleEnum.CAMERIERE)	);
+			}
 			
 			return listWrapperUtentePersonale;
 			
 		}catch(Exception e) {
-			throw new DatabaseException("Errore durante l'eliminazione della sessione ("+ e.toString() + ")");
+			throw new DatabaseException("Errore durante la ricerca delle sessioni dei cuochi loggati ("+ e.toString() + ")");
 		}
 	}
 	 
