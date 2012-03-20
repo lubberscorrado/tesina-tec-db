@@ -24,6 +24,7 @@ public class WrapperConto {
 		this.timestampChiusura = conto.getTimeStampChiusura();
 		this.stato = conto.getStato();
 		this.idTavolo = conto.getTavoloAppartenenza().getIdTavolo();
+		this.numeroPersone = conto.getNumeroPersone();
 	}
 	
 	public int getIdConto() {
