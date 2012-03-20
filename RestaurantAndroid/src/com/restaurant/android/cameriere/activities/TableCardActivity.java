@@ -879,7 +879,7 @@ public class TableCardActivity extends Activity {
 			Button btnOccupa = (Button)findViewById(R.id.button_tableCard_occupaTavolo);
 			btnOccupa.setEnabled(false);
 			Button btnPulisci = (Button)findViewById(R.id.button_tableCard_pulisciTavolo);
-			btnPulisci.setVisibility(0);;
+			btnPulisci.setEnabled(false);
 			Button btnOrdina = (Button)findViewById(R.id.button_tableCard_prendiOrdinazione);
 			btnOrdina.setEnabled(true);
 			//Button btnCedi= (Button)findViewById(R.id.button_tableCard_cediTavolo);
