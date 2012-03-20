@@ -67,79 +67,102 @@ public class login extends HttpServlet {
 		
 
 		if(action == null || action.length() == 0){	//LOGIN
+			String ristorante = request.getParameter("ristorante");
+			String username = request.getParameter("username");
+			String password = request.getParameter("password");
 			
-			int idTenant = 0;
-			int idUtente = 1;
+			int idTenant = -1;
+			int idUtente = -1;
+			
+			//////////////////////////
+			boolean DEBUG_MODE = false;
+			//////////////////////////
+			
+			if(DEBUG_MODE){	//Funzionalità di login disattivata per il debug
+				idTenant = 0;
+				idUtente = 1;
+				// Setto i valori della sessione
+				session.setAttribute("Logged", true);
+				session.setAttribute("idTenant", idTenant);
+				session.setAttribute("idUtente", idUtente);
+				session.setAttribute("Privs", JSONResponse.PRIV_SuperAdministrator);
+				
+				
+				
+				
+				
+			}else{	//Funzionalità di login normale
+				idTenant = Integer.parseInt(ristorante);
+				
+				try {
+					//Estraggo la lista degli utenti
+					WrapperUtentePersonale tmp;
+					try{
+						tmp = gestioneTenant.getWrapperUtentePersonaleByTenantId(idTenant);	//Cerca l'utente Superadmin
+					}catch(DatabaseException e){
+						JSONResponse.WriteOutput(response, false, "Il codice del ristorante non è valido.");
+						return;
+					}
+					List<WrapperUtentePersonale> listaUtentiPersonale = gestioneUtentePersonale.getUtentePersonaleTenant(idTenant,false);
+					listaUtentiPersonale.add( tmp );	//Aggiungo il superutente alla lista
+					
+					//Cerco l'utente che ha sta cercando di loggare
+					for(int i=0;i<listaUtentiPersonale.size(); i++){
+						tmp = listaUtentiPersonale.get(i);
+						if(tmp.getUsername().equals(username) && tmp.getPassword().equals(password)){	//Utente trovato
+							int privilegi = 0;
+							if(tmp.isSuperAdmin()){
+								privilegi = privilegi|JSONResponse.PRIV_SuperAdministrator;
+							}else if(tmp.isAdmin()){
+								privilegi = privilegi|JSONResponse.PRIV_Administrator;
+							}else{
+								if(tmp.isCameriere()){
+									privilegi = privilegi|JSONResponse.PRIV_Cameriere;
+								}
+								if(tmp.isCassiere()){
+									privilegi = privilegi|JSONResponse.PRIV_Cassiere;
+								}
+								if(tmp.isCucina()){
+									privilegi = privilegi|JSONResponse.PRIV_Cuoco;
+								}
+							}
+							// Setto i valori della sessione
+							session.setAttribute("Logged", true);
+							session.setAttribute("idTenant", idTenant);
+							session.setAttribute("Privs", privilegi);
+							
+							WrapperTenant wrapperTenant = gestioneTenant.getTenantById(idTenant);
+							
+							session.setAttribute("Ristorante", wrapperTenant.getRagioneSociale());
+							session.setAttribute("Username", tmp.getUsername());
+							JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");
+							return;
+						}
+					}
+					JSONResponse.WriteOutput(response, false, "Username o password non corretti.");
+					return;
+					
+				} catch (DatabaseException e1) {
+//					e1.printStackTrace();
+					JSONResponse.WriteOutput(response, false, "Errore durante il login.");
+					return;
+				}
+			}
+			
+			//int idTenant = 0;
+			//int idUtente = 1;
 
 			
-//
-//			String ristorante = request.getParameter("ristorante");
-//			String username = request.getParameter("username");
-//			String password = request.getParameter("password");
-//			int idTenant = Integer.valueOf(ristorante);
-//			
-//			try {
-//				//Estraggo la lista degli utenti
-//				WrapperUtentePersonale tmp;
-//				try{
-//					tmp = gestioneTenant.getWrapperUtentePersonaleByTenantId(idTenant);
-//				}catch(DatabaseException e){
-//					JSONResponse.WriteOutput(response, false, "Il codice del ristorante non è valido.");
-//					return;
-//				}
-//				List<WrapperUtentePersonale> listaUtentiPersonale = gestioneUtentePersonale.getUtentePersonaleTenant(idTenant);
-//				listaUtentiPersonale.add( tmp );	//Aggiungo il superutente alla lista
-//				
-//				//Cerco l'utente che ha sta cercando di loggare
-//				for(int i=0;i<listaUtentiPersonale.size(); i++){
-//					tmp = listaUtentiPersonale.get(i);
-//					if(tmp.getUsername().equals(username) && tmp.getPassword().equals(password)){	//Utente trovato
-//						int privilegi = 0;
-//						if(tmp.isSuperAdmin()){
-//							privilegi = privilegi|JSONResponse.PRIV_SuperAdministrator;
-//						}else if(tmp.isAdmin()){
-//							privilegi = privilegi|JSONResponse.PRIV_Administrator;
-//						}else{
-//							if(tmp.isCameriere()){
-//								privilegi = privilegi|JSONResponse.PRIV_Cameriere;
-//							}
-//							if(tmp.isCassiere()){
-//								privilegi = privilegi|JSONResponse.PRIV_Cassiere;
-//							}
-//							if(tmp.isCucina()){
-//								privilegi = privilegi|JSONResponse.PRIV_Cuoco;
-//							}
-//						}
-//						// Setto i valori della sessione
-//						session.setAttribute("Logged", true);
-//						session.setAttribute("idTenant", idTenant);
-//						session.setAttribute("Privs", privilegi);
-//						
-//						WrapperTenant wrapperTenant = gestioneTenant.getTenantById(idTenant);
-//						
-//						session.setAttribute("Ristorante", wrapperTenant.getRagioneSociale());
-//						session.setAttribute("Username", tmp.getUsername());
-//						JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");
-//						return;
-//					}
-//				}
-//				JSONResponse.WriteOutput(response, false, "Username o password non corretti.");
-//				return;
-//				
-//			} catch (DatabaseException e1) {
-////				e1.printStackTrace();
-//				JSONResponse.WriteOutput(response, false, "Errore durante il login.");
-//				return;
-//			}
+
 			
 			
 			
 			//VERSIONE SENZA LOGIN
-			// Setto i valori della sessione
-			session.setAttribute("Logged", true);
-			session.setAttribute("idTenant", idTenant);
-			session.setAttribute("idUtente", idUtente);
-			session.setAttribute("Privs", JSONResponse.PRIV_SuperAdministrator);
+//			// Setto i valori della sessione
+//			session.setAttribute("Logged", true);
+//			session.setAttribute("idTenant", idTenant);
+//			session.setAttribute("idUtente", idUtente);
+//			session.setAttribute("Privs", JSONResponse.PRIV_SuperAdministrator);
 			
 			
 			
@@ -152,14 +175,9 @@ public class login extends HttpServlet {
 				}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
 					gestioneStatoUtentePersonale.aggiungiStatoUtentePersonale(idUtente, idTenant, StatoUtentePersonaleEnum.CASSIERE);
 				}
-				
-				
-				
 			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 			
 			JSONResponse.WriteLoginPrivs(request, response, true, "Login effettuato correttamente.");	return;
 			
