@@ -135,12 +135,9 @@ var _mainTabPanel = {
 		        store: Ext.getStore('datastore_stato_cameriere'),
 		        columns: [
 		            { header: 'IdUtente',  	dataIndex: 'idUtente', hidden: true },
-		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
-		            { header: 'Piano',  	dataIndex: 'numeroPiano' },
-		            { header: 'Area',  		dataIndex: 'nomeArea' },
-		            { header: 'N°Posti', 	dataIndex: 'numPosti' },
-		            { header: 'Cameriere', 	dataIndex: 'cameriere' },
-		            { header: 'Stato', 		dataIndex: 'statoTavolo'}
+		            { header: 'Area',  		dataIndex: 'username' },
+		            { header: 'Tavolo',  	dataIndex: 'nome' },
+		            { header: 'Piano',  	dataIndex: 'cognome' }
 		        ],
 		        //features: [{ftype:'grouping'}],
 		        listeners:{
@@ -183,14 +180,11 @@ var _mainTabPanel = {
 				margin: '2 2 2 2',
 		        store: Ext.getStore('datastore_stato_cucina'),
 		        columns: [
-		            { header: 'IdTavolo',  	dataIndex: 'idTavolo', hidden: true },
-		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
-		            { header: 'Piano',  	dataIndex: 'numeroPiano' },
-		            { header: 'Area',  		dataIndex: 'nomeArea' },
-		            { header: 'N°Posti', 	dataIndex: 'numPosti' },
-		            { header: 'Cameriere', 	dataIndex: 'cameriere' },
-		            { header: 'Stato', 		dataIndex: 'statoTavolo'}
-		        ],
+				            { header: 'IdUtente',  	dataIndex: 'idUtente', hidden: true },
+				            { header: 'Area',  		dataIndex: 'username' },
+				            { header: 'Tavolo',  	dataIndex: 'nome' },
+				            { header: 'Piano',  	dataIndex: 'cognome' }
+				        ],
 		        //features: [{ftype:'grouping'}],
 		        listeners:{
 		        	itemdblclick: function(view, record, item, index, e, eOpts){

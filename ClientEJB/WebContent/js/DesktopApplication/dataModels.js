@@ -59,14 +59,11 @@ Ext.define('StatoTavolo', {
 Ext.define('StatoCameriere', {
     extend: 'Ext.data.Model',
     fields: [
-             {name: 'idTavolo', 		type: 'int',		useNull: true},
-             {name: 'nomeTavolo', 		type: 'string'},
-             {name: 'numeroPiano', 		type: 'int'},
-             {name: 'nomePiano', 		type: 'string'},
-             {name: 'nomeArea',  		type: 'string'},
-             {name: 'numPosti',    		type: 'int'},
-             {name: 'statoTavolo',  	type: 'string'},
-             {name: 'cameriere',  		type: 'string'}
+             {name: 'idUtente', 		type: 'int',		useNull: true},
+             {name: 'nome', 			type: 'string'},
+             {name: 'cognome', 			type: 'string'},
+             {name: 'username', 		type: 'string'},
+             {name: 'tipoAccesso',  	type: 'string'},
     ],
     proxy: {
         type: 'rest',
@@ -95,14 +92,11 @@ Ext.define('StatoCameriere', {
 Ext.define('StatoCuoco', {
     extend: 'Ext.data.Model',
     fields: [
-             {name: 'idTavolo', 		type: 'int',		useNull: true},
-             {name: 'nomeTavolo', 		type: 'string'},
-             {name: 'numeroPiano', 		type: 'int'},
-             {name: 'nomePiano', 		type: 'string'},
-             {name: 'nomeArea',  		type: 'string'},
-             {name: 'numPosti',    		type: 'int'},
-             {name: 'statoTavolo',  	type: 'string'},
-             {name: 'cameriere',  		type: 'string'}
+             {name: 'idUtente', 		type: 'int',		useNull: true},
+             {name: 'nome', 			type: 'string'},
+             {name: 'cognome', 			type: 'string'},
+             {name: 'username', 		type: 'string'},
+             {name: 'tipoAccesso',  	type: 'string'},
     ],
     proxy: {
         type: 'rest',

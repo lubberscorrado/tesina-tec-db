@@ -11,7 +11,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.exceptions.DatabaseException;
+import com.orb.StatoUtentePersonaleEnum;
 import com.orb.gestioneOggetti.GestioneConto;
 import com.orb.gestioneOggetti.GestioneStatoUtentePersonale;
 import com.restaurant.WrapperUtentePersonale;
@@ -52,14 +56,26 @@ public class gestioneStatoUtenti extends HttpServlet {
 		
 		String action = request.getParameter("action");
 		int idTenant = (Integer) request.getSession().getAttribute("idTenant");
-		
+		JSONArray jsonArray_StatoUtente = new JSONArray();
 		
 		if(action.equals("INFO_CAMERIERE")){
 			try {
-				List<WrapperUtentePersonale> list = gestioneStatoUtentePersonale.getLoggedCamerieri(idTenant);
-				List<WrapperUtentePersonaleVisualizzazioneStato> listWUPVS = new ArrayList<WrapperUtentePersonaleVisualizzazioneStato>();
+				List<WrapperUtentePersonaleVisualizzazioneStato> resultList = gestioneStatoUtentePersonale.getLoggedCamerieri(idTenant);
+				//List<WrapperUtentePersonaleVisualizzazioneStato> listWUPVS = new ArrayList<WrapperUtentePersonaleVisualizzazioneStato>();
 				
-				JSONResponse.WriteOutput(response, true, "OK");
+				for(WrapperUtentePersonaleVisualizzazioneStato wupvs : resultList){
+					JSONObject jsonObj = new JSONObject();
+					jsonObj.put("idUtente", wupvs.getIdUtentePersonale());
+					jsonObj.put("nome", wupvs.getNome());
+					jsonObj.put("cognome", wupvs.getCognome());
+					jsonObj.put("username", wupvs.getUsername());
+					jsonObj.put("tipoAccesso", wupvs.getTipoAccesso().toString());
+					jsonArray_StatoUtente.put(jsonObj);
+				}
+				
+				
+				
+				JSONResponse.WriteOutput(response, true, "OK","statoUtente",jsonArray_StatoUtente);
 				return;
 			} catch (DatabaseException e) {
 				JSONResponse.WriteOutput(response, false, "Errore reperimento informazioni INFO_CAMERIERE");
@@ -73,10 +89,26 @@ public class gestioneStatoUtenti extends HttpServlet {
 			
 		}else if(action.equals("INFO_CUCINA")){
 			try {
-				gestioneStatoUtentePersonale.getLoggedCuochi(idTenant);
+				List<WrapperUtentePersonaleVisualizzazioneStato> resultList = gestioneStatoUtentePersonale.getLoggedCuochi(idTenant);
+				//List<WrapperUtentePersonaleVisualizzazioneStato> listWUPVS = new ArrayList<WrapperUtentePersonaleVisualizzazioneStato>();
+				
+				for(WrapperUtentePersonaleVisualizzazioneStato wupvs : resultList){
+					JSONObject jsonObj = new JSONObject();
+					jsonObj.put("idUtente", wupvs.getIdUtentePersonale());
+					jsonObj.put("nome", wupvs.getNome());
+					jsonObj.put("cognome", wupvs.getCognome());
+					jsonObj.put("username", wupvs.getUsername());
+					jsonObj.put("tipoAccesso", wupvs.getTipoAccesso().toString());
+					jsonArray_StatoUtente.put(jsonObj);
+				}
+				
+				
+				
+				JSONResponse.WriteOutput(response, true, "OK","statoUtente",jsonArray_StatoUtente);
+				return;
 			} catch (DatabaseException e) {
-				JSONResponse.WriteOutput(response, false, "Errore reperimento informazioni INFO_CUOCO");
-				//e.printStackTrace();
+				JSONResponse.WriteOutput(response, false, "Errore reperimento informazioni INFO_CAMERIERE");
+				e.printStackTrace();
 				return;
 			}
 			
