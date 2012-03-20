@@ -134,28 +134,28 @@ var _mainTabPanel = {
 				margin: '2 2 2 2',
 		        store: Ext.getStore('datastore_stato_cameriere'),
 		        columns: [
-		            { header: 'IdUtente',  	dataIndex: 'idUtente', hidden: true },
-		            { header: 'Area',  		dataIndex: 'username' },
-		            { header: 'Tavolo',  	dataIndex: 'nome' },
-		            { header: 'Piano',  	dataIndex: 'cognome' }
+		            { header: 'IdUtente',  	dataIndex: 'idUtente', 	hidden: true },
+		            { header: 'Username',  	dataIndex: 'username', 	flex: 1 },
+		            { header: 'Nome',  		dataIndex: 'nome', 		flex: 1 },
+		            { header: 'Cognome',  	dataIndex: 'cognome', 	flex: 1 }
 		        ],
 		        //features: [{ftype:'grouping'}],
-		        listeners:{
-		        	itemdblclick: function(view, record, item, index, e, eOpts){
-			        	_viewPort_panel_east.removeAll(false);
-			        	// Inizio definizione stato tavolo
-			        	//console.debug(view);
-			        	console.debug(record);
-			        	console.debug(item);
-			        	_viewPort_panel_east.setTitle(index);
-			        	_viewPort_panel_east.add({
-			        		xtype: 'label',
-			        		text: '<h1>Tavolo:</h1> '+record.get('Tavolo')
-			        	});
-			        	// Fine definizione stato tavolo
-			        	_viewPort_panel_east.expand(true);
-			        }
-		        },
+//		        listeners:{
+//		        	itemdblclick: function(view, record, item, index, e, eOpts){
+//			        	_viewPort_panel_east.removeAll(false);
+//			        	// Inizio definizione stato tavolo
+//			        	//console.debug(view);
+//			        	console.debug(record);
+//			        	console.debug(item);
+//			        	_viewPort_panel_east.setTitle(index);
+//			        	_viewPort_panel_east.add({
+//			        		xtype: 'label',
+//			        		text: '<h1>Tavolo:</h1> '+record.get('Tavolo')
+//			        	});
+//			        	// Fine definizione stato tavolo
+//			        	_viewPort_panel_east.expand(true);
+//			        }
+//		        },
 			    dockedItems: [{
 		            xtype: 'toolbar',
 		            dock: 'bottom',
@@ -180,23 +180,23 @@ var _mainTabPanel = {
 				margin: '2 2 2 2',
 		        store: Ext.getStore('datastore_stato_cucina'),
 		        columns: [
-				            { header: 'IdUtente',  	dataIndex: 'idUtente', hidden: true },
-				            { header: 'Area',  		dataIndex: 'username' },
-				            { header: 'Tavolo',  	dataIndex: 'nome' },
-				            { header: 'Piano',  	dataIndex: 'cognome' }
+				            { header: 'IdUtente',  	dataIndex: 'idUtente', 	hidden: true },
+				            { header: 'Username',  	dataIndex: 'username', 	flex: 1 },
+				            { header: 'Nome',  		dataIndex: 'nome', 		flex: 1 },
+				            { header: 'Cognome',  	dataIndex: 'cognome', 	flex: 1 }
 				        ],
 		        //features: [{ftype:'grouping'}],
-		        listeners:{
-		        	itemdblclick: function(view, record, item, index, e, eOpts){
-			        	_viewPort_panel_east.removeAll(false);
-			        	_viewPort_panel_east.setTitle(index);
-			        	_viewPort_panel_east.add({
-			        		xtype: 'label',
-			        		text: '<h1>Tavolo:</h1> '+record.get('Tavolo')
-			        	});
-			        	_viewPort_panel_east.expand(true);
-			        }
-		        },
+//		        listeners:{
+//		        	itemdblclick: function(view, record, item, index, e, eOpts){
+//			        	_viewPort_panel_east.removeAll(false);
+//			        	_viewPort_panel_east.setTitle(index);
+//			        	_viewPort_panel_east.add({
+//			        		xtype: 'label',
+//			        		text: '<h1>Tavolo:</h1> '+record.get('Tavolo')
+//			        	});
+//			        	_viewPort_panel_east.expand(true);
+//			        }
+//		        },
 			    dockedItems: [{
 		            xtype: 'toolbar',
 		            dock: 'bottom',

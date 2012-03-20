@@ -52,6 +52,47 @@ public class JSONResponse {
 		
 	}
 	
+	public static boolean UserAccessControlAnyPrivs(HttpServletRequest request, HttpServletResponse response, int[] privs) throws IOException{
+		HttpSession session = request.getSession();
+		try{
+			if(session == null || session.isNew() || session.getAttribute("Logged").equals(false)){
+				JSONObject json_out = new JSONObject();
+				json_out.put("success", false);
+				json_out.put("message", "L'utente non è autenticato nel sistema.");
+				response.getWriter().println(json_out);
+				return false;
+			}
+		}catch(Exception e){
+			JSONObject json_out = new JSONObject();
+			json_out.put("success", false);
+			json_out.put("message", "L'utente non è autenticato nel sistema.");
+			response.getWriter().println(json_out);
+			return false;
+		}
+		
+		
+		int user_privs = (Integer) session.getAttribute("Privs");
+		
+		boolean find = false;
+		
+		for(int i : privs){
+			if((user_privs&i) == i)
+				find= true;
+		}
+		
+		if(find){
+			return true;
+		}else{
+			JSONObject json_out = new JSONObject();
+			json_out.put("success", false);
+			json_out.put("message", "I privilegi dell'utente non sono sufficienti.");
+			response.getWriter().println(json_out);
+			return false;
+		}
+		
+		
+	}
+	
 	public static boolean WriteLoginPrivs(HttpServletRequest request, HttpServletResponse response, boolean success, String message){
 		HttpSession session = request.getSession();
 		int user_privs = (Integer) session.getAttribute("Privs");
