@@ -31,6 +31,7 @@
 
 		<EditText
 		    android:id="@+id/login_host"
+		    android:text="http://192.168.1.104:8080/"
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
 		    android:layout_marginLeft="10px"
