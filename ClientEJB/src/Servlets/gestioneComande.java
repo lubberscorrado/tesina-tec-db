@@ -51,12 +51,15 @@ public class gestioneComande extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		if( !JSONResponse.UserAccessControlAnyPrivs(request, response, new int[]{JSONResponse.PRIV_Cassiere,JSONResponse.PRIV_Cameriere,JSONResponse.PRIV_Cuoco}) ){
+    		return;
+    	}
 		
-		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere) || 
-			(Integer) request.getSession().getAttribute("idTenant") == null || 
-			(Integer)request.getSession().getAttribute("idUtente") == null) {
-			return;
-		}
+//		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere) || 
+//			(Integer) request.getSession().getAttribute("idTenant") == null || 
+//			(Integer)request.getSession().getAttribute("idUtente") == null) {
+//			return;
+//		}
 		
 		int idTenant = (Integer) request.getSession().getAttribute("idTenant");
 			
