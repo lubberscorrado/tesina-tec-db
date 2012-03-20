@@ -15,13 +15,11 @@ import org.json.JSONObject;
 
 import com.exceptions.DatabaseException;
 import com.orb.StatoUtentePersonaleEnum;
-import com.orb.gestioneOggetti.GestionePrenotazione;
 import com.orb.gestioneOggetti.GestioneStatoUtentePersonale;
 import com.orb.gestioneOggetti.GestioneTenant;
 import com.orb.gestioneOggetti.GestioneUtentePersonale;
 import com.restaurant.WrapperTenant;
 import com.restaurant.WrapperUtentePersonale;
-import com.sun.mail.iap.Response;
 
 import Utilita.JSONResponse;
 
