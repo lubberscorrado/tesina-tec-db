@@ -57,8 +57,6 @@ public class HomeActivity extends TabActivity {
 	  	 * @author Fabio Pierazzi
 	  	 * */
 	  	startNotificationUpdaterService();	  	
-	  
-	  	
 	  	
 	  	/** Alloco le risorse per mostrare i vari tab della Home page */
 	    Resources res = getResources(); // Resource object to get Drawables
@@ -108,10 +106,12 @@ public class HomeActivity extends TabActivity {
 	    
 	    DbManager dbManager = new DbManager(getApplicationContext());
 	 
+	    /* Creo, se non esistono, tutte le tabelle */
+	    dbManager.createTablesMenu(); 
 	    dbManager.createTablesComande();
 	    dbManager.createTableNotifiche();
-	    
-	    dbManager.BackUpDbToSD();
+	   
+	    //dbManager.BackUpDbToSD();
 	    dbManager.close();
 	}
 	
@@ -164,8 +164,11 @@ public class HomeActivity extends TabActivity {
     		
     		
     		dbManager = new DbManager(getApplicationContext());
-    		dbManager.dropTables();
-    		dbManager.createTables();
+    		
+    		/* Forzo la rimozione e la creazione di un nuovo
+    		 * database */
+    		dbManager.dropTablesMenu();
+    		dbManager.createTablesMenu();
     		
     		db = dbManager.getWritableDatabase();
     			
@@ -174,7 +177,6 @@ public class HomeActivity extends TabActivity {
     		 ***********************************************************/
     		
     		List<Integer> categoriePadre = new ArrayList<Integer>();
-    		List<Integer> temp;
     		categoriePadre.add(1);
     		
     		List<Integer> categorieFiglie;

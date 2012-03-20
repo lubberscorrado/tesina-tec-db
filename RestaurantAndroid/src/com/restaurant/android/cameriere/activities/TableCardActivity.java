@@ -123,8 +123,14 @@ public class TableCardActivity extends Activity {
 				    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {  
 				    
 				    public void onClick(DialogInterface dialog, int whichButton) {  
-				    	
-					    	   // recupero il valore dato in input dall'utente
+				    		   // recupero il valore dato in input dall'utente
+				    			if(inputText_numPersone.getText().toString().equals("")) {
+				    				
+				    				Toast.makeText(getApplicationContext(), "Numero Persone inserito non " +
+				    	    				"accettabile! Riprovare.", Toast.LENGTH_SHORT).show();
+				    				return;
+				    				
+				    			}
 					           int numeroPersone_input = Integer.parseInt(inputText_numPersone.getText().toString());
 					           int numeroPostiDisponibili =  myTable.getNumPosti();
 					           
@@ -1197,7 +1203,6 @@ public class TableCardActivity extends Activity {
 	   		try {
 	   			String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
 																requestParameters);
-	   			Log.d("OccupaTavoloAsyncTask", response);
 	   			JSONObject jsonObject = new JSONObject(response);
 	   			
 	   			if(jsonObject.getString("success").equals("true")) {
@@ -1474,7 +1479,7 @@ public class TableCardActivity extends Activity {
 	   		} else {
 	   			myTable.setCameriere("Non definito");
 	   			myTable.setNumPersone(0);
-	   			myTable.setTableStatus("PULIRE");
+	   			myTable.setTableStatus("LIBERO");
 	   			
 	   			updateTableCardFromGlobalObject();
 	   		}

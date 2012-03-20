@@ -31,7 +31,7 @@ public class DbManager extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase database) {
 	}
 	
-	public void dropTables() {
+	public void dropTablesMenu() {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.execSQL("drop table if exists categoria");
 		database.execSQL("drop table if exists vocemenu");
@@ -39,7 +39,7 @@ public class DbManager extends SQLiteOpenHelper {
 		database.close();
 	}
 	
-	public void createTables() {
+	public void createTablesMenu() {
 		SQLiteDatabase database = this.getWritableDatabase();
 		
 		database.execSQL(	"create table categoria ("+
