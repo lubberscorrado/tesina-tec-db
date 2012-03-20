@@ -90,7 +90,12 @@ public class login extends HttpServlet {
 				
 				
 			}else{	//Funzionalità di login normale
-				idTenant = Integer.valueOf(ristorante);
+				try{
+					idTenant = Integer.valueOf(ristorante);
+				}catch(Exception e){
+					JSONResponse.WriteLoginPrivs(request, response, false, "Id del ristorante mancante!");
+					return;
+				}
 				
 				try {
 					//Estraggo la lista degli utenti
