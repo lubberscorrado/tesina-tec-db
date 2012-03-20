@@ -2213,9 +2213,9 @@ var _mainTabPanel = {
 					if(objConto.conto[0].stato == "APERTO" || objConto.conto[0].stato == "DAPAGARE"){
 						//Ext.get('tabella_visualizza_conto_action_button').dom.textContent = 'Chiudi';
 					}else if(objConto.conto[0].stato == "CHIUSO"){
-						//
-					}else{
 						Ext.get('tabella_visualizza_conto_action_button').destroy();
+					}else{
+						
 					}
 			    }
 			});

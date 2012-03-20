@@ -114,6 +114,7 @@ function aggiornamentoAutomaticoDati(){
 	Ext.getStore('datastore_stato_tavolo').load();
 	Ext.getStore('datastore_stato_cameriere').load();
 	Ext.getStore('datastore_stato_cucina').load();
+	Ext.getStore('datastore_elenco_conti_tavolo').load();
 	
-	scheduledUpdate=setTimeout("aggiornamentoAutomaticoDati()",300000);
+	scheduledUpdate=setTimeout("aggiornamentoAutomaticoDati()",150000);
 };
