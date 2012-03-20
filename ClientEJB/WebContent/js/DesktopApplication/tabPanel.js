@@ -132,9 +132,9 @@ var _mainTabPanel = {
 				flex: 1,
 				title: 'Stato: camerieri',
 				margin: '2 2 2 2',
-		        store: Ext.getStore('datastore_stato_tavolo'),
+		        store: Ext.getStore('datastore_stato_cameriere'),
 		        columns: [
-		            { header: 'IdTavolo',  	dataIndex: 'idTavolo', hidden: true },
+		            { header: 'IdUtente',  	dataIndex: 'idUtente', hidden: true },
 		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
 		            { header: 'Piano',  	dataIndex: 'numeroPiano' },
 		            { header: 'Area',  		dataIndex: 'nomeArea' },
@@ -142,7 +142,7 @@ var _mainTabPanel = {
 		            { header: 'Cameriere', 	dataIndex: 'cameriere' },
 		            { header: 'Stato', 		dataIndex: 'statoTavolo'}
 		        ],
-		        features: [{ftype:'grouping'}],
+		        //features: [{ftype:'grouping'}],
 		        listeners:{
 		        	itemdblclick: function(view, record, item, index, e, eOpts){
 			        	_viewPort_panel_east.removeAll(false);
@@ -163,51 +163,12 @@ var _mainTabPanel = {
 		            xtype: 'toolbar',
 		            dock: 'bottom',
 		            //height: 100,
-		            items: ['Raggruppamenti: ',{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'None',
-		                handler: function(){
-		                	_mainTabPanel._tab_stato.getStore().clearGrouping();
-		                }
-		            },{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'Piano',
-		                handler: function(){
-		                	_mainTabPanel._tab_stato.getStore().group('nomePiano');
-		                }
-		            },{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'Area',
-		                handler: function(){
-		                	_mainTabPanel._tab_stato.getStore().group('nomeArea');
-		                }
-		            },{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'Stato',
-		                handler: function(){
-		                	 _mainTabPanel._tab_stato.getStore().group('statoTavolo');
-		                }
-		            },'->',{
+		            items: ['->',{
 		                text: 'Aggiorna',
 		                iconCls: '/ExtJS/resources/themes/images/gray/tree/drop-add.gif',
 		                handler: function(){
 		                    // empty record
-		                    store.load();
-		                }
-		            },{
-		                text: 'Add',
-		                iconCls: 'icon-add',
-		                handler: function(){
-		                    // empty record
-		                    store.insert(0, new StatoTavolo());
-		                    //rowEditing.startEdit(0, 0);
-		                }
-		            }, '-', {
-		                text: 'Delete',
-		                iconCls: 'icon-delete',
-		                handler: function(){
-		                    var selection = store.remove(store.getAt(0));
-		                 store.sync();
+		                	Ext.getStore('datastore_stato_cameriere').load();
 		                }
 		            }]
 		        }]	//Fine dockeditems
@@ -220,7 +181,7 @@ var _mainTabPanel = {
 				flex: 1,
 				title: 'Stato: cucina',
 				margin: '2 2 2 2',
-		        store: Ext.getStore('datastore_stato_tavolo'),
+		        store: Ext.getStore('datastore_stato_cucina'),
 		        columns: [
 		            { header: 'IdTavolo',  	dataIndex: 'idTavolo', hidden: true },
 		            { header: 'Tavolo',  	dataIndex: 'nomeTavolo' },
@@ -230,7 +191,7 @@ var _mainTabPanel = {
 		            { header: 'Cameriere', 	dataIndex: 'cameriere' },
 		            { header: 'Stato', 		dataIndex: 'statoTavolo'}
 		        ],
-		        features: [{ftype:'grouping'}],
+		        //features: [{ftype:'grouping'}],
 		        listeners:{
 		        	itemdblclick: function(view, record, item, index, e, eOpts){
 			        	_viewPort_panel_east.removeAll(false);
@@ -246,51 +207,11 @@ var _mainTabPanel = {
 		            xtype: 'toolbar',
 		            dock: 'bottom',
 		            //height: 100,
-		            items: ['Raggruppamenti: ',{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'None',
-		                handler: function(){
-		                	_mainTabPanel._tab_stato.getStore().clearGrouping();
-		                }
-		            },{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'Piano',
-		                handler: function(){
-		                	_mainTabPanel._tab_stato.getStore().group('nomePiano');
-		                }
-		            },{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'Area',
-		                handler: function(){
-		                	_mainTabPanel._tab_stato.getStore().group('nomeArea');
-		                }
-		            },{
-		                tooltip: 'Toggle the visibility of the summary row',
-		                text: 'Stato',
-		                handler: function(){
-		                	 _mainTabPanel._tab_stato.getStore().group('statoTavolo');
-		                }
-		            },'->',{
+		            items: ['->',{
 		                text: 'Aggiorna',
 		                iconCls: 'icon-refresh',
 		                handler: function(){
-		                    // empty record
-		                    store.load();
-		                }
-		            },{
-		                text: 'Add',
-		                iconCls: 'icon-add',
-		                handler: function(){
-		                    // empty record
-		                    store.insert(0, new StatoTavolo());
-		                    //rowEditing.startEdit(0, 0);
-		                }
-		            }, '-', {
-		                text: 'Delete',
-		                iconCls: 'icon-delete',
-		                handler: function(){
-		                    var selection = store.remove(store.getAt(0));
-		                 store.sync();
+		                	Ext.getStore('datastore_stato_cucina').load();
 		                }
 		            }]
 		        }]	//Fine dockeditems
@@ -2306,18 +2227,7 @@ var _mainTabPanel = {
 		
 };
 
-//function createTabellaConto(idTavolo){
-//	console.debug('IDTAVOLO: - '+idTavolo);
-//	
-//	//var tabella_conto = Ext.get('tabella_conto');
-//	
-//	if(_mainTabPanel._tabella_conto == undefined){
-//		console.debug('CREO TABELLA');
-//		_mainTabPanel.
-//	}//fine if
-//	
-//	return tabella_conto;
-//};
+
 	
 
 function titoloRaggruppamentoVariazioni(values) {

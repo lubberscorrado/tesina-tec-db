@@ -70,19 +70,27 @@ Ext.define('StatoCameriere', {
     ],
     proxy: {
         type: 'rest',
-        url : 'stato',
+        url : 'gestioneStatoUtenti',
         appendId: true,
+        api: {
+            create: 	'gestioneStatoUtenti',
+            read: 		'gestioneStatoUtenti?action=INFO_CAMERIERE',
+            update: 	'gestioneStatoUtenti',
+            destroy: 	'gestioneStatoUtenti',
+        },
         writer: {
             type: 'singlepost'
         },
 		reader: {
 	        type: 'json',
-	        model: 'StatoTavolo',
+	        model: 'StatoCameriere',
 	        idProperty: 'id_tavolo',
-	        root: 'items'
+	        root: 'statoUtente'
 	    }
     }
 });
+
+
 
 Ext.define('StatoCuoco', {
     extend: 'Ext.data.Model',
@@ -98,16 +106,22 @@ Ext.define('StatoCuoco', {
     ],
     proxy: {
         type: 'rest',
-        url : 'stato',
+        url : 'gestioneStatoUtenti',
         appendId: true,
+        api: {
+            create: 	'gestioneStatoUtenti',
+            read: 		'gestioneStatoUtenti?action=INFO_CUCINA',
+            update: 	'gestioneStatoUtenti',
+            destroy: 	'gestioneStatoUtenti',
+        },
         writer: {
             type: 'singlepost'
         },
 		reader: {
 	        type: 'json',
-	        model: 'StatoTavolo',
+	        model: 'StatoCuoco',
 	        idProperty: 'id_tavolo',
-	        root: 'items'
+	        root: 'statoUtente'
 	    }
     }
 });

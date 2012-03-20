@@ -1,6 +1,8 @@
 package Servlets;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -12,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.exceptions.DatabaseException;
 import com.orb.gestioneOggetti.GestioneConto;
 import com.orb.gestioneOggetti.GestioneStatoUtentePersonale;
+import com.restaurant.WrapperUtentePersonale;
+import com.restaurant.WrapperUtentePersonaleVisualizzazioneStato;
 
 import Utilita.JSONResponse;
 
@@ -52,10 +56,14 @@ public class gestioneStatoUtenti extends HttpServlet {
 		
 		if(action.equals("INFO_CAMERIERE")){
 			try {
-				gestioneStatoUtentePersonale.getLoggedCamerieri(idTenant);
+				List<WrapperUtentePersonale> list = gestioneStatoUtentePersonale.getLoggedCamerieri(idTenant);
+				List<WrapperUtentePersonaleVisualizzazioneStato> listWUPVS = new ArrayList<WrapperUtentePersonaleVisualizzazioneStato>();
+				
+				
 			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				JSONResponse.WriteOutput(response, false, "Errore reperimento informazioni INFO_CAMERIERE");
+				//e.printStackTrace();
+				return;
 			}
 			
 			
@@ -66,8 +74,9 @@ public class gestioneStatoUtenti extends HttpServlet {
 			try {
 				gestioneStatoUtentePersonale.getLoggedCuochi(idTenant);
 			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				JSONResponse.WriteOutput(response, false, "Errore reperimento informazioni INFO_CUOCO");
+				//e.printStackTrace();
+				return;
 			}
 			
 			
