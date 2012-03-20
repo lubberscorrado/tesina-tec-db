@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -212,6 +211,10 @@ public class LoginActivity extends Activity implements OnClickListener {
   		String idTenant = etIdTenant.getText().toString();
 		String username = etUsername.getText().toString();
   		String password = etPassword.getText().toString();
+  		
+  		if(idTenant.equals("") || idTenant == null || username.equals("") || username == null || password.equals("") || password == null) {
+  			Toast.makeText(getApplicationContext(), "Errore! Tutti i parametri di Login sono obbligatori!", 20).show();
+  		}
   		
         // We need an Editor object to make preference changes.
         // All objects are from android.context.Context
