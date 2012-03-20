@@ -151,22 +151,37 @@ public class login extends HttpServlet {
 							session.setAttribute("tipoAccesso", tipoAccesso);
 							
 							//Se l'utente cerca di accedere all'interfaccia web, ma non ha i privilegi blocco il login!
+							
+							
+							
 							if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
-								if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cassiere)	){
+								if(!((privilegi&JSONResponse.PRIV_Cassiere) == JSONResponse.PRIV_Cassiere)){
 									session.setAttribute("Logged", false);
+									JSONObject json_out = new JSONObject();
+									json_out.put("success", false);
+									json_out.put("message", "I privilegi dell'utente non sono sufficienti.");
+									response.getWriter().println(json_out);
 						    		return;
 						    	}
-							}/*else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
-								if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere)	){
+							}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
+								if(!((privilegi&JSONResponse.PRIV_Cameriere) == JSONResponse.PRIV_Cameriere)){
 									session.setAttribute("Logged", false);
+									JSONObject json_out = new JSONObject();
+									json_out.put("success", false);
+									json_out.put("message", "I privilegi dell'utente non sono sufficienti.");
+									response.getWriter().println(json_out);
 						    		return;
 						    	}
 							}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
-								if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cuoco)	){
+								if(!((privilegi&JSONResponse.PRIV_Cuoco) == JSONResponse.PRIV_Cuoco)){
 									session.setAttribute("Logged", false);
+									JSONObject json_out = new JSONObject();
+									json_out.put("success", false);
+									json_out.put("message", "I privilegi dell'utente non sono sufficienti.");
+									response.getWriter().println(json_out);
 						    		return;
 						    	}
-							}*/
+							}
 							
 							
 							
