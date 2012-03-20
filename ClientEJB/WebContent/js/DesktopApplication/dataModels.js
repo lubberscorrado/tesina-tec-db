@@ -468,7 +468,8 @@ Ext.define('StoricoConto', {
              {name: 'timestampApertura', 	type: 'string'},
              {name: 'timestampChiusura', 	type: 'string'},
              {name: 'stato', 				type: 'string'},
-             {name: 'prezzo',				type: 'string'}
+             {name: 'prezzo',				type: 'string'},
+             {name: 'numeroPersone',		type: 'int'}
     ],
     idProperty: 'threadid',
     proxy: {
