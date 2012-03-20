@@ -127,6 +127,7 @@ public class login extends HttpServlet {
 							// Setto i valori della sessione
 							session.setAttribute("Logged", true);
 							session.setAttribute("idTenant", idTenant);
+							session.setAttribute("idUtente", tmp.getIdUtentePersonale());
 							session.setAttribute("Privs", privilegi);
 							
 							WrapperTenant wrapperTenant = gestioneTenant.getTenantById(idTenant);
