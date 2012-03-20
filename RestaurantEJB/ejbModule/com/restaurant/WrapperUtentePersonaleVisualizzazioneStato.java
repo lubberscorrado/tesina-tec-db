@@ -1,5 +1,6 @@
 package com.restaurant;
 
+import com.orb.StatoUtentePersonaleEnum;
 import com.orb.UtentePersonale;
 
 public class WrapperUtentePersonaleVisualizzazioneStato {
@@ -14,12 +15,13 @@ public class WrapperUtentePersonaleVisualizzazioneStato {
 	private boolean isCameriere;
 	private boolean isCucina;
 	private boolean isCassiere;
+	private StatoUtentePersonaleEnum tipoAccesso;
 	
 	public WrapperUtentePersonaleVisualizzazioneStato() {
 		
 	}
 	
-	public WrapperUtentePersonaleVisualizzazioneStato(UtentePersonale utentePersonale) {
+	public WrapperUtentePersonaleVisualizzazioneStato(UtentePersonale utentePersonale, StatoUtentePersonaleEnum tipoAccesso) {
 		this.setIdUtentePersonale(utentePersonale.getIdUtente());
 		this.setNome(utentePersonale.getNome());
 		this.setCognome(utentePersonale.getCognome());
