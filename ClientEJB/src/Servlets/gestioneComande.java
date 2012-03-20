@@ -93,7 +93,7 @@ public class gestioneComande extends HttpServlet {
 											numeroPersone);
 			
 				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("cameriere", utentePersonale.getNome() + "" +
+				jsonObject.put("cameriere", utentePersonale.getNome() + " " +
 											utentePersonale.getCognome());
 				jsonObject.put("success", true);
 				
