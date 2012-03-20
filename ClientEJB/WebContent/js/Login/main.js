@@ -28,7 +28,7 @@ var login_main = function registration_main(){
 	    defaultType: 'textfield',
 	    items: [{
 	        fieldLabel: 'Ristorante',
-	        name: 'ristorante',
+	        name: 'idTenant',
 	        allowBlank: false
 	    },{
 	        fieldLabel: 'Username',

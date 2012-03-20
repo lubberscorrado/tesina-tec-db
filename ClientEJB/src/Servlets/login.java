@@ -65,7 +65,7 @@ public class login extends HttpServlet {
 		
 
 		if(action == null || action.length() == 0){	//LOGIN
-			String ristorante = request.getParameter("ristorante");
+			String ristorante = request.getParameter("idTenant");
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			
@@ -90,7 +90,7 @@ public class login extends HttpServlet {
 				
 				
 			}else{	//Funzionalità di login normale
-				idTenant = Integer.parseInt(ristorante);
+				idTenant = Integer.valueOf(ristorante);
 				
 				try {
 					//Estraggo la lista degli utenti
@@ -151,11 +151,6 @@ public class login extends HttpServlet {
 			//int idTenant = 0;
 			//int idUtente = 1;
 
-			
-
-			
-			
-			
 			//VERSIONE SENZA LOGIN
 //			// Setto i valori della sessione
 //			session.setAttribute("Logged", true);
