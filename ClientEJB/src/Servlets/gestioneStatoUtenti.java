@@ -59,10 +59,11 @@ public class gestioneStatoUtenti extends HttpServlet {
 				List<WrapperUtentePersonale> list = gestioneStatoUtentePersonale.getLoggedCamerieri(idTenant);
 				List<WrapperUtentePersonaleVisualizzazioneStato> listWUPVS = new ArrayList<WrapperUtentePersonaleVisualizzazioneStato>();
 				
-				
+				JSONResponse.WriteOutput(response, true, "OK");
+				return;
 			} catch (DatabaseException e) {
 				JSONResponse.WriteOutput(response, false, "Errore reperimento informazioni INFO_CAMERIERE");
-				//e.printStackTrace();
+				e.printStackTrace();
 				return;
 			}
 			

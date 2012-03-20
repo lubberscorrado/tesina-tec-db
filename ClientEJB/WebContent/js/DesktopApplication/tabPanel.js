@@ -2170,6 +2170,7 @@ var _mainTabPanel = {
 			        				    	Ext.getStore('datastore_conto').load();
 			        				    	Ext.getStore('datastore_elenco_conti_tavolo').load();	//Aggiornamento per la visualizzazione delle modifiche
 			        				    	Ext.getStore('datastore_stato_tavolo').load();			//Aggiornamento per la visualizzazione delle modifiche
+			        				    	Ext.getStore('datastore_storico_conti').load();			//Aggiornamento per la visualizzazione delle modifiche
 			        				    	
 						                	_mainTabPanel.updateVisualizzaConto(idConto,idTavolo);
 						                	Ext.get('tabella_visualizza_conto_action_button').destroy();
