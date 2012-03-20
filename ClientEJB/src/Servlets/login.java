@@ -152,14 +152,17 @@ public class login extends HttpServlet {
 							//Se l'utente cerca di accedere all'interfaccia web, ma non ha i privilegi blocco il login!
 							if( tipoAccesso.equals(StatoUtentePersonaleEnum.CASSIERE.toString()) ){
 								if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cassiere)	){
+									session.setAttribute("Logged", false);
 						    		return;
 						    	}
 							}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CAMERIERE.toString()) ){
 								if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere)	){
+									session.setAttribute("Logged", false);
 						    		return;
 						    	}
 							}else if( tipoAccesso.equals(StatoUtentePersonaleEnum.CUOCO.toString()) ){
 								if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cuoco)	){
+									session.setAttribute("Logged", false);
 						    		return;
 						    	}
 							}
@@ -276,6 +279,7 @@ public class login extends HttpServlet {
 					json_obj.put("user", 		session.getAttribute("Username"));
 					
 					//Aggiorno i record di sessione
+					System.out.println("AGGIORNO I RECORD DI SESSIONE");
 					int idUtente = (Integer) session.getAttribute("idUtente");
 					int idTenant = (Integer) session.getAttribute("idTenant");
 					try {
@@ -290,6 +294,9 @@ public class login extends HttpServlet {
 						e.printStackTrace();
 					}
 					
+					json_obj.put("success", true);
+					response.getWriter().println(json_obj);
+					return;
 					
 					
 				}
@@ -297,12 +304,7 @@ public class login extends HttpServlet {
 				json_obj.put("logged", false);
 			}
 			
-			json_obj.put("success", true);
-			response.getWriter().println(json_obj);
 			
-			
-			
-			return;
 		}
 
 		
