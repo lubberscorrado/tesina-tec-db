@@ -40,7 +40,7 @@
 
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-		<title>Restaurant Manager - Registrazione</title>
+		<title>Restaurant Manager - Login</title>
 	</head>
 	
 	<body>
