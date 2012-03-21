@@ -46,35 +46,10 @@ public class ThreadMailSender implements Runnable {
 
 	@Override
 	public void run() {
-
-//		try {
-//			Thread.currentThread().sleep(10000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		sendMail();
 	}
 	
 	private void sendMail(){
-//		try {
-//			System.out.print("Invio a: ");
-//			for(int i=0; i<sendTo.length; i++)
-//				System.out.print(sendTo[i]+" ");
-//			
-//			System.out.print("\nSoggetto: "+subject);
-//			System.out.print("\nMessaggio: "+message);
-//			
-//			//SendMail.sendSSLMessage(sendTo, subject,message, from);
-//			
-//			
-//		} catch (SecurityException e){
-//			e.printStackTrace();
-//			System.out.println("SECURITY EXCEPTIONNNNNNN ");
-//			return;
-//		}
-//		System.out.println("MAIL INVIATA");
-		
 		try {
 			SendMail.sendSSLMessage(sendTo, subject,message, from);
 		} catch (MessagingException e) {

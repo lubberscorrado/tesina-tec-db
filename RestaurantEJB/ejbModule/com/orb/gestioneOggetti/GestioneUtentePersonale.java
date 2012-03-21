@@ -215,38 +215,6 @@ public class GestioneUtentePersonale{
 			throw new DatabaseException("Errore durante la ricerca dell'utente (" + e.toString() + ")");
 		}
 	}
+
 	
-	
-//	/** 
-//	 * Ritorna la lista delle aree associate ad un determinato piano
-//	 * @param idPiano id del piano del quale si vuole ottenere la lista delle aree
-//	 * @return Lista di oggetti TreeNodeArea che incapsulano di dati di un area
-//	 * @throws DatabaseException Eccezione di errore durante l'accesso al database
-//	 */
-//	
-//	// TODO Forzare il fetch con una query FETCH per ottenere le aree di un piano in un' unica query?
-//	
-//	public List<TreeNodeArea> getAreeByPiano(int idPiano) throws DatabaseException {
-//	
-//		try {
-//			
-//			Piano piano = em.find(Piano.class, idPiano);
-//			if(piano == null)
-//				throw new DatabaseException("Impossibile trovare il piano");
-//			
-//			/* TODO Impostare l'associazione con piano di ogni area come LAZY per evitare
-//			il fetch di oggetti inutili? */
-//			List<Area> listaAree = piano.getAree();
-//			List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
-//			
-//			for(Area area : listaAree) 
-//				listaTreeNodeArea.add(new TreeNodeArea(area));
-//				
-//			return listaTreeNodeArea;
-//				
-//		} catch(Exception e) {
-//			throw new DatabaseException("Impossibile ottenere le aree associate al piano " +
-//										"(" + e.toString()+")");
-//		}
-//	}
 }
