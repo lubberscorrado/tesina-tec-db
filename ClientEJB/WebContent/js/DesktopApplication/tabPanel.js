@@ -216,33 +216,14 @@ var _mainTabPanel = {
 			
 			this._tab_stato = Ext.create('Ext.panel.Panel', {
 				id:	'main_tabPanel_stato',
-				
-//				layout: {
-//			        type: 'vbox',
-//			        align: 'stretch'
-//			    },
-			    
-			    layout: {
+				layout: {
 			        type: 'accordion',
-			        align: 'stretch',
-			        //itemCls: 'Css/custom.css'
-			        //multi: true
-			        //css:'background-color: #000000;border-style:solid;border-color:#0000ff;'
-			    },
-			    defaults: {
-			        // applied to each contained panel
-			        //bodyStyle: 'padding:15px'
-//			    	bodyStyle: {
-//					    background: '#000000',
-//					    padding: '10px'
-//					}
+			        align: 'stretch'
 			    },
 			    layoutConfig: {
-			        // layout-specific configs go here
 			        titleCollapse: false,
 			        animate: true,
 			        activeOnTop: true
-			        
 			    },
 				
 				title: 'Stato locale',
@@ -265,9 +246,6 @@ var _mainTabPanel = {
 			this._albero_gestioneTavolo = Ext.create('Ext.tree.Panel', {
 				id: 'albero_gestioneTavolo',
 			    title: 'Gestione ristorante: piani, aree, tavoli',
-			    //,
-			    
-			    //height: 500,
 			    align : 'stretch',
 			    flex: 1,
 			    width: '75%',
@@ -284,24 +262,10 @@ var _mainTabPanel = {
 		                handler: function(){
 		                	Ext.getStore('datastore_gestione_tavolo').load();
 		                }
-		            }/*,{
-		                text: 'Add',
-		                iconCls: 'icon-add',
-		                handler: function(){
-		                	
-		                    
-		                }
-		            }, '-', {
-		                text: 'Delete',
-		                iconCls: 'icon-delete',
-		                handler: function(){
-		                	
-		                }
-		            }*/]
+		            }]
 		        }],	//Fine dockeditems
 		        
 		        viewConfig: {
-		        	//plugins: { ptype: 'treeviewdragdrop' },
 		            stripeRows: true,
 		            listeners: {
 		            	itemdblclick: function( view, rec,item,index,e,eOpts ){
@@ -312,8 +276,6 @@ var _mainTabPanel = {
 		                itemcontextmenu: function(view, rec, node, index, e) {
 		                	var depth = rec.get("depth");
 		                	var contextMenu = null;
-		                	//_mainTabPanel._albero_gestioneTavolo.
-		                	
 		                	if(depth == 0){
 		                		contextMenu = Ext.create('Ext.menu.Menu', {
 			                        items: [{
@@ -541,27 +503,6 @@ var _mainTabPanel = {
 			                    	});
 			                    	
 			                    	parentId = action.result.data[0].parentId;
-//			                    	
-//			                    	
-//			                    	
-//			                    	switch(action.result.data[0].tipo){
-//			                    		case 1: {
-//						                    		nuovo_nodo.set('parentId','root');
-//						                    		parentId = 'root';
-//				                    				break;
-//			                    		}
-//			                    		case 2: {
-//						                    		parentId = 'P'+action.result.data[0].parentId;
-//						                    		break;
-//					                    }
-//			                    		case 3: {
-//						                    		parentId = 'A'+action.result.data[0].parentId;
-//						                    		break;
-//					                    }
-//			                    		default: {parentId = 'root';	break;}
-//			                    	}
-////			                    	console.debug("PARENT ID NUOVO NODO: "+parentId);
-//			                    	console.debug('Nuovo nodo creato: '+nuovo_nodo.get('id')+' - '+nuovo_nodo.get('parentId')+' - '+nuovo_nodo.get('text')+' - '+nuovo_nodo.get('tipo'));
 			                    	var nodo_padre = Ext.getStore('datastore_gestione_tavolo').getNodeById(parentId);
 			                    	nodo_padre.appendChild(nuovo_nodo);
 			                    	
@@ -617,10 +558,7 @@ var _mainTabPanel = {
 			    bodyPadding: 5,
 			    width: '100%',
 			    height: '100%',
-
 			    url: 'gestioneTavolo',
-
-			    // Fields will be arranged vertically, stretched to full width
 			    layout: 'anchor',
 			    defaults: {
 			        anchor: '100%'
@@ -664,7 +602,6 @@ var _mainTabPanel = {
 			        name: 'enabled'
 			    }],
 
-			    // Reset and Submit buttons
 			    buttons: [{
 			        text: 'Reset',
 			        handler: function() {
@@ -683,7 +620,6 @@ var _mainTabPanel = {
 			                    	action : 'update'
 			                    },
 			                    success: function(form, action) {
-//			                       Ext.Msg.alert('Success', action.result.message);
 			                    	new Ext.ux.Notification({
 				        				iconCls:	'x-icon-information',
 				        				title:	  'Successo',
@@ -699,11 +635,7 @@ var _mainTabPanel = {
 			                       updatedNode.set('numPosti',action.result.data[0].numPosti);
 			                       updatedNode.set('numeroPiano',action.result.data[0].numeroPiano);
 			                       updatedNode.set('enabled',action.result.data[0].enabled);
-//			                       if(action.result.data[0].enabled == true){
-//			                    	   updatedNode.set('enabled','on');
-//			                       }else{
-//			                    	   updatedNode.set('enabled','off');
-//			                       }
+
 			                       Ext.getCmp('viewport_east').collapse();
 			                    },
 			                    failure: function(form, action) {
@@ -741,12 +673,7 @@ var _mainTabPanel = {
 			
 		},
 		deleteNodeGestioneTavolo : function(selectedNode){
-//			Ext.Msg.show({
-//			     title:'Save Changes?',
-//			     msg: 'You are closing a tab that has unsaved changes. Would you like to save your changes?',
-//			     buttons: Ext.Msg.YESNO,
-//			     icon: Ext.Msg.QUESTION
-//			});
+
 			Ext.MessageBox.confirm('Conferma', 'Sei sicuro di voler rimuovere '+selectedNode.get('nome')+'?', function(btn){
 				if(btn == 'no') return;
 				selectedNode.destroy({
@@ -776,7 +703,6 @@ var _mainTabPanel = {
 		        title: 'Gestione menù',
 		        width: '100%',
 		        flex: 1,
-		        //height: 500,
 		        //collapsible: true,
 		        useArrows: true,
 		        rootVisible: false,
@@ -785,7 +711,6 @@ var _mainTabPanel = {
 		        dockedItems: [{
 		            xtype: 'toolbar',
 		            dock: 'bottom',
-		            //height: 100,
 		            items: ['->',{
 		                text: 'Aggiorna',
 		                iconCls: 'icon-refresh',
@@ -796,7 +721,6 @@ var _mainTabPanel = {
 		        }],
 		        
 		        viewConfig: {
-		        	//plugins: { ptype: 'treeviewdragdrop' },
 		            stripeRows: true,
 		            listeners: {
 		            	itemdblclick: function( view, rec,item,index,e,eOpts ){
@@ -807,7 +731,6 @@ var _mainTabPanel = {
 		                itemcontextmenu: function(view, rec, node, index, e) {
 		                	var depth = rec.get("depth");
 		                	var contextMenu = null;
-//		                	console.debug('PROFONDITA: '+depth);
 		                	
 		                	if(depth == 1){
 		                		contextMenu = Ext.create('Ext.menu.Menu', {
@@ -830,13 +753,7 @@ var _mainTabPanel = {
 			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
 			                            		_mainTabPanel.showGestioneVariazioniMenu(rec.get('id').substring(1),rec.get('nome'));
 			                            	}
-			                            }/*,{
-			                            	text: 'Modifica categoria',
-			                            	handler: function(){
-			                        			//var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                            		_mainTabPanel.updateNodeGestioneMenu(rec);
-			                            	}
-			                            }*/
+			                            }
 			                        ]
 			                    });
 		                	}else if(depth >= 2){
@@ -898,36 +815,7 @@ var _mainTabPanel = {
 				                        ]
 				                    });
 		                		}
-		                	}
-		                	/*
-		                	else if(depth == 3){
-		                		contextMenu = Ext.create('Ext.menu.Menu', {
-			                        items: [
-			                            {
-			                            	text: 'Modifica tavolo',
-			                            	handler: function(){
-			                        			var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                        			_mainTabPanel.updateNodeGestioneTavolo(lastSelected);
-			                            	}
-			                            },{
-			                            	text: 'Rimuovi tavolo',
-			                            	handler: function(){
-			                            		var lastSelected = Ext.getCmp('albero_gestioneTavolo').getSelectionModel().getLastSelected();
-			                            		_mainTabPanel.deleteNodeGestioneTavolo(lastSelected);
-			                            	}
-			                            }
-			                        ]
-			                    });
-		                	}else{
-		                		contextMenu = Ext.create('Ext.menu.Menu', {
-			                        items: [
-			                            buyAction,
-			                            sellAction
-			                        ]
-			                    });
-		                	}
-		                	*/
-		                	    
+		                	}  
 		                    contextMenu.showAt(e.getXY());
 		                    return false;
 		                }
@@ -935,42 +823,6 @@ var _mainTabPanel = {
 		            
 
 		        },
-		        //multiSelect: true,
-		        //singleExpand: true,
-		        //the 'columns' property is now 'headers'
-		        /*columns: [{
-		            xtype: 'treecolumn', //this is so we know which column will show the tree
-		            text: 'Task',
-		            flex: 2,
-		            sortable: true,
-		            dataIndex: 'task'
-		        },{
-		            //we must use the templateheader component so we can use a custom tpl
-		            xtype: 'templatecolumn',
-		            text: 'Duration',
-		            flex: 1,
-		            sortable: true,
-		            dataIndex: 'duration',
-		            align: 'center',
-		            //add in the custom tpl for the rows
-		            tpl: Ext.create('Ext.XTemplate', '{duration:this.formatHours}', {
-		                formatHours: function(v) {
-		                    if (v < 1) {
-		                        return Math.round(v * 60) + ' mins';
-		                    } else if (Math.floor(v) !== v) {
-		                        var min = v - Math.floor(v);
-		                        return Math.floor(v) + 'h ' + Math.round(min * 60) + 'm';
-		                    } else {
-		                        return v + ' hour' + (v === 1 ? '' : 's');
-		                    }
-		                }
-		            })
-		        },{
-		            text: 'Assigned To',
-		            flex: 1,
-		            dataIndex: 'user',
-		            sortable: true
-		        }]*/
 		    });
 		},
 		
@@ -1135,10 +987,6 @@ var _mainTabPanel = {
         	    title: title,
         	    expandOnShow : true,
         	    modal: true,
-        	    //height: 400,
-        	    //width: 400,
-//        	    layout: 'fit',
-//        	    layout: 'auto',
         	    layout: {
 			        type: 'auto',
 			        pack: 'center'
@@ -1151,7 +999,6 @@ var _mainTabPanel = {
         	    	}
         	    }
         	});
-			//askWindow.add(form);
 			
 			
 			
@@ -1220,40 +1067,10 @@ var _mainTabPanel = {
 					beforeload: function( store, operation, eOpts ){
 						store.proxy.extraParams.idCategoria=idCategoria;
 					},
-					beforesync: function( options, eOpts ){
-////									console.debug('beforesync');
-////									console.debug(options);
-//						//			console.debug(eOpts);
-//									if(options.update){
-////										console.debug('Create OR Update');
-//									}
-					},
-					write: function(store, operation, eOpts ){
-//						console.debug('writerello');
-//						console.debug(eOpts);
-//						console.debug(operation);
-//						console.debug(store);
-//						
-//						operation.request.params.action = 'Cicisbeo';
-//						
-					},
-					update: function( store, record, operation, eOpts ){
-//						console.debug('updaterello');
-//						console.debug(eOpts);
-//						console.debug(operation);
-//						console.debug(store);
-//			//			Ext.data.Model.EDIT
-//			//			Ext.data.Model.REJECT
-//			//			Ext.data.Model.COMMIT
-//						
-					},
-					remove: function( store, record, index, eOpts ){
-//						console.debug('removerello');
-//						console.debug(eOpts);
-//						console.debug(index);
-//						console.debug(record);
-//						console.debug(store);
-					},
+					beforesync: function( options, eOpts ){},
+					write: function(store, operation, eOpts ){},
+					update: function( store, record, operation, eOpts ){},
+					remove: function( store, record, index, eOpts ){},
 					
 					beforeappend: function( thisNode, newChildNode, eOpts ){
 						var tipo = newChildNode.get("tipo");
@@ -1276,27 +1093,7 @@ var _mainTabPanel = {
 					append: function( thisNode, newChildNode, index, eOpts ) {
 						
 				    }
-			    },
-//			    proxy: {
-//			        type: 'rest',
-//			        url : 'variazioneVoceMenu',
-//			        appendId : false,
-//			        writer: {
-//			            type: 'singlepostnoaction'
-//			            //type: 'json'
-//			        },
-//					reader: {
-//				        type: 'json',
-//				        idProperty: 'id',
-//				        root: 'data'
-//				    },
-//				    actionMethods : {
-//			            create : 'POST',
-//			            read   : 'GET',
-//			            update : 'POST',
-//			            destroy: 'POST'
-//			        }
-//			    }
+			    }
 				
 			});
 			
@@ -1309,19 +1106,11 @@ var _mainTabPanel = {
 					  	}
 						return true;
 				    },
-				    canceledit: function( grid, eOpts ){
-				    	
-				    },
+				    canceledit: function( grid, eOpts ){},
 				    edit: function( editor, e, eOpts ){
-//				    	console.debug('EDITED KISSES');
-//				    	console.debug(editor);
-//				    	editor.record.save();
 				    	editor.store.sync();
-				    	
 				    },
-				    validateedit: function( editor, e, eOpts ){
-				    	
-				    }
+				    validateedit: function( editor, e, eOpts ){}
 				},
 				failure: function(form, action) {
                     Ext.Msg.alert('Errore: ', 'sadsasdasd');
@@ -1430,26 +1219,6 @@ var _mainTabPanel = {
 		                    	Ext.getStore('datastore_variazione_voce_menu').remove(selection);
 		                    	Ext.getStore('datastore_variazione_voce_menu').sync();
 		                    	Ext.getCmp('tabella_gestioneVariazioni').forceComponentLayout();
-//		                    	selection.set('action','delete');
-//		                    	Ext.getStore('datastore_variazione_voce_menu').remove(selection);
-//		                    	selection.destroy({
-//		                			params: {
-//		                				action: 'delete'
-//		                			},
-//		                			success: function(form, action){
-//		                				Ext.getStore('datastore_variazione_voce_menu').remove(selection);
-//		                			}
-//		                		});
-		                    	
-		                    	//Ext.getStore('datastore_variazione_voce_menu').remove(selection);
-//		                    	selection.destroy({
-//		                			params: {
-//		                				action: 'delete'
-//		                			},
-//		                			success: function(form, action){
-//		                				Ext.getStore('datastore_variazione_voce_menu').remove(selection);
-//		                			}
-//		                		});
 		                    }
 		                }
 		            }]
@@ -1491,30 +1260,10 @@ var _mainTabPanel = {
 			
 			var rowEditing = Ext.create('Ext.grid.plugin.RowEditing',{
 				listeners: {
-					beforeedit: function(editor, e, eOpts ){
-//						if (editor.record.get('isEreditata') == true) {
-//							Ext.Msg.alert('Info: ', 'Non è possibile modificare variazioni ereditate da altre categorie. Per modificarle, occorre visualizzare le variazione dell\'apposita categoria a cui sono associate.');
-//							return false;
-//					  	}
-//						return true;
-				    },
-				    canceledit: function( grid, eOpts ){
-				    	
-				    },
-				    edit: function( editor, e, eOpts ){
-//				    	console.debug('EDITED KISSES');
-//				    	console.debug(editor);
-//				    	editor.record.save();
-				    	editor.store.sync();
-				    	
-				    },
-				    validateedit: function( editor, e, eOpts ){
-//				    	console.debug('VALIDAMELOOO');
-//				    	console.debug(editor);
-//				    	console.debug(e);
-//				    	console.debug(eOpts);
-//				    	
-				    }
+					beforeedit: function(editor, e, eOpts ){},
+				    canceledit: function( grid, eOpts ){},
+				    edit: function( editor, e, eOpts ){},
+				    validateedit: function( editor, e, eOpts ){}
 				}
 			});
 			
@@ -1538,27 +1287,11 @@ var _mainTabPanel = {
 		            { text:	'Cucina', 		width: 80,	dataIndex: 'isCucina',		field: {xtype: 'checkbox'}	},
 		            { text:	'Admin', 		width: 80,	dataIndex: 'isAdmin',		field: {xtype: 'checkbox'}	}
 		        ],
-//		        features: [{ftype:'grouping'}],
 		        listeners:{
-		        	itemdblclick: function(view, record, item, index, e, eOpts){
-//			        	_viewPort_panel_east.removeAll(false);
-//			        	_viewPort_panel_east.setTitle(index);
-//			        	_viewPort_panel_east.add({
-//			        		xtype: 'label',
-//			        		text: '<h1>Tavolo:</h1> '+record.get('Tavolo')
-//			        	});
-//			        	_viewPort_panel_east.expand(true);
-			        },
-//					selectionchange: function(view, records) {
-//						grid.down('#delete_gestione_personale').setDisabled(!records.length);
-//					}
-			        statesave: function( thisStateful, state, eOpts ){
-			        	//console.debug('STATESAVE');
-			        },
-			        
+		        	itemdblclick: function(view, record, item, index, e, eOpts){},
+			        statesave: function( thisStateful, state, eOpts ){},
 			        itemcontextmenu: function(view, rec, node, index, e) {
 	                	var contextMenu = null;
-	                	//console.debug('CONTEXT MENU');
 	                	contextMenu = Ext.create('Ext.menu.Menu', {
 	                		items: [{
 			                			text: 'Modifica utente',
@@ -1570,7 +1303,6 @@ var _mainTabPanel = {
 		                });
 	                	
 	                    contextMenu.showAt(e.getXY());
-//	                    return false;
 	                }
 		        },
 		        
@@ -1588,13 +1320,6 @@ var _mainTabPanel = {
 		                iconCls: 'icon-add',
 		                handler: function(){
 		                	_mainTabPanel.addNewComponentePersonale();
-
-//		                	var emptyRecord = Ext.create('personale',{
-//		                    	action: 'create'
-//		                    });
-//		            		Ext.getStore('datastore_gestione_personale').insert(0,emptyRecord);
-//		                    rowEditing.startEdit(0, 0);
-//		                	_maintab addNewComponentePersonale();
 		                }
 		            }, '-', {
 //		                itemId: 'delete',
@@ -1617,14 +1342,6 @@ var _mainTabPanel = {
 		            						action: 'delete'
 		            					},
 		            	                success : function(record, action) {
-//		            	                	Ext.Msg.alert('Success', action.resultSet.message);
-//		            	                	new Ext.ux.Notification({
-//		            	        				iconCls:	'x-icon-information',
-//		            	        				title:	  'Successo',
-//		            	        				html:		action.result.message,
-//		            	        				autoDestroy: true,
-//		            	        				hideDelay:  2000,
-//		            	        			}).show(document);
 		            	                	Ext.getStore('datastore_gestione_personale').remove(selection);
 		            	                },
 		            	                failure: function(form, action) {
@@ -1632,11 +1349,6 @@ var _mainTabPanel = {
 		            	                }
 		            	            });
 		            			});
-		                    	
-//		                    	Ext.getStore('datastore_variazione_voce_menu').remove(selection);
-//		                    	Ext.getStore('datastore_variazione_voce_menu').sync();
-//		                    	Ext.getCmp('tabella_gestioneVariazioni').forceComponentLayout();
-
 		                    }
 		                }
 		            }]
@@ -1722,9 +1434,6 @@ var _mainTabPanel = {
 	    	            	if(this.up('form').action == 'create'){
 	    	            		this.up('form').getForm().reset();
 	    	            	}else{
-//		    	            	this.up('form').getForm().findField('nome').setValue('');
-//		    	            	this.up('form').getForm().findField('descrizione').setValue('');
-//		    	            	this.up('form').getForm().findField('prezzo').setValue('');
 	    	            		this.up('form').getForm().loadRecord( this.up('form').selectedNode );
 	    	            	}
 	    	            	
@@ -1742,11 +1451,7 @@ var _mainTabPanel = {
 					                    	action : this.up('form').action
 					                    },
 					                    success: function(form, action) {
-					                    	//console.debug('GUARDAAAAA');
-					                    	//console.debug(action);
 					                    	if( action.params.action == 'create' ){
-					                    		//console.debug('OK SUCCESSO CREATE');
-					                    		
 					                    		var nuovo_nodo = Ext.create('personale', {
 						                    		id: 			action.result.data[0].id,
 						                    		username: 		action.result.data[0].username,
@@ -1770,28 +1475,8 @@ var _mainTabPanel = {
 					                    		updatedNode.set('isCucina',		action.result.data[0].isCucina);
 					                    		updatedNode.set('isAdmin',		action.result.data[0].isAdmin);
 					                    		
-					                    		
-					                    		
-					                    		
-//					                    		//updatedNode.set('id',action.result.data[0].id);
-//						                    		//updatedNode.set('parentId',action.result.data[0].parentId);
-//						                    		updatedNode.set('nome',action.result.data[0].nome);
-//						                    		//updatedNode.set('tipo',action.result.data[0].tipo);
-//						                    		updatedNode.set('descrizione',action.result.data[0].descrizione);
-//						                    		updatedNode.set('prezzo',action.result.data[0].prezzo);
-//						                    		if(action.result.data[0].tipo == 1){
-//						                    			updatedNode.set('text',action.result.data[0].nome);
-//						                    		}else{
-//						                    			updatedNode.set('text',action.result.data[0].nome+' - ['+action.result.data[0].prezzo+'€]');
-//						                    		}
 						                    	Ext.getCmp('viewport_east').collapse();
 					                    	}
-					                    	
-					                    	
-					                    	
-//					                    	Ext.Msg.alert('Info: ', action.result.message);
-//					                    	Ext.getCmp(window_inserimentoPersonale).destroy();
-//					                    	Ext.getCmp('form_gestioneMenu').destroy();
 					                    	
 					                    },
 					                    failure: function(form, action) {
@@ -1828,10 +1513,6 @@ var _mainTabPanel = {
         	    title: 'Inserimento componente del personale',
         	    expandOnShow : true,
         	    modal: true,
-        	    //height: 400,
-        	    //width: 400,
-//        	    layout: 'fit',
-//        	    layout: 'auto',
         	    layout: {
 			        type: 'auto',
 			        pack: 'center'
@@ -1850,16 +1531,6 @@ var _mainTabPanel = {
 			var form = this.createFormGestionePersonale();
 			form.action = 'update';
 			form.selectedNode = selectedNode;
-//			form.getForm().findField('id').hide();
-//			form.getForm().findField('parentId').hide();
-//			form.getForm().findField('depth').hide();
-//			form.getForm().findField('tipo').hide();
-//			if(selectedNode.get('tipo') == 2){
-//				form.setTitle('Modifica voce di menù');
-//			}else{
-//				form.setTitle('Modifica categoria');
-//				form.getForm().findField('prezzo').hide();
-//			}
 			
 			form.setTitle('Modifica utente');
 			
@@ -1873,23 +1544,6 @@ var _mainTabPanel = {
 		createTabStoricoConti : function(){
 			///////INIZIO
 			var pluginExpanded = true;
-		    
-			// pluggable renders
-//		    function renderTopic(value, p, record) {
-//		        return Ext.String.format(
-//		            '<b><a href="http://sencha.com/forum/showthread.php?t={2}" target="_blank">{0}</a></b><a href="http://sencha.com/forum/forumdisplay.php?f={3}" target="_blank">{1} Forum</a>',
-//		            value,
-//		            record.data.forumtitle,
-//		            record.getId(),
-//		            record.data.forumid
-//		        );
-//		    }
-//
-//		    function renderLast(value, p, r) {
-//		        return Ext.String.format('{0}<br/>by {1}', Ext.Date.dateFormat(value, 'M j, Y, g:i a'), r.get('lastposter'));
-//		    }
-
-		    
 		    
 		    var grid = Ext.create('Ext.grid.Panel', {
 		    	id:	'tabella_storico_conti',
@@ -1929,21 +1583,7 @@ var _mainTabPanel = {
 					afterlayout: function(thisCmp, lay, eOpts ){
 					},
 					itemdblclick: function(view, record, item, index, e, eOpts){
-		        		//console.debug('idConto: '+record.get('idConto'));
 		        		_mainTabPanel.visualizzaConto(	record.get('idConto'), record.get('idTavolo')	);
-//			        	_viewPort_panel_east.removeAll(false);
-//			        	// Inizio definizione stato tavolo
-//				        	console.debug(view);
-//				        	console.debug('Record: ');
-//				        	console.debug(record);
-//				        	console.debug(item);
-//				        	_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
-//				        	_viewPort_panel_east.add({
-//				        		xtype: 'label',
-//				        		text: '<h1>Tavolo:</h1> '+record.get('idTavolo')
-//				        	});
-//			        	// Fine definizione stato tavolo
-//			        	_viewPort_panel_east.expand(true);
 			        },
 			        itemcontextmenu: function(view, rec, node, index, e) {}
 				},
@@ -1954,22 +1594,9 @@ var _mainTabPanel = {
 		            displayInfo: true,
 		            displayMsg: 'Conti visualizzati {0} - {1} di {2}',
 		            emptyMsg: "Non ci sono conti da visualizzare",
-		            items:[
-		                '-'/*, 'Trololo',/*{
-		                text: 'Show Preview',
-		                pressed: pluginExpanded,
-		                enableToggle: true,
-		                toggleHandler: function(btn, pressed) {
-		                    var preview = Ext.getCmp('gv').getPlugin('preview');
-		                    preview.toggleExpanded(pressed);
-		                }
-		            }*/]
+		            items:[]
 		        })
 		    });
-
-		    // trigger the data store load
-		    //Ext.getStore('datastore_storico_conti').loadPage(1);
-		    //Ext.getCmp('main_tabPanel').add( Ext.getCmp('tabella_storico_conti') );
 			return grid;
 		    ///////FINE
 		},
@@ -2004,19 +1631,6 @@ var _mainTabPanel = {
 			        	itemdblclick: function(view, record, item, index, e, eOpts){
 			        		console.debug('idConto: '+record.get('idConto'));
 			        		_mainTabPanel.visualizzaConto(	record.get('idConto'), idTavolo	);
-	//			        	_viewPort_panel_east.removeAll(false);
-	//			        	// Inizio definizione stato tavolo
-	//				        	console.debug(view);
-	//				        	console.debug('Record: ');
-	//				        	console.debug(record);
-	//				        	console.debug(item);
-	//				        	_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
-	//				        	_viewPort_panel_east.add({
-	//				        		xtype: 'label',
-	//				        		text: '<h1>Tavolo:</h1> '+record.get('idTavolo')
-	//				        	});
-	//			        	// Fine definizione stato tavolo
-	//			        	_viewPort_panel_east.expand(true);
 				        },
 				        itemcontextmenu: function(view, rec, node, index, e) {}
 				    },
@@ -2041,26 +1655,6 @@ var _mainTabPanel = {
 			
 			_viewPort_panel_east.add(_mainTabPanel._tabella_lista_conti_tavolo);
 			
-			
-			//_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
-			
-			
-//			if( record.get('statoTavolo') == 'OCCUPATO' ){
-//    			_viewPort_panel_east.removeAll(false);
-//    			_viewPort_panel_east.expand(true);
-//    			var idTavolo = record.get('idTavolo');
-//    			//var tabella_conto = createTabellaConto( idTavolo );
-//    			_viewPort_panel_east.add(_mainTabPanel._tabella_conto);
-//    			_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
-//    						        			
-//    			
-//    			Ext.getStore('datastore_conto').idTavolo=idTavolo;
-//    			Ext.getStore('datastore_conto').load();
-//    		}else{
-//    			_viewPort_panel_east.collapse();
-//	        	_viewPort_panel_east.removeAll(false);
-//	        	_viewPort_panel_east.setTitle('');
-//    		}
 			return;
 		},
 
@@ -2103,41 +1697,8 @@ var _mainTabPanel = {
 			        ],
 	//		        features: [{ftype:'grouping'}],
 			        listeners:{
-			        	itemdblclick: function(view, record, item, index, e, eOpts){
-	//			        	_viewPort_panel_east.removeAll(false);
-	//			        	// Inizio definizione stato tavolo
-	//				        	console.debug(view);
-	//				        	console.debug('Record: ');
-	//				        	console.debug(record);
-	//				        	console.debug(item);
-	//				        	_viewPort_panel_east.setTitle('P:'+record.get('numeroPiano')+'\tT:'+record.get('idTavolo')+'\t'+record.get('nomeTavolo')+'['+record.get('numPosti')+']');
-	//				        	_viewPort_panel_east.add({
-	//				        		xtype: 'label',
-	//				        		text: '<h1>Tavolo:</h1> '+record.get('idTavolo')
-	//				        	});
-	//			        	// Fine definizione stato tavolo
-	//			        	_viewPort_panel_east.expand(true);
-				        },
-				        itemcontextmenu: function(view, rec, node, index, e) {
-	//			        	if(rec.get('statoTavolo') == 'OCCUPATO'){
-	//			        		
-	//			        	}
-	//			        	
-	//		            	var contextMenu = null;
-	//		            	console.debug('CONTEXT MENU');
-	//		            	contextMenu = Ext.create('Ext.menu.Menu', {
-	//		            		items: [{
-	//			                			text: 'Modifica utente',
-	//			                        	handler: function(){
-	//			                        		_mainTabPanel.updateComponentePersonale(rec);
-	//			                        	}
-	//		                            }
-	//		                        ]
-	//		                });
-	//		            	
-	//		                contextMenu.showAt(e.getXY());
-	////		                return false;
-			            }
+			        	itemdblclick: function(view, record, item, index, e, eOpts){},
+				        itemcontextmenu: function(view, rec, node, index, e) {}
 				    },
 				    dockedItems: [{
 			            xtype: 'toolbar',
