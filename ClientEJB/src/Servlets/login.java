@@ -335,25 +335,6 @@ public class login extends HttpServlet {
 				
 			}
 			
-//			
-//			
-//			try{
-//				if{
-//					
-//					
-//					
-//					
-//					
-//					
-//					
-//				}
-//			}catch(Exception e){
-//				json_obj.put("logged", false);
-//				json_obj.put("success", false);
-//				response.getWriter().println(json_obj);
-//				return;
-//			}
-//			
 			
 		}
 

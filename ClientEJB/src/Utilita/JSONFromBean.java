@@ -6,41 +6,6 @@ import com.orb.*;
 import com.restaurant.*;
 
 public class JSONFromBean {
-	/*
-	public static JSONObject jsonFromPiano(Piano piano){
-		JSONObject json_obj = new JSONObject();
-			json_obj.put("tipo", 1);
-			json_obj.put("id", "P"+piano.getIdPiano());
-			json_obj.put("parentId", "root");
-			//json_obj.put("", piano.getIdTenant());
-			json_obj.put("numeroPiano", piano.getNumero());
-			json_obj.put("descrizione", piano.getDescrizione());
-			json_obj.put("nome", piano.getNome());
-		return json_obj;
-	}
-
-	public static JSONObject jsonFromArea(Area area) {
-		JSONObject json_obj = new JSONObject();
-			json_obj.put("tipo",2);
-			json_obj.put("id", "+A"+area.getIdArea());
-			json_obj.put("parentId", "xxx");
-			//json_obj.put("idTenant", area.getIdTenant());
-			json_obj.put("descrizione", area.getDescrizione());
-			json_obj.put("nome", area.getNome());
-		return json_obj;
-	}
-
-	public static JSONObject jsonFromTavolo(Tavolo tavolo) {
-		JSONObject json_obj = new JSONObject();
-		json_obj.put("tipo", 3);
-//		json_obj.put("idPiano", piano.getIdPiano());
-//		//json_obj.put("", piano.getIdTenant());
-//		json_obj.put("numero", piano.getNumero());
-//		json_obj.put("descrizione", piano.getDescrizione());
-//		json_obj.put("nome", piano.getNome());
-	return json_obj;
-	}
-	*/
 	
 	/*
 	 * JSON FROM TREE NODE GESTIONE TAVOLO

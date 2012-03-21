@@ -69,25 +69,6 @@ public class gestionePersonale extends HttpServlet {
 			JSONResponse.WriteOutput(response, false, "Eccezione generale");	return;
 		}
 		
-//		// fields: ['id','username','passwd','nome','cognome','isCameriere','isCassiere','isCucina','isAdmin'],
-//		json_tmp = new JSONObject();
-//		json_tmp.put("id", 1);
-//		json_tmp.put("username", "kissalino");
-//		json_tmp.put("passwd", "asd");
-//		json_tmp.put("nome", "gino");
-//		json_tmp.put("cognome", "capra");
-//		json_tmp.put("isCameriere", true);
-//		json_tmp.put("isCassiere", true);
-//		json_tmp.put("isCucina", true);
-//		json_tmp.put("isAdmin", true);
-////		json_tmp.put("isCameriere", "on");
-////		json_tmp.put("isCassiere", "on");
-////		json_tmp.put("isCucina", "on");
-////		json_tmp.put("isAdmin", "on");
-//		json_array.put(json_tmp);
-//		
-//		
-//		JSONResponse.WriteOutput(response, true, "Caricamento effettuato correttamente.", "data", json_array);
 	}
 
 	/**
@@ -127,11 +108,6 @@ public class gestionePersonale extends HttpServlet {
 			String isCassiereS = 	request.getParameter("isCassiere");
 			String isCucinaS = 		request.getParameter("isCucina");
 			String isAdminS = 		request.getParameter("isAdmin");
-			
-//			if(isCameriereS.equals("on"))	isCameriereS = "true";
-//			if(isCassiereS.equals("on"))	isCassiereS = "true";
-//			if(isCucinaS.equals("on"))		isCucinaS = "true";
-//			if(isAdminS.equals("on"))		isAdminS = "true";
 			
 			boolean isCameriere = 	FieldChecker.checkValue(isCameriereS);	//Boolean.parseBoolean(	isCameriereS);
 			boolean isCassiere = 	FieldChecker.checkValue(isCassiereS);	//Boolean.parseBoolean(	isCassiereS);

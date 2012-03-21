@@ -127,24 +127,6 @@ public class registrazione extends HttpServlet {
 		}
 		
 		
-		
-		
-
-
-		
-
-//		try {
-//			SendMail.sendSSLMessage(sendTo, emailSubjectTxt,emailMsgTxt, emailFromAddress);
-//		} catch (MessagingException e) {
-//			System.out.println("Exception");
-//			e.printStackTrace();
-//		}
-//		System.out.println("Sucessfully Sent mail to All Users");
-//		System.out.println("MAIL INVIATA");
-		
-		
-		
-		
 		String message = "Registrazione effettuata correttamente\n" +
 				"Ti sarà inviata al più presto una mail con i tuoi dati di accesso.";
 		JSONResponse.WriteOutput(response, true, message);

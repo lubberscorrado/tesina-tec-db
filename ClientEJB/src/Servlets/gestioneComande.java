@@ -55,12 +55,6 @@ public class gestioneComande extends HttpServlet {
     		return;
     	}
 		
-//		if( !JSONResponse.UserAccessControl(request, response, JSONResponse.PRIV_Cameriere) || 
-//			(Integer) request.getSession().getAttribute("idTenant") == null || 
-//			(Integer)request.getSession().getAttribute("idUtente") == null) {
-//			return;
-//		}
-		
 		int idTenant = (Integer) request.getSession().getAttribute("idTenant");
 			
 		WrapperUtentePersonale utentePersonale;

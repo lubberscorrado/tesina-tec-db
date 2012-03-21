@@ -60,13 +60,7 @@ public class statoTavolo extends HttpServlet {
 			return;
 		} 
     	
-//    	StatoTavolo stato_tavolo1 = new StatoTavolo(1, "nomeTavolo", 0, "nomearea", 5, "libero", "Troiaccio");
-//    	StatoTavolo stato_tavolo2 = new StatoTavolo(2, "nomeTavolo", 1, "nomearea", 566, "occupato", "Puzzolo");
-//    	StatoTavolo stato_tavolo3 = new StatoTavolo(3, "nomeTavolo", 2, "nomearea", 56, "Prenotato", "Magnaccio");
-//    	lista_statoTavolo.add(stato_tavolo1);
-//    	lista_statoTavolo.add(stato_tavolo2);
-//    	lista_statoTavolo.add(stato_tavolo3);
-		
+    	
 		JSONArray json_array_statoTavolo = new JSONArray();
     	StatoTavolo st_tmp = null;
     	
