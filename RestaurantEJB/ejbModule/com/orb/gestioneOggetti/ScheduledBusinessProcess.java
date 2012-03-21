@@ -27,30 +27,30 @@ public class ScheduledBusinessProcess {
     }
 	
 	@SuppressWarnings("unused")
-	@Schedule(minute="*/10", hour="*", dayOfWeek="*", dayOfMonth="*", month="*", year="*", info="MyTimer")
+	@Schedule(minute="*/15", hour="*", dayOfWeek="*", dayOfMonth="*", month="*", year="*", info="MyTimer")
     private void scheduledTimeout(final Timer t) {
-        System.out.println("@Esecuzione fatturazioni: called at: " + new java.util.Date());
-//        Query query = em.createQuery("SELECT t FROM Tenant t");
-//        List<Tenant> listTenant = query.getResultList();
-//        float canoneMensile = 15.00f;
-//        float costoConto = 0.05f;
-//        
-//        for(Tenant tenant : listTenant){
-//        	query = em.createQuery("SELECT Count(*) FROM Conto c WHERE c.idTenant = :idTenant");
-//        	query.setParameter("idTenant", tenant.getIdTenant());
-//        	long numeroConti = (Long) query.getSingleResult();
-//        	int idTenant = tenant.getIdTenant();
-//        	
-//        	
-//        	try {
-//				new ThreadMailSender(tenant.getRagioneSociale(), numeroConti, canoneMensile, costoConto, tenant.getEmail()).run();
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//        	System.out.println("Tenant:"+idTenant+" N_Conti:"+numeroConti);
-//        	
-//        }
+        //System.out.println("@Esecuzione fatturazioni: called at: " + new java.util.Date());
+        Query query = em.createQuery("SELECT t FROM Tenant t");
+        List<Tenant> listTenant = query.getResultList();
+        float canoneMensile = 15.00f;
+        float costoConto = 0.05f;
+        
+        for(Tenant tenant : listTenant){
+        	query = em.createQuery("SELECT Count(*) FROM Conto c WHERE c.idTenant = :idTenant");
+        	query.setParameter("idTenant", tenant.getIdTenant());
+        	long numeroConti = (Long) query.getSingleResult();
+        	int idTenant = tenant.getIdTenant();
+        	
+        	
+        	try {
+				new ThreadMailSender(tenant.getRagioneSociale(), numeroConti, canoneMensile, costoConto, tenant.getEmail()).run();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	//System.out.println("Tenant:"+idTenant+" N_Conti:"+numeroConti);
+        	
+        }
         
     }
 	
