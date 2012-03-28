@@ -29,6 +29,10 @@ public class ThreadMailSender implements Runnable {
 	/*INVIO FATTURE*/
 	public ThreadMailSender(String ragioneSociale,long numeroConti,float canoneMensile,float costoConto,String email) throws InterruptedException{
 		Thread.currentThread().setName("ThreadMailSender");
+		float aliquota =  0.21f;
+		float imponibile = (canoneMensile+(costoConto*numeroConti));
+		float imposta = imponibile*aliquota;
+		float totale = imponibile+imposta;
 		
 		sendTo = new String[1];
 		sendTo[0] = new String(email);
@@ -38,8 +42,11 @@ public class ThreadMailSender implements Runnable {
 		message =	new String("Fatturazione servizio YouRestaurant - " +ragioneSociale+"\n" +
 				"Canone mensile: " +canoneMensile+"€\n" +
 				"Numero conti del mese:" +numeroConti+"\n" +
-				"Costo/Conto: " +costoConto+"€\n" +
-				"Totale:"+(canoneMensile+(costoConto*numeroConti))+"€\n\n" +
+				"Provvigione€/Conto: " +costoConto+"€\n" +
+				"Imponibile: "+imponibile+"€\n" +
+				"Aliquota IVA: "+aliquota+"%"+
+				"Imposta "+imposta+"€\n" +
+				"Totale:"+totale+"€\n\n" +
 				"Mandaci i tuoi feedback per un servizio sempre migliore!");
 		
 	}
