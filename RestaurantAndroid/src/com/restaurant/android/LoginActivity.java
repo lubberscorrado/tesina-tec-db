@@ -70,6 +70,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         
 //        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences settings = getSharedPreferences("RESTAURANT", 0);
+        String hostname = settings.getString("hostname", "");
         String username = settings.getString("username", "");
         String password = settings.getString("password", "");
         String idTenant = settings.getString("idTenant", "");
@@ -77,6 +78,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         etIdTenant.setText(idTenant);
         etUsername.setText(username);
         etPassword.setText(password);
+        etHost.setText(hostname);
        
         /* Imposto il listener del bottone di Login */
         btnLogin.setOnClickListener(this);
@@ -96,25 +98,25 @@ public class LoginActivity extends Activity implements OnClickListener {
 		super.onResume();
 		
 		Log.d("HomeActivity", "Effettuo il logout");
-		RestaurantApplication restApp = (RestaurantApplication)getApplication();
-		HashMap<String, String> postParametersMap = new HashMap<String,String>();;
-		
-		postParametersMap.put("action", "logout");
-	
-		try {
-			String response = ((RestaurantApplication)getApplication()).
-									makeHttpPostRequest(restApp.getHost() + 
-														"ClientEJB/login", 
-														postParametersMap);
-			JSONObject jsonObjecResponse = new JSONObject(response);
-			
-			if(jsonObjecResponse.getString("success").equals("true")) {
-				this.logged = false;
-			}
-		
-		} catch (Exception e) {
-			/* Errore durante il logout, inutile notificarlo... */
-		}
+//		RestaurantApplication restApp = (RestaurantApplication)getApplication();
+//		HashMap<String, String> postParametersMap = new HashMap<String,String>();;
+//		
+//		postParametersMap.put("action", "logout");
+//	
+//		try {
+//			String response = ((RestaurantApplication)getApplication()).
+//									makeHttpPostRequest(restApp.getHost() + 
+//														"ClientEJB/login", 
+//														postParametersMap);
+//			JSONObject jsonObjecResponse = new JSONObject(response);
+//			
+//			if(jsonObjecResponse.getString("success").equals("true")) {
+//				this.logged = false;
+//			}
+//		
+//		} catch (Exception e) {
+//			/* Errore durante il logout, inutile notificarlo... */
+//		}
 	}
     
 	 /*****************************************************************
@@ -230,6 +232,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         editor.putString("username", username);
         editor.putString("password", password);
         editor.putString("idTenant", idTenant);
+        editor.putString("hostname", host);
         
         // Commit the edits!
         editor.commit();
