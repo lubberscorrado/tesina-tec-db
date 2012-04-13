@@ -34,13 +34,17 @@ public class RestaurantApplication extends Application {
 	private DefaultHttpClient httpClient;
 
 	private String host;
+	private SharedPreferences sharedPref;
+	
 	private String lastNotificationCheckDate;
 	
 	@Override
 	public void onCreate() {
 		host = "http://192.168.1.104:8080/";
 		httpClient = new DefaultHttpClient();
-		lastNotificationCheckDate = "0000-00-00 00:00:00";
+		sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		this.lastNotificationCheckDate = sharedPref.getString("lastNotificationCheckDate", "0000-00-00 00:00:00");
+		
 	}
 		
 	/**
@@ -190,6 +194,10 @@ public class RestaurantApplication extends Application {
 	}
 
 	public void setLastNotificationCheckDate(String lastNotificationCheckDate) {
+		
+		SharedPreferences.Editor editor= sharedPref.edit();
+		editor.remove("lastNotificationCheckDate");
+		editor.putString("lastNotificationCheckDate", lastNotificationCheckDate);
 		this.lastNotificationCheckDate = lastNotificationCheckDate;
 	}
 }
