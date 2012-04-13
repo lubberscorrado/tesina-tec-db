@@ -302,8 +302,7 @@ public class gestioneComande extends HttpServlet {
 				
 				/* Nota: passo anche l'idTenant per filtrare i risultati letti */
 				List<WrapperComandaCucina> listaComandeCucina =  businessComande.getElencoComandeByType(idTenant, tipo);
-				
-				System.out.println("POFFERBACCO!!! "+listaComandeCucina.size()+" IdTenant:"+idTenant+" Tipo: "+tipo);
+
 				JSONObject jsonObject = new JSONObject();
 				
 				JSONArray jsonArrayComande = new JSONArray();
