@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -51,6 +53,7 @@ public class GestioneComanda {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo
 	 * errore verificatosi.
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public WrapperComanda aggiungiComanda(	int idTenant,
 											int idVoceMenu,
 											int idConto,
@@ -90,7 +93,8 @@ public class GestioneComanda {
 
 			Conto conto = em.find(Conto.class, idConto);
 			if(conto == null)
-				throw new DatabaseException("Errore durante la ricerca del conto a cui appartiene la comanda");
+				throw new DatabaseException("Errore durante la ricerca del conto a cui " +
+											"appartiene la comanda");
 			comanda.setContoAppartenenza(conto);
 				
 			/* *****************************************************************
@@ -99,7 +103,8 @@ public class GestioneComanda {
 			
 			VoceMenu voceMenu = em.find(VoceMenu.class, idVoceMenu);
 			if(voceMenu == null)
-				throw new DatabaseException("Errore durante la ricerca della voce di menu associata alla comanda");
+				throw new DatabaseException("Errore durante la ricerca della voce di menu " +
+											"associata alla comanda");
 			comanda.setVoceMenuAssociata(voceMenu);
 			
 			/* *****************************************************************
@@ -108,10 +113,12 @@ public class GestioneComanda {
 			
 			UtentePersonale cameriere = em.find(UtentePersonale.class, idCameriere);
 			if(cameriere == null)
-				throw new DatabaseException("Errore durante la ricerca del cameriere responsabile per la comanda");
+				throw new DatabaseException("Errore durante la ricerca del cameriere " +
+											"responsabile per la comanda");
 			comanda.setCameriereAssociato(cameriere);
 			
 			em.persist(comanda);
+			
 			return new WrapperComanda(comanda);
 		
 		} catch (DatabaseException e) {
@@ -131,16 +138,19 @@ public class GestioneComanda {
 	 * @param listIdVariazioniAssociate Lista delle variazioni associate alla comanda
 	 * @return
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public WrapperComanda updateComanda(int idComanda,
 										String note,
 										int quantita,
-										List<Integer> listIdVariazioniAssociate) throws DatabaseException {
+										List<Integer> listIdVariazioniAssociate) 
+										throws DatabaseException {
 			
 		try {
 			
 			Comanda comanda = em.find(Comanda.class, idComanda);
 			if(comanda == null)
-				throw new DatabaseException("Errore durante la ricerca della comanda da aggiornare");
+				throw new DatabaseException("Errore durante la ricerca della comanda da " +
+											"aggiornare");
 				
 			comanda.setNote(note);
 			comanda.setQuantita(quantita);
@@ -150,7 +160,8 @@ public class GestioneComanda {
 			
 			/* Aggiungo le nuove variazioni */
 			for(int i=0; i< listIdVariazioniAssociate.size(); i++) {
-					Variazione variazione = em.find(Variazione.class, listIdVariazioniAssociate.get(i));
+					Variazione variazione = em.find(Variazione.class, 
+													listIdVariazioniAssociate.get(i));
 					comanda.getVariazioniAssociate().add(variazione);
 			}
 			
@@ -160,7 +171,8 @@ public class GestioneComanda {
 			/* Rilancia l'eccezione */
 			throw e;
 		} catch (Exception e) {
-			throw new DatabaseException("Errore durante la modifica della comanda (" +e.toString() +")");
+			throw new DatabaseException("Errore durante la modifica della comanda (" +
+										e.toString() +")");
 		}
 	 }
 	
@@ -169,25 +181,30 @@ public class GestioneComanda {
 	 * @param idComanda Id della comanda da modificare
 	 * @param stato Nuovo stato della comanda
 	 */
-	public void updateStatoComanda(int idComanda, int idCucina, String nuovoStato) throws DatabaseException {
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public void updateStatoComanda(	int idComanda, int idCucina, String nuovoStato) 
+									throws DatabaseException {
 		try {
 			
 			Comanda comanda = em.find(Comanda.class, idComanda);
 			
 			if(comanda == null)
-				throw new DatabaseException("Errore durante la ricerca della comanda da aggiornare");
+				throw new DatabaseException("Errore durante la ricerca della comanda da " +
+											"aggiornare");
 			
 			StatoComandaEnum statoAttuale = comanda.getStato();
 			
 			if(statoAttuale == null) 
-				throw new DatabaseException("Errore durante la ricerca dello stato attuale della comanda da aggiornare");
+				throw new DatabaseException("Errore durante la ricerca dello stato attuale " +
+											"della comanda da aggiornare");
 			
 			/* Se voglio richiederne la preparazione */
 			if(nuovoStato.equals("INPREPARAZIONE")) {
 				
 				if( ! (statoAttuale == StatoComandaEnum.INVIATA)) {
-					throw new DatabaseException("Errore durante la richiesta di messa in preparazione della comanda: " +
-							"qualcun altro sta già preparando la comanda.");
+					throw new DatabaseException("Errore durante la richiesta di messa in " +
+												"preparazione della comanda: " +
+												"qualcun altro sta già preparando la comanda.");
 				} else {
 					/* *****************************************************************
 					 * Associo la comanda alla cucina che l'ha presa in carico
@@ -236,6 +253,7 @@ public class GestioneComanda {
 	 * @param idComanda Id della comanda da eliminare
 	 * @throws DatabaseException
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public void deleteComanda(int idComanda) throws DatabaseException {
 		try {
 			Comanda comanda = em.find(Comanda.class, idComanda);
@@ -253,42 +271,33 @@ public class GestioneComanda {
 	 
 	
 	/**
-	 * Ritorna le comande che fanno parte del conto aperto associato al tavolo
-	 * @param idTavolo Id del tavolo per il quale si vogliono ottenere le voci di menu
-	 * @return Lista delle comande associate al conto aperto del tavolo
+	 * Ritorna le comande che fanno parte di un conto
+	 * @param idConto Id del conto per il quale si vogliono ottenere le comande
+	 * @return Lista delle comande associate al conto
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo
 	 * errore verificatosi
 	 */
-	public List<WrapperComanda> getComandeByTavolo(int idTavolo) throws DatabaseException {
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public List<WrapperComanda> getComandeByConto(int idConto) throws DatabaseException {
 		
 		try {
 			
 			/* Ottengo la lista dei conti in stato aperto per il tavolo richiesto */
-			Query query = em.createQuery(	"SELECT c FROM Tavolo t JOIN t.conti c WHERE " +
-											"c.stato = 'APERTO' AND t.idTavolo = :idTavolo");
-			query.setParameter("idTavolo", idTavolo);
-			List<Conto> listaContiAperti =  query.getResultList();
+			Conto conto = em.find(Conto.class, idConto);
 			
-			/* *********************************************************************
-			 * Non verifica il numero di conti aperti associati al tavolo. In ogni
-			 * momento dovrebbe esserci comunque al più 1 conto aperto.
-			 * Il controllo è compito della logica di business.
-			 ***********************************************************************/
+			if(conto == null)
+				return null;
 			
-			if(listaContiAperti.size() == 0) {
-				return new ArrayList<WrapperComanda>();
-			} else {
-			
-				List<Comanda> listaComande = listaContiAperti.get(0).getComande();
-				List<WrapperComanda> listaWrapperComande = new ArrayList<WrapperComanda>();
+			List<Comanda> listaComande = conto.getComande();
+			List<WrapperComanda> listaWrapperComande = new ArrayList<WrapperComanda>();
 				
-				for(Comanda comanda: listaComande) 
-					listaWrapperComande.add(new WrapperComanda(comanda));
+			for(Comanda comanda: listaComande) 
+				listaWrapperComande.add(new WrapperComanda(comanda));
 						
-				return listaWrapperComande;
-			}
+			return listaWrapperComande;
 	
 		} catch (Exception e) {
+			
 			throw new DatabaseException("Errora durante la ricerca delle comande  ("+ e.toString() +")");
 			
 		}
@@ -302,6 +311,7 @@ public class GestioneComanda {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
 	 * verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public WrapperComanda getComandaById(int idComanda) throws DatabaseException {
 		try {
 			Comanda comanda = em.find(Comanda.class, idComanda);
@@ -325,6 +335,7 @@ public class GestioneComanda {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo
 	 * errore verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public TreeNodeVoceMenu getVoceMenuByComanda(int idComanda) throws DatabaseException {
 		try {
 			Comanda comanda = em.find(Comanda.class, idComanda);
@@ -349,6 +360,7 @@ public class GestioneComanda {
 	 * @param type: può essumere i valori "CIBO", "BEVANDA"
 	 * @return Lista di comande
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public List<WrapperComandaCucina> getElencoComandeByType(int idTenant, String type) throws DatabaseException {
 		
 		List<WrapperComandaCucina> listComandeCucina = new ArrayList<WrapperComandaCucina>();
@@ -499,6 +511,7 @@ public class GestioneComanda {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
 	 * verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public WrapperVariazione[] getVariazioniByComanda(int idComanda) throws DatabaseException {
 		try {
 			Comanda comanda = em.find(Comanda.class, idComanda);
@@ -533,7 +546,7 @@ public class GestioneComanda {
 	 * verificatosi
 	 * @author Guerri Marco
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<WrapperComanda> getComandeByStatoAndCameriere(	StatoComandaEnum stato, 
 																int idCameriere,
 																String lastCheckDate) 

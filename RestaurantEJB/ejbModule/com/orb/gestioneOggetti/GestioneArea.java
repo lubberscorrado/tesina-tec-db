@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -34,6 +36,7 @@ public class GestioneArea{
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'ultimo errore verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public TreeNodeArea aggiungiArea(	int idTenant, 
 										String nome, 
 										String descrizione, 
@@ -69,7 +72,8 @@ public class GestioneArea{
 	 * @return Oggetto TreeNodeArea che rappresenta la nuova area modificata
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
 	 */
-	 public TreeNodeArea updateArea(int idArea,
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public TreeNodeArea updateArea(int idArea,
 			 						String nome,
 									String descrizione,
 									boolean enabled) throws DatabaseException {
@@ -96,8 +100,8 @@ public class GestioneArea{
 	  * @param idArea id dell'area da eliminare
 	  * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore che si è verificato
 	  */
-	 
-	 public void deleteArea(int idArea) throws DatabaseException {
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public void deleteArea(int idArea) throws DatabaseException {
 		 try {
 			 Area area = em.find(Area.class, idArea);
 			 if(area == null)
@@ -117,7 +121,7 @@ public class GestioneArea{
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'ultimo errore verificatosi
 	 */
-	 
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS) 
 	public List<TreeNodeArea> getAreeTenant(int idTenant, boolean removed) throws DatabaseException {
 		try {
 			
@@ -148,7 +152,7 @@ public class GestioneArea{
 	 * @return Lista di oggetti TreeNodeArea che incapsulano di dati di un area
 	 * @throws DatabaseException Eccezione di errore durante l'accesso al database
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public List<TreeNodeArea> getAreeByPiano(int idPiano, boolean removed) throws DatabaseException {
 	
 		try {
@@ -157,8 +161,6 @@ public class GestioneArea{
 			if(piano == null)
 				throw new DatabaseException("Impossibile trovare il piano");
 			
-			/* TODO Impostare l'associazione con piano di ogni area come LAZY per evitare
-			il fetch di oggetti inutili? */
 			List<Area> listaAree = piano.getAree();
 			List<TreeNodeArea> listaTreeNodeArea = new ArrayList<TreeNodeArea>();
 			
@@ -166,8 +168,6 @@ public class GestioneArea{
 				if(area.getRemoved() == removed)
 					listaTreeNodeArea.add(new TreeNodeArea(area));
 			}
-				
-				
 			return listaTreeNodeArea;
 				
 		} catch(Exception e) {

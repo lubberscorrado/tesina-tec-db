@@ -10,6 +10,8 @@ import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import com.exceptions.DatabaseException;
 import com.orb.StatoContoEnum;
@@ -44,7 +46,7 @@ public class BusinessTavolo {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo
 	 * errore verificatosi
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void occupaTavolo(int idTavolo, int idTenant, int idCameriere, int numeroPersone) throws DatabaseException {
 		
 		try {
@@ -104,6 +106,7 @@ public class BusinessTavolo {
 	 * @param idTavolo
 	 * @throws DatabaseException
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void liberaTavolo(int idTavolo) throws DatabaseException {
 		
 		try {
@@ -160,7 +163,7 @@ public class BusinessTavolo {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'ultimo errore verificatosi
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void pulisciTavolo(int idTavolo) throws DatabaseException {
 		try {
 			

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -33,7 +35,7 @@ public class GestioneVoceMenu{
 	 * @return Oggetto TreeNodeVoceMenu che rappresenta la voce del menu
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore verificatosi
 	 */
-
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public TreeNodeVoceMenu aggiungiVoceMenu(	int idTenant,
 												int idCategoria,
 												String nome,
@@ -75,6 +77,7 @@ public class GestioneVoceMenu{
 	 * verificatosi
 	 */
 	
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public TreeNodeVoceMenu updateVoceMenu(	int idVoceMenu,
 			 								String nome,
 			 								String descrizione,
@@ -103,7 +106,7 @@ public class GestioneVoceMenu{
 	 * @param idVoceMenu Id della voce di menu da eliminare
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore verificatosi
 	 */
-	 
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	 public void deleteVoceMenu(int idVoceMenu) throws DatabaseException {
 		 try {
 			 VoceMenu  voceMenu = em.find(VoceMenu.class, idVoceMenu);
@@ -131,7 +134,7 @@ public class GestioneVoceMenu{
 	 * @return Lista di oggetti TreeNodeVoceMenu che rappresentano le voci del menu 
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore verificatosi
 	 */
-		
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<TreeNodeVoceMenu> getVociMenuByCategoria(int idTenant, int idCategoria, boolean removed) throws DatabaseException {
 			
 		try {
@@ -160,7 +163,7 @@ public class GestioneVoceMenu{
 	 * @return Oggetto TreeNodeVoceMenu che rappresenta la voce richiesta
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore verificatosi
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public TreeNodeVoceMenu getVoceMenu(int idVoceMenu) throws DatabaseException {
 		try {
 			VoceMenu voceMenu = em.find(VoceMenu.class, idVoceMenu);

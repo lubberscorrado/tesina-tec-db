@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -41,6 +43,7 @@ public class GestioneConto {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'ultimo errore verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public WrapperConto aggiungiConto(	int idTenant,
 										int idTavolo,
 										int idCameriere,
@@ -94,7 +97,7 @@ public class GestioneConto {
 	 * @throws DatabaseException Eccezione che incapsula le 
 	 * informazioni sull'ultimo errore verificatosi
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public WrapperConto updateConto(int idConto,
 									BigDecimal prezzo, 
 									Timestamp timestampChiusura, 
@@ -128,6 +131,7 @@ public class GestioneConto {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'ultimo errore verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<WrapperConto> getContiAperti(int idTavolo) throws DatabaseException {
 	
 		try {
@@ -157,11 +161,13 @@ public class GestioneConto {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'ultimo errore verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<WrapperConto> getConti(int idTavolo) throws DatabaseException {
 	
 		try {
 			
-			Query query = em.createQuery(	"SELECT c FROM Tavolo t JOIN t.conti c WHERE t.idTavolo = :idTavolo ORDER BY c.idConto DESC");
+			Query query = em.createQuery(	"SELECT c FROM Tavolo t JOIN t.conti c WHERE " + 
+											"t.idTavolo = :idTavolo ORDER BY c.idConto DESC");
 			
 			query.setParameter("idTavolo", idTavolo);
 			List<WrapperConto> listConti = new ArrayList<WrapperConto>();
@@ -177,11 +183,10 @@ public class GestioneConto {
 		}
 	}
 	
-	
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public WrapperConto getContoById(int idConto) throws DatabaseException {
 		
 		try {
-			
 			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idConto = :idConto");
 			query.setParameter("idConto", idConto);
 			List<Conto> listConto = query.getResultList();
@@ -203,10 +208,12 @@ public class GestioneConto {
 	 * @return
 	 * @throws DatabaseException
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<WrapperConto> getContoByIdTenant(int idTenant, int start, int limit) throws DatabaseException {
 
 		try {
-			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idTenant = :idTenant ORDER BY timeStampChiusura DESC");
+			Query query = em.createQuery(	"SELECT c FROM Conto c WHERE c.idTenant = :idTenant "+
+											"ORDER BY timeStampChiusura DESC");
 			query.setFirstResult(start);
 			query.setMaxResults(limit);
 			query.setParameter("idTenant", idTenant);
@@ -228,12 +235,12 @@ public class GestioneConto {
 	 * @return
 	 * @throws DatabaseException
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public Long getNumContiByIdTenant(int idTenant) throws DatabaseException {
 		try {
 			
 			Query query = em.createQuery(	"SELECT COUNT(*) FROM Conto c WHERE c.idTenant = :idTenant");
 			query.setParameter("idTenant", idTenant);
-			int results = 0;
 			return (Long) query.getSingleResult();
 					
 		}catch(Exception e) {
@@ -247,6 +254,7 @@ public class GestioneConto {
 	 * @return
 	 * @throws DatabaseException
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public boolean chiudiContoById(int idConto) throws DatabaseException {
 		try {
 			

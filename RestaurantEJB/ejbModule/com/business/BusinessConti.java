@@ -6,11 +6,14 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import com.exceptions.DatabaseException;
 import com.orb.gestioneOggetti.GestioneComanda;
 import com.orb.gestioneOggetti.GestioneConto;
 import com.restaurant.WrapperComanda;
+import com.restaurant.WrapperConto;
 
 @Stateless
 
@@ -32,14 +35,18 @@ public class BusinessConti {
 	 * errore verificatosi
 	 * @author Guerri Marco
 	 */
+	@TransactionAttribute(TransactionAttributeType.NEVER)
 	public List<WrapperComanda> getConto(int idTavolo) throws DatabaseException {
 				
-		if(gestioneConto.getContiAperti(idTavolo).size() == 0) {
+		List<WrapperConto> listaConti = gestioneConto.getContiAperti(idTavolo);
+		if(listaConti.size() == 0) {
+			
 			return new ArrayList<WrapperComanda>();
 		
-		} else if( gestioneConto.getContiAperti(idTavolo).size() == 1) {
+		} else if(listaConti.size() == 1) {
 			
-			List<WrapperComanda> listaComande = gestioneComanda.getComandeByTavolo(idTavolo);
+			int idConto = listaConti.get(0).getIdConto();
+			List<WrapperComanda> listaComande = gestioneComanda.getComandeByConto(idConto);
 			return listaComande;
 		
 		} else 	{

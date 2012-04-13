@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -23,6 +25,7 @@ public class GestionePrenotazione {
 		
 	public GestionePrenotazione() {}
 	
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public WrapperPrenotazione aggiungiPrenotazione(	int idTenant, 
 												Date data, 
 												Time ora,
@@ -61,6 +64,7 @@ public class GestionePrenotazione {
 	 * @return
 	 * @author Fabio Pierazzi
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<WrapperPrenotazione> getListaPrenotazioni(int idTenant) throws DatabaseException {
 
 		Query query = em.createQuery("SELECT p FROM Prenotazione p " +
@@ -71,7 +75,7 @@ public class GestionePrenotazione {
 
 		List<WrapperPrenotazione> listPrenotazioni= new ArrayList<WrapperPrenotazione>();
 		
-		for(Prenotazione prenotazione :  ((List<Prenotazione>) query.getResultList())) 
+		for(Prenotazione prenotazione :  ((ArrayList<Prenotazione>) query.getResultList())) 
 			listPrenotazioni.add(new WrapperPrenotazione(prenotazione));
 		
 		return listPrenotazioni;

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -32,6 +34,7 @@ public class GestioneCategoria {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore 
 	 * verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public TreeNodeCategoria aggiungiCategoria(	int idTenant,
 												String nome,
 												String descrizione,
@@ -73,7 +76,7 @@ public class GestioneCategoria {
 	 * @return Oggetto TreeNodeCategoria che rappresenta la categoria modificata
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
 	 */
-	 
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	 public TreeNodeCategoria updateCategoria(	int idCategoria,
 			 									String nome,
 			 									String descrizione) throws DatabaseException {
@@ -103,6 +106,7 @@ public class GestioneCategoria {
 	  * @param idCategoria Id della categoria da elimiare
 	  * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore che si è verificato
 	  */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	 public void deleteCategoria(int idCategoria) throws DatabaseException {
 		 try {
 			 Categoria categoria = em.find(Categoria.class, idCategoria);
@@ -132,8 +136,9 @@ public class GestioneCategoria {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore 
 	 * verificatosi
 	 */
-	
-	public List<TreeNodeCategoria> getCategorie(int idTenant, int idPadre, boolean removed) throws DatabaseException {
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+	public List<TreeNodeCategoria> getCategorie(int idTenant, int idPadre, boolean removed) 
+												throws DatabaseException {
 		
 		try {
 			
@@ -173,6 +178,7 @@ public class GestioneCategoria {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore che si
 	 * è verificato
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public TreeNodeCategoria getCategoriaById(int idCategoria) throws DatabaseException {
 		
 		try {

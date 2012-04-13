@@ -51,6 +51,7 @@ public class GestioneTavolo{
 	 * @return Oggetto TreeNodeTavolo che rappresenta il tavolo appena creato
 	 * @throws DatabaseException
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public TreeNodeTavolo aggiungiTavolo(	int idTenant, 
 											String nome, 
 											StatoTavoloEnum stato,
@@ -96,7 +97,7 @@ public class GestioneTavolo{
 	 * @return Oggetto TreeNodeTavolo che rappresenta il tavolo modificato
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public TreeNodeTavolo updateTavolo(	int idTavolo,
 										int numposti,
 										String nome,
@@ -132,6 +133,7 @@ public class GestioneTavolo{
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore che si è
 	 * verificato
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public void deleteTavolo(int idTavolo) throws DatabaseException {
 		
 		try {
@@ -156,11 +158,11 @@ public class GestioneTavolo{
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'errore che si è verificato.
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<StatoTavolo> getStatoTavoli(int idTenant, boolean removed) throws DatabaseException {
 		
 		/* Ottengo tutti i tavoli associato al cliente, forzando l'acquisizione delle aree e 
-		 * dei piani in un'unica query. Senza il FETCH JOIN il metodo di fetch delle enitità 
-		 * (eager) è a discrezione  del persistence framework */
+		 * dei piani in un'unica query. */
 		
 		List<Tavolo> listTavoli = null;
 		
@@ -267,6 +269,8 @@ public class GestioneTavolo{
 	 * un tavolo
 	 * @throws DatabaseException Generica eccezione durante le operazioni sul database
 	 */
+	
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public List<TreeNodeTavolo> getTavoloByArea(int idArea, boolean removed) throws DatabaseException {
 		
 		Area area;
@@ -292,10 +296,7 @@ public class GestioneTavolo{
 				if(tavolo.getRemoved() == removed) {
 					listaTreeNodeTavolo.add(new TreeNodeTavolo(tavolo));
 				}
-				
 			}
-				
-			
 		}catch(Exception e) {
 			throw new DatabaseException("Errore durante la ricerca dei tavoli associati ad un area " +
 										"(" + e.getMessage() +")");
@@ -311,6 +312,7 @@ public class GestioneTavolo{
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo
 	 * errore verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public TreeNodeTavolo getTavoloById(int idTavolo) throws DatabaseException {
 		
 		try {
@@ -323,16 +325,6 @@ public class GestioneTavolo{
 			throw new DatabaseException("Errore durante la ricerca del tavolo (" + e.toString() + ")");
 		}
 	}
-	
-	/**
-	 * Ritorna i tavoli associati ad un determinato cameriere che si trovano in un determinato
-	 * stato. Viene utilizzato per la gestione delle notifiche.
-	 * @param stato Stato dei tavoli che si vogliono recuperare
-	 * @param idUtente Id del cameriere al quale sono associati i tavoli
-	 * @return Lista dei tavoli
-	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
-	 * verificatosi
-	 */
 	
 	
 	/**
@@ -347,9 +339,10 @@ public class GestioneTavolo{
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore 
 	 * verificatosi
 	 */
-	public List<TreeNodeTavolo> getTavoliByStatoAndCameriere(	StatoTavoloEnum stato, 
-																int idUtente,
-																String lastCheckDate)
+	
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+	public List<TreeNodeTavolo> getTavoliByStato(	StatoTavoloEnum stato, 
+													String lastCheckDate)
 																throws DatabaseException{
 		
 		List<Tavolo> listaTavoli = new ArrayList<Tavolo>();
@@ -357,14 +350,9 @@ public class GestioneTavolo{
 		
 		try {
 			Query query = em.createQuery(	"SELECT DISTINCT t FROM Tavolo t "+
-											"JOIN t.conti co " +
-											"JOIN co.cameriereAssociato ca WHERE " +
-											"t.stato = :stato AND " +
-											"ca.idUtente = :idUtente AND " +
+											"WHERE t.stato = :stato AND " +
 											"t.lastModified > :lastCheckDate");
 					
-			
-			query.setParameter("idUtente", idUtente);
 			query.setParameter("stato", stato);
 			query.setParameter(	"lastCheckDate", 
 								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")

@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -44,6 +46,7 @@ public class GestioneUtentePersonale{
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'ultimo errore verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public WrapperUtentePersonale aggiungiUtentePersonale(	int idTenant, 
 															String nome,
 															String cognome,
@@ -97,7 +100,8 @@ public class GestioneUtentePersonale{
 	 * @param isAdmin
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
 	 */
-	 public WrapperUtentePersonale updateUtentePersonale(int idUtentePersonale,
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public WrapperUtentePersonale updateUtentePersonale(int idUtentePersonale,
 														String nome,
 														String cognome,
 														String username,
@@ -149,8 +153,8 @@ public class GestioneUtentePersonale{
 	  * @param idUtentePersonale id dell'utente da eliminare
 	  * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore che si è verificato
 	  */
-	 
-	 public void deleteUtentePersonale(int idUtentePersonale) throws DatabaseException {
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public void deleteUtentePersonale(int idUtentePersonale) throws DatabaseException {
 		 try {
 			 UtentePersonale utentePersonale = em.find(UtentePersonale.class, idUtentePersonale);
 			 if(utentePersonale == null)
@@ -173,15 +177,17 @@ public class GestioneUtentePersonale{
 	 * @throws DatabaseException Eccezione che incapsula le informazioni
 	 * sull'ultimo errore verificatosi
 	 */
-	 
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<WrapperUtentePersonale> getUtentePersonaleTenant(int idTenant, boolean removed) throws DatabaseException {
 		try {
 			
-			Query query = em.createQuery("SELECT a FROM UtentePersonale a " +
-					"WHERE a.idTenant = :idTenant " +
-					"AND a.removed = :removed ");
+			Query query = em.createQuery(	"SELECT a FROM UtentePersonale a " +
+											"WHERE a.idTenant = :idTenant " +
+											"AND a.removed = :removed ");
+			
 			query.setParameter("idTenant", idTenant);
 			query.setParameter("removed", removed);
+			
 			List<UtentePersonale> listaUtentePersonale = (List<UtentePersonale>)query.getResultList();
 			List<WrapperUtentePersonale> listaWrapperUtentePersonale = new ArrayList<WrapperUtentePersonale>();
 			
@@ -202,6 +208,7 @@ public class GestioneUtentePersonale{
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
 	 * verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public WrapperUtentePersonale getUtentePersonaleById(int idUtentePersonale) throws DatabaseException {
 		
 		try {

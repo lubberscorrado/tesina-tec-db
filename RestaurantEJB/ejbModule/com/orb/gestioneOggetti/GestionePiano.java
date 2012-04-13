@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -40,6 +42,7 @@ public class GestionePiano {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore che si è 
 	 * verificato durante l'inserimento
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public TreeNodePiano aggiungiPiano(	int idTenant, 
 										int numero, 
 										String nome, 
@@ -73,7 +76,7 @@ public class GestionePiano {
 	 * @return Oggetto TreeNodePiano che rappresenta il piano modificato
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public TreeNodePiano updatePiano(	int idPiano,
 										String nome,
 										String descrizione,
@@ -103,7 +106,7 @@ public class GestionePiano {
 	 * @param idPiano Id del piano da eliminare
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'errore verificatosi
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public void deletePiano(int idPiano) throws DatabaseException {
 		
 		try {
@@ -127,7 +130,7 @@ public class GestionePiano {
 	 * sui piani.
 	 * @throws DatabaseException 
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<TreeNodePiano> getPiani(int idTenant, boolean removed) throws DatabaseException {
 		
 		try {

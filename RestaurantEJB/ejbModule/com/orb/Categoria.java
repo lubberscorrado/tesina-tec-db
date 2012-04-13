@@ -67,8 +67,6 @@ public class Categoria {
 	private List<VoceMenu> vociMenu;
 	
 	
-	
-	
 	public int getIdCategoria() {
 		return idCategoria;
 	}

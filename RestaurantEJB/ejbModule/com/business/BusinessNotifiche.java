@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 
 
@@ -38,6 +40,7 @@ public class BusinessNotifiche {
 	 * per l'utente.
 	 * @author Guerri Marco
 	 */
+	@TransactionAttribute(TransactionAttributeType.NEVER)
 	public List<Notifica> getNotifiche(int idUtente, String lastDateSqlFormatted) throws DatabaseException {
 		
 		/* Lista delle notifiche da ritornare alla logica di presentazione.
@@ -78,13 +81,21 @@ public class BusinessNotifiche {
 		
 		
 		/* *********************************************************
-		 * Recupero delle notifiche relative ai tavoli da pulire 
+		 * Recupero delle notifiche relative ai tavoli da pulire.
+		 * Il tavolo che viene impostato come da pulire è associato
+		 * ad un conto che viene messo come "DA PAGARE". Il conto
+		 * però può essere chiuso prima che il tavolo venga pulito,
+		 * rendendo quindi non più possibile risalire al cameriere che 
+		 * era associato al tavolo (a meno di non fare riferimento
+		 * all'ultimo conto chiuso). Se la notifica non è ancora 
+		 * stata acquisista, non sarebbe quindi possibile recuperarla
+		 * in base al cameriere. Per questo motivo tutti i camerieri
+		 * vengono notificati se c'è un tavolo da pulire.
 		 ***********************************************************/
 		
 		List<TreeNodeTavolo> listaTreeNodeTavolo =
-				gestioneTavolo.getTavoliByStatoAndCameriere(StatoTavoloEnum.PULIRE,
-															idUtente,
-															lastDateSqlFormatted);
+				gestioneTavolo.getTavoliByStato(StatoTavoloEnum.PULIRE,
+												lastDateSqlFormatted);
 		
 		for(TreeNodeTavolo tavolo : listaTreeNodeTavolo) {
 			Notifica notifica = new Notifica();
@@ -99,11 +110,6 @@ public class BusinessNotifiche {
 			
 			listaNotifiche.add(notifica);
 		}
-				
-		
-
-		
-		
 		return listaNotifiche;
 	}
 	

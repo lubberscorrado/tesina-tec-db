@@ -74,16 +74,18 @@ public class BusinessComande {
 						gestioneVoceMenu.getVoceMenu(wrapperComanda.getIdVoceMenu());
 					
 				WrapperComanda newWrapperComanda = 
-						gestioneComanda.aggiungiComanda(	wrapperComanda.getIdTenant(), 
-															wrapperComanda.getIdVoceMenu(),
-															listaContiAperti.get(0).getIdConto(),
-															idCameriere,
-															wrapperComanda.getNote(),
-															hashGruppo,
-															voceMenu.getPrezzo(),
-															wrapperComanda.getQuantita(),
-															wrapperComanda.getStato(),
-															wrapperComanda.getListIdVariazioni());
+						gestioneComanda.aggiungiComanda(	
+								wrapperComanda.getIdTenant(), 
+								wrapperComanda.getIdVoceMenu(),
+								listaContiAperti.get(0).getIdConto(),
+								idCameriere,
+								wrapperComanda.getNote(),
+								hashGruppo,
+								voceMenu.getPrezzo(),
+								wrapperComanda.getQuantita(),
+								wrapperComanda.getStato(),
+								wrapperComanda.getListIdVariazioni()
+								);
 			
 				listaIdRemotiComande.add(new Integer(newWrapperComanda.getIdComanda()));
 			
@@ -99,10 +101,8 @@ public class BusinessComande {
 			 
 			 /* Rilancio l'eccezione per la logica di presentazione */
 			 throw e;
-			
 		}
 		return listaIdRemotiComande;
-			
 	}
 	
 	/**
@@ -110,7 +110,7 @@ public class BusinessComande {
 	 * @param wrapperComanda Oggetti che rappresenta la comanda modificata
 	 * @throws DatabaseException
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void modificaComanda(WrapperComanda wrapperComanda) throws DatabaseException{
 
 		/* Verifica se la comanda è già in preparazione o in uno stato diverso
@@ -124,10 +124,12 @@ public class BusinessComande {
 			throw new DatabaseException("Impossibile modificare la comanda (stato: " + 
 										stato.toString() + ")");
 			
-		gestioneComanda.updateComanda(	wrapperComanda.getIdComanda(),
-										wrapperComanda.getNote(),
-										wrapperComanda.getQuantita(),
-										wrapperComanda.getListIdVariazioni());
+		gestioneComanda.updateComanda(
+				wrapperComanda.getIdComanda(),
+				wrapperComanda.getNote(),
+				wrapperComanda.getQuantita(),
+				wrapperComanda.getListIdVariazioni()
+				);
 	}
 	
 	/**
@@ -135,17 +137,14 @@ public class BusinessComande {
 	 * @param stato il nuovo stato 
 	 * @throws DatabaseException
 	 */
-	public void modificaStatoComanda(int idComanda, int idCucina, String stato) throws DatabaseException{
-
-		StatoComandaEnum statoAttuale = gestioneComanda.getComandaById(idComanda).getStato();
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	
+	public void modificaStatoComanda(	int idComanda, 
+										int idCucina, 
+										String stato) throws DatabaseException{
 		
-		try {
-			gestioneComanda.updateStatoComanda(idComanda,idCucina, stato);
-		} catch(Exception e) {
-			throw new DatabaseException("Eccezione durante la modifica dello stato " +
-					"della comanda con id " + idComanda + ". " + e.toString());
-		}
-			
+		gestioneComanda.updateStatoComanda(idComanda,idCucina, stato);
+	
 	}
 	
 	
@@ -154,12 +153,14 @@ public class BusinessComande {
 	 * @param idComanda Id della comanda da eliminare
 	 * @throws DatabaseException 
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void eliminaComanda(int idComanda) throws DatabaseException  {
 		
 		WrapperComanda wrapperComanda = gestioneComanda.getComandaById(idComanda);
 		
 		/* Impedisco l'eliminazione della comanda se è già in preparazione */
 		if(!wrapperComanda.getStato().equals(StatoComandaEnum.INVIATA)) {
+			
 			throw new DatabaseException("Impossibile eliminare la comanda (stato: " + 
 										wrapperComanda.getStato() + ")");
 		}
@@ -188,16 +189,14 @@ public class BusinessComande {
 	 * Funzione per ottenere un elenco delle comande in base al tipo
 	 * @param type = CIBO, BEVANDA
 	 */
-	public List<WrapperComandaCucina> getElencoComandeByType(int idTenant, String type) {
+	@TransactionAttribute(TransactionAttributeType.NEVER)
+	public List<WrapperComandaCucina> getElencoComandeByType(	int idTenant, 
+																String type) 
+																throws DatabaseException {
 		
 		List<WrapperComandaCucina> lista = new ArrayList<WrapperComandaCucina>();
 		
-		try {
-			lista = gestioneComanda.getElencoComandeByType(idTenant, type);
-		} catch (DatabaseException e) {
-			System.out.println("BusinessComande: eccezione invocando l'entity bean" );
-			e.printStackTrace();
-		}
+		lista = gestioneComanda.getElencoComandeByType(idTenant, type);
 		
 		return lista;
 	}

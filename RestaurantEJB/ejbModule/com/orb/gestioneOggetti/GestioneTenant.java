@@ -1,6 +1,8 @@
 package com.orb.gestioneOggetti;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -24,6 +26,7 @@ public class GestioneTenant{
 	
 	public GestioneTenant() {}
 	
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public WrapperTenant aggiungiTenant(	
 										//int idTenant,	//Assegnato dal db
 										String ragioneSociale,
@@ -111,6 +114,7 @@ public class GestioneTenant{
 		}
 	}
 	
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public WrapperTenant getTenantById(int idTenant) throws DatabaseException {
 	
 		try {
@@ -126,6 +130,7 @@ public class GestioneTenant{
 		}
 	}
 	
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public WrapperUtentePersonale getWrapperUtentePersonaleByTenantId(int idTenant) throws DatabaseException {
 		
 		try {

@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -39,6 +41,7 @@ public class GestioneVariazioni {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo
 	 * errore verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public WrapperVariazione aggiungiVariazione(int idTenant,
 												String nome,
 												String descrizione,
@@ -78,6 +81,7 @@ public class GestioneVariazioni {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
 	 * verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public WrapperVariazione updateVariazione(	int idVariazione,
 												String nome,
 												String descrizione,
@@ -106,6 +110,7 @@ public class GestioneVariazioni {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore
 	 * verificatosi
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public void deleteVariazione(int idVariazione) throws DatabaseException {
 		try {
 			Variazione variazione = em.find(Variazione.class, idVariazione);
@@ -132,6 +137,7 @@ public class GestioneVariazioni {
 	 * @throws DatabaseException Eccezione che incapsula le informazioni sull'ultimo errore verificatosi
 	 */
 	
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<WrapperVariazione> getVariazioniByCategoria(int idCategoria, int idTenant, boolean removed) throws DatabaseException {
 		
 		try {
