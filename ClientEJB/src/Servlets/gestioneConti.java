@@ -78,46 +78,49 @@ public class gestioneConti extends HttpServlet {
 			try {
 				
 				List<WrapperComanda> listaComande = businessConti.getConto(idTavolo);
+				
 				JSONArray jsonArrayComande = new JSONArray();
 				
-				for(WrapperComanda comanda : listaComande) {
-					TreeNodeVoceMenu voceMenu = 
-							gestioneComanda.getVoceMenuByComanda(comanda.getIdComanda());
-		
-					JSONObject jsonObjectComanda = new JSONObject();
-					
-					/* ********************************************************
-					 * Informazioni necessarie relative al conto da passare
-					 * al client:
-					 * - idRemoto comanda
-					 * - idVoceMenu associata 
-					 * - note
-					 * - stato 
-					 * - array degli id delle variazioni (le variazioni hanno gli
-					 * 	stessi id sia su client che su server
-					 * - quantità
-					 ***********************************************************/
-					
-					jsonObjectComanda.put("idRemoto", comanda.getIdComanda());
-					jsonObjectComanda.put("idVoceMenu", voceMenu.getIdVoceMenu());
-					jsonObjectComanda.put("note", comanda.getNote());
-					jsonObjectComanda.put("quantita", comanda.getQuantita());
-					jsonObjectComanda.put("stato", comanda.getStato());
-					
-					/* **********************************************************
-					 * Costruisco l'array degli id delle variazioni associate 
-					 * alla comanda che sto considerando
-					 ************************************************************/
-					JSONArray jsonArrayVariazioni = new JSONArray();
-					
-					for(Integer idVariazione : comanda.getListIdVariazioni()) {
-						JSONObject jsonObjectIdVariazione = new JSONObject();
-						jsonObjectIdVariazione.put("id", idVariazione);
-						jsonArrayVariazioni.put(jsonObjectIdVariazione);
+				if(listaComande != null) {
+					for(WrapperComanda comanda : listaComande) {
+						TreeNodeVoceMenu voceMenu = 
+								gestioneComanda.getVoceMenuByComanda(comanda.getIdComanda());
+			
+						JSONObject jsonObjectComanda = new JSONObject();
+						
+						/* ********************************************************
+						 * Informazioni necessarie relative al conto da passare
+						 * al client:
+						 * - idRemoto comanda
+						 * - idVoceMenu associata 
+						 * - note
+						 * - stato 
+						 * - array degli id delle variazioni (le variazioni hanno gli
+						 * 	stessi id sia su client che su server
+						 * - quantità
+						 ***********************************************************/
+						
+						jsonObjectComanda.put("idRemoto", comanda.getIdComanda());
+						jsonObjectComanda.put("idVoceMenu", voceMenu.getIdVoceMenu());
+						jsonObjectComanda.put("note", comanda.getNote());
+						jsonObjectComanda.put("quantita", comanda.getQuantita());
+						jsonObjectComanda.put("stato", comanda.getStato());
+						
+						/* **********************************************************
+						 * Costruisco l'array degli id delle variazioni associate 
+						 * alla comanda che sto considerando
+						 ************************************************************/
+						JSONArray jsonArrayVariazioni = new JSONArray();
+						
+						for(Integer idVariazione : comanda.getListIdVariazioni()) {
+							JSONObject jsonObjectIdVariazione = new JSONObject();
+							jsonObjectIdVariazione.put("id", idVariazione);
+							jsonArrayVariazioni.put(jsonObjectIdVariazione);
+						}
+						
+						jsonObjectComanda.put("variazioni", jsonArrayVariazioni);
+						jsonArrayComande.put(jsonObjectComanda);
 					}
-					
-					jsonObjectComanda.put("variazioni", jsonArrayVariazioni);
-					jsonArrayComande.put(jsonObjectComanda);
 				}
 				
 				JSONResponse.WriteOutput(response,true, "", "comande", jsonArrayComande);
