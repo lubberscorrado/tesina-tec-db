@@ -43,22 +43,31 @@ import com.restaurant.android.cameriere.prenotazioni.PrenotationsListActivity;
  * Activity principale da mostrare al cameriere
  * come Home Page successivamente al Login. E' una 
  * Tab Activity che mostra le risorse
- * @author fabio
+ * @author Pierazzi Fabio, Guerri Marco
  */
 public class HomeActivity extends TabActivity {
 	
 	private static final String TAG = "HomeActivity"; 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-	  super.onCreate(savedInstanceState);
-	  setContentView(R.layout.cameriere_home);
 	  
-	  	/** 
-	  	 * Faccio Partire NotificationUpdaterService, servizio che gira in 
-	  	 * background e controlla se ci sono nuove notifiche per il cameriere
-	  	 * @author Fabio Pierazzi
-	  	 * */
-	  	startNotificationUpdaterService();	  	
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.cameriere_home);
+		
+		Log.d(TAG,"OnCreate");
+		/* 
+		 * In alcune occasioni è possibile che il thread all'interno del service
+		 * incontri un'eccezione e termini la sua esecuzione, mentre il service
+		 * rimane attivo. Le notfiche quindi smettono di funzionare. Per far 
+		 * fronte e questa evenienze è opportuno interrompere il service
+		 * nel caso sia in esecuzione e riavviarlo. Questa operazione
+		 * avviene solo onCreate e dovrebbe quindi minimizzare l'overhead di
+		 * stop/start del service
+		 * @author Guerri Marco
+		 */
+		
+		stopNotificationUpdaterService();
+	  	startNotificationUpdaterService();	
 	  	
 	  	/** Alloco le risorse per mostrare i vari tab della Home page */
 	    Resources res = getResources(); // Resource object to get Drawables
@@ -90,20 +99,21 @@ public class HomeActivity extends TabActivity {
 	    tabHost.addTab(spec);
 
 	    /* Verifico se questa activity è stata attivata per effetto di un notifica. In caso
-	     * affermativo devo settare come tab corrente quello delle notifiche. */
+	     * affermativo devo settare come tab corrente quello delle notifiche. (causa spesso il 
+	     * crash dell'app) */
 	    
-	    if(	getIntent().getStringExtra("UPDATE_NOTIFICHE") != null &&
-	    	getIntent().getStringExtra("UPDATE_NOTIFICHE").equals("TRUE")) {
-	    	/* 
-	    	 * L'activity è stata attivata per effetti di una notifica dalla status
-	    	 * bar
-	    	 */
-	    	tabHost.setCurrentTab(0);
-	    	
-	    } else {
-	        /* Imposto il tab di default */
-		    tabHost.setCurrentTab(1);
-		}
+//	    if(	getIntent().getStringExtra("UPDATE_NOTIFICHE") != null &&
+//	    	getIntent().getStringExtra("UPDATE_NOTIFICHE").equals("TRUE")) {
+//	    	/* 
+//	    	 * L'activity è stata attivata per effetti di una notifica dalla status
+//	    	 * bar
+//	    	 */
+//	    	tabHost.setCurrentTab(0);
+//	    	
+//	    } else {
+//	        /* Imposto il tab di default */
+//		    tabHost.setCurrentTab(1);
+//		}
 	    
 	    DbManager dbManager = new DbManager(getApplicationContext());
 	 
@@ -116,6 +126,7 @@ public class HomeActivity extends TabActivity {
 	    dbManager.close();
 	}
 	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -368,6 +379,7 @@ public class HomeActivity extends TabActivity {
  	    ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
  	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
  	        if (serviceName.equals(service.service.getClassName())) {
+ 	        	
  	            return true;
  	        }
  	    }
@@ -377,21 +389,22 @@ public class HomeActivity extends TabActivity {
     /**
      * Metodo per far partire il NotificationUpdaterService.
      * Controlla anche che il metodo non sia già attivo
-     * @author Fabio Pierazzi
+     * @author Fabio Pierazzi, Guerri Marco
      */
     private void startNotificationUpdaterService() {
+    	
+    	
     	// Attivo NotificationUpdaterService solamente se non è già attivo
 	  	if(isMyServiceRunning("com.restaurant.android.cameriere.notifiche.NotificationUpdaterService")) {
-	  		// do nothing
 	  		Log.d(TAG, "NotificationUpdaterService is already running!");
 	  	} else {
 	  		/** Faccio partire il service per la l'update delle notifiche */
 		  	Log.d(TAG, "I'm starting the NotificationUpdaterService from HomeActivity!");
 		  
 		  	Intent serviceIntent = new Intent(this, NotificationUpdaterService.class);
-//		  	serviceIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		  	//serviceIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		  	startService(serviceIntent);
-		  	Toast.makeText(getApplicationContext(), "Notifiche Attivate", 20).show();
+		  	//Toast.makeText(getApplicationContext(), "Notifiche Attivate", 20).show();
 	  	}
     }
 
@@ -402,7 +415,7 @@ public class HomeActivity extends TabActivity {
     	if(isMyServiceRunning("com.restaurant.android.cameriere.notifiche.NotificationUpdaterService")) {
     		Intent serviceIntent = new Intent(this, NotificationUpdaterService.class);
     		stopService(serviceIntent);
-    		Toast.makeText(getApplicationContext(), "Notifiche Disattivate", 20).show();
+    		//Toast.makeText(getApplicationContext(), "Notifiche Disattivate", 20).show();
     	}
     }
     

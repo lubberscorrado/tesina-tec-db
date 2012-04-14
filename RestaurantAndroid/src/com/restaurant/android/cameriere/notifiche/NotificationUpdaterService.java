@@ -145,13 +145,20 @@ public class NotificationUpdaterService extends Service {
 					/* IMPORTANTE: Mettere in tutte le eccezione la flag = false altrimenti 
 					 * va in loop  */
 				} catch(InterruptedException e) {
+					Log.e("Eccezione service", e.toString());
 					notificationUpdaterService.runFlag = false;
+				
 				} catch (ClientProtocolException e) {
+					Log.e("Eccezione service", e.toString());
 					notificationUpdaterService.runFlag = false;
 				} catch (IOException e) {
+					Log.e("Eccezione service", e.toString());
 					notificationUpdaterService.runFlag = false;
 				} catch (JSONException e) {
+					Log.e("Eccezione service", e.toString());
 					notificationUpdaterService.runFlag = false;
+				}finally {
+				
 				}
 			}
 		}
@@ -169,7 +176,7 @@ public class NotificationUpdaterService extends Service {
 			Intent intent = new Intent(this, HomeActivity.class);
 			
 			/* Segnalo all'activity, tramite l'intent, la necessità di refreshare la lista
-			 * delle notifiche Tramite l'intent non è possibile attivare in modo specifico
+			 * delle notifiche. Tramite l'intent non è possibile attivare in modo specifico
 			 * il tab delle notifiche. E' necessario attivare prima la TabActivity e
 			 * riconoscere tramite un parametro passato con l'intent, la richiesta di 
 			 * attivazione del tab di notifiche */
@@ -206,5 +213,8 @@ public class NotificationUpdaterService extends Service {
 		}
 
 	}
+	
+	
+	
 }
 
