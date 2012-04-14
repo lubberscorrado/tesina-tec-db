@@ -181,17 +181,15 @@ public class NotificationUpdaterService extends Service {
 			 * riconoscere tramite un parametro passato con l'intent, la richiesta di 
 			 * attivazione del tab di notifiche */
 			
-			intent.putExtra("UPDATE_NOTIFICHE", "TRUE");
+			//intent.putExtra("UPDATE_NOTIFICHE", "TRUE");
 			
 			/* Segnalo all'activity delle notifiche che deve aggiornarsi. La flag viene
 			 * controllata all'avvio dell'activity di notifiche per permettere l'aggiornamento
 			 * nel caso venga avviata senza ricevere un broadcast intent. Viene resettata
 			 * dopo che le notifiche vengono acquisite.  */
 			
-			/* Se l'activity non è in esecuzione l'accesso a una variabile statica fa esplodere
-			 * tutto? */
-			
-			NotificationActivity.updateNofitications = true;
+						
+			//NotificationActivity.updateNofitications = true;
 			
 			pendingIntent = PendingIntent.getActivity(	this, 
 														-1, 
