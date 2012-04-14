@@ -240,6 +240,9 @@ public class GestioneOrdinazioneActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 					
+				if(Integer.parseInt(editText_quantita.getText().toString()) == 0 )
+					return;
+				
 				if(myOrdinazione.getIdOrdinazione() == 0) {
 					
 					/* ************************************************************************
