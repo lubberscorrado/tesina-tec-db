@@ -189,7 +189,7 @@ public class NotificationUpdaterService extends Service {
 			 * dopo che le notifiche vengono acquisite.  */
 			
 						
-			//NotificationActivity.updateNofitications = true;
+			NotificationActivity.updateNofitications = true;
 			
 			pendingIntent = PendingIntent.getActivity(	this, 
 														-1, 
