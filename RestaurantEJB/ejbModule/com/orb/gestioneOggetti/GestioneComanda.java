@@ -592,7 +592,7 @@ public class GestioneComanda {
 	 * verificatosi
 	 * @author Guerri Marco
 	 */
-	
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public TreeNodeTavolo getTavoloByIdComanda(int idComanda) throws DatabaseException{
 		
 		try {
@@ -617,6 +617,7 @@ public class GestioneComanda {
 	 * verificatosi
 	 * @author Castelli Andrea
 	 */
+	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public List<WrapperComanda> getComandeByIdConto(int idConto) throws DatabaseException {
 		
 		try {
