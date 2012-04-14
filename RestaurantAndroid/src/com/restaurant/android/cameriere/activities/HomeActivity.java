@@ -55,18 +55,7 @@ public class HomeActivity extends TabActivity {
 		setContentView(R.layout.cameriere_home);
 		
 		Log.d(TAG,"OnCreate");
-		/* 
-		 * In alcune occasioni è possibile che il thread all'interno del service
-		 * incontri un'eccezione e termini la sua esecuzione, mentre il service
-		 * rimane attivo. Le notfiche quindi smettono di funzionare. Per far 
-		 * fronte e questa evenienze è opportuno interrompere il service
-		 * nel caso sia in esecuzione e riavviarlo. Questa operazione
-		 * avviene solo onCreate e dovrebbe quindi minimizzare l'overhead di
-		 * stop/start del service
-		 * @author Guerri Marco
-		 */
 		
-		stopNotificationUpdaterService();
 	  	startNotificationUpdaterService();	
 	  	
 	  	/** Alloco le risorse per mostrare i vari tab della Home page */
