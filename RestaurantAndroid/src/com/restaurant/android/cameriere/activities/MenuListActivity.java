@@ -94,7 +94,6 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 				
 				cursorCategoria.moveToNext();
 			}
-			cursorCategoria.close();
 			
 			/* ********************************************************
 			 * Aquisizione delle voci di menu associate alla categoria
@@ -117,7 +116,6 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 				
 				cursorVoceMenu.moveToNext();
 			}
-			cursorVoceMenu.close();
 			
 			/* Aggiungo alla lista vociMenu tutte le categorie */
 			Iterator<VoceMenu> it = temp.iterator();
@@ -142,15 +140,21 @@ public class MenuListActivity extends Activity implements OnItemClickListener {
 				vociMenu.add(new VoceMenu(-1, "..Indietro..", "", idCategoriaPadre, new BigDecimal(0.0), false));
 			
 			listAdapter.notifyDataSetChanged();
+	
+		} catch (Exception e) {
+			 e.printStackTrace();
+			 Log.e("MenuListActivity", "Errore query database " + e.toString());
+		}finally {
 			
-			
-			db.close();
-			dbManager.close();
-			
-		  } catch (Exception e) {
-			  e.printStackTrace();
-			  Log.e("MenuListActivity", "Errore query database " + e.toString());
-		  }
+			 if(cursorVoceMenu != null)
+				 cursorVoceMenu.close();
+			 
+			 if(cursorCategoria != null)
+				 cursorCategoria.close();
+			 
+			 db.close();
+			 dbManager.close();  
+		}
 	}
 	
 

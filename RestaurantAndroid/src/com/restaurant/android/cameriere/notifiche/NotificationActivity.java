@@ -413,11 +413,11 @@ public class NotificationActivity extends Activity {
 			   			String voceMenu = "Sconosciuta";
 			   				
 			   			cursorVoceMenu.moveToFirst();
-			   			while(!cursorVoceMenu.isAfterLast()) {
-			   				/* Il ciclo dovrebbe essere eseguito una sola volta */
+			   			
+			   			if(!cursorVoceMenu.isAfterLast()) {
 			   				voceMenu = cursorVoceMenu.getString(0);
-			   				cursorVoceMenu.moveToNext();
 			   			}
+			   			
 			   			cursorVoceMenu.close();
 			   			notifica.put("voceMenu", voceMenu);
 			   			notifica.put("data", jsonObjectNotifica.getString("lastModified"));

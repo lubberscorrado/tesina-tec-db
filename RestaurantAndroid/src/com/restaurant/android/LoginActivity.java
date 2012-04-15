@@ -137,9 +137,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 				String responseBody = restApp.makeHttpPostRequest(	url + "ClientEJB/login", 
 																	hashMap[0]);
 			        			
-				Log.e("ResponseBody", responseBody);
 				
-				/*****************************************
+				/* ****************************************
 				 * Decodifica della risposta del server **
 				 *****************************************/
 					
@@ -150,8 +149,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 		        else
 		        	errorMessage = jObject.getString("message");
 		        	
-				Log.e("LoginTask", "isCameriere: " + jObject.getJSONObject("privs").getString("isCameriere"));
-				Log.e("LoginTask", "isCuoco: " + jObject.getJSONObject("privs").getString("isCuoco"));
+				Log.d("LoginTask", "isCameriere: " + jObject.getJSONObject("privs").getString("isCameriere"));
+				Log.d("LoginTask", "isCuoco: " + jObject.getJSONObject("privs").getString("isCuoco"));
 					
 				if(logged) {
 					
@@ -168,16 +167,18 @@ public class LoginActivity extends Activity implements OnClickListener {
 				
 						
 			} catch (ClientProtocolException e) {
-				Log.e("LoginTask", "Eccezione ClientProtocolException");
+				Log.d("LoginTask", "Eccezione ClientProtocolException");
 				return  new Error("Errore durante la comunicazione con il server", true);
 			} catch (IOException e) {
-				Log.e("LoginTask", "Eccezione IO" + e.toString());
+				Log.d("LoginTask", "Eccezione IO" + e.toString());
 				return  new Error("Errore di connettività", true);
 			} catch (JSONException e) {
-				if(errorMessage.equals(""))
+				if(errorMessage.equals("")) {
+					Log.d("LoginTask", "JSON Exception");
 					return  new Error("Errore durante la lettura della risposta dal server", true);
-				else 
+				}else {
 					return  new Error(errorMessage, true);
+				}
 			} finally {
 				progressDialog.dismiss();
 			}
@@ -194,11 +195,11 @@ public class LoginActivity extends Activity implements OnClickListener {
         	} else {
         		/* Apro la nuova attività a seconda della funzionalità richiesta dall'utente */
 				if(radioButtonCameriere.isChecked() && logged == true) {
-					Log.i(TAG, "Login eseguito con successo per la richiesta dell'interfaccia Cameriere");
+					Log.d(TAG, "Login eseguito con successo per la richiesta dell'interfaccia Cameriere");
 					Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
 			  		LoginActivity.this.startActivity(myIntent);
 				} else if(radioButtonCucina.isChecked() && logged == true) {
-					Log.i(TAG, "Login eseguito con successo per la richiesta dell'interfaccia Cucina");
+					Log.d(TAG, "Login eseguito con successo per la richiesta dell'interfaccia Cucina");
 					Intent myIntent = new Intent(LoginActivity.this, Kitchen_HomeActivity.class);
 			  		LoginActivity.this.startActivity(myIntent);
 				}

@@ -202,6 +202,7 @@ public class HomeActivity extends TabActivity {
     			return new Error("Errore di comunicazione", true);
     		} finally {
     			db.close();
+    			dbManager.close();
     		}
     		
     		Log.d("UpdateDatabaseService", "Trasferimento DB su SD");

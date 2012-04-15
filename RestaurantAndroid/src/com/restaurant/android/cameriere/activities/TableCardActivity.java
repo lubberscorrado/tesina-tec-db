@@ -594,16 +594,16 @@ public class TableCardActivity extends Activity {
     private void updateListViewSospeseFromLocalDatabase(){
     	
     	Log.i(TAG, "Entrato in getOrdersWaitingToBeConfirmed();");
-          try{
+    	
+    	DbManager dbManager = new DbManager(getApplicationContext());
+    	SQLiteDatabase db = dbManager.getWritableDatabase();
+   	  	
+    	Cursor cursorOrdinazioniSospese = null;
+   	  	Cursor cursorNomeVoceMenu = null;
+    	
+   	  	try{
         	  
         	  ordersWaitingListView_arrayOrdinazioni.clear();
-        	  
-        	  DbManager dbManager = new DbManager(getApplicationContext());
-        	  SQLiteDatabase db;
-        	  db = dbManager.getWritableDatabase();
-        	  
-        	  Cursor cursorOrdinazioniSospese;
-        	  
         	  cursorOrdinazioniSospese = db.query("comanda", 
 											new String[] {"idComanda", "idVoceMenu", "quantita", "note"} , 
 											"idTavolo=" + myTable.getTableId() + " and stato=\"SOSPESA\"", 
@@ -614,21 +614,25 @@ public class TableCardActivity extends Activity {
         	  while(!cursorOrdinazioniSospese.isAfterLast()) {
         		  
         		  /* Recupero il nome della voce di menu relativa all'id
-        		   * apperna acquisito dal database */
-        		  
-        		  Cursor cursorNomeVoceMenu;
-        		  
+        		   * apperna acquisito dal database. Se la voce di menù non è
+        		   * presente significa che il menu non è sincronizzato */
         		  cursorNomeVoceMenu = db.query("vocemenu", new String[] {"nome"}, "idVoceMenu=" + cursorOrdinazioniSospese.getInt(1),
         				  						null, null, null, null, null);
         		  
+        		  String voceMenu = "Sconosciuta";
         		  cursorNomeVoceMenu.moveToFirst();
+        		  
+        		  if(!cursorNomeVoceMenu.isAfterLast())
+        			  voceMenu = cursorNomeVoceMenu.getString(0);
+        		  
+        		  cursorNomeVoceMenu.close();
         		  
         		  Ordinazione o = new Ordinazione();
         		  
         		  o.setIdOrdinazione(cursorOrdinazioniSospese.getInt(0));
         		  o.setIdVoceMenu(cursorOrdinazioniSospese.getInt(1));
         		  o.setIdTavolo(myTable.getTableId());
-        		  o.setNome(cursorNomeVoceMenu.getString(0));
+        		  o.setNome(voceMenu);
         		  o.setQuantita(cursorOrdinazioniSospese.getInt(2));
         		  o.setNote(cursorOrdinazioniSospese.getString(3));
         		  o.setStato("SOSPESA");
@@ -636,14 +640,10 @@ public class TableCardActivity extends Activity {
         		  
         		  cursorOrdinazioniSospese.moveToNext();
         		  
-        		  cursorNomeVoceMenu.close();
+        		 
         		  ordersWaitingListView_arrayOrdinazioni.add(o);
            	  }
-        	  
-        	  cursorOrdinazioniSospese.close();
-        	  db.close();
-        	  dbManager.close();
-        	  
+        	 
         	  /* *************************************************************************
         	   * Aggiornamento dell'interfaccia grafica. Solo l'UI thread può modificare
         	   * la view.
@@ -655,7 +655,20 @@ public class TableCardActivity extends Activity {
         	  
        
           } catch (Exception e) {
-        	Log.e("TableCardActivity", e.toString());
+        	  
+        	Log.d("TableCardActivity", e.toString());
+        
+          }finally {
+        	
+        	if(cursorOrdinazioniSospese != null)
+        		cursorOrdinazioniSospese.close();
+        	
+        	if(cursorNomeVoceMenu != null)
+        		cursorNomeVoceMenu.close();
+        	
+        	db.close();
+        	dbManager.close();
+        	
         }
           
     }
@@ -667,16 +680,14 @@ public class TableCardActivity extends Activity {
      ************************************************************************/
     private void updateListViewContoFromLocalDatabase(){
     	
-          try{
-        	  
+    	DbManager dbManager = new DbManager(getApplicationContext());
+   	  	SQLiteDatabase db = dbManager.getWritableDatabase();
+   	  
+   	  	Cursor cursorOrdinazioniInviate = null ;
+   	  	Cursor cursorNomeVoceMenu = null;
+   	  	
+   	  	try{
         	  contoListView_arrayOrdinazioni.clear();
-        	  
-        	  DbManager dbManager = new DbManager(getApplicationContext());
-        	  SQLiteDatabase db;
-        	  db = dbManager.getWritableDatabase();
-        	  
-        	  Cursor cursorOrdinazioniInviate;
-        	  
         	  cursorOrdinazioniInviate = db.query("comanda", 
 											new String[] {"idComanda", "idVoceMenu", "quantita", "note", "idRemotoComanda", "stato"} , 
 											"idTavolo=" + myTable.getTableId() + " and stato IS NOT 'SOSPESA'", 
@@ -688,8 +699,6 @@ public class TableCardActivity extends Activity {
         		  
         		 
         		  /* Recupero il nome della voce di menu relativa all'id apperna acquisito dal database */
-        		  
-        		  Cursor cursorNomeVoceMenu;
         		  cursorNomeVoceMenu = db.query("vocemenu", new String[] {"nome"}, "idVoceMenu=" + cursorOrdinazioniInviate.getInt(1),
         				  						null, null, null, null, null);
         		  cursorNomeVoceMenu.moveToFirst();
@@ -716,10 +725,6 @@ public class TableCardActivity extends Activity {
         		  
            	  }
         	  
-        	  cursorOrdinazioniInviate.close();
-        	  db.close();
-        	  dbManager.close();
-        	  
         	  /* *************************************************************************
         	   * Aggiornamento dell'interfaccia grafica. 
         	   **************************************************************************/
@@ -727,7 +732,21 @@ public class TableCardActivity extends Activity {
        	      Utility.setListViewHeightBasedOnChildren(contoListView);
              
         } catch (Exception e) {
-        	Log.e("TableCardActivity", e.toString());
+        	
+        	Log.d("TableCardActivity", e.toString());
+        
+        }finally {
+        	
+        	if(cursorNomeVoceMenu != null)
+        		cursorNomeVoceMenu.close();
+        	
+        	if(cursorOrdinazioniInviate != null)
+        		cursorOrdinazioniInviate.close();
+        	
+        	
+        	db.close();
+       	  	dbManager.close();
+       	  	
         }
      
     }
@@ -1238,11 +1257,14 @@ public class TableCardActivity extends Activity {
 				
 	   		RestaurantApplication restApp = (RestaurantApplication)getApplication();
 			HashMap<String,String> requestParameters = new HashMap<String,String>();
+			
 			requestParameters.put("action","LIBERA_TAVOLO");
 			requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
 			  
 			DbManager dbManager = new DbManager(getApplicationContext());
 			SQLiteDatabase db = dbManager.getWritableDatabase();
+			
+			Cursor cursorOrdinazioni = null;
 			
 			try {
 				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
@@ -1262,7 +1284,7 @@ public class TableCardActivity extends Activity {
 					
 					List<Integer> listaComande = new ArrayList<Integer>();
 					
-					Cursor cursorOrdinazioni;
+					
 					cursorOrdinazioni = db.query(	"comanda", new String[] {"idComanda"}, 
 													"idTavolo="+myTable.getTableId(),
 													null,
@@ -1277,9 +1299,7 @@ public class TableCardActivity extends Activity {
 						listaComande.add(new Integer(cursorOrdinazioni.getInt(0)));
 						cursorOrdinazioni.moveToNext();
 					}
-					
-					cursorOrdinazioni.close();
-					
+										
 					/* ******************************************************
 					 * Cancello comande e variazioni associate in base agli
 					 * id recuperati in precedenza 
@@ -1299,16 +1319,19 @@ public class TableCardActivity extends Activity {
 					return new Error("", false);
 					
 				} else {
-					
 					return new Error(jsonObject.getString("message"),true);
 				}
+				
 			} catch (ClientProtocolException e) {
-			  return new Error("Errore durante la comunicazione con il server",true);
+				return new Error("Errore durante la comunicazione con il server",true);
 			} catch (IOException e) {
-			  return new Error("Errore durante la comunicazione con il server",true);
+				return new Error("Errore durante la comunicazione con il server",true);
 			} catch (JSONException e) {
-			  return new Error("Errore durante la lettura della risposta dal server",true);
+				return new Error("Errore durante la lettura della risposta dal server",true);
 			}finally{
+				if(cursorOrdinazioni != null)
+					cursorOrdinazioni.close();
+				
 				db.close();
 				dbManager.close();
 			}
@@ -1352,25 +1375,21 @@ public class TableCardActivity extends Activity {
 			requestParameters.put("action","ELIMINA_COMANDA");
 			requestParameters.put("idRemotoComanda", ((Integer)params[0]).toString());
 			  
+			DbManager dbManager = new DbManager(getApplicationContext());
+			SQLiteDatabase db = dbManager.getWritableDatabase();
+			
 			try {
 				String response = restApp.makeHttpPostRequest(	restApp.getHost() + "ClientEJB/gestioneComande", 
 																requestParameters);
-				
 				
 				JSONObject jsonObject = new JSONObject(response);
 				
 				if(jsonObject.getString("success").equals("true"))  {
 					
 					/* Elimino la comanda dal database locale e l'associazione con le variazioni  */
-					DbManager dbManager = new DbManager(getApplicationContext());
-					SQLiteDatabase db = dbManager.getWritableDatabase();
 					
 					db.delete("comanda", "idComanda=" + ((Integer)params[1]).toString(),null);
 					db.delete("variazionecomanda", "idComanda=" +  ((Integer)params[1]).toString(), null);
-					db.close();
-					
-					
-					dbManager.close();
 					
 					/* Aggiorno la list view del conto ricaricando gli ordini dal database */
 					runOnUiThread(new Runnable() {
@@ -1397,6 +1416,9 @@ public class TableCardActivity extends Activity {
 			  return new Error("Errore durante la comunicazione con il server (" + e.toString() + ")",true);
 			} catch (JSONException e) {
 			  return new Error("Errore durante la lettura della risposta dal server (" + e.toString() +")",true);
+			} finally {
+				db.close();
+				dbManager.close();
 			}
 		}
 	
@@ -1485,14 +1507,14 @@ public class TableCardActivity extends Activity {
 	   	@Override
 		protected Error doInBackground(Object... params) {
 			
-	   		DbManager dbManager = new DbManager(getApplicationContext());
-	   		SQLiteDatabase db = dbManager.getWritableDatabase();
-	   		
 	   		RestaurantApplication restApp = (RestaurantApplication)getApplication();
 			HashMap<String,String> requestParameters = new HashMap<String,String>();
 			requestParameters.put("action","GET_CONTO");
 			requestParameters.put("idTavolo", new Integer(myTable.getTableId()).toString());
 			  
+			DbManager dbManager = new DbManager(getApplicationContext());
+	   		SQLiteDatabase db = dbManager.getWritableDatabase();
+			Cursor cursorOrdinazioniNonSospese = null;
 			
 			try {
 				
@@ -1510,7 +1532,6 @@ public class TableCardActivity extends Activity {
 				
 				List<Integer> listaComandeNonSospese = new ArrayList<Integer>();
 				
-				Cursor cursorOrdinazioniNonSospese;
 				cursorOrdinazioniNonSospese = db.query(	"comanda", new String[] {"idComanda"}, 
 														"stato IS NOT 'SOSPESA'",
 														null,
@@ -1606,18 +1627,14 @@ public class TableCardActivity extends Activity {
 							db.insertOrThrow("variazionecomanda", null, variazione);
 						}
 					}
-			
 					return new Error("",false);
-					
 				} else {
-					dbManager.close();
-					db.close();
 					return new Error(jsonObject.getString("message"), true);
 				}
-				
 			} catch (Exception e) {
 				return new Error(e.toString(),true);
 			}finally {
+				cursorOrdinazioniNonSospese.close();
 				dbManager.close();
 				db.close();
 			}

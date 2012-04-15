@@ -57,43 +57,39 @@ public class RestaurantApplication extends Application {
 	 */
 	public synchronized String makeHttpPostRequest(	String url, 
 													HashMap<String, String > postParametersMap) throws 	ClientProtocolException, IOException {
-		try {
+	
 			HttpPost httpPost = new HttpPost(url);
 	      
 	       	List<NameValuePair> listPostParameters = new ArrayList<NameValuePair>(2);
 	        	
 	       	for(String key : postParametersMap.keySet()){
-	       		/* Costruisco la lista dei parametri da passare alla richiesta POST */
-	        	listPostParameters.add(new BasicNameValuePair(key, postParametersMap.get(key)));
+	       		listPostParameters.add(new BasicNameValuePair(key, postParametersMap.get(key)));
 	        }
 	       	
-	       	/* Setto i parametri per la richiesta POST codificandoli come URL encoded */
 	       	httpPost.setEntity(new UrlEncodedFormEntity(listPostParameters));
 	        	
 	       
-	       	/* Effettuo la richiesta HTTP */
+	       	
 	        HttpResponse response = httpClient.execute(httpPost);
 	                
 	        /* Log dei cookies */
 	        List<Cookie> cookies = httpClient.getCookieStore().getCookies();
 	
-	       	if (cookies.isEmpty()) {
-	       	   Log.d("RestaurantApplication", "POST REQUEST, No cookies");
-	       	} else {
-	       		for(Cookie c : cookies) {
-	       		    if(c.getName().equals("JSESSIONID")) { 
-	       				Log.e("POST REQUEST, JSESSIONID" , c.getValue());
-	       			} else {
-	       				Log.e("POST REQUEST, Cookie" , c.getName() + " - " + c.getValue());
-	       			}
-	       		}
-	       	}
+//	       	if (cookies.isEmpty()) {
+//	       	   Log.d("RestaurantApplication", "POST REQUEST, No cookies");
+//	       	} else {
+//	       		for(Cookie c : cookies) {
+//	       		    if(c.getName().equals("JSESSIONID")) { 
+//	       				Log.e("POST REQUEST, JSESSIONID" , c.getValue());
+//	       			} else {
+//	       				Log.e("POST REQUEST, Cookie" , c.getName() + " - " + c.getValue());
+//	       			}
+//	       		}
+//	       	}
 	       	String responseBody = EntityUtils.toString(response.getEntity());
 	        	
 	        return responseBody;
-		}catch(Exception e) {
-			return "";
-		}
+	
 	}
 	
 	/**
