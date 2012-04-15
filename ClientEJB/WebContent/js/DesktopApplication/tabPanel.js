@@ -66,26 +66,26 @@ var _mainTabPanel = {
 			        	_mainTabPanel.visualizzaListaConti(record.get('idTavolo'));
 			        	// Fine definizione stato tavolo
 			        },
-			        itemcontextmenu: function(view, rec, node, index, e) {
-			        	if(rec.get('statoTavolo') == 'OCCUPATO'){
-			        		
-			        	}
-			        	
-	                	var contextMenu = null;
-	                	//console.debug('CONTEXT MENU');
-	                	contextMenu = Ext.create('Ext.menu.Menu', {
-	                		items: [{
-			                			text: 'Modifica utente',
-			                        	handler: function(){
-			                        		_mainTabPanel.updateComponentePersonale(rec);
-			                        	}
-		                            }
-		                        ]
-		                });
-	                	
-	                    contextMenu.showAt(e.getXY());
-//	                    return false;
-	                }
+//			        itemcontextmenu: function(view, rec, node, index, e) {
+//			        	if(rec.get('statoTavolo') == 'OCCUPATO'){
+//			        		
+//			        	}
+//			        	
+//	                	var contextMenu = null;
+//	                	//console.debug('CONTEXT MENU');
+//	                	contextMenu = Ext.create('Ext.menu.Menu', {
+//	                		items: [{
+//			                			text: 'Modifica utente',
+//			                        	handler: function(){
+//			                        		_mainTabPanel.updateComponentePersonale(rec);
+//			                        	}
+//		                            }
+//		                        ]
+//		                });
+//	                	
+//	                    contextMenu.showAt(e.getXY());
+////	                    return false;
+//	                }
 			        
 		        },
 			    dockedItems: [{
@@ -101,7 +101,7 @@ var _mainTabPanel = {
 		                tooltip: 'Toggle the visibility of the summary row',
 		                text: 'Piano',
 		                handler: function(){
-		                	Ext.getStore('datastore_stato_tavolo').group('nomePiano');
+		                	Ext.getStore('datastore_stato_tavolo').group('numeroPiano');
 		                }
 		            },{
 		                tooltip: 'Toggle the visibility of the summary row',
