@@ -173,7 +173,6 @@ public class gestioneConti extends HttpServlet {
 				start = Integer.parseInt(request.getParameter("start"));
 				limit = Integer.parseInt(request.getParameter("limit"));
 			}catch(Exception e){
-				System.out.println("ECCEZIONE MAGICA LALALAL");
 				start = 0;
 				limit = 25;
 			}
