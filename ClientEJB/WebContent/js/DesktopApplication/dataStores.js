@@ -142,7 +142,7 @@ function initStores(){
 			//groupField: 'nomeArea',
 			model: 'personale',
 			autoLoad: true,
-			//autoSync: true,
+			autoSync: true,
 			pageSize: 50,
 			remoteFilter : true,
 		
