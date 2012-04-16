@@ -142,7 +142,13 @@ public class NotificationUpdaterService extends Service {
 			   		
 					Thread.sleep(DELAY);
 					
-					/* IMPORTANTE: Mettere in tutte le eccezione la flag = false altrimenti 
+					/* Problema: se il thread incontra un'eccezione viene interrotto ma il
+					 * service rimane attivo, quindi le notifiche non vengono più segnalate
+					 * ed è necessario riavviare manualmente il service. Contemporaneamente,
+					 * se non imposto la flag = false, il thread va in loop perchè non esegue
+					 * mai Thread.sleep ma continua ad eseguire gli exception handler. 
+					 * Sarebbe opportuno trovare una soluzione alternativa.
+					 * IMPORTANTE: Mettere in tutte le eccezione la flag = false altrimenti 
 					 * va in loop  */
 				} catch(InterruptedException e) {
 					Log.e("Eccezione service", e.toString());
